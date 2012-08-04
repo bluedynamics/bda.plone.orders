@@ -1,5 +1,4 @@
-collective.orders
-=================
+bda.plone.orders
+================
 
 Write me
-
