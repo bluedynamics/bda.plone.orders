@@ -27,6 +27,9 @@ setup(name='bda.plone.orders',
       install_requires=[
           'setuptools',
           'Plone',
+          'souper.plone',
+          'bda.plone.cart',
+          'bda.plone.checkout',
       ],
       entry_points="""
       [z3c.autoinclude.plugin]
