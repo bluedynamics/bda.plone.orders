@@ -57,10 +57,14 @@ class OrdersCatalogFactory(object):
         catalog[u'creator'] = CatalogFieldIndex(creator_indexer)
         created_indexer = NodeAttributeIndexer('created')
         catalog[u'created'] = CatalogFieldIndex(created_indexer)
+        state_indexer = NodeAttributeIndexer('state')
+        catalog[u'state'] = CatalogFieldIndex(state_indexer)
         name_indexer = NodeAttributeIndexer('personal_data.name')
         catalog[u'personal_data.name'] = CatalogTextIndex(name_indexer)
         surname_indexer = NodeAttributeIndexer('personal_data.surname')
         catalog[u'personal_data.surname'] = CatalogTextIndex(surname_indexer)
+        city_indexer = NodeAttributeIndexer('billing_address.city')
+        catalog[u'billing_address.city'] = CatalogTextIndex(city_indexer)
         return catalog
 
 
@@ -85,6 +89,7 @@ class OrderCheckoutAdapter(CheckoutAdapter):
         order.attrs['uid'] = uuid.uuid4()
         order.attrs['creator'] = creator
         order.attrs['created'] = created
+        order.attrs['state'] = 'new'
         bookings = self.create_bookings(order)
         order.attrs['booking_uids'] = [_.attrs['uid'] for _ in bookings]
         orders_soup = get_soup('bda_plone_orders_orders', self.context)

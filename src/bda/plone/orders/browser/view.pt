@@ -61,7 +61,7 @@
     <div class="orderscsvexport">
       <p>
         <a href="#"
-           tal:attributes="href string:${context/absolute_url}/@@export">
+           tal:attributes="href string:${context/absolute_url}/@@orderscsvexport">
           Export all data as CSV (excel optimized)
         </a>
       </p>

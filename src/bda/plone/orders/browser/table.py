@@ -20,6 +20,9 @@ class OrdersView(BrowserView):
         return [
             ('Name', 'personal_data.name'),
             ('Surname', 'personal_data.surname'),
+            ('City', 'billing_address.city'),
+            ('Date', 'created'),
+            ('State', 'state'),
         ]
 
 
