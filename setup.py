@@ -30,6 +30,7 @@ setup(name='bda.plone.orders',
           'souper.plone',
           'bda.plone.cart',
           'bda.plone.checkout',
+          'collective.js.datatables',
       ],
       entry_points="""
       [z3c.autoinclude.plugin]

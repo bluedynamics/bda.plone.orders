@@ -1,4 +1,12 @@
 <configure xmlns="http://namespaces.zope.org/zope"
            xmlns:browser="http://namespaces.zope.org/browser">
 
+  <browser:resource
+    name="bda.plone.orders.js"
+    file="orders.js" />
+
+  <browser:resource
+    name="bda.plone.ordser.css"
+    file="orders.css" />
+
 </configure>
