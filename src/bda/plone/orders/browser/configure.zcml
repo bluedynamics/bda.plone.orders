@@ -8,5 +8,20 @@
   <browser:resource
     name="bda.plone.ordser.css"
     file="orders.css" />
+  
+  <!-- XXX: specific permission -->
+  <browser:page
+    for="*"
+    name="orders"
+    template="view.pt"
+    permission="cmf.ModifyPortalContent"
+    layer="..interfaces.IOrdersExtensionLayer" />
+  
+  <!-- XXX: specific permission -->
+  <browser:page
+    for="*"
+    name="orderssoupdata"
+    class=".table.OrdersTable"
+    permission="cmf.ModifyPortalContent" /> 
 
 </configure>
