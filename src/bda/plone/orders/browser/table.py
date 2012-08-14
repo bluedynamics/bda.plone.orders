@@ -40,6 +40,8 @@ class OrdersView(BrowserView):
         }]
 
 
+DT_FORMAT = '%m.%d.%Y-%H:%M'
+
 class DataTable(BrowserView):
     """datatables json data.
     """
@@ -151,7 +153,7 @@ class DataTable(BrowserView):
             for colname in colnames:
                 value = record.attrs.get(colname, '')
                 if isinstance(value, datetime.datetime):
-                    value = value.isoformat()
+                    value = value.strftime(DT_FORMAT)
                 result.append(value)
             return result
         for lazyrecord in self._slice(lazydata):
