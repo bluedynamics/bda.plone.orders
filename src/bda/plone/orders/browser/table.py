@@ -17,13 +17,27 @@ class OrdersView(BrowserView):
     
     @property
     def columns(self):
-        return [
-            ('Name', 'personal_data.name'),
-            ('Surname', 'personal_data.surname'),
-            ('City', 'billing_address.city'),
-            ('Date', 'created'),
-            ('State', 'state'),
-        ]
+        return [{
+            'id': 'personal_data.name',
+            'label': 'Name',
+            'searchable': True,
+        }, {
+            'id': 'personal_data.surname',
+            'label': 'Surname',
+            'searchable': True,
+        }, {
+            'id': 'billing_address.city',
+            'label': 'City',
+            'searchable': True,
+        }, {
+            'id': 'created',
+            'label': 'Date',
+            'searchable': False,
+        }, {
+            'id': 'state',
+            'label': 'State',
+            'searchable': False,
+        }]
 
 
 class DataTable(BrowserView):
@@ -44,15 +58,15 @@ class DataTable(BrowserView):
         sortparams['sortable'] = dict()
         sortparams['reverse'] = False
         sortcols_idx = 0
-        sortparams['index'] = columns[sortcols_idx][1]
+        sortparams['index'] = columns[sortcols_idx]['id']
         sortparams['altindex'] = '_sort_%s' % sortparams['index']
         for idx in range(0, len(columns)):
             col = int(self.request.form.get('iSortCol_%d' % idx, 0))
             if col:
                 sortcols_idx = idx
-                sortparams['index'] = columns[idx][1]
+                sortparams['index'] = columns[idx]['id']
             sabl = self.request.form.get('bSortable_%d' % sortcols_idx, 'false')
-            sortparams['sortable'][columns[idx][1]] = sabl == 'true'
+            sortparams['sortable'][columns[idx]['id']] = sabl == 'true'
         sdir = self.request.form.get('sSortDir_%d' % sortcols_idx, 'asc')
         sortparams['reverse'] = sdir == 'desc'
         return sortparams
@@ -82,7 +96,7 @@ class DataTable(BrowserView):
             term = self.request.form['sSearch_%d' % idx]
             if not term or not term.strip():
                 continue
-            querymap[columns[idx][1]] = term
+            querymap[columns[idx]['id']] = term
         global_term = self.request.form['sSearch']
         if not querymap and not global_term:
             return self._alldata(soup)
@@ -131,7 +145,7 @@ class DataTable(BrowserView):
         soup = get_soup('bda_plone_orders_orders', self.context)
         aaData = list()
         length, lazydata = self._query(soup)
-        colnames = [_[1] for _ in self.columns]
+        colnames = [_['id'] for _ in self.columns]
         def record2list(record):
             result = list()
             for colname in colnames:
