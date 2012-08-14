@@ -5,5 +5,18 @@
   
   <include file="profiles.zcml" />
   <include package=".browser" />
+  
+  <utility
+    name="bda_plone_orders_bookings"
+    factory=".common.BookingsCatalogFactory" />
+  
+  <utility
+    name="bda_plone_orders_orders"
+    factory=".common.OrdersCatalogFactory" />
+  
+  <adapter
+    for="Products.Archetypes.interfaces.IBaseObject
+         zope.publisher.interfaces.browser.IBrowserRequest"
+    factory="common.OrderCheckoutAdapter" />
 
 </configure>
