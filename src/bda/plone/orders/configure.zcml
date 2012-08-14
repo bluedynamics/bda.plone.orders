@@ -17,6 +17,6 @@
   <adapter
     for="Products.Archetypes.interfaces.IBaseObject
          zope.publisher.interfaces.browser.IBrowserRequest"
-    factory="common.OrderCheckoutAdapter" />
+    factory=".common.OrderCheckoutAdapter" />
 
 </configure>

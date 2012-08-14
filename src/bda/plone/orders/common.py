@@ -51,7 +51,7 @@ class OrdersCatalogFactory(object):
         uid_indexer = NodeAttributeIndexer('uid')
         catalog[u'uid'] = CatalogFieldIndex(uid_indexer)
         booking_uids_indexer = NodeAttributeIndexer('booking_uids')
-        catalog[u'booking_uids'] = CatalogFieldIndex(booking_uids_indexer)
+        catalog[u'booking_uids'] = CatalogKeywordIndex(booking_uids_indexer)
         creator_indexer = NodeAttributeIndexer('creator')
         catalog[u'creator'] = CatalogFieldIndex(creator_indexer)
         created_indexer = NodeAttributeIndexer('created')
@@ -62,29 +62,36 @@ class OrdersCatalogFactory(object):
 class OrderCheckoutAdapter(CheckoutAdapter):
     
     @instance_property
-    def vessel(self):
+    def order(self):
         return OOBTNode()
+    
+    @property
+    def vessel(self):
+        return self.order.attrs
     
     def save(self, providers, widget, data):
         super(OrderCheckoutAdapter, self).save(providers, widget, data)
-        creator = self.context.portal_membership.getAuthenticatedMember()
+        creator = None
+        member = self.context.portal_membership.getAuthenticatedMember()
+        if member:
+            creator = member.getId()
         created = datetime.datetime.now()
-        items = extractitems(readcookie(self.request))
-        order = self.vessel
+        order = self.order
         order.attrs['uid'] = uuid.uuid4()
-        order.attrs['booking_uids'] = [item[0] for item in items]
         order.attrs['creator'] = creator
         order.attrs['created'] = created
+        bookings = self.create_bookings(order)
+        order.attrs['booking_uids'] = [_.attrs['uid'] for _ in bookings]
         orders_soup = get_soup('bda_plone_orders_orders', self.context)
         orders_soup.add(order)
-        bookings = self.create_bookings(order, items, creator, created)
         bookings_soup = get_soup('bda_plone_orders_bookings', self.context)
         for booking in bookings:
             bookings_soup.add(booking)
         deletecookie(self.request)
     
-    def create_bookings(self, order, items, creator, created):
+    def create_bookings(self, order):
         ret = list()
+        items = extractitems(readcookie(self.request))
         for uid, count, comment in items:
             brain = get_catalog_brain(self.context, uid)
             booking = OOBTNode()
@@ -93,8 +100,8 @@ class OrderCheckoutAdapter(CheckoutAdapter):
             booking.attrs['buyable_count'] = count
             booking.attrs['buyable_comment'] = comment
             booking.attrs['order_uid'] = order.attrs['uid']
-            booking.attrs['creator'] = creator
-            booking.attrs['created'] = created
+            booking.attrs['creator'] = order.attrs['creator']
+            booking.attrs['created'] = order.attrs['created']
             booking.attrs['exported'] = False
             booking.attrs[u'title'] = brain and brain.Title or 'unknown'
             ret.append(booking)
