@@ -1,8 +1,11 @@
 <configure xmlns="http://namespaces.zope.org/zope"
-           xmlns:five="http://namespaces.zope.org/five">
+           xmlns:five="http://namespaces.zope.org/five"
+           xmlns:i18n="http://namespaces.zope.org/i18n">
 
   <include package="souper.plone" />
   <include package="collective.js.datatables" />
+  
+  <i18n:registerTranslations directory="locales" />
   
   <include file="profiles.zcml" />
   <include package=".browser" />
