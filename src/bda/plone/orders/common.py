@@ -4,6 +4,7 @@ from zope.interface import implementer
 from repoze.catalog.catalog import Catalog
 from repoze.catalog.indexes.field import CatalogFieldIndex
 from repoze.catalog.indexes.keyword import CatalogKeywordIndex
+from repoze.catalog.indexes.text import CatalogTextIndex
 from souper.interfaces import ICatalogFactory
 from souper.soup import (
     get_soup,
@@ -56,6 +57,10 @@ class OrdersCatalogFactory(object):
         catalog[u'creator'] = CatalogFieldIndex(creator_indexer)
         created_indexer = NodeAttributeIndexer('created')
         catalog[u'created'] = CatalogFieldIndex(created_indexer)
+        name_indexer = NodeAttributeIndexer('personal_data.name')
+        catalog[u'personal_data.name'] = CatalogTextIndex(name_indexer)
+        surname_indexer = NodeAttributeIndexer('personal_data.surname')
+        catalog[u'personal_data.surname'] = CatalogTextIndex(surname_indexer)
         return catalog
 
 

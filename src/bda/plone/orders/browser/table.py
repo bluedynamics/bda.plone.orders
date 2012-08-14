@@ -5,7 +5,22 @@ from repoze.catalog.query import (
     Contains,
     Or,
 )
-from souper.soup import LazyRecord
+from souper.soup import (
+    get_soup,
+    LazyRecord,
+)
+
+
+class OrdersView(BrowserView):
+    """Orders view.
+    """
+    
+    @property
+    def columns(self):
+        return [
+            ('Name', 'personal_data.name'),
+            ('Surname', 'personal_data.surname'),
+        ]
 
 
 class DataTable(BrowserView):
@@ -58,7 +73,7 @@ class DataTable(BrowserView):
         return soup.storage.length.value, lazyrecords()
     
     def _query(self, soup):
-        columns = self.columns()
+        columns = self.columns
         querymap = dict()
         for idx in range(0, len(columns)):
             term = self.request.form['sSearch_%d' % idx]
@@ -110,11 +125,10 @@ class DataTable(BrowserView):
             count += 1
     
     def __call__(self):
-        soup = self.context.get_soup()
+        soup = get_soup('bda_plone_orders_orders', self.context)
         aaData = list()
         length, lazydata = self._query(soup)
-        colnames = [_[1] for _ in self.columns()]
-
+        colnames = [_[1] for _ in self.columns]
         def record2list(record):
             result = list()
             for colname in colnames:
@@ -126,20 +140,14 @@ class DataTable(BrowserView):
         for lazyrecord in self._slice(lazydata):
             aaData.append(record2list(lazyrecord()))
         data = {
-          "sEcho": int(self.request.form['sEcho']),
-          "iTotalRecords": soup.storage.length.value,
-          "iTotalDisplayRecords": length,
-          "aaData": aaData,
+            "sEcho": int(self.request.form['sEcho']),
+            "iTotalRecords": soup.storage.length.value,
+            "iTotalDisplayRecords": length,
+            "aaData": aaData,
         }
         return json.dumps(data)
 
 
-class OrdersTable(DataTable):
+class OrdersTable(OrdersView, DataTable):
     """Orders table.
     """
-    
-    @property
-    def columns(self):
-        ret = list()
-        ret.append(('label', 'id'))
-        return ret

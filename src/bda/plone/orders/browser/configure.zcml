@@ -6,7 +6,7 @@
     file="orders.js" />
 
   <browser:resource
-    name="bda.plone.ordser.css"
+    name="bda.plone.orders.css"
     file="orders.css" />
   
   <!-- XXX: specific permission -->
@@ -14,6 +14,7 @@
     for="*"
     name="orders"
     template="view.pt"
+    class=".table.OrdersView"
     permission="cmf.ModifyPortalContent"
     layer="..interfaces.IOrdersExtensionLayer" />
   
@@ -22,6 +23,7 @@
     for="*"
     name="orderssoupdata"
     class=".table.OrdersTable"
-    permission="cmf.ModifyPortalContent" /> 
+    permission="cmf.ModifyPortalContent"
+    layer="..interfaces.IOrdersExtensionLayer" /> 
 
 </configure>

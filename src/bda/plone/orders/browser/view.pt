@@ -21,27 +21,30 @@
     
     <table id="bdaploneorders"
            tal:define="ajaxurl python:'%s/%s' % (context.absolute_url(),
-                                                 '@@orderssoupdata')"
+                                                 '@@orderssoupdata');
+                       columns view/columns"
            tal:attributes="data-ajaxurl ajaxurl">
       <thead>
         <tr>
-          <tal:loop repeat="colinfo view/columns">
+          <tal:loop repeat="colinfo columns">
             <th tal:attributes="class python:'datarow-'+colinfo[1];">
               <span tal:replace="python:colinfo[0]">Title</span>
             </th>
           </tal:loop>
         </tr>
       </thead>
+      
       <tbody>
         <tr>
-          <td tal:attributes="columnspan: python:len(view.columns())">
+          <td tal:attributes="columnspan: python:len(columns)">
             Bitte warte. Lade Daten...
           </td>
         </tr>
       </tbody>
+      
       <tfoot>
         <tr>
-          <tal:loop repeat="colinfo view/columns">
+          <tal:loop repeat="colinfo columns">
             <th>
               <input type="text"
                      class="search_init"
