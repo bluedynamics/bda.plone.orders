@@ -1,0 +1,55 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2012-08-14 14:27+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0\n"
+"Language-Code: en\n"
+"Language-Name: English\n"
+"Preferred-Encodings: utf-8 latin1\n"
+"Domain: DOMAIN\n"
+
+#. Default: "City"
+#: ./browser/table.py:33
+msgid "city"
+msgstr "Ort"
+
+#. Default: "Date"
+#: ./browser/table.py:37
+msgid "date"
+msgstr "Datum"
+
+#. Default: "Export recent orders as CSV (excel optimized)"
+#: ./browser/view.pt:65
+msgid "export_recent_orders"
+msgstr "Exportiere aktuelle Bestellungen als CSV Datei"
+
+#. Default: "Loading Data, please wait..."
+#: ./browser/view.pt:39
+msgid "loading_please_wait"
+msgstr "Lade Daten, bitte warten..."
+
+#. Default: "Name"
+#: ./browser/table.py:25
+msgid "name"
+msgstr "Name"
+
+#. Default: "Orders"
+#: ./browser/view.pt:20
+msgid "orders"
+msgstr "Bestellungen"
+
+#. Default: "State"
+#: ./browser/table.py:41
+msgid "state"
+msgstr "Status"
+
+#. Default: "Surname"
+#: ./browser/table.py:29
+msgid "surname"
+msgstr "Nachname"

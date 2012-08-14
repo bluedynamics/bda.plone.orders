@@ -27,8 +27,8 @@
       <thead>
         <tr>
           <tal:loop repeat="colinfo columns">
-            <th tal:attributes="class python:'datarow-' + colinfo['id'];">
-              <span tal:replace="python:colinfo['label']">Title</span>
+            <th tal:attributes="class python: 'datarow-' + colinfo['id'];">
+              <span tal:replace="python: colinfo['label']">Title</span>
             </th>
           </tal:loop>
         </tr>
@@ -36,8 +36,9 @@
       
       <tbody>
         <tr>
-          <td tal:attributes="columnspan: python:len(columns)">
-            Bitte warte. Lade Daten...
+          <td tal:attributes="columnspan: python:len(columns)"
+              i18n:translate="loading_please_wait">
+            Loading Data, please wait...
           </td>
         </tr>
       </tbody>
@@ -62,8 +63,9 @@
     <div class="orderscsvexport">
       <p>
         <a href="#"
-           tal:attributes="href string:${context/absolute_url}/@@orderscsvexport">
-          Export all data as CSV (excel optimized)
+           tal:attributes="href string:${context/absolute_url}/@@orderscsvexport"
+           i18n:translate="export_recent_orders">
+          Export recent orders as CSV (excel optimized)
         </a>
       </p>
     </div>

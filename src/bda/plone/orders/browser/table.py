@@ -1,5 +1,6 @@
 import json
 import datetime
+from zope.i18nmessageid import MessageFactory
 from Products.Five import BrowserView
 from repoze.catalog.query import (
     Contains,
@@ -10,6 +11,8 @@ from souper.soup import (
     LazyRecord,
 )
 
+_ = MessageFactory('bda.plone.orders')
+
 
 class OrdersView(BrowserView):
     """Orders view.
@@ -19,23 +22,23 @@ class OrdersView(BrowserView):
     def columns(self):
         return [{
             'id': 'personal_data.name',
-            'label': 'Name',
+            'label': _('name', 'Name'),
             'searchable': True,
         }, {
             'id': 'personal_data.surname',
-            'label': 'Surname',
+            'label': _('surname', 'Surname'),
             'searchable': True,
         }, {
             'id': 'billing_address.city',
-            'label': 'City',
+            'label': _('city', 'City'),
             'searchable': True,
         }, {
             'id': 'created',
-            'label': 'Date',
+            'label': _('date', 'Date'),
             'searchable': False,
         }, {
             'id': 'state',
-            'label': 'State',
+            'label': _('state', 'State'),
             'searchable': False,
         }]
 
