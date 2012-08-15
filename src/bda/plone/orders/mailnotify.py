@@ -45,7 +45,7 @@ Country: %(delivery_address.country)s
 
 def create_mail_listing(context, attrs):
     soup = get_soup('bda_plone_orders_bookings', context)
-    bookings = soup.query((Any('buyable_uid', attrs['booking_uids'])))
+    bookings = soup.query((Any('uid', attrs['booking_uids'])))
     lines = []
     for booking in bookings:
         buyable = get_catalog_brain(context, booking.attrs['buyable_uid'])
