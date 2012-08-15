@@ -10,6 +10,7 @@ from souper.soup import (
     get_soup,
     LazyRecord,
 )
+from ..common import DT_FORMAT
 
 _ = MessageFactory('bda.plone.orders')
 
@@ -42,8 +43,6 @@ class OrdersView(BrowserView):
             'searchable': False,
         }]
 
-
-DT_FORMAT = '%m.%d.%Y-%H:%M'
 
 class DataTable(BrowserView):
     """datatables json data.

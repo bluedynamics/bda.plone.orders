@@ -18,8 +18,10 @@ from bda.plone.cart import (
     readcookie,
     deletecookie,
     extractitems,
+    get_catalog_brain,
 )
-from .utils import get_catalog_brain
+
+DT_FORMAT = '%m.%d.%Y-%H:%M'
 
 
 @implementer(ICatalogFactory)

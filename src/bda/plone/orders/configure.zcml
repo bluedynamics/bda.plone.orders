@@ -22,5 +22,9 @@
     for="Products.Archetypes.interfaces.IBaseObject
          zope.publisher.interfaces.browser.IBrowserRequest"
     factory=".common.OrderCheckoutAdapter" />
+  
+  <subscriber
+    for="bda.plone.checkout.interfaces.ICheckoutEvent"
+    handler=".mailnotify.checkout_success" />
 
 </configure>
