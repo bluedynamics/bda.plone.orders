@@ -7,40 +7,7 @@ from repoze.catalog.query import Any
 from Products.CMFCore.utils import getToolByName
 from bda.plone.cart import get_catalog_brain
 from .common import DT_FORMAT
-
-
-MAIL_SUBJECT = u'Order received.'
-
-MAIL_BODY = """
-Date: %(date)s
-
-Personal Data:
-Name: %(personal_data.name)s %(personal_data.surname)s
-Company: %(personal_data.company)s
-Phone: %(personal_data.phone)s
-
-Address:
-Street: %(billing_address.street)s
-ZIP: %(billing_address.zip)s
-City: %(billing_address.city)s
-Country: %(billing_address.country)s
-%(delivery_address)s
-Comment:
-%(order_comment.comment)s
-
-Ordered items:
-%(item_listing)s
-"""
-
-DELIVERY_ADDRESS = """
-Delivery Address:
-Name: %(delivery_address.name)s %(delivery_address.surname)s
-Company: %(delivery_address.company)s
-Street: %(delivery_address.street)s
-ZIP: %(delivery_address.zip)s
-City: %(delivery_address.city)s
-Country: %(delivery_address.country)s
-"""
+from .mailtemplates import get_templates
 
 
 def create_mail_listing(context, attrs):
@@ -49,12 +16,17 @@ def create_mail_listing(context, attrs):
     lines = []
     for booking in bookings:
         buyable = get_catalog_brain(context, booking.attrs['buyable_uid'])
-        line = '    %s: %s' % (buyable.Title, booking.attrs['buyable_count'])
+        title = buyable.Title
+        comment = booking.attrs['buyable_comment']
+        if comment:
+            title = '%s (%s)' % (title, comment)
+        line = '    %s: %s' % (title, booking.attrs['buyable_count'])
         lines.append(line)
     return '\n'.join(lines)
 
 
 def create_mail_body(context, attrs):
+    templates = get_templates(context)
     arguments = dict()
     arguments['date'] = attrs['created'].strftime(DT_FORMAT)
     arguments['personal_data.name'] = attrs['personal_data.name']
@@ -74,18 +46,21 @@ def create_mail_body(context, attrs):
         delivery['delivery_address.zip'] = attrs['delivery_address.zip']
         delivery['delivery_address.city'] = attrs['delivery_address.city']
         delivery['delivery_address.country'] = attrs['delivery_address.country']
-        arguments['delivery_address'] = DELIVERY_ADDRESS % delivery
+        delivery_address_template = templates['delivery_address']
+        arguments['delivery_address'] = delivery_address_template % delivery
     else:
         arguments['delivery_address'] = ''
     arguments['order_comment.comment'] = attrs['order_comment.comment']
     arguments['item_listing'] = create_mail_listing(context, attrs)
-    return MAIL_BODY % arguments
+    body_template = templates['body']
+    return body_template % arguments
 
 
 def checkout_success(event):
     """Send notification mail after checkout succeed.
     """
-    subject = MAIL_SUBJECT
+    templates = get_templates(event.context)
+    subject = templates['subject']
     message = create_mail_body(event.context, event.vessel)
     receiver = event.vessel['personal_data.email']
     notify = MailNotify(event.context)
