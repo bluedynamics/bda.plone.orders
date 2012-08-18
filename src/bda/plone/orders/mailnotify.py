@@ -62,9 +62,12 @@ def checkout_success(event):
     templates = get_templates(event.context)
     subject = templates['subject']
     message = create_mail_body(event.context, event.vessel)
-    receiver = event.vessel['personal_data.email']
-    notify = MailNotify(event.context)
-    notify.send(subject, message, receiver)
+    customer_address = event.vessel['personal_data.email']
+    props = getToolByName(event.context, 'portal_properties')
+    shop_manager_address = props.site_properties.email_from_address
+    mail_notify = MailNotify(event.context)
+    for receiver in [customer_address, shop_manager_address]:
+        mail_notify.send(subject, message, receiver)
 
 
 class MailNotify(object):
@@ -75,8 +78,9 @@ class MailNotify(object):
         self.context = context
     
     def send(self, subject, message, receiver):
-        if self.context.REQUEST.get('_order_mail_already_sent') == 1:
-            return True
+        sent_key = '_order_mail_already_sent_%s' % receiver
+        if self.context.REQUEST.get(sent_key):
+            return
         purl = getToolByName(self.context, 'portal_url')
         mailfrom = purl.getPortalObject().email_from_address
         mailhost = getToolByName(self.context, 'MailHost')
@@ -100,4 +104,4 @@ class MailNotify(object):
         message = message.as_string()
         server.sendmail(from_, receiver, message)
         server.quit()
-        self.context.REQUEST['_order_mail_already_sent'] = 1
+        self.context.REQUEST[sent_key] = 1
