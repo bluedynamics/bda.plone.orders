@@ -20,6 +20,8 @@ from bda.plone.cart import (
     extractitems,
     get_catalog_brain,
 )
+from bda.plone.cart.interfaces import ICartItemDataProvider
+
 
 DT_FORMAT = '%m.%d.%Y-%H:%M'
 
@@ -106,6 +108,7 @@ class OrderCheckoutAdapter(CheckoutAdapter):
         items = extractitems(readcookie(self.request))
         for uid, count, comment in items:
             brain = get_catalog_brain(self.context, uid)
+            item_data = ICartItemDataProvider(brain.getObject())
             booking = OOBTNode()
             booking.attrs['uid'] = uuid.uuid4()
             booking.attrs['buyable_uid'] = uid
@@ -116,5 +119,7 @@ class OrderCheckoutAdapter(CheckoutAdapter):
             booking.attrs['created'] = order.attrs['created']
             booking.attrs['exported'] = False
             booking.attrs[u'title'] = brain and brain.Title or 'unknown'
+            booking.attrs[u'net'] = item_data.net
+            booking.attrs[u'vat'] = item_data.vat
             ret.append(booking)
         return ret
