@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2012-08-19 12:01+0000\n"
+"POT-Creation-Date: 2012-08-19 17:21+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -14,43 +14,213 @@ msgstr ""
 "Preferred-Encodings: utf-8 latin1\n"
 "Domain: DOMAIN\n"
 
+#. Default: "Actions"
+#: ./browser/views.py:139
+msgid "actions"
+msgstr ""
+
+#. Default: "Billing Address:"
+#: ./browser/order.pt:34
+msgid "billing_address"
+msgstr ""
+
+#. Default: "comment"
+#: ./browser/order.pt:123
+msgid "booking_comment"
+msgstr ""
+
+#. Default: "count"
+#: ./browser/order.pt:119
+msgid "booking_count"
+msgstr ""
+
+#. Default: "exported"
+#: ./browser/order.pt:122
+msgid "booking_exported"
+msgstr ""
+
+#. Default: "net"
+#: ./browser/order.pt:120
+msgid "booking_net"
+msgstr ""
+
+#. Default: "title"
+#: ./browser/order.pt:118
+msgid "booking_title"
+msgstr ""
+
+#. Default: "vat"
+#: ./browser/order.pt:121
+msgid "booking_vat"
+msgstr ""
+
 #. Default: "City"
-#: ./browser/orders.py:27
+#: ./browser/views.py:149
 msgid "city"
 msgstr ""
 
 #. Default: "Date"
-#: ./browser/orders.py:30
+#: ./browser/views.py:152
 msgid "date"
 msgstr ""
 
+#. Default: "Delivery Address:"
+#: ./browser/order.pt:76
+msgid "delivery_address"
+msgstr ""
+
+#. Default: "Export Orders"
+#: ./browser/orders.pt:14
+msgid "export_orders"
+msgstr ""
+
 #. Default: "Export recent orders as CSV (excel optimized)"
-#: ./browser/orders.pt:50
+#: ./browser/orders.pt:18
 msgid "export_recent_orders"
 msgstr ""
 
 #. Default: "Loading Data, please wait..."
-#: ./browser/orders.pt:39
+#: ./browser/table.pt:22
 msgid "loading_please_wait"
 msgstr ""
 
 #. Default: "Name"
-#: ./browser/orders.py:24
+#: ./browser/views.py:146
 msgid "name"
 msgstr ""
 
+#. Default: "Order Bookings:"
+#: ./browser/order.pt:115
+msgid "order_bookings"
+msgstr ""
+
+#. Default: "Order Comment:"
+#: ./browser/order.pt:104
+msgid "order_comment"
+msgstr ""
+
+#. Default: "Company:"
+#: ./browser/order.pt:26
+msgid "order_company"
+msgstr ""
+
+#. Default: "Country:"
+#: ./browser/order.pt:42
+msgid "order_country"
+msgstr ""
+
+#. Default: "Created:"
+#: ./browser/order.pt:56
+msgid "order_created"
+msgstr ""
+
+#. Default: "Order Details"
+#: ./browser/order.pt:8
+msgid "order_details"
+msgstr ""
+
+#. Default: "Email:"
+#: ./browser/order.pt:23
+msgid "order_email"
+msgstr ""
+
+#. Default: "Gender:"
+#: ./browser/order.pt:16
+msgid "order_gender"
+msgstr ""
+
+#. Default: "Name:"
+#: ./browser/order.pt:19
+msgid "order_name"
+msgstr ""
+
+#. Default: "Net:"
+#: ./browser/order.pt:62
+msgid "order_net"
+msgstr ""
+
+#. Default: "No Comment"
+#: ./browser/order.pt:107
+msgid "order_no_comment"
+msgstr ""
+
+#. Default: "No delivery Address defined"
+#: ./browser/order.pt:98
+msgid "order_no_delivery_address"
+msgstr ""
+
+#. Default: "Payment:"
+#: ./browser/order.pt:50
+msgid "order_payment"
+msgstr ""
+
+#. Default: "Phone:"
+#: ./browser/order.pt:29
+msgid "order_phone"
+msgstr ""
+
+#. Default: "Salaried:"
+#: ./browser/order.pt:53
+msgid "order_salaried"
+msgstr ""
+
+#. Default: "Order State:"
+#: ./browser/order.pt:49
+msgid "order_state"
+msgstr ""
+
+#. Default: "Street:"
+#: ./browser/order.pt:35
+msgid "order_street"
+msgstr ""
+
+#. Default: "Order Summary:"
+#: ./browser/order.pt:61
+msgid "order_summary"
+msgstr ""
+
+#. Default: "Total:"
+#: ./browser/order.pt:68
+msgid "order_total"
+msgstr ""
+
+#. Default: "Order UID:"
+#: ./browser/order.pt:10
+msgid "order_uid"
+msgstr ""
+
+#. Default: "VAT:"
+#: ./browser/order.pt:65
+msgid "order_vat"
+msgstr ""
+
+#. Default: "ZIP/City:"
+#: ./browser/order.pt:38
+msgid "order_zip_city"
+msgstr ""
+
 #. Default: "Orders"
-#: ./browser/orders.pt:20
+#: ./browser/orders.pt:6
 msgid "orders"
 msgstr ""
 
-#. Default: "State"
-#: ./browser/orders.py:33
-msgid "state"
+#. Default: "Personal Data:"
+#: ./browser/order.pt:15
+msgid "personal_data"
 msgstr ""
 
 #. Default: "Surname"
-#: ./browser/orders.py:21
+#: ./browser/views.py:143
 msgid "surname"
+msgstr ""
+
+#. Default: "Unknown"
+#: ./browser/views.py:271
+msgid "unknown"
+msgstr ""
+
+#. Default: "View Order"
+#: ./browser/views.py:172
+msgid "view_order"
 msgstr ""
 

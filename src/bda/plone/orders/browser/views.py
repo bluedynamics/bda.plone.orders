@@ -139,6 +139,10 @@ class OrdersTable(BrowserView):
             'label': _('actions', 'Actions'),
             'renderer': self.render_order_actions,
         }, {
+            'id': 'created',
+            'label': _('date', 'Date'),
+            'renderer': self.render_dt,
+        }, {
             'id': 'personal_data.surname',
             'label': _('surname', 'Surname'),
         }, {
@@ -147,10 +151,6 @@ class OrdersTable(BrowserView):
         }, {
             'id': 'billing_address.city',
             'label': _('city', 'City'),
-        }, {
-            'id': 'created',
-            'label': _('date', 'Date'),
-            'renderer': self.render_dt,
         }]
     
     def render_dt(self, colname, record):

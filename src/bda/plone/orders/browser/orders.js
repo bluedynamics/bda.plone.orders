@@ -16,7 +16,7 @@
                 'bSortable': false,
                 'aTargets': [0]
             }],
-            "aaSorting": [[4, "desc"]],
+            "aaSorting": [[1, "desc"]],
             "fnDrawCallback": orders.bind
         });
     });

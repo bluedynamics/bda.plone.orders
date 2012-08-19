@@ -20,8 +20,11 @@
     border-right:#ddd 1px solid;
     border-bottom:#ddd 1px solid;
 }
+#bdaploneorders th.datarow-actions {
+    width:120px;
+}
 #bdaploneorders td {
-    padding:3px 3px 3px 1em;
+    padding:1px 3px 1px 1em;
     border-right:#ddd 1px solid;
 }
 #bdaploneorders a.contenttype-document {
@@ -42,7 +45,11 @@
     padding:0.4em;
 }
 .order_bookings {
-    padding:1.2em 0.4em 0.4em 0.4em;
+    padding:0 0.4em 0.4em 0.4em;
+}
+.order_bookings h3 {
+    margin-top:0.8em;
+    margin-bottom:0.3em;
 }
 .order_bookings table {
     width:100%;
@@ -51,16 +58,15 @@
     border-collapse:collapse;
 }
 .order_bookings table th {
-    padding:6px 3px 6px 1em;
+    padding:5px 3px 5px 1em;
     text-align:left;
     background-color:#fafafa;
     border-right:#ddd 1px solid;
     border-bottom:#ddd 1px solid;
     font-weight:bold;
-    font-size:110%;
 }
 .order_bookings table td {
-    padding:6px 3px 6px 1em;
+    padding:5px 3px 5px 1em;
     border-right:#ddd 1px solid;
 }
 .order_bookings tr.odd td {
