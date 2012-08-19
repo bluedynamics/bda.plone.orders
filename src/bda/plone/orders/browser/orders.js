@@ -1,7 +1,5 @@
 (function($) {
     
-    var asInitVals = new Array();
-    
     $(document).ready(function() {
         var url = $('#bdaploneorders').attr('data-ajaxurl');
         var oTable = $('#bdaploneorders').dataTable({
