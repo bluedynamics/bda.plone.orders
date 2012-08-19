@@ -13,8 +13,8 @@
   <browser:page
     for="*"
     name="orders"
-    template="view.pt"
-    class=".table.OrdersView"
+    template="orders.pt"
+    class=".orders.OrdersView"
     permission="cmf.ModifyPortalContent"
     layer="..interfaces.IOrdersExtensionLayer" />
   
@@ -22,7 +22,7 @@
   <browser:page
     for="*"
     name="orderssoupdata"
-    class=".table.OrdersTable"
+    class=".orders.OrdersTable"
     permission="cmf.ModifyPortalContent"
     layer="..interfaces.IOrdersExtensionLayer" /> 
 

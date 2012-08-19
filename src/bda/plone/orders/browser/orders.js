@@ -10,7 +10,7 @@
             "sAjaxSource": url,
             "sPaginationType": "full_numbers",
             "oLanguage": {
-                "sSearch": "Alles durchsuchen:"
+                "sUrl": "@@collective.js.datatables.translation"
             }
         });
     });
