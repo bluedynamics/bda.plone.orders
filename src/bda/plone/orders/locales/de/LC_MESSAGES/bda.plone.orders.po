@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2012-08-14 14:27+0000\n"
+"POT-Creation-Date: 2012-08-19 12:01+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -15,41 +15,42 @@ msgstr ""
 "Domain: DOMAIN\n"
 
 #. Default: "City"
-#: ./browser/table.py:33
+#: ./browser/orders.py:27
 msgid "city"
 msgstr "Ort"
 
 #. Default: "Date"
-#: ./browser/table.py:37
+#: ./browser/orders.py:30
 msgid "date"
 msgstr "Datum"
 
 #. Default: "Export recent orders as CSV (excel optimized)"
-#: ./browser/view.pt:65
+#: ./browser/orders.pt:50
 msgid "export_recent_orders"
 msgstr "Exportiere aktuelle Bestellungen als CSV Datei"
 
 #. Default: "Loading Data, please wait..."
-#: ./browser/view.pt:39
+#: ./browser/orders.pt:39
 msgid "loading_please_wait"
 msgstr "Lade Daten, bitte warten..."
 
 #. Default: "Name"
-#: ./browser/table.py:25
+#: ./browser/orders.py:24
 msgid "name"
 msgstr "Name"
 
 #. Default: "Orders"
-#: ./browser/view.pt:20
+#: ./browser/orders.pt:20
 msgid "orders"
 msgstr "Bestellungen"
 
 #. Default: "State"
-#: ./browser/table.py:41
+#: ./browser/orders.py:33
 msgid "state"
 msgstr "Status"
 
 #. Default: "Surname"
-#: ./browser/table.py:29
+#: ./browser/orders.py:21
 msgid "surname"
 msgstr "Nachname"
+

@@ -1,0 +1,28 @@
+#bdaploneorders_wrapper {
+    margin-top:1em;
+}
+#bdaploneorders_length {
+    margin-bottom:0.8em;
+}
+#bdaploneorders_length select,
+#bdaploneorders_filter input {
+    font-size:90%;
+}
+#bdaploneorders {
+    margin-bottom:1em;
+    border:#ddd 1px solid;
+}
+#bdaploneorders thead {
+    background-color:#fafafa;
+}
+#bdaploneorders th {
+    border-right:#ddd 1px solid;
+    border-bottom:#ddd 1px solid;
+}
+#bdaploneorders td {
+    padding:5px;
+    border-right:#ddd 1px solid;
+}
+#bdaploneorders_paginate a:hover {
+    color:#fff !important;
+}
