@@ -9,7 +9,6 @@
     name="bda.plone.orders.css"
     file="orders.css" />
   
-  <!-- XXX: specific permission -->
   <browser:page
     for="*"
     name="orders"
@@ -17,7 +16,6 @@
     permission="cmf.ModifyPortalContent"
     layer="..interfaces.IOrdersExtensionLayer" />
   
-  <!-- XXX: specific permission -->
   <browser:page
     for="*"
     name="orderstable"
@@ -26,12 +24,19 @@
     permission="cmf.ModifyPortalContent"
     layer="..interfaces.IOrdersExtensionLayer" />
   
-  <!-- XXX: specific permission -->
   <browser:page
     for="*"
     name="ordersdata"
     class=".views.OrdersData"
     permission="cmf.ModifyPortalContent"
     layer="..interfaces.IOrdersExtensionLayer" /> 
+  
+  <browser:page
+    for="*"
+    name="order"
+    template="order.pt"
+    class=".views.OrderView"
+    permission="cmf.ModifyPortalContent"
+    layer="..interfaces.IOrdersExtensionLayer" />
 
 </configure>

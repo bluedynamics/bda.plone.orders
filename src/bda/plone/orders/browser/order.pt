@@ -1,0 +1,143 @@
+<div class="order_details"
+     xmlns="http://www.w3.org/1999/xhtml"
+     xmlns:tal="http://xml.zope.org/namespaces/tal"
+     xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+     i18n:domain="bda.plone.orders"
+     tal:define="order view/order">
+
+  <h1 i18n:translate="order_details">Order Details</h1>
+  
+  <strong i18n:translate="order_uid">Order UID:</strong>
+  <span tal:replace="order/uid">UID</span>
+  
+  <div class="order_details_row">
+    <div class="personal_data">
+      <h3 i18n:translate="personal_data">Personal Data:</h3>
+      <strong i18n:translate="order_gender">Gender:</strong>
+      <span tal:replace="order/personal_data.gender">gender</span>
+      <br />
+      <strong i18n:translate="order_name">Name:</strong>
+      <span tal:replace="order/personal_data.name">name</span>
+      <span tal:replace="order/personal_data.surname">surname</span>
+      <br />
+      <strong i18n:translate="order_email">Email:</strong>
+      <span tal:replace="order/personal_data.email">email</span>
+      <br />
+      <strong i18n:translate="order_company">Company:</strong>
+      <span tal:replace="order/personal_data.company">company</span>
+      <br />
+      <strong i18n:translate="order_phone">Phone:</strong>
+      <span tal:replace="order/personal_data.phone">phone</span>
+    </div>
+    
+    <div class="billing_address">
+      <h3 i18n:translate="billing_address">Billing Address:</h3>
+      <strong i18n:translate="order_street">Street:</strong>
+      <span tal:replace="order/billing_address.street">street</span>
+      <br />
+      <strong i18n:translate="order_zip_city">ZIP/City:</strong>
+      <span tal:replace="order/billing_address.zip">zip</span>
+      <span tal:replace="order/billing_address.city">city</span>
+      <br />
+      <strong i18n:translate="order_country">Country:</strong>
+      <span tal:replace="order/billing_address.country">country</span>
+    </div>
+  </div>
+  
+  <div class="order_details_row">
+    <div class="order_state">
+      <h3 i18n:translate="order_state">Order State:</h3>
+      <strong i18n:translate="order_payment">Payment:</strong>
+      <span tal:replace="order/payment_selection.payment">payment</span>
+      <br />
+      <strong i18n:translate="order_salaried">Salaried:</strong>
+      <span>No</span>
+      <br />
+      <strong i18n:translate="order_created">Created:</strong>
+      <span tal:replace="order/created">No</span>
+      <br />
+      <strong i18n:translate="order_state">State:</strong>
+      <span tal:replace="order/state">state</span>
+    </div>
+    
+    <div class="order_summary">
+      <h3 i18n:translate="order_summary">Order Summary:</h3>
+      <strong i18n:translate="order_net">Net:</strong>
+      <span tal:replace="view/net">0.00</span>
+      <br />
+      <strong i18n:translate="order_vat">VAT:</strong>
+      <span tal:replace="view/vat">0.00</span>
+      <br />
+      <strong i18n:translate="order_total">Total:</strong>
+      <strong tal:content="view/total">0.00</strong>
+    </div>
+  </div>
+  
+  <div class="order_details_row">
+    <div class="delivery_address"
+         tal:condition="order/delivery_address.alternative_delivery">
+      <h3 i18n:translate="delivery_address">Delivery Address:</h3>
+      <strong i18n:translate="order_name">Name:</strong>
+      <span tal:replace="order/delivery_address.name">name</span>
+      <span tal:replace="order/delivery_address.surname">surname</span>
+      <br />
+      <strong i18n:translate="order_company">Company:</strong>
+      <span tal:replace="order/delivery_address.company">company</span>
+      <br />
+      <strong i18n:translate="order_street">Street:</strong>
+      <span tal:replace="order/delivery_address.street">street</span>
+      <br />
+      <strong i18n:translate="order_zip_city">ZIP/City:</strong>
+      <span tal:replace="order/delivery_address.zip">zip</span>
+      <span tal:replace="order/delivery_address.city">city</span>
+      <br />
+      <strong i18n:translate="order_country">Country:</strong>
+      <span tal:replace="order/delivery_address.country">country</span>
+    </div>
+    
+    <div class="delivery_address"
+         tal:condition="not:order/delivery_address.alternative_delivery">
+      <h3 i18n:translate="delivery_address">Delivery Address:</h3>
+      <p i18n:translate="order_no_delivery_address">
+        No delivery Address defined
+      </p>
+    </div>
+    
+    <div class="order_comment">
+      <h3 i18n:translate="order_comment">Order Comment:</h3>
+      <p tal:content="order/order_comment.comment"
+         tal:condition="order/order_comment.comment">comment</p>
+      <p tal:condition="not:order/order_comment.comment"
+         i18n:translate="order_no_comment">
+        No Comment
+      </p>
+    </div>
+  </div>
+  
+  <div class="order_bookings">
+    <table>
+      <tr>
+        <th i18n:translate="booking_title">title</th>
+        <th i18n:translate="booking_count">count</th>
+        <th i18n:translate="booking_net">net</th>
+        <th i18n:translate="booking_vat">vat</th>
+        <th i18n:translate="booking_exported">exported</th>
+        <th i18n:translate="booking_comment">comment</th>
+      </tr>
+      <tal:tr repeat="row view/listing">
+        <tr tal:define="even repeat/row/even"
+            tal:attributes="class python:even and 'even' or 'odd'">
+          <td tal:content="row/title">title</td>
+          <td tal:content="row/count">count</td>
+          <td tal:content="row/net">net</td>
+          <td>
+            <span tal:replace="row/vat">20.0</span>%
+          </td>
+          <td tal:content="row/exported">exported</td>
+          <td tal:content="row/comment">comment</td>
+        </tr>
+      </tal:tr>
+    </table>
+  </div>
+
+</div>

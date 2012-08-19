@@ -1,15 +1,36 @@
 import json
-from zope.i18nmessageid import MessageFactory
+import uuid
+from zope.i18n import translate
+from zope.i18nmessageid import (
+    Message,
+    MessageFactory,
+)
 from Products.Five import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from repoze.catalog.query import Contains
+from repoze.catalog.query import (
+    Contains,
+    Eq,
+)
 from souper.soup import (
     get_soup,
     LazyRecord,
 )
+from yafowil.utils import Tag
+from bda.plone.cart import ascur
 from ..common import DT_FORMAT
 
 _ = MessageFactory('bda.plone.orders')
+
+
+class Translate(object):
+
+    def __init__(self, request):
+        self.request = request
+
+    def __call__(self, msg):
+        if not isinstance(msg, Message):
+            return msg
+        return translate(msg, context=self.request)
 
 
 class TableData(BrowserView):
@@ -140,7 +161,18 @@ class OrdersTable(BrowserView):
         return value
     
     def render_order_actions(self, colname, record):
-        return '<a href="">foo</a>'
+        tag = Tag(Translate(self.request))
+        target = '%s?uid=%s' % (self.context.absolute_url(),
+                                str(record.attrs['uid']))
+        link_attrs = {
+            'ajax:bind': 'click',
+            'ajax:target': target,
+            'ajax:overlay': 'order',
+            'class_': 'contenttype-document',
+            'href': '',
+            'title': _('view_order', 'View Order'),
+        }
+        return tag('a', '&nbsp', **link_attrs)
 
 
 class OrdersData(OrdersTable, TableData):
@@ -159,3 +191,58 @@ class OrdersData(OrdersTable, TableData):
             length = res.next()
             return length, res
         return self.all(soup)
+
+
+class OrderView(BrowserView):
+    
+    @property
+    def uid(self):
+        return uuid.UUID(self.request.form['uid'])
+    
+    @property
+    def order(self):
+        soup = get_soup('bda_plone_orders_orders', self.context)
+        return dict([_ for _ in soup.query(Eq('uid', self.uid))][0].attrs)
+    
+    @property
+    def bookings(self):
+        soup = get_soup('bda_plone_orders_bookings', self.context)
+        return soup.query(Eq('order_uid', self.uid))
+    
+    @property
+    def net(self):
+        ret = 0.0
+        for booking in self.bookings:
+            ret += booking.attrs.get('net', 0.0)
+        return ascur(ret * float(booking.attrs['buyable_count']))
+    
+    @property
+    def vat(self):
+        ret = 0.0
+        for booking in self.bookings:
+            net = booking.attrs.get('net', 0.0)
+            ret += net * booking.attrs.get('vat', 0.0) / 100
+        return ascur(ret * float(booking.attrs['buyable_count']))
+    
+    @property
+    def total(self):
+        ret = 0.0
+        for booking in self.bookings:
+            net = booking.attrs.get('net', 0.0)
+            ret += net
+            ret += net * booking.attrs.get('vat', 0.0) / 100
+        return ascur(ret * float(booking.attrs['buyable_count']))
+    
+    @property
+    def listing(self):
+        ret = list()
+        for booking in self.bookings:
+            ret.append({
+                'title': booking.attrs['title'],
+                'count': booking.attrs['buyable_count'],
+                'net': ascur(booking.attrs.get('net', 0.0)),
+                'vat': booking.attrs.get('vat', 0.0),
+                'exported': booking.attrs['exported'],
+                'comment': booking.attrs['buyable_comment'],
+            })
+        return ret

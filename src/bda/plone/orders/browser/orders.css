@@ -21,9 +21,48 @@
     border-bottom:#ddd 1px solid;
 }
 #bdaploneorders td {
-    padding:5px;
+    padding:3px 3px 3px 1em;
     border-right:#ddd 1px solid;
+}
+#bdaploneorders a.contenttype-document {
+    border:none !important;
 }
 #bdaploneorders_paginate a:hover {
     color:#fff !important;
+}
+.order_details {
+    padding:1.2em;
+}
+.order_details_row {
+    display:table-row;
+}
+.order_details_row div {
+    display:table-cell;
+    width:300px;
+    padding:0.4em;
+}
+.order_bookings {
+    padding:1.2em 0.4em 0.4em 0.4em;
+}
+.order_bookings table {
+    width:100%;
+    border:#ddd 1px solid;
+    border-spacing:0;
+    border-collapse:collapse;
+}
+.order_bookings table th {
+    padding:6px 3px 6px 1em;
+    text-align:left;
+    background-color:#fafafa;
+    border-right:#ddd 1px solid;
+    border-bottom:#ddd 1px solid;
+    font-weight:bold;
+    font-size:110%;
+}
+.order_bookings table td {
+    padding:6px 3px 6px 1em;
+    border-right:#ddd 1px solid;
+}
+.order_bookings tr.odd td {
+    background-color:#fbfbfb;
 }
