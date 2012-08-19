@@ -14,7 +14,7 @@
     <div class="personal_data">
       <h3 i18n:translate="personal_data">Personal Data:</h3>
       <strong i18n:translate="order_gender">Gender:</strong>
-      <span tal:replace="order/personal_data.gender">gender</span>
+      <span tal:replace="python:view.gender(order)">gender</span>
       <br />
       <strong i18n:translate="order_name">Name:</strong>
       <span tal:replace="order/personal_data.name">name</span>
@@ -48,16 +48,13 @@
     <div class="order_state">
       <h3 i18n:translate="order_state">Order State:</h3>
       <strong i18n:translate="order_payment">Payment:</strong>
-      <span tal:replace="order/payment_selection.payment">payment</span>
+      <span tal:replace="python:view.payment(order)">payment</span>
       <br />
       <strong i18n:translate="order_salaried">Salaried:</strong>
-      <span>No</span>
+      <span tal:replace="python:view.salaried(order)">No</span>
       <br />
       <strong i18n:translate="order_created">Created:</strong>
-      <span tal:replace="order/created">No</span>
-      <br />
-      <strong i18n:translate="order_state">State:</strong>
-      <span tal:replace="order/state">state</span>
+      <span tal:replace="python:view.created(order)">created</span>
     </div>
     
     <div class="order_summary">
@@ -115,6 +112,7 @@
   </div>
   
   <div class="order_bookings">
+    <h3 i18n:translate="order_bookings">Order Bookings:</h3>
     <table>
       <tr>
         <th i18n:translate="booking_title">title</th>
@@ -133,7 +131,7 @@
           <td>
             <span tal:replace="row/vat">20.0</span>%
           </td>
-          <td tal:content="row/exported">exported</td>
+          <td tal:content="python:view.exported(row)">No</td>
           <td tal:content="row/comment">comment</td>
         </tr>
       </tal:tr>

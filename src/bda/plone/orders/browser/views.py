@@ -20,6 +20,8 @@ from bda.plone.cart import ascur
 from ..common import DT_FORMAT
 
 _ = MessageFactory('bda.plone.orders')
+_co = MessageFactory('bda.plone.checkout')
+_pa = MessageFactory('bda.plone.payment')
 
 
 class Translate(object):
@@ -149,9 +151,6 @@ class OrdersTable(BrowserView):
             'id': 'created',
             'label': _('date', 'Date'),
             'renderer': self.render_dt,
-        }, {
-            'id': 'state',
-            'label': _('state', 'State'),
         }]
     
     def render_dt(self, colname, record):
@@ -213,25 +212,28 @@ class OrderView(BrowserView):
     def net(self):
         ret = 0.0
         for booking in self.bookings:
-            ret += booking.attrs.get('net', 0.0)
-        return ascur(ret * float(booking.attrs['buyable_count']))
+            count = float(booking.attrs['buyable_count'])
+            ret += booking.attrs.get('net', 0.0) * count
+        return ascur(ret)
     
     @property
     def vat(self):
         ret = 0.0
         for booking in self.bookings:
-            net = booking.attrs.get('net', 0.0)
+            count = float(booking.attrs['buyable_count'])
+            net = booking.attrs.get('net', 0.0) * count
             ret += net * booking.attrs.get('vat', 0.0) / 100
-        return ascur(ret * float(booking.attrs['buyable_count']))
+        return ascur(ret)
     
     @property
     def total(self):
         ret = 0.0
         for booking in self.bookings:
-            net = booking.attrs.get('net', 0.0)
+            count = float(booking.attrs['buyable_count'])
+            net = booking.attrs.get('net', 0.0) * count
             ret += net
             ret += net * booking.attrs.get('vat', 0.0) / 100
-        return ascur(ret * float(booking.attrs['buyable_count']))
+        return ascur(ret)
     
     @property
     def listing(self):
@@ -246,3 +248,30 @@ class OrderView(BrowserView):
                 'comment': booking.attrs['buyable_comment'],
             })
         return ret
+    
+    def gender(self, order):
+        gender = order['personal_data.gender']
+        if gender == 'male':
+            return _co('male', 'Male')
+        if gender == 'female':
+            return _co('female', 'Female')
+        return gender
+    
+    def payment(self, order):
+        payment = order['payment_selection.payment']
+        return payment == 'credit_card' \
+            and _pa('credit_card', 'Credit Card') \
+            or _pa('invoice', 'Invoice')
+    
+    def salaried(self, order):
+        # XXX:
+        return _co('no', 'No')
+    
+    def created(self, order):
+        value = order.get('created', _('unknown', 'Unknown'))
+        if value:
+            value = value.strftime(DT_FORMAT)
+        return value
+    
+    def exported(self, item):
+        return item['exported'] and _co('yes', 'Yes') or _co('no', 'No')
