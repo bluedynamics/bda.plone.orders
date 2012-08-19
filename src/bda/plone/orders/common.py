@@ -10,6 +10,7 @@ from souper.soup import (
     get_soup,
     Record,
     NodeAttributeIndexer,
+    NodeTextIndexer,
 )
 from node.utils import instance_property
 from node.ext.zodb import OOBTNode
@@ -64,11 +65,16 @@ class OrdersCatalogFactory(object):
         state_indexer = NodeAttributeIndexer('state')
         catalog[u'state'] = CatalogFieldIndex(state_indexer)
         name_indexer = NodeAttributeIndexer('personal_data.name')
-        catalog[u'personal_data.name'] = CatalogTextIndex(name_indexer)
+        catalog[u'personal_data.name'] = CatalogFieldIndex(name_indexer)
         surname_indexer = NodeAttributeIndexer('personal_data.surname')
-        catalog[u'personal_data.surname'] = CatalogTextIndex(surname_indexer)
+        catalog[u'personal_data.surname'] = CatalogFieldIndex(surname_indexer)
         city_indexer = NodeAttributeIndexer('billing_address.city')
-        catalog[u'billing_address.city'] = CatalogTextIndex(city_indexer)
+        catalog[u'billing_address.city'] = CatalogFieldIndex(city_indexer)
+        search_attributes = ['personal_data.name',
+                             'personal_data.surname',
+                             'billing_address.city']
+        text_indexer = NodeTextIndexer(search_attributes)
+        catalog[u'text'] = CatalogTextIndex(text_indexer)
         return catalog
 
 

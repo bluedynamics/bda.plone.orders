@@ -42,25 +42,10 @@
           </td>
         </tr>
       </tbody>
-      
-      <tfoot>
-        <tr>
-          <tal:loop repeat="colinfo columns">
-            <th>
-              <input type="text"
-                     class="search_init"
-                     value="Search engines"
-                     name="search_engine"
-                     tal:condition="colinfo/searchable"
-                     tal:attributes="value python: 'Suche in ' + colinfo['label'];
-                                     name python: colinfo['id'];" >
-            </th>
-          </tal:loop>
-        </tr>
-      </tfoot> 
     </table>
     
     <div class="orderscsvexport">
+      <br />
       <p>
         <a href="#"
            tal:attributes="href string:${context/absolute_url}/@@orderscsvexport"
