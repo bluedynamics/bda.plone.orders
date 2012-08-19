@@ -2,6 +2,7 @@ import json
 import datetime
 from zope.i18nmessageid import MessageFactory
 from Products.Five import BrowserView
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from repoze.catalog.query import Contains
 from souper.soup import (
     get_soup,
@@ -13,7 +14,6 @@ _ = MessageFactory('bda.plone.orders')
 
 
 class TableData(BrowserView):
-    
     soup_name = None
     search_text_index = None
     
@@ -89,6 +89,16 @@ class TableData(BrowserView):
 
 
 class OrdersTable(BrowserView):
+    table_template = ViewPageTemplateFile('table.pt')
+    table_id = 'bdaploneorders'
+    
+    @property
+    def rendered_table(self):
+        return self.table_template(self)
+    
+    @property
+    def ajaxurl(self):
+        return '%s/%s' % (self.context.absolute_url(), '@@ordersdata')
     
     @property
     def columns(self):
@@ -111,7 +121,6 @@ class OrdersTable(BrowserView):
 
 
 class OrdersData(OrdersTable, TableData):
-    
     soup_name = 'bda_plone_orders_orders'
     search_text_index = 'text'
     
