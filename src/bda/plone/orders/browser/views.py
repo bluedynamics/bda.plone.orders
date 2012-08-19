@@ -12,36 +12,28 @@ from ..common import DT_FORMAT
 _ = MessageFactory('bda.plone.orders')
 
 
-class OrdersView(BrowserView):
-    
-    @property
-    def columns(self):
-        return [{
-            'id': 'personal_data.surname',
-            'label': _('surname', 'Surname'),
-        }, {
-            'id': 'personal_data.name',
-            'label': _('name', 'Name'),
-        }, {
-            'id': 'billing_address.city',
-            'label': _('city', 'City'),
-        }, {
-            'id': 'created',
-            'label': _('date', 'Date'),
-        }, {
-            'id': 'state',
-            'label': _('state', 'State'),
-        }]
-
-
 class TableData(BrowserView):
     
-    search_text_index = 'text'
+    soup_name = None
+    search_text_index = None
     
     @property
     def columns(self):
+        """Return list of dicts with column definitions:
+        
+        [{
+            'id': 'colid',
+            'label': 'Col Label',
+        }]
+        """
         raise NotImplementedError(u"Abstract DataTable does not implement "
                                   u"``columns``.")
+    
+    def query(self, soup):
+        """Return 2-tuple with result length and lazy record iterator.
+        """
+        raise NotImplementedError(u"Abstract DataTable does not implement "
+                                  u"``query``.")
     
     def sort(self):
         columns = self.columns
@@ -61,19 +53,6 @@ class TableData(BrowserView):
                 yield LazyRecord(iid, soup)
         return soup.storage.length.value, lazyrecords()
     
-    def query(self, soup):
-        columns = self.columns
-        sort = self.sort()
-        term = self.request.form['sSearch']
-        if term:
-            res = soup.lazy(Contains(self.search_text_index, term),
-                            sort_index=sort['index'],
-                            reverse=sort['reverse'],
-                            with_size=True)
-            length = res.next()
-            return length, res
-        return self.all(soup)
-    
     def slice(self, fullresult):
         start = int(self.request.form['iDisplayStart'])
         length = int(self.request.form['iDisplayLength'])
@@ -86,7 +65,7 @@ class TableData(BrowserView):
             count += 1
     
     def __call__(self):
-        soup = get_soup('bda_plone_orders_orders', self.context)
+        soup = get_soup(self.soup_name, self.context)
         aaData = list()
         length, lazydata = self.query(soup)
         colnames = [_['id'] for _ in self.columns]
@@ -109,5 +88,42 @@ class TableData(BrowserView):
         return json.dumps(data)
 
 
-class OrdersTable(OrdersView, TableData):
-    pass
+class OrdersTable(BrowserView):
+    
+    @property
+    def columns(self):
+        return [{
+            'id': 'personal_data.surname',
+            'label': _('surname', 'Surname'),
+        }, {
+            'id': 'personal_data.name',
+            'label': _('name', 'Name'),
+        }, {
+            'id': 'billing_address.city',
+            'label': _('city', 'City'),
+        }, {
+            'id': 'created',
+            'label': _('date', 'Date'),
+        }, {
+            'id': 'state',
+            'label': _('state', 'State'),
+        }]
+
+
+class OrdersData(OrdersTable, TableData):
+    
+    soup_name = 'bda_plone_orders_orders'
+    search_text_index = 'text'
+    
+    def query(self, soup):
+        columns = self.columns
+        sort = self.sort()
+        term = self.request.form['sSearch']
+        if term:
+            res = soup.lazy(Contains(self.search_text_index, term),
+                            sort_index=sort['index'],
+                            reverse=sort['reverse'],
+                            with_size=True)
+            length = res.next()
+            return length, res
+        return self.all(soup)

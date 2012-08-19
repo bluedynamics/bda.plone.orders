@@ -13,16 +13,24 @@
   <browser:page
     for="*"
     name="orders"
-    template="orders.pt"
-    class=".orders.OrdersView"
+    template="view.pt"
     permission="cmf.ModifyPortalContent"
     layer="..interfaces.IOrdersExtensionLayer" />
   
   <!-- XXX: specific permission -->
   <browser:page
     for="*"
-    name="orderssoupdata"
-    class=".orders.OrdersTable"
+    name="orderstable"
+    template="orders.pt"
+    class=".views.OrdersTable"
+    permission="cmf.ModifyPortalContent"
+    layer="..interfaces.IOrdersExtensionLayer" />
+  
+  <!-- XXX: specific permission -->
+  <browser:page
+    for="*"
+    name="ordersdata"
+    class=".views.OrdersData"
     permission="cmf.ModifyPortalContent"
     layer="..interfaces.IOrdersExtensionLayer" /> 
 

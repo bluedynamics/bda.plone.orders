@@ -1,62 +1,45 @@
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
-      xmlns:tal="http://xml.zope.org/namespaces/tal"
-      xmlns:metal="http://xml.zope.org/namespaces/metal"
-      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
-      lang="en"
-      metal:use-macro="here/main_template/macros/master"
-      i18n:domain="bda.plone.orders">
-
-<head>
-  <metal:top fill-slot="top_slot">
-    <tal:border define="dummy python:request.set('disable_border', True)" />
-  </metal:top>
-</head>
-
-<body>
-
-<metal:main fill-slot="main">
-  <tal:main-macro metal:define-macro="main">
+<div xmlns="http://www.w3.org/1999/xhtml"
+     xml:lang="en"
+     xmlns:tal="http://xml.zope.org/namespaces/tal"
+     xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+     i18n:domain="bda.plone.orders">
+  
+  <h1 class="documentFirstHeading" i18n:translate="orders">Orders</h1>
+  
+  <table id="bdaploneorders"
+         tal:define="ajaxurl python:'%s/%s' % (context.absolute_url(),
+                                               '@@ordersdata');
+                     columns view/columns"
+         tal:attributes="data-ajaxurl ajaxurl">
+    <thead>
+      <tr>
+        <tal:loop repeat="colinfo columns">
+          <th tal:attributes="class python: 'datarow-' + colinfo['id'];">
+            <span tal:replace="python: colinfo['label']">Title</span>
+          </th>
+        </tal:loop>
+      </tr>
+    </thead>
     
-    <h1 class="documentFirstHeading" i18n:translate="orders">Orders</h1>
-    
-    <table id="bdaploneorders"
-           tal:define="ajaxurl python:'%s/%s' % (context.absolute_url(),
-                                                 '@@orderssoupdata');
-                       columns view/columns"
-           tal:attributes="data-ajaxurl ajaxurl">
-      <thead>
-        <tr>
-          <tal:loop repeat="colinfo columns">
-            <th tal:attributes="class python: 'datarow-' + colinfo['id'];">
-              <span tal:replace="python: colinfo['label']">Title</span>
-            </th>
-          </tal:loop>
-        </tr>
-      </thead>
-      
-      <tbody>
-        <tr>
-          <td tal:attributes="columnspan: python:len(columns)"
-              i18n:translate="loading_please_wait">
-            Loading Data, please wait...
-          </td>
-        </tr>
-      </tbody>
-    </table>
-    
-    <div class="orderscsvexport">
-      <br />
-      <p>
-        <a href="#"
-           tal:attributes="href string:${context/absolute_url}/@@orderscsvexport"
-           i18n:translate="export_recent_orders">
-          Export recent orders as CSV (excel optimized)
-        </a>
-      </p>
-    </div>
+    <tbody>
+      <tr>
+        <td tal:attributes="columnspan: python:len(columns)"
+            i18n:translate="loading_please_wait">
+          Loading Data, please wait...
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  
+  <div class="orderscsvexport">
+    <br />
+    <p>
+      <a href="#"
+         tal:attributes="href string:${context/absolute_url}/@@orderscsvexport"
+         i18n:translate="export_recent_orders">
+        Export recent orders as CSV (excel optimized)
+      </a>
+    </p>
+  </div>
 
-  </tal:main-macro>
-</metal:main>
-
-</body>
-</html>
+</div>
