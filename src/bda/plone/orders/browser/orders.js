@@ -11,7 +11,12 @@
             "sPaginationType": "full_numbers",
             "oLanguage": {
                 "sUrl": "@@collective.js.datatables.translation"
-            }
+            },
+            "aoColumnDefs": [{
+                'bSortable': false,
+                'aTargets': [0]
+            }],
+            "aaSorting": [[1, "asc"]]
         });
     });
 

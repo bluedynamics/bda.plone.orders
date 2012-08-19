@@ -1,5 +1,4 @@
 import json
-import datetime
 from zope.i18nmessageid import MessageFactory
 from Products.Five import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
@@ -24,6 +23,7 @@ class TableData(BrowserView):
         [{
             'id': 'colid',
             'label': 'Col Label',
+            'renderer': callback,
         }]
         """
         raise NotImplementedError(u"Abstract DataTable does not implement "
@@ -64,17 +64,26 @@ class TableData(BrowserView):
                 break
             count += 1
     
+    def column_def(self, colname):
+        for column in self.columns:
+            if column['id'] == colname:
+                return column
+    
     def __call__(self):
         soup = get_soup(self.soup_name, self.context)
         aaData = list()
         length, lazydata = self.query(soup)
-        colnames = [_['id'] for _ in self.columns]
+        columns = self.columns
+        colnames = [_['id'] for _ in columns]
         def record2list(record):
             result = list()
             for colname in colnames:
-                value = record.attrs.get(colname, '')
-                if isinstance(value, datetime.datetime):
-                    value = value.strftime(DT_FORMAT)
+                coldef = self.column_def(colname)
+                renderer = coldef.get('renderer')
+                if renderer:
+                    value = renderer(colname, record)
+                else:
+                    value = record.attrs.get(colname, '')
                 result.append(value)
             return result
         for lazyrecord in self.slice(lazydata):
@@ -103,6 +112,10 @@ class OrdersTable(BrowserView):
     @property
     def columns(self):
         return [{
+            'id': 'actions',
+            'label': _('actions', 'Actions'),
+            'renderer': self.render_order_actions,
+        }, {
             'id': 'personal_data.surname',
             'label': _('surname', 'Surname'),
         }, {
@@ -114,10 +127,20 @@ class OrdersTable(BrowserView):
         }, {
             'id': 'created',
             'label': _('date', 'Date'),
+            'renderer': self.render_dt,
         }, {
             'id': 'state',
             'label': _('state', 'State'),
         }]
+    
+    def render_dt(self, colname, record):
+        value = record.attrs.get(colname, '')
+        if value:
+            value = value.strftime(DT_FORMAT)
+        return value
+    
+    def render_order_actions(self, colname, record):
+        return '<a href="">foo</a>'
 
 
 class OrdersData(OrdersTable, TableData):
