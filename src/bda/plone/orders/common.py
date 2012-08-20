@@ -103,7 +103,7 @@ class OrderCheckoutAdapter(CheckoutAdapter):
         order.attrs['creator'] = creator
         order.attrs['created'] = created
         order.attrs['state'] = 'new'
-        order.attrs['salaried'] = False
+        order.attrs['salaried'] = 'no'
         bookings = self.create_bookings(order)
         order.attrs['booking_uids'] = [_.attrs['uid'] for _ in bookings]
         orders_soup = get_soup('bda_plone_orders_orders', self.context)
@@ -161,9 +161,9 @@ class OrderTransitions(object):
         soup = get_soup('bda_plone_orders_orders', self.context)
         record = [_ for _ in soup.query(Eq('uid', uid))][0]
         if transition == 'mark_salaried':
-            record.attrs['salaried'] = True
+            record.attrs['salaried'] = 'yes'
         elif transition == 'mark_outstanding':
-            record.attrs['salaried'] = False
+            record.attrs['salaried'] = 'no'
         elif transition == 'renew':
             record.attrs['state'] = 'new'
         elif transition == 'finish':

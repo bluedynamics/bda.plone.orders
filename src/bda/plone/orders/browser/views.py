@@ -125,13 +125,13 @@ class SalariedDropdown(Dropdown):
     
     @property
     def value(self):
-        return self.record.attrs.get('salaried', False) and 'yes' or 'no'
+        return self.record.attrs.get('salaried') == 'yes' and 'yes' or 'no'
     
     @property
     def items(self):
-        salaried = self.record.attrs.get('salaried', False)
+        salaried = self.record.attrs.get('salaried', 'no')
         transitions = list()
-        if salaried:
+        if salaried == 'yes':
             transitions = ['mark_outstanding']
         else:
             transitions = ['mark_salaried']
@@ -399,8 +399,7 @@ class OrderView(BrowserView):
             or _pa('invoice', 'Invoice')
     
     def salaried(self, order):
-        # XXX:
-        return _co('no', 'No')
+        order.get('salaried') == 'yes' and _co('yes', 'Yes') or _co('no', 'No')
     
     def created(self, order):
         value = order.get('created', _('unknown', 'Unknown'))
