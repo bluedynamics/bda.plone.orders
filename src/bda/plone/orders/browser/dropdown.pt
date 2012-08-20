@@ -1,0 +1,45 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+     xmlns:tal="http://xml.zope.org/namespaces/tal"
+     xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+     xmlns:ajax="http://namesspaces.bluedynamics.eu/ajax"
+     i18n:domain="bda.plone.orders"
+     tal:define="items view/items"
+     tal:attributes="id view/identifyer">
+  
+  <strong
+    class=""
+    tal:condition="not:items"
+    tal:attributes="class string:${view/name}-dropdown-${view/value}"
+    tal:content="python:view.vocab(view.value)">
+    value
+  </strong>
+  
+  <div class="dropdown"
+       tal:attributes="class view/css"
+       tal:condition="itema">
+    
+    <div class="dropdown_header">
+      <strong
+        class=""
+        tal:attributes="class string:${view/name}-value-${view/value}"
+        tal:content="view/value">
+        value
+      </strong>
+    </div>
+    
+    <ul class="dropdown_items" style="display:none;">
+      <li tal:repeat="item items">
+        <a href=""
+           ajax:bind="click"
+           ajax:action=""
+           ajax:target=""
+           tal:attributes="ajax:target item/target;
+                           ajax:action view/ajax_action"
+           tal:content="item/title">
+          title
+        </a>
+      </li>
+    </ul>
+    
+  </div>
+</div>

@@ -35,6 +35,122 @@ class Translate(object):
         return translate(msg, context=self.request)
 
 
+class Dropdown(object):
+    render = ViewPageTemplateFile('dropdown.pt')
+    css = 'dropdown'
+    action = ''
+    name = ''
+    vocab = {}
+    transitions = {}
+    value = ''
+    
+    def __init__(self, context, request, record):
+        self.context = context
+        self.request = request
+        self.record = record
+    
+    def create_items(self, transitions):
+        uid = str(self.record.attrs['uid'])
+        url = self.context.absolute_url()
+        ret = list()
+        for transition in transitions:
+            ret.append({
+                'title': self.transitions[transition],
+                'target': '%s?transition=%s&uid=%s' % (url, transition, uid)
+            })
+    
+    @property
+    def identifyer(self):
+        return '%s-%s' % (self.name, str(self.record.attrs['uid']))
+    
+    @property
+    def ajax_action(self):
+        return '%s:#%s-%s:replace' % (self.action,
+                                      self.name,
+                                      str(self.record.attrs['uid']))
+    
+    @property
+    def items(self):
+        raise NotImplementedError(u"Abstract Dropdown does not implement "
+                                  u"``items``.")
+
+
+class StateDropdown(Dropdown):
+    name = 'state'
+    css = 'dropdown change_order_state_dropdown'
+    action = 'change_order_state'
+    vocab = {
+        'new': _('new', 'New'),
+        'finished': _('finished', 'Finished'),
+        'cancelled': _('cancelled', 'Cancelled'),
+    }
+    transitions = {
+        'renew': _('renew', 'Renew'),
+        'finish': _('finish', 'Finish'),
+        'cancel': _('cancel', 'Cancel'),
+    }
+    
+    @property
+    def value(self):
+        return self.record.attrs['state']
+    
+    @property
+    def items(self):
+        state = self.record.attrs['state']
+        transitions = list()
+        if state == 'new':
+            transitions = ['finish', 'cancel']
+        else:
+            transitions = ['renew']
+        return self.create_items(transitions)
+
+
+class StateTransition(BrowserView):
+    
+    def __call__(self):
+        transition = self.request['transition']
+        uid = self.request['uid']
+        record = None
+        return StateDropdown(self.context, self.request, record).render()
+
+
+class SalariedDropdown(Dropdown):
+    name = 'salaried'
+    css = 'dropdown change_order_salaried_dropdown'
+    action = 'change_order_salaried'
+    vocab = {
+        'yes': _co('yes', 'Yes'),
+        'no': _co('no', 'No'),
+    }
+    transitions = {
+        'mark_salaried': _('mark_salaried', 'Mark salaried'),
+        'mark_outstanding': _('mark_outstanding', 'Mark outstanding'),
+    }
+    
+    @property
+    def value(self):
+        return self.record.attrs.get('salaried', False) and 'yes' or 'no'
+    
+    @property
+    def items(self):
+        salaried = self.record.attrs.get('salaried', False)
+        transitions = list()
+        if salaried:
+            transitions = ['mark_outstanding']
+        else:
+            transitions = ['mark_salaried']
+        return self.create_items(transitions)
+
+
+class SalariedTransition(BrowserView):
+    
+    def __call__(self):
+        transition = self.request['transition']
+        uid = self.request['uid']
+        record = None
+        return SalariedDropdown(self.context, self.request, record).render()
+
+
 class TableData(BrowserView):
     soup_name = None
     search_text_index = None
