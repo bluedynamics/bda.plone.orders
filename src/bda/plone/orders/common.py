@@ -5,6 +5,7 @@ from repoze.catalog.catalog import Catalog
 from repoze.catalog.indexes.field import CatalogFieldIndex
 from repoze.catalog.indexes.keyword import CatalogKeywordIndex
 from repoze.catalog.indexes.text import CatalogTextIndex
+from repoze.catalog.query import Eq
 from souper.interfaces import ICatalogFactory
 from souper.soup import (
     get_soup,
@@ -132,3 +133,40 @@ class OrderCheckoutAdapter(CheckoutAdapter):
             booking.attrs[u'vat'] = item_data.vat
             ret.append(booking)
         return ret
+
+
+def get_order(context, uid):
+    if not isinstance(uid, uuid.UUID):
+        uid = uuid.UUID(uid)
+    soup = get_soup('bda_plone_orders_orders', context)
+    return [_ for _ in soup.query(Eq('uid', uid))][0]
+
+
+class OrderTransitions(object):
+    
+    def __init__(self, context):
+        self.context = context
+    
+    def do_transition(self, uid, transition):
+        """Change state of order by UID and transition.
+        
+        @param uid: uuid.UUID
+        @param transition: string
+        """
+        record = get_order(self.context, uid)
+        soup = get_soup('bda_plone_orders_orders', self.context)
+        record = [_ for _ in soup.query(Eq('uid', uid))][0]
+        if transition == 'mark_salaried':
+            record.attrs['salaried'] = True
+        elif transition == 'mark_outstanding':
+            record.attrs['salaried'] = False
+        elif transition == 'renew':
+            record.attrs['state'] = 'new'
+        elif transition == 'finish':
+            record.attrs['state'] = 'finished'
+        elif transition == 'cancel':
+            record.attrs['state'] = 'finished'
+        else:
+            raise ValueError(u"invalid transition: %s" % transition)
+        soup.reindex(records=[record])
+        return record

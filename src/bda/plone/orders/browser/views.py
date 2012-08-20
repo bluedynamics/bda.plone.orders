@@ -17,7 +17,11 @@ from souper.soup import (
 )
 from yafowil.utils import Tag
 from bda.plone.cart import ascur
-from ..common import DT_FORMAT
+from ..common import (
+    DT_FORMAT,
+    get_order,
+    OrderTransitions,
+)
 
 _ = MessageFactory('bda.plone.orders')
 _co = MessageFactory('bda.plone.checkout')
@@ -316,8 +320,8 @@ class OrderView(BrowserView):
     
     @property
     def order(self):
-        soup = get_soup('bda_plone_orders_orders', self.context)
-        return dict([_ for _ in soup.query(Eq('uid', self.uid))][0].attrs)
+        record = get_order(self.context, self.uid)
+        return dict(record.attrs)
     
     @property
     def bookings(self):
