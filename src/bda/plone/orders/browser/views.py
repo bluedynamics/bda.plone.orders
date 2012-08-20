@@ -41,9 +41,9 @@ class Translate(object):
 
 class Dropdown(object):
     render = ViewPageTemplateFile('dropdown.pt')
+    name = ''
     css = 'dropdown'
     action = ''
-    name = ''
     vocab = {}
     transitions = {}
     value = ''
@@ -62,6 +62,7 @@ class Dropdown(object):
                 'title': self.transitions[transition],
                 'target': '%s?transition=%s&uid=%s' % (url, transition, uid)
             })
+        return ret
     
     @property
     def identifyer(self):
@@ -82,7 +83,7 @@ class Dropdown(object):
 class StateDropdown(Dropdown):
     name = 'state'
     css = 'dropdown change_order_state_dropdown'
-    action = 'change_order_state'
+    action = 'statetransition'
     vocab = {
         'new': _('new', 'New'),
         'finished': _('finished', 'Finished'),
@@ -109,19 +110,10 @@ class StateDropdown(Dropdown):
         return self.create_items(transitions)
 
 
-class StateTransition(BrowserView):
-    
-    def __call__(self):
-        transition = self.request['transition']
-        uid = self.request['uid']
-        record = None
-        return StateDropdown(self.context, self.request, record).render()
-
-
 class SalariedDropdown(Dropdown):
     name = 'salaried'
     css = 'dropdown change_order_salaried_dropdown'
-    action = 'change_order_salaried'
+    action = 'salariedtransition'
     vocab = {
         'yes': _co('yes', 'Yes'),
         'no': _co('no', 'No'),
@@ -146,13 +138,22 @@ class SalariedDropdown(Dropdown):
         return self.create_items(transitions)
 
 
-class SalariedTransition(BrowserView):
+class Transition(BrowserView):
+    dropdown = None
     
     def __call__(self):
         transition = self.request['transition']
         uid = self.request['uid']
-        record = None
-        return SalariedDropdown(self.context, self.request, record).render()
+        record = OrderTransitions(self.context).do_transition(uid, transition)
+        return self.dropdown(self.context, self.request, record).render()
+
+
+class StateTransition(Transition):
+    dropdown = StateDropdown
+
+
+class SalariedTransition(Transition):
+    dropdown = SalariedDropdown
 
 
 class TableData(BrowserView):
@@ -271,6 +272,14 @@ class OrdersTable(BrowserView):
         }, {
             'id': 'billing_address.city',
             'label': _('city', 'City'),
+        }, {
+            'id': 'salaried',
+            'label': _('salaried', 'Salaried'),
+            'renderer': self.render_salaried,
+        }, {
+            'id': 'state',
+            'label': _('state', 'State'),
+            'renderer': self.render_state,
         }]
     
     def render_dt(self, colname, record):
@@ -292,6 +301,12 @@ class OrdersTable(BrowserView):
             'title': _('view_order', 'View Order'),
         }
         return tag('a', '&nbsp', **link_attrs)
+    
+    def render_salaried(self, colname, record):
+        return SalariedDropdown(self.context, self.request, record).render()
+    
+    def render_state(self, colname, record):
+        return StateDropdown(self.context, self.request, record).render()
 
 
 class OrdersData(OrdersTable, TableData):

@@ -20,7 +20,6 @@
         $.extend(bdajax.binders, {
             orders_dropdown_menus: orders.dropdown_binder
         });
-        orders.dropdown_binder(document);
     });
     
     var orders = {
@@ -29,15 +28,20 @@
         },
         
         dropdown_binder: function(context) {
-            var sel = '.change_reservation_booking_state_dropdown';
-            $(sel, context).dropdownmenu({
+            var sel = '.change_order_salaried_dropdown';
+            $(sel, context).ordersdropdownmenu({
                 menu: '.dropdown_items',
-                trigger: '.change_reservation_booking_state strong'
+                trigger: '.dropdown_header'
+            });
+            sel = '.change_order_state_dropdown';
+            $(sel, context).ordersdropdownmenu({
+                menu: '.dropdown_items',
+                trigger: '.dropdown_header'
             });
         }
     }
     
-    $.fn.dropdownmenu = function(options) {
+    $.fn.ordersdropdownmenu = function(options) {
         var trigger = options.trigger;
         var menu = options.menu;
         this.unbind('click');

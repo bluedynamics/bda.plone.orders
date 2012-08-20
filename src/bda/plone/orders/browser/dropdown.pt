@@ -10,13 +10,13 @@
     class=""
     tal:condition="not:items"
     tal:attributes="class string:${view/name}-dropdown-${view/value}"
-    tal:content="python:view.vocab(view.value)">
+    tal:content="python:view.vocab[view.value]">
     value
   </strong>
   
   <div class="dropdown"
        tal:attributes="class view/css"
-       tal:condition="itema">
+       tal:condition="items">
     
     <div class="dropdown_header">
       <strong

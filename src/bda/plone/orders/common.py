@@ -148,11 +148,15 @@ class OrderTransitions(object):
         self.context = context
     
     def do_transition(self, uid, transition):
-        """Change state of order by UID and transition.
+        """Do transition for order by UID and transition name.
         
-        @param uid: uuid.UUID
+        @param uid: uuid.UUID or string representing a UUID
         @param transition: string
+        
+        @return: order record
         """
+        if not isinstance(uid, uuid.UUID):
+            uid = uuid.UUID(uid)
         record = get_order(self.context, uid)
         soup = get_soup('bda_plone_orders_orders', self.context)
         record = [_ for _ in soup.query(Eq('uid', uid))][0]
@@ -165,7 +169,7 @@ class OrderTransitions(object):
         elif transition == 'finish':
             record.attrs['state'] = 'finished'
         elif transition == 'cancel':
-            record.attrs['state'] = 'finished'
+            record.attrs['state'] = 'cancelled'
         else:
             raise ValueError(u"invalid transition: %s" % transition)
         soup.reindex(records=[record])
