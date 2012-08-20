@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2012-08-19 17:21+0000\n"
+"POT-Creation-Date: 2012-08-20 15:58+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Domain: DOMAIN\n"
 
 #. Default: "Actions"
-#: ./browser/views.py:139
+#: ./browser/views.py:260
 msgid "actions"
 msgstr ""
 
@@ -54,13 +54,23 @@ msgstr ""
 msgid "booking_vat"
 msgstr ""
 
+#. Default: "Cancel"
+#: ./browser/views.py:95
+msgid "cancel"
+msgstr ""
+
+#. Default: "Cancelled"
+#: ./browser/views.py:90
+msgid "cancelled"
+msgstr ""
+
 #. Default: "City"
-#: ./browser/views.py:149
+#: ./browser/views.py:274
 msgid "city"
 msgstr ""
 
 #. Default: "Date"
-#: ./browser/views.py:152
+#: ./browser/views.py:264
 msgid "date"
 msgstr ""
 
@@ -79,14 +89,44 @@ msgstr ""
 msgid "export_recent_orders"
 msgstr ""
 
+#. Default: "Finish"
+#: ./browser/views.py:94
+msgid "finish"
+msgstr ""
+
+#. Default: "Finished"
+#: ./browser/views.py:89
+msgid "finished"
+msgstr ""
+
 #. Default: "Loading Data, please wait..."
 #: ./browser/table.pt:22
 msgid "loading_please_wait"
 msgstr ""
 
+#. Default: "Mark outstanding"
+#: ./browser/views.py:123
+msgid "mark_outstanding"
+msgstr ""
+
+#. Default: "Mark salaried"
+#: ./browser/views.py:122
+msgid "mark_salaried"
+msgstr ""
+
 #. Default: "Name"
-#: ./browser/views.py:146
+#: ./browser/views.py:271
 msgid "name"
+msgstr ""
+
+#. Default: "New"
+#: ./browser/views.py:88
+msgid "new"
+msgstr ""
+
+#. Default: "No"
+#: ./browser/views.py:119
+msgid "no"
 msgstr ""
 
 #. Default: "Order Bookings:"
@@ -209,18 +249,38 @@ msgstr ""
 msgid "personal_data"
 msgstr ""
 
+#. Default: "Renew"
+#: ./browser/views.py:93
+msgid "renew"
+msgstr ""
+
+#. Default: "Salaried"
+#: ./browser/views.py:277
+msgid "salaried"
+msgstr ""
+
+#. Default: "State"
+#: ./browser/views.py:281
+msgid "state"
+msgstr ""
+
 #. Default: "Surname"
-#: ./browser/views.py:143
+#: ./browser/views.py:268
 msgid "surname"
 msgstr ""
 
 #. Default: "Unknown"
-#: ./browser/views.py:271
+#: ./browser/views.py:406
 msgid "unknown"
 msgstr ""
 
 #. Default: "View Order"
-#: ./browser/views.py:172
+#: ./browser/views.py:301
 msgid "view_order"
+msgstr ""
+
+#. Default: "Yes"
+#: ./browser/views.py:118
+msgid "yes"
 msgstr ""
 

@@ -80,15 +80,17 @@ class Dropdown(object):
                                   u"``items``.")
 
 
+state_vocab = {
+    'new': _('new', 'New'),
+    'finished': _('finished', 'Finished'),
+    'cancelled': _('cancelled', 'Cancelled'),
+}
+
 class StateDropdown(Dropdown):
     name = 'state'
     css = 'dropdown change_order_state_dropdown'
     action = 'statetransition'
-    vocab = {
-        'new': _('new', 'New'),
-        'finished': _('finished', 'Finished'),
-        'cancelled': _('cancelled', 'Cancelled'),
-    }
+    vocab = state_vocab
     transitions = {
         'renew': _('renew', 'Renew'),
         'finish': _('finish', 'Finish'),
@@ -115,8 +117,8 @@ class SalariedDropdown(Dropdown):
     css = 'dropdown change_order_salaried_dropdown'
     action = 'salariedtransition'
     vocab = {
-        'yes': _co('yes', 'Yes'),
-        'no': _co('no', 'No'),
+        'yes': _('yes', 'Yes'),
+        'no': _('no', 'No'),
     }
     transitions = {
         'mark_salaried': _('mark_salaried', 'Mark salaried'),
@@ -399,7 +401,11 @@ class OrderView(BrowserView):
             or _pa('invoice', 'Invoice')
     
     def salaried(self, order):
-        order.get('salaried') == 'yes' and _co('yes', 'Yes') or _co('no', 'No')
+        return order.get('salaried') == 'yes' \
+            and _('yes', 'Yes') or _('no', 'No')
+    
+    def state(self, order):
+        return state_vocab[order.get('state', 'new')]
     
     def created(self, order):
         value = order.get('created', _('unknown', 'Unknown'))
@@ -408,4 +414,4 @@ class OrderView(BrowserView):
         return value
     
     def exported(self, item):
-        return item['exported'] and _co('yes', 'Yes') or _co('no', 'No')
+        return item['exported'] and _('yes', 'Yes') or _('no', 'No')

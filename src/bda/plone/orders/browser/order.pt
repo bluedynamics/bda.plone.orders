@@ -47,14 +47,17 @@
   <div class="order_details_row">
     <div class="order_state">
       <h3 i18n:translate="order_state">Order State:</h3>
+      <strong i18n:translate="order_created">Created:</strong>
+      <span tal:replace="python:view.created(order)">created</span>
+      <br />
       <strong i18n:translate="order_payment">Payment:</strong>
       <span tal:replace="python:view.payment(order)">payment</span>
       <br />
       <strong i18n:translate="order_salaried">Salaried:</strong>
       <span tal:replace="python:view.salaried(order)">No</span>
       <br />
-      <strong i18n:translate="order_created">Created:</strong>
-      <span tal:replace="python:view.created(order)">created</span>
+      <strong i18n:translate="order_state">State:</strong>
+      <span tal:replace="python:view.state(order)">state</span>
     </div>
     
     <div class="order_summary">

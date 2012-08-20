@@ -22,7 +22,7 @@
       <strong
         class=""
         tal:attributes="class string:${view/name}-value-${view/value}"
-        tal:content="view/value">
+        tal:content="python:view.vocab[view.value]">
         value
       </strong>
     </div>
