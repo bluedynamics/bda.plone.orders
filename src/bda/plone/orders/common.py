@@ -158,8 +158,6 @@ class OrderTransitions(object):
         if not isinstance(uid, uuid.UUID):
             uid = uuid.UUID(uid)
         record = get_order(self.context, uid)
-        soup = get_soup('bda_plone_orders_orders', self.context)
-        record = [_ for _ in soup.query(Eq('uid', uid))][0]
         if transition == 'mark_salaried':
             record.attrs['salaried'] = 'yes'
         elif transition == 'mark_outstanding':
@@ -172,5 +170,6 @@ class OrderTransitions(object):
             record.attrs['state'] = 'cancelled'
         else:
             raise ValueError(u"invalid transition: %s" % transition)
+        soup = get_soup('bda_plone_orders_orders', self.context)
         soup.reindex(records=[record])
         return record

@@ -106,8 +106,8 @@
     position:absolute;
     left:0;
     margin-left:0 !important;
-    margin-top:0px;
-    padding:3px;
+    margin-top:3px;
+    padding:6px 3px 3px 3px;
     z-index:10000;
     width:200px;
     list-style-type:none !important;
