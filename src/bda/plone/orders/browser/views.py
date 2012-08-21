@@ -37,11 +37,6 @@ _co = MessageFactory('bda.plone.checkout')
 _pa = MessageFactory('bda.plone.payment')
 
 
-def message(context, msg):
-    putils = getToolByName(context, 'plone_utils')
-    putils.addPortalMessage(msg)
-
-
 class Translate(object):
 
     def __init__(self, request):

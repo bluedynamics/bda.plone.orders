@@ -2,12 +2,22 @@ import smtplib
 from email.MIMEText import MIMEText
 from email.Utils import formatdate
 from email.Header import Header
+from zope.i18n import translate
+from zope.i18nmessageid import MessageFactory
 from souper.soup import get_soup
 from repoze.catalog.query import Any
 from Products.CMFCore.utils import getToolByName
 from bda.plone.cart import get_catalog_brain
 from .common import DT_FORMAT
 from .mailtemplates import get_templates
+
+
+_ = MessageFactory('bda.plone.orders')
+
+
+def message(context, msg):
+    putils = getToolByName(context, 'plone_utils')
+    putils.addPortalMessage(msg)
 
 
 def create_mail_listing(context, attrs):
@@ -67,7 +77,14 @@ def checkout_success(event):
     shop_manager_address = props.site_properties.email_from_address
     mail_notify = MailNotify(event.context)
     for receiver in [customer_address, shop_manager_address]:
-        mail_notify.send(subject, message, receiver)
+        try:
+            mail_notify.send(subject, message, receiver)
+        except Exception, e:
+            msg = translate(
+                _('email_sending_failed',
+                  'Failed to send Notification to ${receiver}',
+                  mapping={'receiver': receiver}))
+            message(event.context, msg)
 
 
 class MailNotify(object):
