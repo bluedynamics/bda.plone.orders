@@ -5,5 +5,6 @@
     <dependency>profile-bda.plone.checkout:default</dependency>
     <dependency>profile-souper.plone:default</dependency>
     <dependency>profile-collective.js.datatables:default</dependency>
+    <dependency>profile-collective.js.jqueryui:default</dependency>
   </dependencies>
 </metadata>

@@ -1,0 +1,5 @@
+<registry>
+    <records interface="collective.js.jqueryui.controlpanel.IJQueryUIPlugins">
+      <value key="ui_datepicker">False</value>
+    </records>
+</registry>

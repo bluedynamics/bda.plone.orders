@@ -30,6 +30,7 @@ setup(name='bda.plone.orders',
           'souper.plone',
           'bda.plone.checkout',
           'collective.js.datatables',
+          'collective.js.jqueryui',
           'yafowil.widget.datetime',
       ],
       entry_points="""
