@@ -55,8 +55,15 @@
   
   <browser:page
     for="*"
-    name="ordercsvexportform"
-    class=".views.OrdersCSVExportForm"
+    name="exportorders"
+    template="export.pt"
+    permission="cmf.ModifyPortalContent"
+    layer="..interfaces.IOrdersExtensionLayer" />
+  
+  <browser:page
+    for="*"
+    name="exportordersform"
+    class=".views.ExportOrdersForm"
     permission="cmf.ModifyPortalContent"
     layer="..interfaces.IOrdersExtensionLayer" />
 

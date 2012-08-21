@@ -1,19 +1,40 @@
 factory: form
-name: order_export_csv
+name: exportorders
 props:
     action: context.form_action
 widgets:
-- from:
-    factory: "#field:datetime"
+- table:
+    factory: table
     props:
-        label: i18n:from
-        datepicker: True
-        time: True
-        timepicker: True
-- to:
-    factory: "#field:datetime"
+        structural: True
+    widgets:
+    - tr:
+        factory: tr
+        props:
+            structural: True
+        widgets:
+        - from:
+            factory: "td:#field:datetime"
+            props:
+                label: i18n:from_date
+                required: i18n:from_date_required
+                datepicker: True
+                time: True
+                timepicker: True
+                locale: de
+        - to:
+            factory: "td:#field:datetime"
+            props:
+                label: i18n:to_date
+                required: i18n:to_date_required
+                datepicker: True
+                time: True
+                timepicker: True
+                locale: de
+- export:
+    factory: submit
     props:
-        label: i18n:to
-        datepicker: True
-        time: True
-        timepicker: True
+        label: i18n:export
+        action: export
+        handler: context.export
+        next: context.csv

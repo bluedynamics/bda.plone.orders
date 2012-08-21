@@ -6,20 +6,5 @@
   <h1 class="documentFirstHeading" i18n:translate="orders">Orders</h1>
   
   <tal:table replace="structure view/rendered_table" />
-  
-  <br />
-  <hr />
-  <br />
-  
-  <h2 i18n:translate="export_orders">Export Orders</h2>
-  
-  <div class="orderscsvexport">
-    <h3 i18n:translate="export_recent_orders">
-      Export recent orders as CSV (excel optimized)
-    </h3>
-    
-    <div class="exportcsvform"
-         tal:content="structure context/@@ordercsvexportform"></div>
-  </div>
 
 </div>
