@@ -3,6 +3,7 @@ import uuid
 import csv
 import datetime
 from StringIO import StringIO
+from decimal import Decimal
 from zope.i18n import translate
 from zope.i18nmessageid import (
     Message,
@@ -436,6 +437,42 @@ class DialectExcelWithColons(csv.excel):
 csv.register_dialect('excel-colon', DialectExcelWithColons)
 
 
+order_export_attrs = [
+    'uid',
+    'created',
+    'salaried',
+    'state',
+    'personal_data.company',
+    'personal_data.email',
+    'personal_data.gender',
+    'personal_data.name',
+    'personal_data.phone',
+    'personal_data.surname',
+    'billing_address.city',
+    'billing_address.country',
+    'billing_address.street',
+    'billing_address.zip',
+    'delivery_address.alternative_delivery',
+    'delivery_address.city',
+    'delivery_address.company',
+    'delivery_address.country',
+    'delivery_address.name',
+    'delivery_address.street',
+    'delivery_address.surname',
+    'delivery_address.zip',
+    'order_comment.comment',
+    'payment_selection.payment',
+]
+booking_export_attrs = [
+    'title',
+    'buyable_comment',
+    'buyable_count',
+    'net',
+    'vat',
+    'exported',
+]
+
+
 class ExportOrdersForm(YAMLForm):
     browser_template = ViewPageTemplateFile('export.pt')
     form_template = 'bda.plone.orders.browser:forms/orders_export.yaml'
@@ -462,34 +499,36 @@ class ExportOrdersForm(YAMLForm):
         self.from_date = data.fetch('exportorders.from').extracted
         self.to_date = data.fetch('exportorders.to').extracted
     
+    def export_val(self, record, attr_name):
+        val = record.attrs.get(attr_name)
+        if isinstance(val, datetime.datetime):
+            val = val.strftime(DT_FORMAT)
+        if val == '-':
+            val = ''
+        if isinstance(val, float) or \
+           isinstance(val, Decimal):
+            val = str(val).replace('.', ',')
+        return val
+    
     def csv(self, request):
         orders_soup = get_soup('bda_plone_orders_orders', self.context)
         bookings_soup = get_soup('bda_plone_orders_bookings', self.context)
         query = Ge('created', self.from_date) & Le('created', self.to_date)
-        order_attr_blacklist = ['booking_uids', 'creator']
-        booking_attrs = ['buyable_count', 'buyable_comment', 'exported',
-                         'title', 'net', 'vat']
         sio = StringIO()
         ex = csv.writer(sio, dialect='excel-colon')
+        ex.writerow(order_export_attrs + booking_export_attrs)
         for order in orders_soup.query(query):
-            row = list()
-            keys = sorted(order.attrs.keys())
-            for key in keys:
-                if key in order_attr_blacklist:
-                    continue
-                val = order.attrs[key]
-                if isinstance(val, datetime.datetime):
-                    val = val.strftime(DT_FORMAT)
-                row.append(val)
+            order_attrs = list()
+            for attr_name in order_export_attrs:
+                val = self.export_val(order, attr_name)
+                order_attrs.append(val)
             booking_query = Eq('order_uid', order.attrs['uid'])
             for booking in bookings_soup.query(booking_query):
                 booking_attrs = list()
-                for key in booking_attrs:
-                    val = order.attrs.get(key)
-                    if isinstance(val, datetime.datetime):
-                        val = val.strftime(DT_FORMAT)
+                for attr_name in booking_export_attrs:
+                    val = self.export_val(booking, attr_name)
                     booking_attrs.append(val)
-                ex.writerow(row + booking_attrs)
+                ex.writerow(order_attrs + booking_attrs)
                 booking.attrs['exported'] = True
                 bookings_soup.reindex(booking)
         s_start = self.from_date.strftime('%G-%m-%d_%H-%M-%S') 
