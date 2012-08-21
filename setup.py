@@ -28,9 +28,9 @@ setup(name='bda.plone.orders',
           'setuptools',
           'Plone',
           'souper.plone',
-          'bda.plone.cart',
           'bda.plone.checkout',
           'collective.js.datatables',
+          'yafowil.widget.datetime',
       ],
       entry_points="""
       [z3c.autoinclude.plugin]

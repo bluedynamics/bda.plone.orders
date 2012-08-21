@@ -1,5 +1,6 @@
 import json
 import uuid
+import csv
 from zope.i18n import translate
 from zope.i18nmessageid import (
     Message,
@@ -16,6 +17,7 @@ from souper.soup import (
     LazyRecord,
 )
 from yafowil.utils import Tag
+from yafowil.plone.form import YAMLForm
 from bda.plone.cart import ascur
 from ..common import (
     DT_FORMAT,
@@ -26,6 +28,11 @@ from ..common import (
 _ = MessageFactory('bda.plone.orders')
 _co = MessageFactory('bda.plone.checkout')
 _pa = MessageFactory('bda.plone.payment')
+
+
+def message(context, msg):
+    putils = getToolByName(context, 'plone_utils')
+    putils.addPortalMessage(msg)
 
 
 class Translate(object):
@@ -415,3 +422,105 @@ class OrderView(BrowserView):
     
     def exported(self, item):
         return item['exported'] and _('yes', 'Yes') or _('no', 'No')
+
+
+class OrdersCSVExportForm(YAMLForm):
+    form_template = 'bda.plone.orders.browser:forms/orders_export.yaml'
+    message_factory = _
+    action_resource = 'orderscsvexport'
+
+
+def verypast(context):
+    return datetime.datetime.now(ITimezoneFactory(context)) - \
+           datetime.timedelta(20*365) # 20 Years
+
+
+def dateexport(dt):
+    try:
+        return unicode(dt.strftime('%Y-%m-%d %H:%M:%S'))
+    except:
+        return u'unset'
+
+
+class DialectExcelWithColons(csv.excel):    
+    delimiter = ';'
+
+csv.register_dialect('excel-colon', DialectExcelWithColons)
+
+
+#BASE_HEADER = ['uid', 'created', 'company', 'first_name', 'name', 'email',
+#               'phone', 'fax', 'address', 'zip', 'city', 'country',
+#               'company_number']
+
+#ARTICLES_HEADER = ['art_no', 'brand', 'name', 'license',
+#                   'quantity', 'description']
+
+
+class OrdersCSVExport(BrowserView):
+    
+    def __call__(self):
+        """Request value start is given, use it as start range until now
+        request value end is given (only together with start), use it as
+        upper border.
+        """
+        start = datevalue(self.context, self.request.get('start'))
+        end = datevalue(self.context, self.request.get('end'))      
+        now = datetime.datetime.now(ITimezoneFactory(self.context))
+        if not start:
+            start = verypast(self.context)
+        if not end:
+            end = now
+        if end < start:
+            message(self.context, u"Invalid query, end < start")
+            url = '%s/inquiryexport' % self.context.absolute_url()
+            self.request.response.redirect(url)
+            return
+        inquiry = Inquiry(self.context)
+        records = inquiry.soup.query(created=(start, end))
+        if not records:
+            message(self.context, u"No results found")
+            url = '%s/inquiryexport' % self.context.absolute_url()
+            self.request.response.redirect(url)
+            return
+        sio = StringIO() 
+        ex = csv.writer(sio, dialect='excel-colon')
+        ex.writerow(BASE_HEADER + ARTICLES_HEADER)
+        for record in records:
+            row = [
+                record.uid,
+                dateexport(record.created),
+                record.address['company'],
+                record.address['first_name'],
+                record.address['name'],
+                record.address['email'],
+                record.address['phone'],
+                record.address['fax'],
+                record.address.get('address'), # ???
+                record.address['zip'],
+                record.address['city'],
+                record.address['country'],
+                record.address['company_number'],
+            ]
+            for i in range(len(ARTICLES_HEADER)):
+                row.append('')
+            ex.writerow(row)
+            for article in record.articles:
+                row = list()
+                for i in range(len(BASE_HEADER)):
+                    row.append('')
+                row += [
+                    article['art_no'],
+                    article['brand'],
+                    article['name'],
+                    article['license'],
+                    article['quantity'],
+                    article['description'],
+                ]
+                ex.writerow(row)
+        s_start = start.strftime('%G-%m-%d_%H-%M-%S') 
+        s_end = end.strftime('%G-%m-%d_%H-%M-%S')
+        filename = 'inquiry-export-%s-%s.csv' % (s_start, s_end) 
+        self.request.response.setHeader('Content-Type', 'text/csv')
+        self.request.response.setHeader('Content-Disposition', 
+                                        'attachment; filename=%s' % filename)
+        return sio.getvalue().decode('utf8')

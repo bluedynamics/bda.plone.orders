@@ -52,5 +52,12 @@
     class=".views.SalariedTransition"
     permission="cmf.ModifyPortalContent"
     layer="..interfaces.IOrdersExtensionLayer" />
+  
+  <browser:page
+    for="*"
+    name="ordercsvexportform"
+    class=".views.OrdersCSVExportForm"
+    permission="cmf.ModifyPortalContent"
+    layer="..interfaces.IOrdersExtensionLayer" />
 
 </configure>

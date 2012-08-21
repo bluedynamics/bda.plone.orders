@@ -1,0 +1,19 @@
+factory: form
+name: order_export_csv
+props:
+    action: context.form_action
+widgets:
+- from:
+    factory: "#field:datetime"
+    props:
+        label: i18n:from
+        datepicker: True
+        time: True
+        timepicker: True
+- to:
+    factory: "#field:datetime"
+    props:
+        label: i18n:to
+        datepicker: True
+        time: True
+        timepicker: True
