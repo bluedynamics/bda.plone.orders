@@ -133,3 +133,9 @@
 .dropdown_header {
     cursor:pointer;
 }
+
+/* export form */
+#field-exportorders-from,
+#field-exportorders-to {
+    margin:0.4em;
+}

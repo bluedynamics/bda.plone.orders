@@ -23,7 +23,7 @@ widgets:
                 timepicker: True
                 locale: de
         - to:
-            factory: "td:#field:datetime"
+            factory: "td:#field:*from_before_to:datetime"
             props:
                 label: i18n:to_date
                 required: i18n:to_date_required
@@ -31,6 +31,10 @@ widgets:
                 time: True
                 timepicker: True
                 locale: de
+            custom:
+                from_before_to:
+                    extractors:
+                        - context.from_before_to
 - export:
     factory: submit
     props:

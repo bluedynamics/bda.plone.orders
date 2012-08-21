@@ -21,6 +21,8 @@ from souper.soup import (
     LazyRecord,
 )
 from yafowil.utils import Tag
+from yafowil.base import ExtractionError
+from yafowil.controller import Controller
 from yafowil.plone.form import YAMLForm
 from bda.plone.cart import ascur
 from ..common import (
@@ -435,9 +437,26 @@ csv.register_dialect('excel-colon', DialectExcelWithColons)
 
 
 class ExportOrdersForm(YAMLForm):
+    browser_template = ViewPageTemplateFile('export.pt')
     form_template = 'bda.plone.orders.browser:forms/orders_export.yaml'
     message_factory = _
     action_resource = 'exportorders'
+    
+    def __call__(self):
+        self.prepare()
+        controller = Controller(self.form, self.request)
+        if not controller.next:
+            self.rendered_form = controller.rendered
+            return self.browser_template(self)
+        return controller.next
+    
+    def from_before_to(self, widget, data):
+        from_date = data.fetch('exportorders.from').extracted
+        to_date = data.fetch('exportorders.to').extracted
+        if to_date <= from_date:
+            raise ExtractionError(_('from_date_before_to_date',
+                                    'From-date after to-date'))
+        return data.extracted
     
     def export(self, widget, data):
         self.from_date = data.fetch('exportorders.from').extracted

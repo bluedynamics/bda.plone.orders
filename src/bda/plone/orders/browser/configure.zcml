@@ -56,13 +56,6 @@
   <browser:page
     for="*"
     name="exportorders"
-    template="export.pt"
-    permission="cmf.ModifyPortalContent"
-    layer="..interfaces.IOrdersExtensionLayer" />
-  
-  <browser:page
-    for="*"
-    name="exportordersform"
     class=".views.ExportOrdersForm"
     permission="cmf.ModifyPortalContent"
     layer="..interfaces.IOrdersExtensionLayer" />

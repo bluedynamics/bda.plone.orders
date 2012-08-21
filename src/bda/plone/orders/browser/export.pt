@@ -26,7 +26,7 @@
         Export recent orders as CSV (excel optimized)
       </h3>
       <div class="exportcsvform"
-           tal:content="structure context/@@exportordersform"></div>
+           tal:content="structure view/rendered_form"></div>
     </div>
 
   </tal:main-macro>
