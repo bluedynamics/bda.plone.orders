@@ -133,6 +133,16 @@ class OrderCheckoutAdapter(CheckoutAdapter):
         return ret
 
 
+def payment_success(event):
+    # XXX
+    pass
+
+
+def payment_failed(event):
+    # XXX
+    pass
+
+
 def get_order(context, uid):
     if not isinstance(uid, uuid.UUID):
         uid = uuid.UUID(uid)
