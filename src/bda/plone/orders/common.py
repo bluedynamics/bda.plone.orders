@@ -18,7 +18,6 @@ from node.ext.zodb import OOBTNode
 from bda.plone.checkout import CheckoutAdapter
 from bda.plone.cart import (
     readcookie,
-    deletecookie,
     extractitems,
     get_catalog_brain,
 )
@@ -111,7 +110,6 @@ class OrderCheckoutAdapter(CheckoutAdapter):
         bookings_soup = get_soup('bda_plone_orders_bookings', self.context)
         for booking in bookings:
             bookings_soup.add(booking)
-        deletecookie(self.request)
     
     def create_bookings(self, order):
         ret = list()
