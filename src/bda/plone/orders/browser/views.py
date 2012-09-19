@@ -1,5 +1,4 @@
 import json
-import uuid
 import csv
 import datetime
 from StringIO import StringIO
@@ -28,7 +27,7 @@ from yafowil.plone.form import YAMLForm
 from bda.plone.cart import ascur
 from ..common import (
     DT_FORMAT,
-    get_order,
+    OrderData,
     OrderTransitions,
 )
 
@@ -342,49 +341,32 @@ class OrderView(BrowserView):
     
     @property
     def uid(self):
-        return uuid.UUID(self.request.form['uid'])
+        return self.request.form['uid']
     
     @property
     def order(self):
-        record = get_order(self.context, self.uid)
-        return dict(record.attrs)
+        return dict(self.order_data.order.attrs)
     
     @property
-    def bookings(self):
-        soup = get_soup('bda_plone_orders_bookings', self.context)
-        return soup.query(Eq('order_uid', self.uid))
+    def order_data(self):
+        return OrderData(self.context, self.uid)
     
     @property
     def net(self):
-        ret = 0.0
-        for booking in self.bookings:
-            count = float(booking.attrs['buyable_count'])
-            ret += booking.attrs.get('net', 0.0) * count
-        return ascur(ret)
+        return ascur(self.order_data.net)
     
     @property
     def vat(self):
-        ret = 0.0
-        for booking in self.bookings:
-            count = float(booking.attrs['buyable_count'])
-            net = booking.attrs.get('net', 0.0) * count
-            ret += net * booking.attrs.get('vat', 0.0) / 100
-        return ascur(ret)
+        return ascur(self.order_data.vat)
     
     @property
     def total(self):
-        ret = 0.0
-        for booking in self.bookings:
-            count = float(booking.attrs['buyable_count'])
-            net = booking.attrs.get('net', 0.0) * count
-            ret += net
-            ret += net * booking.attrs.get('vat', 0.0) / 100
-        return ascur(ret)
+        return ascur(self.order_data.total)
     
     @property
     def listing(self):
         ret = list()
-        for booking in self.bookings:
+        for booking in self.order_data.bookings:
             ret.append({
                 'title': booking.attrs['title'],
                 'count': booking.attrs['buyable_count'],

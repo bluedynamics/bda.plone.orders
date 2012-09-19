@@ -23,6 +23,10 @@
          zope.publisher.interfaces.browser.IBrowserRequest"
     factory=".common.OrderCheckoutAdapter" />
   
+  <adapter
+    for="Products.Archetypes.interfaces.IBaseObject"
+    factory=".common.SixPaymentData" />
+  
   <subscriber
     for="bda.plone.payment.interfaces.IPaymentSuccessEvent"
     handler=".common.payment_success" />

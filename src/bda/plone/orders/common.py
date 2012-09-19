@@ -22,9 +22,17 @@ from bda.plone.cart import (
     get_catalog_brain,
 )
 from bda.plone.cart.interfaces import ICartItemDataProvider
+from bda.plone.payment.six_payment import ISixPaymentData
 
 
 DT_FORMAT = '%m.%d.%Y-%H:%M'
+
+
+def get_order(context, uid):
+    if not isinstance(uid, uuid.UUID):
+        uid = uuid.UUID(uid)
+    soup = get_soup('bda_plone_orders_orders', context)
+    return [_ for _ in soup.query(Eq('uid', uid))][0]
 
 
 @implementer(ICatalogFactory)
@@ -134,6 +142,85 @@ class OrderCheckoutAdapter(CheckoutAdapter):
         return ret
 
 
+class OrderData(object):
+    
+    def __init__(self, context, uid):
+        self.context = context
+        if not isinstance(uid, uuid.UUID):
+            uid = uuid.UUID(uid)
+        self.uid = uid
+    
+    @property
+    def order(self):
+        return get_order(self.context, self.uid)
+    
+    @property
+    def bookings(self):
+        soup = get_soup('bda_plone_orders_bookings', self.context)
+        return soup.query(Eq('order_uid', self.uid))
+    
+    @property
+    def net(self):
+        ret = 0.0
+        for booking in self.bookings:
+            count = float(booking.attrs['buyable_count'])
+            ret += booking.attrs.get('net', 0.0) * count
+        return ret
+    
+    @property
+    def vat(self):
+        ret = 0.0
+        for booking in self.bookings:
+            count = float(booking.attrs['buyable_count'])
+            net = booking.attrs.get('net', 0.0) * count
+            ret += net * booking.attrs.get('vat', 0.0) / 100
+        return ret
+    
+    @property
+    def total(self):
+        ret = 0.0
+        for booking in self.bookings:
+            count = float(booking.attrs['buyable_count'])
+            net = booking.attrs.get('net', 0.0) * count
+            ret += net
+            ret += net * booking.attrs.get('vat', 0.0) / 100
+        return ret
+
+
+@implementer(ISixPaymentData)
+class SixPaymentData(object):
+    
+    def __init__(self, context):
+        self.context = context
+    
+    @instance_property
+    def order(self):
+        return get_order(self.context, self.order_uid)
+    
+    @property
+    def amount(self):
+        amount = str(round(OrderData(self.context, self.order_uid).total, 2))
+        amount = amount[:amount.index('.')] + amount[amount.index('.') + 1:]
+        return amount
+    
+    @property
+    def currency(self):
+        return 'EUR' # XXX
+    
+    @property
+    def description(self):
+        return 'description'
+    
+    def data(self, order_uid):
+        self.order_uid = order_uid
+        return {
+            'amount': self.amount,
+            'currency': self.currency,
+            'description': self.description,
+            'orderid': order_uid,
+        }
+
+
 def payment_success(event):
     # XXX
     print event
@@ -142,13 +229,6 @@ def payment_success(event):
 def payment_failed(event):
     # XXX
     print event
-
-
-def get_order(context, uid):
-    if not isinstance(uid, uuid.UUID):
-        uid = uuid.UUID(uid)
-    soup = get_soup('bda_plone_orders_orders', context)
-    return [_ for _ in soup.query(Eq('uid', uid))][0]
 
 
 class OrderTransitions(object):
