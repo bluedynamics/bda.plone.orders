@@ -24,12 +24,12 @@
     factory=".common.OrderCheckoutAdapter" />
   
   <subscriber
-    for="bda.plone.checkout.interfaces.ICheckoutEvent"
-    handler=".mailnotify.checkout_success" />
+    for="bda.plone.payment.interfaces.IPaymentSuccessEvent"
+    handler=".common.payment_success" />
   
   <subscriber
     for="bda.plone.payment.interfaces.IPaymentSuccessEvent"
-    handler=".common.payment_success" />
+    handler=".mailnotify.notify_order" />
   
   <subscriber
     for="bda.plone.payment.interfaces.IPaymentFailedEvent"

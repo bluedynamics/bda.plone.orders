@@ -110,6 +110,7 @@ class OrderCheckoutAdapter(CheckoutAdapter):
         bookings_soup = get_soup('bda_plone_orders_bookings', self.context)
         for booking in bookings:
             bookings_soup.add(booking)
+        return order.attrs['uid']
     
     def create_bookings(self, order):
         ret = list()
@@ -135,12 +136,12 @@ class OrderCheckoutAdapter(CheckoutAdapter):
 
 def payment_success(event):
     # XXX
-    pass
+    print event
 
 
 def payment_failed(event):
     # XXX
-    pass
+    print event
 
 
 def get_order(context, uid):

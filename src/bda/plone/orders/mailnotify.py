@@ -8,7 +8,10 @@ from souper.soup import get_soup
 from repoze.catalog.query import Any
 from Products.CMFCore.utils import getToolByName
 from bda.plone.cart import get_catalog_brain
-from .common import DT_FORMAT
+from .common import (
+    DT_FORMAT,
+    get_order,
+)
 from .mailtemplates import get_templates
 
 
@@ -66,16 +69,19 @@ def create_mail_body(context, attrs):
     return body_template % arguments
 
 
-def checkout_success(event):
+def notify_order(event):
     """Send notification mail after checkout succeed.
     """
-    templates = get_templates(event.context)
+    context = event.context
+    order = get_order(context, event.order_uid)
+    attrs = order.attrs
+    templates = get_templates(context)
     subject = templates['subject']
-    message = create_mail_body(event.context, event.vessel)
-    customer_address = event.vessel['personal_data.email']
-    props = getToolByName(event.context, 'portal_properties')
+    message = create_mail_body(context, attrs)
+    customer_address = attrs['personal_data.email']
+    props = getToolByName(context, 'portal_properties')
     shop_manager_address = props.site_properties.email_from_address
-    mail_notify = MailNotify(event.context)
+    mail_notify = MailNotify(context)
     for receiver in [customer_address, shop_manager_address]:
         try:
             mail_notify.send(subject, message, receiver)
@@ -84,7 +90,7 @@ def checkout_success(event):
                 _('email_sending_failed',
                   'Failed to send Notification to ${receiver}',
                   mapping={'receiver': receiver}))
-            message(event.context, msg)
+            message(context, msg)
 
 
 class MailNotify(object):
