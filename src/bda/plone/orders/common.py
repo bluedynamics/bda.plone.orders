@@ -212,7 +212,7 @@ class SixPaymentData(object):
         order = self.order_data.order
         attrs = order.attrs
         amount = '%s %s' % (self.currency, str(round(self.order_data.total, 2)))
-        description = u', '.join([
+        description = ', '.join([
             attrs['created'].strftime(DT_FORMAT),
             attrs['personal_data.name'],
             attrs['personal_data.surname'],
@@ -226,7 +226,6 @@ class SixPaymentData(object):
             'amount': self.amount,
             'currency': self.currency,
             'description': self.description,
-            'orderid': order_uid,
         }
 
 
