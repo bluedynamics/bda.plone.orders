@@ -56,6 +56,9 @@
       <strong i18n:translate="order_salaried">Salaried:</strong>
       <span tal:replace="python:view.salaried(order)">No</span>
       <br />
+      <strong i18n:translate="transaction_id">Transaction ID:</strong>
+      <span tal:replace="python:view.tid(order)">none</span>
+      <br />
       <strong i18n:translate="order_state">State:</strong>
       <span tal:replace="python:view.state(order)">state</span>
     </div>

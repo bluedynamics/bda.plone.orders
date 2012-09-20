@@ -120,14 +120,17 @@ class StateDropdown(Dropdown):
         return self.create_items(transitions)
 
 
+salaried_vocab = {
+    'yes': _('yes', 'Yes'),
+    'no': _('no', 'No'),
+    'failed': _('failed', 'Failed'),
+}
+
 class SalariedDropdown(Dropdown):
     name = 'salaried'
     css = 'dropdown change_order_salaried_dropdown'
     action = 'salariedtransition'
-    vocab = {
-        'yes': _('yes', 'Yes'),
-        'no': _('no', 'No'),
-    }
+    vocab = salaried_vocab
     transitions = {
         'mark_salaried': _('mark_salaried', 'Mark salaried'),
         'mark_outstanding': _('mark_outstanding', 'Mark outstanding'),
@@ -135,7 +138,7 @@ class SalariedDropdown(Dropdown):
     
     @property
     def value(self):
-        return self.record.attrs.get('salaried') == 'yes' and 'yes' or 'no'
+        return self.record.attrs.get('salaried', 'no')
     
     @property
     def items(self):
@@ -386,14 +389,21 @@ class OrderView(BrowserView):
         return gender
     
     def payment(self, order):
+        # XXX: get vocab from ``bda.plone.payment.Payments``
         payment = order['payment_selection.payment']
-        return payment == 'credit_card' \
-            and _pa('credit_card', 'Credit Card') \
-            or _pa('invoice', 'Invoice')
+        return payment == 'invoice' \
+            and _pa('invoice', 'Invoice') \
+            or _pa('six_payment', 'Six Payment')
     
     def salaried(self, order):
-        return order.get('salaried') == 'yes' \
-            and _('yes', 'Yes') or _('no', 'No')
+        salaried = order.get('salaried', 'no')
+        return salaried_vocab[salaried]
+    
+    def tid(self, order):
+        tid = order.get('tid', 'none')
+        if tid == 'none':
+            return _('none', 'None')
+        return tid
     
     def state(self, order):
         return state_vocab[order.get('state', 'new')]

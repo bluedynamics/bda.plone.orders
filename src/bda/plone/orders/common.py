@@ -194,12 +194,12 @@ class SixPaymentData(object):
         self.context = context
     
     @instance_property
-    def order(self):
-        return get_order(self.context, self.order_uid)
+    def order_data(self):
+        return OrderData(self.context, self.order_uid)
     
     @property
     def amount(self):
-        amount = str(round(OrderData(self.context, self.order_uid).total, 2))
+        amount = str(round(self.order_data.total, 2))
         amount = amount[:amount.index('.')] + amount[amount.index('.') + 1:]
         return amount
     
@@ -209,7 +209,16 @@ class SixPaymentData(object):
     
     @property
     def description(self):
-        return 'description'
+        order = self.order_data.order
+        attrs = order.attrs
+        amount = '%s %s' % (self.currency, str(round(self.order_data.total, 2)))
+        description = u', '.join([
+            attrs['created'].strftime(DT_FORMAT),
+            attrs['personal_data.name'],
+            attrs['personal_data.surname'],
+            attrs['billing_address.city'],
+            amount])
+        return description
     
     def data(self, order_uid):
         self.order_uid = order_uid
@@ -222,13 +231,19 @@ class SixPaymentData(object):
 
 
 def payment_success(event):
-    # XXX
-    print event
+    if event.payment.pid == 'six_payment':
+        data = event.data
+        order = get_order(event.context, event.order_uid)
+        order.attrs['salaried'] = 'yes'
+        order.attrs['tid'] = data['tid']
 
 
 def payment_failed(event):
-    # XXX
-    print event
+    if event.payment.pid == 'six_payment':
+        data = event.data
+        order = get_order(event.context, event.order_uid)
+        order.attrs['salaried'] = 'failed'
+        order.attrs['tid'] = data['tid']
 
 
 class OrderTransitions(object):

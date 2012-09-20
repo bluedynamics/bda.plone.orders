@@ -92,6 +92,9 @@
     color:#1600e5;
 }
 .salaried-value-no {
+    color:#ffcc00;
+}
+.salaried-value-failed {
     color:#e50000;
 }
 
