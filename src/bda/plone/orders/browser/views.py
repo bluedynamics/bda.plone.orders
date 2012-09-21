@@ -437,7 +437,7 @@ class DialectExcelWithColons(csv.excel):
 csv.register_dialect('excel-colon', DialectExcelWithColons)
 
 
-order_export_attrs = [
+ORDER_EXPORT_ATTRS = [
     'uid',
     'created',
     'salaried',
@@ -463,7 +463,7 @@ order_export_attrs = [
     'order_comment.comment',
     'payment_selection.payment',
 ]
-booking_export_attrs = [
+BOOKING_EXPORT_ATTRS = [
     'title',
     'buyable_comment',
     'buyable_count',
@@ -518,16 +518,16 @@ class ExportOrdersForm(YAMLForm):
         query = Ge('created', self.from_date) & Le('created', self.to_date)
         sio = StringIO()
         ex = csv.writer(sio, dialect='excel-colon')
-        ex.writerow(order_export_attrs + booking_export_attrs)
+        ex.writerow(ORDER_EXPORT_ATTRS + BOOKING_EXPORT_ATTRS)
         for order in orders_soup.query(query):
             order_attrs = list()
-            for attr_name in order_export_attrs:
+            for attr_name in ORDER_EXPORT_ATTRS:
                 val = self.export_val(order, attr_name)
                 order_attrs.append(val)
             booking_query = Eq('order_uid', order.attrs['uid'])
             for booking in bookings_soup.query(booking_query):
                 booking_attrs = list()
-                for attr_name in booking_export_attrs:
+                for attr_name in BOOKING_EXPORT_ATTRS:
                     val = self.export_val(booking, attr_name)
                     booking_attrs.append(val)
                 ex.writerow(order_attrs + booking_attrs)
