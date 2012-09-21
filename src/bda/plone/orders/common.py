@@ -199,7 +199,7 @@ class SixPaymentData(object):
     
     @property
     def amount(self):
-        amount = str(round(self.order_data.total, 2))
+        amount = '%0.2f' % self.order_data.total
         amount = amount[:amount.index('.')] + amount[amount.index('.') + 1:]
         return amount
     
