@@ -367,6 +367,16 @@ class OrderView(BrowserView):
         return ascur(self.order_data.total)
     
     @property
+    def currency(self):
+        currency = None
+        for booking in self.order_data.bookings:
+            if currency is None:
+                currency = booking.attrs.get('currency')
+            if currency != booking.attrs.get('currency'):
+                return None
+        return currency
+    
+    @property
     def listing(self):
         ret = list()
         for booking in self.order_data.bookings:
@@ -454,8 +464,10 @@ booking_export_attrs = [
     'title',
     'buyable_comment',
     'buyable_count',
+    'quantity_unit_label',
     'net',
     'vat',
+    'currency',
     'exported',
 ]
 

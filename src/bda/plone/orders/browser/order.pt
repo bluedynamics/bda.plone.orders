@@ -65,6 +65,19 @@
     
     <div class="order_summary">
       <h3 i18n:translate="order_summary">Order Summary:</h3>
+      <strong i18n:translate="currency">Currency:</strong>
+      <tal:currency define="currency view/currency">
+        <tal:consistent condition="currency">
+          <span tal:content="currency">EUR</span>
+        </tal:consistent>
+        <tal:inconsistent condition="not:currency">
+          <span i18n:translate="inconsistent_currencies">
+            Found inconsistent Currencies on order related bookings. This
+            should not happen at all!
+          </span>
+        </tal:inconsistent>
+      </tal:currency>
+      <br />
       <strong i18n:translate="order_net">Net:</strong>
       <span tal:replace="view/net">0.00</span>
       <br />
