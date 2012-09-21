@@ -136,6 +136,8 @@
       <tr>
         <th i18n:translate="booking_title">title</th>
         <th i18n:translate="booking_count">count</th>
+        <th i18n:translate="booking_quantity_unit">quantity unit</th>
+        <th i18n:translate="booking_currency">currency</th>
         <th i18n:translate="booking_net">net</th>
         <th i18n:translate="booking_vat">vat</th>
         <th i18n:translate="booking_exported">exported</th>
@@ -146,6 +148,8 @@
             tal:attributes="class python:even and 'even' or 'odd'">
           <td tal:content="row/title">title</td>
           <td tal:content="row/count">count</td>
+          <td tal:content="row/quantity_unit">quantity</td>
+          <td tal:content="row/currency">EUR</td>
           <td tal:content="row/net">net</td>
           <td>
             <span tal:replace="row/vat">20.0</span>%

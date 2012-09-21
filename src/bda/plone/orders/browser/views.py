@@ -380,6 +380,7 @@ class OrderView(BrowserView):
     def listing(self):
         ret = list()
         for booking in self.order_data.bookings:
+            quantity_unit = booking.attrs.get('quantity_unit_label') # XXX: i18n
             ret.append({
                 'title': booking.attrs['title'],
                 'count': booking.attrs['buyable_count'],
@@ -387,6 +388,8 @@ class OrderView(BrowserView):
                 'vat': booking.attrs.get('vat', 0.0),
                 'exported': booking.attrs['exported'],
                 'comment': booking.attrs['buyable_comment'],
+                'quantity_unit': quantity_unit,
+                'currency': booking.attrs.get('currency'),
             })
         return ret
     
