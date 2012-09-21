@@ -28,7 +28,7 @@ from bda.plone.cart import (
 from bda.plone.payment.six_payment import ISixPaymentData
 
 
-DT_FORMAT = '%m.%d.%Y-%H:%M'
+DT_FORMAT = '%m.%d.%Y %H:%M'
 
 
 def get_order(context, uid):
