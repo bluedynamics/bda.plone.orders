@@ -21,7 +21,10 @@ from bda.plone.cart import (
     extractitems,
     get_catalog_brain,
 )
-from bda.plone.cart.interfaces import ICartItemDataProvider
+from bda.plone.cart import (
+    get_data_provider,
+    get_item_data_provider,
+)
 from bda.plone.payment.six_payment import ISixPaymentData
 
 
@@ -125,7 +128,7 @@ class OrderCheckoutAdapter(CheckoutAdapter):
         items = extractitems(readcookie(self.request))
         for uid, count, comment in items:
             brain = get_catalog_brain(self.context, uid)
-            item_data = ICartItemDataProvider(brain.getObject())
+            item_data = get_item_data_provider(brain.getObject())
             booking = OOBTNode()
             booking.attrs['uid'] = uuid.uuid4()
             booking.attrs['buyable_uid'] = uid
@@ -205,7 +208,7 @@ class SixPaymentData(object):
     
     @property
     def currency(self):
-        return 'EUR' # XXX
+        return get_data_provider(self.context).currency
     
     @property
     def description(self):
