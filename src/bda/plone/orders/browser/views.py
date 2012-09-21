@@ -329,7 +329,7 @@ class OrdersData(OrdersTable, TableData):
     def query(self, soup):
         columns = self.columns
         sort = self.sort()
-        term = self.request.form['sSearch']
+        term = self.request.form['sSearch'].decode('utf-8')
         if term:
             res = soup.lazy(Contains(self.search_text_index, term),
                             sort_index=sort['index'],
