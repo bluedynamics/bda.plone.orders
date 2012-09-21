@@ -15,6 +15,7 @@ from souper.soup import (
 )
 from node.utils import instance_property
 from node.ext.zodb import OOBTNode
+from bda.basen import base62
 from bda.plone.checkout import CheckoutAdapter
 from bda.plone.cart import (
     readcookie,
@@ -29,6 +30,20 @@ from bda.plone.payment.six_payment import ISixPaymentData
 
 
 DT_FORMAT = '%m.%d.%Y %H:%M'
+
+
+def uuid_to_orderid(uid):
+    #import pdb;pdb.set_trace()
+    #return base62(uid)
+    # XXX: record intid
+    return uid
+
+
+def orderid_to_uid(uid):
+    #import pdb;pdb.set_trace()
+    #return base62(uid)
+    # XXX: record intid
+    return uid
 
 
 def get_order(context, uid):
@@ -109,7 +124,8 @@ class OrderCheckoutAdapter(CheckoutAdapter):
             creator = member.getId()
         created = datetime.datetime.now()
         order = self.order
-        order.attrs['uid'] = uuid.uuid4()
+        uid = order.attrs['uid'] = uuid.uuid4()
+        order.attrs['orderid'] = uuid_to_orderid(uid)
         order.attrs['creator'] = creator
         order.attrs['created'] = created
         order.attrs['state'] = 'new'
@@ -121,7 +137,7 @@ class OrderCheckoutAdapter(CheckoutAdapter):
         bookings_soup = get_soup('bda_plone_orders_bookings', self.context)
         for booking in bookings:
             bookings_soup.add(booking)
-        return order.attrs['uid']
+        return uid
     
     def create_bookings(self, order):
         ret = list()
