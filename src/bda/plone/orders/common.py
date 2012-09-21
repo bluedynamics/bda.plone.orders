@@ -125,6 +125,7 @@ class OrderCheckoutAdapter(CheckoutAdapter):
     
     def create_bookings(self, order):
         ret = list()
+        currency = get_data_provider(self.context).currency
         items = extractitems(readcookie(self.request))
         for uid, count, comment in items:
             brain = get_catalog_brain(self.context, uid)
@@ -138,9 +139,10 @@ class OrderCheckoutAdapter(CheckoutAdapter):
             booking.attrs['creator'] = order.attrs['creator']
             booking.attrs['created'] = order.attrs['created']
             booking.attrs['exported'] = False
-            booking.attrs[u'title'] = brain and brain.Title or 'unknown'
-            booking.attrs[u'net'] = item_data.net
-            booking.attrs[u'vat'] = item_data.vat
+            booking.attrs['title'] = brain and brain.Title or 'unknown'
+            booking.attrs['net'] = item_data.net
+            booking.attrs['vat'] = item_data.vat
+            booking.attrs['currency'] = currency
             ret.append(booking)
         return ret
 
