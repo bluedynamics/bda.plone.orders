@@ -134,7 +134,7 @@ msgstr "Lade Daten, bitte warten..."
 #. Default: "Mark outstanding"
 #: ./browser/views.py:136
 msgid "mark_outstanding"
-msgstr "makriere unbezahlt"
+msgstr "markiere unbezahlt"
 
 #. Default: "Mark salaried"
 #: ./browser/views.py:135
