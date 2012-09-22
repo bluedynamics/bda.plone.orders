@@ -95,7 +95,8 @@ class OrdersCatalogFactory(object):
         catalog[u'billing_address.city'] = CatalogFieldIndex(city_indexer)
         search_attributes = ['personal_data.name',
                              'personal_data.surname',
-                             'billing_address.city']
+                             'billing_address.city',
+                             'orderid']
         text_indexer = NodeTextIndexer(search_attributes)
         catalog[u'text'] = CatalogTextIndex(text_indexer)
         return catalog
