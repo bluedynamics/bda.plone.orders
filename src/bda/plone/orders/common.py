@@ -159,7 +159,7 @@ class OrderCheckoutAdapter(CheckoutAdapter):
             booking.attrs['net'] = item_data.net
             booking.attrs['vat'] = item_data.vat
             booking.attrs['currency'] = currency
-            booking.attrs['quantity_unit_label'] = item_data.quantity_label
+            booking.attrs['quantity_unit'] = item_data.quantity_unit
             ret.append(booking)
         return ret
 
