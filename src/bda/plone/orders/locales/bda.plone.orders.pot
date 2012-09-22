@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2012-09-20 09:55+0000\n"
+"POT-Creation-Date: 2012-09-21 19:01+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -25,32 +25,42 @@ msgid "billing_address"
 msgstr ""
 
 #. Default: "comment"
-#: ./browser/order.pt:129
+#: ./browser/order.pt:144
 msgid "booking_comment"
 msgstr ""
 
 #. Default: "count"
-#: ./browser/order.pt:125
+#: ./browser/order.pt:138
 msgid "booking_count"
 msgstr ""
 
+#. Default: "currency"
+#: ./browser/order.pt:140
+msgid "booking_currency"
+msgstr ""
+
 #. Default: "exported"
-#: ./browser/order.pt:128
+#: ./browser/order.pt:143
 msgid "booking_exported"
 msgstr ""
 
 #. Default: "net"
-#: ./browser/order.pt:126
+#: ./browser/order.pt:141
 msgid "booking_net"
 msgstr ""
 
+#. Default: "quantity unit"
+#: ./browser/order.pt:139
+msgid "booking_quantity_unit"
+msgstr ""
+
 #. Default: "title"
-#: ./browser/order.pt:124
+#: ./browser/order.pt:137
 msgid "booking_title"
 msgstr ""
 
 #. Default: "vat"
-#: ./browser/order.pt:127
+#: ./browser/order.pt:142
 msgid "booking_vat"
 msgstr ""
 
@@ -69,13 +79,18 @@ msgstr ""
 msgid "city"
 msgstr ""
 
+#. Default: "Currency:"
+#: ./browser/order.pt:68
+msgid "currency"
+msgstr ""
+
 #. Default: "Date"
 #: ./browser/views.py:277
 msgid "date"
 msgstr ""
 
 #. Default: "Delivery Address:"
-#: ./browser/order.pt:82
+#: ./browser/order.pt:95
 msgid "delivery_address"
 msgstr ""
 
@@ -118,12 +133,17 @@ msgid "from_date"
 msgstr ""
 
 #. Default: "From-date after to-date"
-#: ./browser/views.py:481
+#: ./browser/views.py:496
 msgid "from_date_before_to_date"
 msgstr ""
 
 # from_date_required
 msgid "from_date_required"
+msgstr ""
+
+#. Default: "Found inconsistent Currencies on order related bookings. This should not happen at all!"
+#: ./browser/order.pt:74
+msgid "inconsistent_currencies"
 msgstr ""
 
 #. Default: "Loading Data, please wait..."
@@ -157,17 +177,17 @@ msgid "no"
 msgstr ""
 
 #. Default: "None"
-#: ./browser/views.py:405
+#: ./browser/views.py:418
 msgid "none"
 msgstr ""
 
 #. Default: "Order Bookings:"
-#: ./browser/order.pt:121
+#: ./browser/order.pt:134
 msgid "order_bookings"
 msgstr ""
 
 #. Default: "Order Comment:"
-#: ./browser/order.pt:110
+#: ./browser/order.pt:123
 msgid "order_comment"
 msgstr ""
 
@@ -207,17 +227,17 @@ msgid "order_name"
 msgstr ""
 
 #. Default: "Net:"
-#: ./browser/order.pt:68
+#: ./browser/order.pt:81
 msgid "order_net"
 msgstr ""
 
 #. Default: "No Comment"
-#: ./browser/order.pt:113
+#: ./browser/order.pt:126
 msgid "order_no_comment"
 msgstr ""
 
 #. Default: "No delivery Address defined"
-#: ./browser/order.pt:104
+#: ./browser/order.pt:117
 msgid "order_no_delivery_address"
 msgstr ""
 
@@ -252,7 +272,7 @@ msgid "order_summary"
 msgstr ""
 
 #. Default: "Total:"
-#: ./browser/order.pt:74
+#: ./browser/order.pt:87
 msgid "order_total"
 msgstr ""
 
@@ -262,7 +282,7 @@ msgid "order_uid"
 msgstr ""
 
 #. Default: "VAT:"
-#: ./browser/order.pt:71
+#: ./browser/order.pt:84
 msgid "order_vat"
 msgstr ""
 
@@ -315,7 +335,7 @@ msgid "transaction_id"
 msgstr ""
 
 #. Default: "Unknown"
-#: ./browser/views.py:412
+#: ./browser/views.py:425
 msgid "unknown"
 msgstr ""
 

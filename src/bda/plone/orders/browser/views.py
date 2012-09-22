@@ -25,15 +25,16 @@ from yafowil.base import ExtractionError
 from yafowil.controller import Controller
 from yafowil.plone.form import YAMLForm
 from bda.plone.cart import ascur
+from bda.plone.payment import Payments
 from ..common import (
     DT_FORMAT,
     OrderData,
     OrderTransitions,
 )
 
+
 _ = MessageFactory('bda.plone.orders')
 _co = MessageFactory('bda.plone.checkout')
-_pa = MessageFactory('bda.plone.payment')
 
 
 class Translate(object):
@@ -367,6 +368,16 @@ class OrderView(BrowserView):
         return ascur(self.order_data.total)
     
     @property
+    def currency(self):
+        currency = None
+        for booking in self.order_data.bookings:
+            if currency is None:
+                currency = booking.attrs.get('currency')
+            if currency != booking.attrs.get('currency'):
+                return None
+        return currency
+    
+    @property
     def listing(self):
         ret = list()
         for booking in self.order_data.bookings:
@@ -377,6 +388,8 @@ class OrderView(BrowserView):
                 'vat': booking.attrs.get('vat', 0.0),
                 'exported': booking.attrs['exported'],
                 'comment': booking.attrs['buyable_comment'],
+                'quantity_unit': booking.attrs.get('quantity_unit'),
+                'currency': booking.attrs.get('currency'),
             })
         return ret
     
@@ -389,11 +402,11 @@ class OrderView(BrowserView):
         return gender
     
     def payment(self, order):
-        # XXX: get vocab from ``bda.plone.payment.Payments``
-        payment = order['payment_selection.payment']
-        return payment == 'invoice' \
-            and _pa('invoice', 'Invoice') \
-            or _pa('six_payment', 'Six Payment')
+        name = order['payment_selection.payment']
+        payment = Payments(self.context).get(name)
+        if payment:
+            return payment.label
+        return name
     
     def salaried(self, order):
         salaried = order.get('salaried', 'no')
@@ -424,7 +437,7 @@ class DialectExcelWithColons(csv.excel):
 csv.register_dialect('excel-colon', DialectExcelWithColons)
 
 
-order_export_attrs = [
+ORDER_EXPORT_ATTRS = [
     'uid',
     'created',
     'salaried',
@@ -450,12 +463,14 @@ order_export_attrs = [
     'order_comment.comment',
     'payment_selection.payment',
 ]
-booking_export_attrs = [
+BOOKING_EXPORT_ATTRS = [
     'title',
     'buyable_comment',
     'buyable_count',
+    'quantity_unit',
     'net',
     'vat',
+    'currency',
     'exported',
 ]
 
@@ -503,16 +518,16 @@ class ExportOrdersForm(YAMLForm):
         query = Ge('created', self.from_date) & Le('created', self.to_date)
         sio = StringIO()
         ex = csv.writer(sio, dialect='excel-colon')
-        ex.writerow(order_export_attrs + booking_export_attrs)
+        ex.writerow(ORDER_EXPORT_ATTRS + BOOKING_EXPORT_ATTRS)
         for order in orders_soup.query(query):
             order_attrs = list()
-            for attr_name in order_export_attrs:
+            for attr_name in ORDER_EXPORT_ATTRS:
                 val = self.export_val(order, attr_name)
                 order_attrs.append(val)
             booking_query = Eq('order_uid', order.attrs['uid'])
             for booking in bookings_soup.query(booking_query):
                 booking_attrs = list()
-                for attr_name in booking_export_attrs:
+                for attr_name in BOOKING_EXPORT_ATTRS:
                     val = self.export_val(booking, attr_name)
                     booking_attrs.append(val)
                 ex.writerow(order_attrs + booking_attrs)
