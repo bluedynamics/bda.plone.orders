@@ -9,6 +9,9 @@
   
   <strong i18n:translate="order_uid">Order UID:</strong>
   <span tal:replace="order/uid">UID</span>
+  <br />
+  <strong i18n:translate="order_number">Ordernumber:</strong>
+  <span tal:replace="order/orderid">12345</span>
   
   <div class="order_details_row">
     <div class="personal_data">
