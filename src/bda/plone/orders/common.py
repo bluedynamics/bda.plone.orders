@@ -1,4 +1,5 @@
 import uuid
+import time
 import datetime
 from zope.interface import implementer
 from repoze.catalog.catalog import Catalog
@@ -15,7 +16,6 @@ from souper.soup import (
 )
 from node.utils import instance_property
 from node.ext.zodb import OOBTNode
-from bda.basen import base62
 from bda.plone.checkout import CheckoutAdapter
 from bda.plone.cart import (
     readcookie,
@@ -32,18 +32,11 @@ from bda.plone.payment.six_payment import ISixPaymentData
 DT_FORMAT = '%m.%d.%Y %H:%M'
 
 
-def uuid_to_orderid(uid):
-    #import pdb;pdb.set_trace()
-    #return base62(uid)
-    # XXX: record intid
-    return uid
-
-
-def orderid_to_uid(uid):
-    #import pdb;pdb.set_trace()
-    #return base62(uid)
-    # XXX: record intid
-    return uid
+def ordernumber():
+    onum = hash(time.time())
+    if onum < 0:
+        return '0%s' % str(abs(onum))
+    return '1%s' % str(onum)
 
 
 def get_order(context, uid):
@@ -82,6 +75,8 @@ class OrdersCatalogFactory(object):
         catalog = Catalog()
         uid_indexer = NodeAttributeIndexer('uid')
         catalog[u'uid'] = CatalogFieldIndex(uid_indexer)
+        orderid_indexer = NodeAttributeIndexer('orderid')
+        catalog[u'orderid'] = CatalogFieldIndex(orderid_indexer)
         booking_uids_indexer = NodeAttributeIndexer('booking_uids')
         catalog[u'booking_uids'] = CatalogKeywordIndex(booking_uids_indexer)
         creator_indexer = NodeAttributeIndexer('creator')
@@ -116,6 +111,11 @@ class OrderCheckoutAdapter(CheckoutAdapter):
     def vessel(self):
         return self.order.attrs
     
+    def orderid_exists(self, soup, orderid):
+        for order in soup.query(Eq('orderid', orderid)):
+            return bool(order)
+        return False
+    
     def save(self, providers, widget, data):
         super(OrderCheckoutAdapter, self).save(providers, widget, data)
         creator = None
@@ -125,7 +125,6 @@ class OrderCheckoutAdapter(CheckoutAdapter):
         created = datetime.datetime.now()
         order = self.order
         uid = order.attrs['uid'] = uuid.uuid4()
-        order.attrs['orderid'] = uuid_to_orderid(uid)
         order.attrs['creator'] = creator
         order.attrs['created'] = created
         order.attrs['state'] = 'new'
@@ -133,6 +132,10 @@ class OrderCheckoutAdapter(CheckoutAdapter):
         bookings = self.create_bookings(order)
         order.attrs['booking_uids'] = [_.attrs['uid'] for _ in bookings]
         orders_soup = get_soup('bda_plone_orders_orders', self.context)
+        orderid = ordernumber()
+        while self.orderid_exists(orders_soup, orderid):
+            orderid = ordernumber()
+        order.attrs['orderid'] = orderid
         orders_soup.add(order)
         bookings_soup = get_soup('bda_plone_orders_bookings', self.context)
         for booking in bookings:
