@@ -32,9 +32,9 @@ from ..common import (
     OrderTransitions,
 )
 
+
 _ = MessageFactory('bda.plone.orders')
 _co = MessageFactory('bda.plone.checkout')
-_pa = MessageFactory('bda.plone.payment')
 
 
 class Translate(object):
