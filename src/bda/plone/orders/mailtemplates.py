@@ -9,6 +9,8 @@ SUBJECT_EN= u'Order received.'
 BODY_EN = """
 Date: %(date)s
 
+Ordernumber: %(orderid)s
+
 Personal Data:
 Name: %(personal_data.name)s %(personal_data.surname)s
 Company: %(personal_data.company)s
@@ -45,6 +47,8 @@ SUBJECT_DE= u'Order received.'
 
 BODY_DE = """
 Datum: %(date)s
+
+Bestellnummer: %(orderid)s
 
 Persönliche Angaben:
 Name: %(personal_data.name)s %(personal_data.surname)s

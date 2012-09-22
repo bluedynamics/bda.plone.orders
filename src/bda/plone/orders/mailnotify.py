@@ -42,6 +42,7 @@ def create_mail_body(context, attrs):
     templates = get_templates(context)
     arguments = dict()
     arguments['date'] = attrs['created'].strftime(DT_FORMAT)
+    arguments['orderid'] = attrs['orderid']
     arguments['personal_data.name'] = attrs['personal_data.name']
     arguments['personal_data.surname'] = attrs['personal_data.surname']
     arguments['personal_data.company'] = attrs['personal_data.company']
