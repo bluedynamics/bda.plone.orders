@@ -246,12 +246,22 @@ class SixPaymentData(object):
             amount])
         return description
     
+    @property
+    def orderid(self):
+        return self.order_data.order.attrs['orderid']
+    
+    def uid_for(self, orderid):
+        soup = get_soup('bda_plone_orders_orders', self.context)
+        for order in soup.query(Eq('orderid', orderid)):
+            return str(order.attrs['uid'])
+    
     def data(self, order_uid):
         self.order_uid = order_uid
         return {
             'amount': self.amount,
             'currency': self.currency,
             'description': self.description,
+            'orderid': self.orderid,
         }
 
 
