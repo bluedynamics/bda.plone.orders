@@ -406,6 +406,7 @@ class OrderView(BrowserView):
         payment = Payments(self.context).get(name)
         if payment:
             return payment.label
+        return name
     
     def salaried(self, order):
         salaried = order.get('salaried', 'no')
