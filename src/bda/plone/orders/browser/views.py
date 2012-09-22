@@ -25,6 +25,7 @@ from yafowil.base import ExtractionError
 from yafowil.controller import Controller
 from yafowil.plone.form import YAMLForm
 from bda.plone.cart import ascur
+from bda.plone.payment import Payments
 from ..common import (
     DT_FORMAT,
     OrderData,
@@ -401,11 +402,10 @@ class OrderView(BrowserView):
         return gender
     
     def payment(self, order):
-        # XXX: get vocab from ``bda.plone.payment.Payments``
-        payment = order['payment_selection.payment']
-        return payment == 'invoice' \
-            and _pa('invoice', 'Invoice') \
-            or _pa('six_payment', 'Six Payment')
+        name = order['payment_selection.payment']
+        payment = Payments(self.context).get(name)
+        if payment:
+            return payment.label
     
     def salaried(self, order):
         salaried = order.get('salaried', 'no')
