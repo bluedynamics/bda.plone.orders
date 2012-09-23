@@ -32,7 +32,7 @@ from bda.plone.payment.six_payment import ISixPaymentData
 DT_FORMAT = '%m.%d.%Y %H:%M'
 
 
-def ordernumber():
+def create_ordernumber():
     onum = hash(time.time())
     if onum < 0:
         return '0%s' % str(abs(onum))
@@ -75,8 +75,8 @@ class OrdersCatalogFactory(object):
         catalog = Catalog()
         uid_indexer = NodeAttributeIndexer('uid')
         catalog[u'uid'] = CatalogFieldIndex(uid_indexer)
-        orderid_indexer = NodeAttributeIndexer('orderid')
-        catalog[u'orderid'] = CatalogFieldIndex(orderid_indexer)
+        ordernumber_indexer = NodeAttributeIndexer('ordernumber')
+        catalog[u'ordernumber'] = CatalogFieldIndex(ordernumber_indexer)
         booking_uids_indexer = NodeAttributeIndexer('booking_uids')
         catalog[u'booking_uids'] = CatalogKeywordIndex(booking_uids_indexer)
         creator_indexer = NodeAttributeIndexer('creator')
@@ -96,7 +96,7 @@ class OrdersCatalogFactory(object):
         search_attributes = ['personal_data.name',
                              'personal_data.surname',
                              'billing_address.city',
-                             'orderid']
+                             'ordernumber']
         text_indexer = NodeTextIndexer(search_attributes)
         catalog[u'text'] = CatalogTextIndex(text_indexer)
         return catalog
@@ -112,8 +112,8 @@ class OrderCheckoutAdapter(CheckoutAdapter):
     def vessel(self):
         return self.order.attrs
     
-    def orderid_exists(self, soup, orderid):
-        for order in soup.query(Eq('orderid', orderid)):
+    def ordernumber_exists(self, soup, ordernumber):
+        for order in soup.query(Eq('ordernumber', ordernumber)):
             return bool(order)
         return False
     
@@ -133,10 +133,10 @@ class OrderCheckoutAdapter(CheckoutAdapter):
         bookings = self.create_bookings(order)
         order.attrs['booking_uids'] = [_.attrs['uid'] for _ in bookings]
         orders_soup = get_soup('bda_plone_orders_orders', self.context)
-        orderid = ordernumber()
-        while self.orderid_exists(orders_soup, orderid):
-            orderid = ordernumber()
-        order.attrs['orderid'] = orderid
+        ordernumber = create_ordernumber()
+        while self.ordernumber_exists(orders_soup, ordernumber):
+            ordernumber = create_ordernumber()
+        order.attrs['ordernumber'] = ordernumber
         orders_soup.add(order)
         bookings_soup = get_soup('bda_plone_orders_bookings', self.context)
         for booking in bookings:
@@ -247,12 +247,12 @@ class SixPaymentData(object):
         return description
     
     @property
-    def orderid(self):
-        return self.order_data.order.attrs['orderid']
+    def ordernumber(self):
+        return self.order_data.order.attrs['ordernumber']
     
-    def uid_for(self, orderid):
+    def uid_for(self, ordernumber):
         soup = get_soup('bda_plone_orders_orders', self.context)
-        for order in soup.query(Eq('orderid', orderid)):
+        for order in soup.query(Eq('ordernumber', ordernumber)):
             return str(order.attrs['uid'])
     
     def data(self, order_uid):
@@ -261,7 +261,7 @@ class SixPaymentData(object):
             'amount': self.amount,
             'currency': self.currency,
             'description': self.description,
-            'orderid': self.orderid,
+            'ordernumber': self.ordernumber,
         }
 
 
