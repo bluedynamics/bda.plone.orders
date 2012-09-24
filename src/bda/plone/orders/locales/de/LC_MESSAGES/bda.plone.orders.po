@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2012-09-24 13:19+0000\n"
+"POT-Creation-Date: 2012-09-24 15:28+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -133,7 +133,7 @@ msgid "from_date"
 msgstr "Von"
 
 #. Default: "From-date after to-date"
-#: ./browser/views.py:496
+#: ./browser/views.py:500
 msgid "from_date_before_to_date"
 msgstr "Von-Datum nach Bis-Datum"
 
@@ -177,7 +177,7 @@ msgid "no"
 msgstr "Nein"
 
 #. Default: "None"
-#: ./browser/views.py:418
+#: ./browser/views.py:422
 msgid "none"
 msgstr "Keine"
 
@@ -345,7 +345,7 @@ msgid "transaction_id"
 msgstr "Transaktions ID:"
 
 #. Default: "Unknown"
-#: ./browser/views.py:425
+#: ./browser/views.py:429
 msgid "unknown"
 msgstr "unbekannt"
 
