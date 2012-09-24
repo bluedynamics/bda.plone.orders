@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2012-09-22 10:14+0000\n"
+"POT-Creation-Date: 2012-09-24 13:19+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -25,42 +25,42 @@ msgid "billing_address"
 msgstr "Rechnungsadresse:"
 
 #. Default: "comment"
-#: ./browser/order.pt:147
+#: ./browser/order.pt:150
 msgid "booking_comment"
 msgstr "Kommentar"
 
 #. Default: "count"
-#: ./browser/order.pt:141
+#: ./browser/order.pt:144
 msgid "booking_count"
 msgstr "Anzahl"
 
 #. Default: "currency"
-#: ./browser/order.pt:143
+#: ./browser/order.pt:146
 msgid "booking_currency"
 msgstr "Währung"
 
 #. Default: "exported"
-#: ./browser/order.pt:146
+#: ./browser/order.pt:149
 msgid "booking_exported"
 msgstr "Exportiert"
 
 #. Default: "net"
-#: ./browser/order.pt:144
+#: ./browser/order.pt:147
 msgid "booking_net"
 msgstr "Netto"
 
 #. Default: "quantity unit"
-#: ./browser/order.pt:142
+#: ./browser/order.pt:145
 msgid "booking_quantity_unit"
 msgstr "Einheit"
 
 #. Default: "title"
-#: ./browser/order.pt:140
+#: ./browser/order.pt:143
 msgid "booking_title"
 msgstr "Titel"
 
 #. Default: "vat"
-#: ./browser/order.pt:145
+#: ./browser/order.pt:148
 msgid "booking_vat"
 msgstr "USt"
 
@@ -90,12 +90,12 @@ msgid "date"
 msgstr "Datum"
 
 #. Default: "Delivery Address:"
-#: ./browser/order.pt:98
+#: ./browser/order.pt:101
 msgid "delivery_address"
 msgstr "Lieferadresse:"
 
 #. Default: "Failed to send Notification to ${receiver}"
-#: ./mailnotify.py:90
+#: ./mailnotify.py:91
 msgid "email_sending_failed"
 msgstr "Benachrichtigung an ${receiver} konnte nicht versandt werden."
 
@@ -182,12 +182,12 @@ msgid "none"
 msgstr "Keine"
 
 #. Default: "Order Bookings:"
-#: ./browser/order.pt:137
+#: ./browser/order.pt:140
 msgid "order_bookings"
 msgstr "Buchungen:"
 
 #. Default: "Order Comment:"
-#: ./browser/order.pt:126
+#: ./browser/order.pt:129
 msgid "order_comment"
 msgstr "Kommentar:"
 
@@ -232,12 +232,12 @@ msgid "order_net"
 msgstr "Netto:"
 
 #. Default: "No Comment"
-#: ./browser/order.pt:129
+#: ./browser/order.pt:132
 msgid "order_no_comment"
 msgstr "Kein Kommentar"
 
 #. Default: "No delivery Address defined"
-#: ./browser/order.pt:120
+#: ./browser/order.pt:123
 msgid "order_no_delivery_address"
 msgstr "Keine Lieferadresse angegeben"
 
@@ -261,6 +261,11 @@ msgstr "Telefon:"
 msgid "order_salaried"
 msgstr "Bezahlt:"
 
+#. Default: "Shipping:"
+#: ./browser/order.pt:90
+msgid "order_shipping_costs"
+msgstr "Versandkosten:"
+
 #. Default: "Order State:"
 #: ./browser/order.pt:52
 msgid "order_state"
@@ -277,7 +282,7 @@ msgid "order_summary"
 msgstr "Zusammenfassung:"
 
 #. Default: "Total:"
-#: ./browser/order.pt:90
+#: ./browser/order.pt:93
 msgid "order_total"
 msgstr "Gesamt:"
 

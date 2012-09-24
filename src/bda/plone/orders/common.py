@@ -26,6 +26,7 @@ from bda.plone.cart import (
     get_data_provider,
     get_item_data_provider,
 )
+from bda.plone.shipping import Shippings
 from bda.plone.payment.six_payment import ISixPaymentData
 
 
@@ -112,6 +113,10 @@ class OrderCheckoutAdapter(CheckoutAdapter):
     def vessel(self):
         return self.order.attrs
     
+    @property
+    def items(self):
+        return extractitems(readcookie(self.request))
+    
     def ordernumber_exists(self, soup, ordernumber):
         for order in soup.query(Eq('ordernumber', ordernumber)):
             return bool(order)
@@ -125,6 +130,9 @@ class OrderCheckoutAdapter(CheckoutAdapter):
             creator = member.getId()
         created = datetime.datetime.now()
         order = self.order
+        sid = data.fetch('checkout.shipping_selection.shipping').extracted
+        shipping = Shippings(self.context).get(sid)
+        order.attrs['shipping'] = shipping.calculate(self.items)
         uid = order.attrs['uid'] = uuid.uuid4()
         order.attrs['creator'] = creator
         order.attrs['created'] = created
@@ -146,7 +154,7 @@ class OrderCheckoutAdapter(CheckoutAdapter):
     def create_bookings(self, order):
         ret = list()
         currency = get_data_provider(self.context).currency
-        items = extractitems(readcookie(self.request))
+        items = self.items
         for uid, count, comment in items:
             brain = get_catalog_brain(self.context, uid)
             item_data = get_item_data_provider(brain.getObject())
@@ -203,6 +211,10 @@ class OrderData(object):
         return ret
     
     @property
+    def shipping(self):
+        return float(self.order.attrs['shipping'])
+    
+    @property
     def total(self):
         ret = 0.0
         for booking in self.bookings:
@@ -210,7 +222,7 @@ class OrderData(object):
             net = booking.attrs.get('net', 0.0) * count
             ret += net
             ret += net * booking.attrs.get('vat', 0.0) / 100
-        return ret
+        return ret + self.shipping
 
 
 @implementer(ISixPaymentData)

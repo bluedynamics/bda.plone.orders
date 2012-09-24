@@ -364,6 +364,10 @@ class OrderView(BrowserView):
         return ascur(self.order_data.vat)
     
     @property
+    def shipping(self):
+        return ascur(self.order_data.shipping)
+    
+    @property
     def total(self):
         return ascur(self.order_data.total)
     

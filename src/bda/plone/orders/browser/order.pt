@@ -87,6 +87,9 @@
       <strong i18n:translate="order_vat">VAT:</strong>
       <span tal:replace="view/vat">0.00</span>
       <br />
+      <strong i18n:translate="order_shipping_costs">Shipping:</strong>
+      <span tal:replace="view/shipping">0.00</span>
+      <br />
       <strong i18n:translate="order_total">Total:</strong>
       <strong tal:content="view/total">0.00</strong>
     </div>
