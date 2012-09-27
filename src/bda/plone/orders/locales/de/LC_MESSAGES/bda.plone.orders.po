@@ -275,7 +275,7 @@ msgstr "Status:"
 #. Default: "Street:"
 #: ./browser/order.pt:38
 msgid "order_street"
-msgstr "Straße:"
+msgstr "Strasse:"
 
 #. Default: "Order Summary:"
 #: ./browser/order.pt:70

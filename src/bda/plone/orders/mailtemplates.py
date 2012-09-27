@@ -56,7 +56,7 @@ Firma: %(personal_data.company)s
 Telefon: %(personal_data.phone)s
 
 Adresse:
-Straße: %(billing_address.street)s
+Strasse: %(billing_address.street)s
 Postleitzahl: %(billing_address.zip)s
 Ort: %(billing_address.city)s
 Land: %(billing_address.country)s
@@ -72,7 +72,7 @@ DELIVERY_ADDRESS_DE = """
 Lieferadresse:
 Name: %(delivery_address.name)s %(delivery_address.surname)s
 Firma: %(delivery_address.company)s
-Straße: %(delivery_address.street)s
+Strasse: %(delivery_address.street)s
 Postleitzahl: %(delivery_address.zip)s
 Ort: %(delivery_address.city)s
 Land: %(delivery_address.country)s
