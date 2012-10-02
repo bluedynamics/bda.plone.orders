@@ -66,6 +66,8 @@ Kommentar:
 
 Bestellte Artikel:
 %(item_listing)s
+
+Total: %(order_total)s
 """
 
 DELIVERY_ADDRESS_DE = """

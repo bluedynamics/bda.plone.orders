@@ -33,10 +33,20 @@ def create_mail_listing(context, attrs):
         comment = booking.attrs['buyable_comment']
         if comment:
             title = '%s (%s)' % (title, comment)
-        line = '    %s: %s' % (title, booking.attrs['buyable_count'])
+        line = '    %s %s' % (booking.attrs['buyable_count'], title)
         lines.append(line)
     return '\n'.join(lines)
 
+def create_order_total(context, attrs):
+    soup = get_soup('bda_plone_orders_bookings', context)
+    bookings = soup.query((Any('uid', attrs['booking_uids'])))
+    ret = 0.0
+    for booking in bookings:
+        count = float(booking.attrs['buyable_count'])
+        net = booking.attrs.get('net', 0.0) * count
+        ret += net
+        ret += net * booking.attrs.get('vat', 0.0) / 100
+    return  "%.2f" %(ret + float(attrs['shipping']))
 
 def create_mail_body(context, attrs):
     templates = get_templates(context)
@@ -66,6 +76,7 @@ def create_mail_body(context, attrs):
         arguments['delivery_address'] = ''
     arguments['order_comment.comment'] = attrs['order_comment.comment']
     arguments['item_listing'] = create_mail_listing(context, attrs)
+    arguments['order_total'] = create_order_total(context, attrs)
     body_template = templates['body']
     return body_template % arguments
 
