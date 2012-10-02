@@ -43,8 +43,8 @@ def create_mail_body(context, attrs):
     arguments = dict()
     arguments['date'] = attrs['created'].strftime(DT_FORMAT)
     arguments['ordernumber'] = attrs['ordernumber']
-    arguments['personal_data.name'] = attrs['personal_data.name']
-    arguments['personal_data.surname'] = attrs['personal_data.surname']
+    arguments['personal_data.firstname'] = attrs['personal_data.firstname']
+    arguments['personal_data.lastname'] = attrs['personal_data.lastname']
     arguments['personal_data.company'] = attrs['personal_data.company']
     arguments['personal_data.phone'] = attrs['personal_data.phone']
     arguments['billing_address.street'] = attrs['billing_address.street']
@@ -53,8 +53,8 @@ def create_mail_body(context, attrs):
     arguments['billing_address.country'] = attrs['billing_address.country']
     if attrs['delivery_address.alternative_delivery']:
         delivery = dict()
-        delivery['delivery_address.name'] = attrs['delivery_address.name']
-        delivery['delivery_address.surname'] = attrs['delivery_address.surname']
+        delivery['delivery_address.firstname'] = attrs['delivery_address.firstname']
+        delivery['delivery_address.lastname'] = attrs['delivery_address.lastname']
         delivery['delivery_address.company'] = attrs['delivery_address.company']
         delivery['delivery_address.street'] = attrs['delivery_address.street']
         delivery['delivery_address.zip'] = attrs['delivery_address.zip']

@@ -162,10 +162,10 @@ msgstr "markiere unbezahlt"
 msgid "mark_salaried"
 msgstr "markiere bezahlt"
 
-#. Default: "Name"
+#. Default: "First Name"
 #: ./browser/views.py:285
-msgid "name"
-msgstr "Name"
+msgid "firstname"
+msgstr "Vorname"
 
 #. Default: "New"
 #: ./browser/views.py:93
@@ -327,9 +327,9 @@ msgstr "Bezahlt"
 msgid "state"
 msgstr "Status"
 
-#. Default: "Surname"
+#. Default: "Last Name"
 #: ./browser/views.py:282
-msgid "surname"
+msgid "lastname"
 msgstr "Nachname"
 
 # to_date

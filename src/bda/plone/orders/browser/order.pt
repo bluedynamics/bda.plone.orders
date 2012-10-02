@@ -20,8 +20,8 @@
       <span tal:replace="python:view.gender(order)">gender</span>
       <br />
       <strong i18n:translate="order_name">Name:</strong>
-      <span tal:replace="order/personal_data.name">name</span>
-      <span tal:replace="order/personal_data.surname">surname</span>
+      <span tal:replace="order/personal_data.firstname">first name</span>
+      <span tal:replace="order/personal_data.lastname">last name</span>
       <br />
       <strong i18n:translate="order_email">Email:</strong>
       <span tal:replace="order/personal_data.email">email</span>
@@ -100,8 +100,8 @@
          tal:condition="order/delivery_address.alternative_delivery">
       <h3 i18n:translate="delivery_address">Delivery Address:</h3>
       <strong i18n:translate="order_name">Name:</strong>
-      <span tal:replace="order/delivery_address.name">name</span>
-      <span tal:replace="order/delivery_address.surname">surname</span>
+      <span tal:replace="order/delivery_address.firstname">first name</span>
+      <span tal:replace="order/delivery_address.lastname">last name</span>
       <br />
       <strong i18n:translate="order_company">Company:</strong>
       <span tal:replace="order/delivery_address.company">company</span>

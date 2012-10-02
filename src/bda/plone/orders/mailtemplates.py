@@ -12,7 +12,7 @@ Date: %(date)s
 Ordernumber: %(ordernumber)s
 
 Personal Data:
-Name: %(personal_data.name)s %(personal_data.surname)s
+Name: %(personal_data.firstname)s %(personal_data.lastname)s
 Company: %(personal_data.company)s
 Phone: %(personal_data.phone)s
 
@@ -31,7 +31,7 @@ Ordered items:
 
 DELIVERY_ADDRESS_EN = """
 Delivery Address:
-Name: %(delivery_address.name)s %(delivery_address.surname)s
+Name: %(delivery_address.firstname)s %(delivery_address.lastname)s
 Company: %(delivery_address.company)s
 Street: %(delivery_address.street)s
 ZIP: %(delivery_address.zip)s
@@ -51,7 +51,7 @@ Datum: %(date)s
 Bestellnummer: %(ordernumber)s
 
 Persönliche Angaben:
-Name: %(personal_data.name)s %(personal_data.surname)s
+Name: %(personal_data.firstname)s %(personal_data.lastname)s
 Firma: %(personal_data.company)s
 Telefon: %(personal_data.phone)s
 
@@ -70,7 +70,7 @@ Bestellte Artikel:
 
 DELIVERY_ADDRESS_DE = """
 Lieferadresse:
-Name: %(delivery_address.name)s %(delivery_address.surname)s
+Name: %(delivery_address.firstname)s %(delivery_address.lastname)s
 Firma: %(delivery_address.company)s
 Strasse: %(delivery_address.street)s
 Postleitzahl: %(delivery_address.zip)s

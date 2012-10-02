@@ -162,10 +162,10 @@ msgstr ""
 msgid "mark_salaried"
 msgstr ""
 
-#. Default: "Name"
+#. Default: "First Name"
 #: ./browser/views.py:285
-msgid "name"
-msgstr ""
+msgid "firstname"
+msgstr "First Name"
 
 #. Default: "New"
 #: ./browser/views.py:93
@@ -327,10 +327,10 @@ msgstr ""
 msgid "state"
 msgstr ""
 
-#. Default: "Surname"
+#. Default: "Last Name"
 #: ./browser/views.py:282
-msgid "surname"
-msgstr ""
+msgid "lastname"
+msgstr "Last Name"
 
 # to_date
 msgid "to_date"
