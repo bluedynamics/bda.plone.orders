@@ -88,7 +88,7 @@ def notify_order(event):
     order = get_order(context, event.order_uid)
     attrs = order.attrs
     templates = get_templates(context)
-    subject = templates['subject']
+    subject = templates['subject'] % attrs['ordernumber']
     message = create_mail_body(context, attrs)
     customer_address = attrs['personal_data.email']
     props = getToolByName(context, 'portal_properties')

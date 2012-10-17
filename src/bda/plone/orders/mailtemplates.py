@@ -4,7 +4,7 @@
 # en
 ###############################################################################
 
-SUBJECT_EN= u'Order received.'
+SUBJECT_EN = u'Order %s received.'
 
 BODY_EN = """
 Date: %(date)s
@@ -43,7 +43,7 @@ Country: %(delivery_address.country)s
 # de
 ###############################################################################
 
-SUBJECT_DE= u'Order received.'
+SUBJECT_DE = u'Bestellung %s erhalten.'
 
 BODY_DE = """
 Datum: %(date)s
