@@ -18,7 +18,7 @@ from .mailtemplates import get_templates
 _ = MessageFactory('bda.plone.orders')
 
 
-def message(context, msg):
+def status_message(context, msg):
     putils = getToolByName(context, 'plone_utils')
     putils.addPortalMessage(msg)
 
@@ -102,7 +102,7 @@ def notify_order(event):
                 _('email_sending_failed',
                   'Failed to send Notification to ${receiver}',
                   mapping={'receiver': receiver}))
-            message(context, msg)
+            status_message(context, msg)
 
 
 class MailNotify(object):
