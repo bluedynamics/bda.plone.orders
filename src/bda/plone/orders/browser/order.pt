@@ -49,7 +49,7 @@
   
   <div class="order_details_row">
     <div class="order_state">
-      <h3 i18n:translate="order_state">Order State:</h3>
+      <h3 i18n:translate="order_state_heading">Order State:</h3>
       <strong i18n:translate="order_created">Created:</strong>
       <span tal:replace="python:view.created(order)">created</span>
       <br />

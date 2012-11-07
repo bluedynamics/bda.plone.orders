@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2012-09-24 15:28+0000\n"
+"POT-Creation-Date: 2012-11-07 16:35+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -96,7 +96,7 @@ msgid "delivery_address"
 msgstr "Lieferadresse:"
 
 #. Default: "Failed to send Notification to ${receiver}"
-#: ./mailnotify.py:91
+#: ./mailnotify.py:102
 msgid "email_sending_failed"
 msgstr "Benachrichtigung an ${receiver} konnte nicht versandt werden."
 
@@ -129,6 +129,11 @@ msgstr "abschließen"
 msgid "finished"
 msgstr "Abgeschlossen"
 
+#. Default: "First Name"
+#: ./browser/views.py:285
+msgid "firstname"
+msgstr "Vorname"
+
 # from_date
 msgid "from_date"
 msgstr "Von"
@@ -147,6 +152,11 @@ msgstr "Von-Datum ist erforderlich"
 msgid "inconsistent_currencies"
 msgstr "Inkonsistente Währung für diese Bestellung. Kontrollieren Sie bitte den Geld- und Warenfluss!"
 
+#. Default: "Last Name"
+#: ./browser/views.py:282
+msgid "lastname"
+msgstr "Nachname"
+
 #. Default: "Loading Data, please wait..."
 #: ./browser/table.pt:22
 msgid "loading_please_wait"
@@ -161,11 +171,6 @@ msgstr "markiere unbezahlt"
 #: ./browser/views.py:136
 msgid "mark_salaried"
 msgstr "markiere bezahlt"
-
-#. Default: "First Name"
-#: ./browser/views.py:285
-msgid "firstname"
-msgstr "Vorname"
 
 #. Default: "New"
 #: ./browser/views.py:93
@@ -267,10 +272,16 @@ msgstr "Bezahlt:"
 msgid "order_shipping_costs"
 msgstr "Versandkosten:"
 
-#. Default: "Order State:"
-#: ./browser/order.pt:52
+#. Default: "State:"
+#: ./browser/order.pt:65
+#, fuzzy
 msgid "order_state"
 msgstr "Status:"
+
+#. Default: "Order State:"
+#: ./browser/order.pt:52
+msgid "order_state_heading"
+msgstr ""
 
 #. Default: "Street:"
 #: ./browser/order.pt:38
@@ -326,11 +337,6 @@ msgstr "Bezahlt"
 #: ./browser/views.py:295
 msgid "state"
 msgstr "Status"
-
-#. Default: "Last Name"
-#: ./browser/views.py:282
-msgid "lastname"
-msgstr "Nachname"
 
 # to_date
 msgid "to_date"

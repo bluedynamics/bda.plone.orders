@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2012-09-24 15:28+0000\n"
+"POT-Creation-Date: 2012-11-07 16:35+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -96,7 +96,7 @@ msgid "delivery_address"
 msgstr ""
 
 #. Default: "Failed to send Notification to ${receiver}"
-#: ./mailnotify.py:91
+#: ./mailnotify.py:102
 msgid "email_sending_failed"
 msgstr ""
 
@@ -129,6 +129,11 @@ msgstr ""
 msgid "finished"
 msgstr ""
 
+#. Default: "First Name"
+#: ./browser/views.py:285
+msgid "firstname"
+msgstr ""
+
 # from_date
 msgid "from_date"
 msgstr ""
@@ -147,6 +152,11 @@ msgstr ""
 msgid "inconsistent_currencies"
 msgstr ""
 
+#. Default: "Last Name"
+#: ./browser/views.py:282
+msgid "lastname"
+msgstr ""
+
 #. Default: "Loading Data, please wait..."
 #: ./browser/table.pt:22
 msgid "loading_please_wait"
@@ -160,11 +170,6 @@ msgstr ""
 #. Default: "Mark salaried"
 #: ./browser/views.py:136
 msgid "mark_salaried"
-msgstr ""
-
-#. Default: "First Name"
-#: ./browser/views.py:285
-msgid "firstname"
 msgstr ""
 
 #. Default: "New"
@@ -267,9 +272,14 @@ msgstr ""
 msgid "order_shipping_costs"
 msgstr ""
 
+#. Default: "State:"
+#: ./browser/order.pt:65
+msgid "order_state"
+msgstr ""
+
 #. Default: "Order State:"
 #: ./browser/order.pt:52
-msgid "order_state"
+msgid "order_state_heading"
 msgstr ""
 
 #. Default: "Street:"
@@ -325,11 +335,6 @@ msgstr ""
 #. Default: "State"
 #: ./browser/views.py:295
 msgid "state"
-msgstr ""
-
-#. Default: "Last Name"
-#: ./browser/views.py:282
-msgid "lastname"
 msgstr ""
 
 # to_date

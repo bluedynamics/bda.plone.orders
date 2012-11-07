@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2012-09-24 15:28+0000\n"
+"POT-Creation-Date: 2012-11-07 16:35+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -33,7 +33,7 @@ msgstr "Commentaire"
 #. Default: "count"
 #: ./browser/order.pt:144
 msgid "booking_count"
-msgstr "Quantité"
+msgstr "QuantitÃ©"
 
 #. Default: "currency"
 #: ./browser/order.pt:146
@@ -73,12 +73,12 @@ msgstr "Annuler"
 #. Default: "Cancelled"
 #: ./browser/views.py:95
 msgid "cancelled"
-msgstr "Annulé"
+msgstr "AnnulÃ©"
 
 #. Default: "City"
 #: ./browser/views.py:288
 msgid "city"
-msgstr "Localité"
+msgstr "LocalitÃ©"
 
 #. Default: "Currency:"
 #: ./browser/order.pt:71
@@ -96,10 +96,9 @@ msgid "delivery_address"
 msgstr "Adresse de livraison"
 
 #. Default: "Failed to send Notification to ${receiver}"
-#: ./mailnotify.py:91
+#: ./mailnotify.py:102
 msgid "email_sending_failed"
-msgstr "Notification ${receiver} n'a pas pu être envoyé
-"
+msgstr ""
 
 # export
 msgid "export"
@@ -123,12 +122,17 @@ msgstr "manquer"
 #. Default: "Finish"
 #: ./browser/views.py:105
 msgid "finish"
-msgstr "Clôturer"
+msgstr "ClÃ´turer"
 
 #. Default: "Finished"
 #: ./browser/views.py:94
 msgid "finished"
-msgstr "Terminé"
+msgstr "TerminÃ©"
+
+#. Default: "First Name"
+#: ./browser/views.py:285
+msgid "firstname"
+msgstr "Nom"
 
 # from_date
 msgid "from_date"
@@ -137,7 +141,7 @@ msgstr "De-date"
 #. Default: "From-date after to-date"
 #: ./browser/views.py:500
 msgid "from_date_before_to_date"
-msgstr "De-date à-date"
+msgstr "De-date Å•-date"
 
 # from_date_required
 msgid "from_date_required"
@@ -146,27 +150,27 @@ msgstr "De-date obligatoire"
 #. Default: "Found inconsistent Currencies on order related bookings. This should not happen at all!"
 #: ./browser/order.pt:77
 msgid "inconsistent_currencies"
-msgstr "Trouvé sur devises incompatibles de commandes connexes. Cela ne devrait pas se produire du tout!"
+msgstr "TrouvÃ© sur devises incompatibles de commandes connexes. Cela ne devrait pas se produire du tout!"
+
+#. Default: "Last Name"
+#: ./browser/views.py:282
+msgid "lastname"
+msgstr "Nom de famille"
 
 #. Default: "Loading Data, please wait..."
 #: ./browser/table.pt:22
 msgid "loading_please_wait"
-msgstr "Téléchargement du fichier, attendre svp"
+msgstr "TÃ©lÃ©chargement du fichier, attendre svp"
 
 #. Default: "Mark outstanding"
 #: ./browser/views.py:137
 msgid "mark_outstanding"
-msgstr "Sélection non payée"
+msgstr "SÃ©lection non payÃ©e"
 
 #. Default: "Mark salaried"
 #: ./browser/views.py:136
 msgid "mark_salaried"
-msgstr "Sélection payée"
-
-#. Default: "First Name"
-#: ./browser/views.py:285
-msgid "firstname"
-msgstr "Nom"
+msgstr "SÃ©lection payÃ©e"
 
 #. Default: "New"
 #: ./browser/views.py:93
@@ -186,7 +190,7 @@ msgstr "Aucun"
 #. Default: "Order Bookings:"
 #: ./browser/order.pt:140
 msgid "order_bookings"
-msgstr "Réservation"
+msgstr "RÃ©servation"
 
 #. Default: "Order Comment:"
 #: ./browser/order.pt:129
@@ -211,7 +215,7 @@ msgstr "Fait"
 #. Default: "Order Details"
 #: ./browser/order.pt:8
 msgid "order_details"
-msgstr "Commande détaillée"
+msgstr "Commande dÃ©taillÃ©e"
 
 #. Default: "Email:"
 #: ./browser/order.pt:26
@@ -246,7 +250,7 @@ msgstr "Sans adresse de livraison"
 #. Default: "Ordernumber:"
 #: ./browser/order.pt:13
 msgid "order_number"
-msgstr "Numéro de commande"
+msgstr "NumÃ©ro de commande"
 
 #. Default: "Payment:"
 #: ./browser/order.pt:56
@@ -256,22 +260,28 @@ msgstr "Paiement"
 #. Default: "Phone:"
 #: ./browser/order.pt:32
 msgid "order_phone"
-msgstr "Téléphone"
+msgstr "TÃ©lÃ©phone"
 
 #. Default: "Salaried:"
 #: ./browser/order.pt:59
 msgid "order_salaried"
-msgstr "Payé"
+msgstr "PayÃ©"
 
 #. Default: "Shipping:"
 #: ./browser/order.pt:90
 msgid "order_shipping_costs"
-msgstr "Ensablé"
+msgstr "EnsablÃ©"
+
+#. Default: "State:"
+#: ./browser/order.pt:65
+#, fuzzy
+msgid "order_state"
+msgstr "Etat"
 
 #. Default: "Order State:"
 #: ./browser/order.pt:52
-msgid "order_state"
-msgstr "Etat"
+msgid "order_state_heading"
+msgstr ""
 
 #. Default: "Street:"
 #: ./browser/order.pt:38
@@ -281,7 +291,7 @@ msgstr "Rue"
 #. Default: "Order Summary:"
 #: ./browser/order.pt:70
 msgid "order_summary"
-msgstr "Résumé"
+msgstr "RÃ©sumÃ©"
 
 #. Default: "Total:"
 #: ./browser/order.pt:93
@@ -301,7 +311,7 @@ msgstr "TVA"
 #. Default: "ZIP/City:"
 #: ./browser/order.pt:41
 msgid "order_zip_city"
-msgstr "No.postal/Localité"
+msgstr "No.postal/LocalitÃ©"
 
 #. Default: "Orders"
 #: ./browser/orders.pt:6
@@ -311,7 +321,7 @@ msgstr "Commandes"
 #. Default: "Personal Data:"
 #: ./browser/order.pt:18
 msgid "personal_data"
-msgstr "Données personnelles"
+msgstr "DonnÃ©es personnelles"
 
 #. Default: "Renew"
 #: ./browser/views.py:104
@@ -321,25 +331,20 @@ msgstr "Recommencer"
 #. Default: "Salaried"
 #: ./browser/views.py:291
 msgid "salaried"
-msgstr "Payé"
+msgstr "PayÃ©"
 
 #. Default: "State"
 #: ./browser/views.py:295
 msgid "state"
 msgstr "Etat"
 
-#. Default: "Last Name"
-#: ./browser/views.py:282
-msgid "lastname"
-msgstr "Nom de famille"
-
 # to_date
 msgid "to_date"
-msgstr "À-date"
+msgstr "Å”-date"
 
 # to_date_required
 msgid "to_date_required"
-msgstr "Jusqu'à-date obligatoire"
+msgstr "Jusqu'Å•-date obligatoire"
 
 #. Default: "Transaction ID:"
 #: ./browser/order.pt:62
