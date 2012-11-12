@@ -30,7 +30,7 @@ from bda.plone.shipping import Shippings
 from bda.plone.payment.six_payment import ISixPaymentData
 
 
-DT_FORMAT = '%m.%d.%Y %H:%M'
+DT_FORMAT = '%d.%m.%Y %H:%M'
 
 
 def create_ordernumber():
