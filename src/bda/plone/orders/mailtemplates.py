@@ -9,6 +9,8 @@ SUBJECT_EN = u'Order %s received.'
 BODY_EN = """
 Date: %(date)s
 
+Thank you for your order:
+
 Ordernumber: %(ordernumber)s
 
 Personal Data:
@@ -48,6 +50,8 @@ SUBJECT_DE = u'Bestellung %s erhalten.'
 BODY_DE = """
 Datum: %(date)s
 
+Besten Dank für Ihre Bestellung:
+
 Bestellnummer: %(ordernumber)s
 
 Persönliche Angaben:
@@ -81,6 +85,93 @@ Land: %(delivery_address.country)s
 """
 
 ###############################################################################
+# fr
+###############################################################################
+
+SUBJECT_FR = u'votre commande %s.'
+
+BODY_FR = """
+Date: %(date)s
+
+Nous vous remercions pour votre commande :
+
+No. de commande: %(ordernumber)s
+
+Données personnelles:
+Nom: %(personal_data.firstname)s %(personal_data.lastname)s
+Entreprise: %(personal_data.company)s
+Téléphone: %(personal_data.phone)s
+
+Adresse:
+Rue: %(billing_address.street)s
+No. Postal: %(billing_address.zip)s
+Localité: %(billing_address.city)s
+Pays: %(billing_address.country)s
+%(delivery_address)s
+Commentaires:
+%(order_comment.comment)s
+
+Produit commandé:
+%(item_listing)s
+
+Total: %(order_total)s
+"""
+
+DELIVERY_ADDRESS_FR = """
+Adresse de livraison:
+Nom: %(delivery_address.firstname)s %(delivery_address.lastname)s
+Entreprise: %(delivery_address.company)s
+Rue: %(delivery_address.street)s
+No. Postal: %(delivery_address.zip)s
+Localité: %(delivery_address.city)s
+Pays: %(delivery_address.country)s
+"""
+
+
+###############################################################################
+# it
+###############################################################################
+
+SUBJECT_IT = u'votre commande %s.'
+
+BODY_IT = """
+Date: %(date)s
+
+Nous vous remercions pour votre commande :
+
+No. de commande: %(ordernumber)s
+
+Données personnelles:
+Nom: %(personal_data.firstname)s %(personal_data.lastname)s
+Entreprise: %(personal_data.company)s
+Téléphone: %(personal_data.phone)s
+
+Adresse:
+Rue: %(billing_address.street)s
+No. Postal: %(billing_address.zip)s
+Localité: %(billing_address.city)s
+Pays: %(billing_address.country)s
+%(delivery_address)s
+Commentaires:
+%(order_comment.comment)s
+
+Produit commandé:
+%(item_listing)s
+
+Total: %(order_total)s
+"""
+
+DELIVERY_ADDRESS_IT = """
+Lieferadresse:
+Nom: %(delivery_address.firstname)s %(delivery_address.lastname)s
+Entreprise: %(delivery_address.company)s
+Rue: %(delivery_address.street)s
+No. Postal: %(delivery_address.zip)s
+Localité: %(delivery_address.city)s
+Pays: %(delivery_address.country)s
+"""
+
+###############################################################################
 # language templates
 ###############################################################################
 
@@ -92,8 +183,16 @@ TEMPLATES = {
     'de': {
         'subject': SUBJECT_DE,
         'body': BODY_DE,
-        'delivery_address': DELIVERY_ADDRESS_DE}}
-
+        'delivery_address': DELIVERY_ADDRESS_DE},
+    'fr': {
+        'subject': SUBJECT_FR,
+        'body': BODY_FR,
+        'delivery_address': DELIVERY_ADDRESS_FR},
+    'it': {
+        'subject': SUBJECT_IT,
+        'body': BODY_IT,
+        'delivery_address': DELIVERY_ADDRESS_IT}
+}
 
 def get_templates(context):
     lang = context.restrictedTraverse('@@plone_portal_state').language()
