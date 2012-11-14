@@ -430,7 +430,7 @@ class OrderView(BrowserView):
         if value:
             value = value.strftime(DT_FORMAT)
         return value
-    
+        
     def exported(self, item):
         return item['exported'] and _('yes', 'Yes') or _('no', 'No')
 
@@ -444,6 +444,7 @@ csv.register_dialect('excel-colon', DialectExcelWithColons)
 ORDER_EXPORT_ATTRS = [
     'uid',
     'created',
+    'ordernumber',
     'salaried',
     'state',
     'personal_data.company',
