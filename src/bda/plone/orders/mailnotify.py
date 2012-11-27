@@ -37,6 +37,7 @@ def create_mail_listing(context, attrs):
         lines.append(line)
     return '\n'.join(lines)
 
+
 def create_order_total(context, attrs):
     soup = get_soup('bda_plone_orders_bookings', context)
     bookings = soup.query((Any('uid', attrs['booking_uids'])))
@@ -47,6 +48,7 @@ def create_order_total(context, attrs):
         ret += net
         ret += net * booking.attrs.get('vat', 0.0) / 100
     return  "%.2f" %(ret + float(attrs['shipping']))
+
 
 def create_mail_body(context, attrs):
     templates = get_templates(context)
@@ -78,6 +80,8 @@ def create_mail_body(context, attrs):
     arguments['item_listing'] = create_mail_listing(context, attrs)
     arguments['order_total'] = create_order_total(context, attrs)
     body_template = templates['body']
+    for k, v in arguments.items():
+        arguments[k] = v.encode('utf-8')
     return body_template % arguments
 
 
