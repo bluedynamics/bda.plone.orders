@@ -80,8 +80,6 @@ def create_mail_body(context, attrs):
     arguments['item_listing'] = create_mail_listing(context, attrs)
     arguments['order_total'] = create_order_total(context, attrs)
     body_template = templates['body']
-    for k, v in arguments.items():
-        arguments[k] = v.encode('utf-8')
     return body_template % arguments
 
 
