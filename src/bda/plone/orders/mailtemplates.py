@@ -17,6 +17,7 @@ Personal Data:
 Name: %(personal_data.firstname)s %(personal_data.lastname)s
 Company: %(personal_data.company)s
 Phone: %(personal_data.phone)s
+Email: %(personal_data.email)s
 
 Address:
 Street: %(billing_address.street)s
@@ -58,6 +59,7 @@ Persönliche Angaben:
 Name: %(personal_data.firstname)s %(personal_data.lastname)s
 Firma: %(personal_data.company)s
 Telefon: %(personal_data.phone)s
+E-Mail: %(personal_data.email)s
 
 Adresse:
 Strasse: %(billing_address.street)s
@@ -101,6 +103,7 @@ Données personnelles:
 Nom: %(personal_data.firstname)s %(personal_data.lastname)s
 Entreprise: %(personal_data.company)s
 Téléphone: %(personal_data.phone)s
+E-Mail: %(personal_data.email)s
 
 Adresse:
 Rue: %(billing_address.street)s
@@ -145,6 +148,7 @@ Données personnelles:
 Nom: %(personal_data.firstname)s %(personal_data.lastname)s
 Entreprise: %(personal_data.company)s
 Téléphone: %(personal_data.phone)s
+E-Mail: %(personal_data.email)s
 
 Adresse:
 Rue: %(billing_address.street)s

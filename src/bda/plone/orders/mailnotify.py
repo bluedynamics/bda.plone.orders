@@ -59,6 +59,7 @@ def create_mail_body(context, attrs):
     arguments['personal_data.lastname'] = attrs['personal_data.lastname']
     arguments['personal_data.company'] = attrs['personal_data.company']
     arguments['personal_data.phone'] = attrs['personal_data.phone']
+    arguments['personal_data.email'] = attrs['personal_data.email']
     arguments['billing_address.street'] = attrs['billing_address.street']
     arguments['billing_address.zip'] = attrs['billing_address.zip']
     arguments['billing_address.city'] = attrs['billing_address.city']
