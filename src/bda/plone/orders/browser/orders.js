@@ -1,5 +1,5 @@
 (function($) {
-    
+
     $(document).ready(function() {
         var url = $('#bdaploneorders').attr('data-ajaxurl');
         var oTable = $('#bdaploneorders').dataTable({
@@ -21,12 +21,12 @@
             orders_dropdown_menus: orders.dropdown_binder
         });
     });
-    
+
     var orders = {
         bind: function() {
             $(this).bdajax();
         },
-        
+
         dropdown_binder: function(context) {
             var sel = '.change_order_salaried_dropdown';
             $(sel, context).ordersdropdownmenu({
@@ -40,7 +40,7 @@
             });
         }
     }
-    
+
     $.fn.ordersdropdownmenu = function(options) {
         var trigger = options.trigger;
         var menu = options.menu;

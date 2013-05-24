@@ -15,6 +15,7 @@ from .common import (
 from .mailtemplates import get_templates
 from Products.CMFPlone.utils import safe_unicode
 
+
 _ = MessageFactory('bda.plone.orders')
 
 
@@ -111,21 +112,19 @@ def notify_order(event):
 class MailNotify(object):
     """Mail notifyer.
     """
-    
+
     def __init__(self, context):
         self.context = context
-    
+
     def send(self, subject, message, receiver):
         sent_key = '_order_mail_already_sent_%s' % receiver
         if self.context.REQUEST.get(sent_key):
             return
-
         purl = getToolByName(self.context, 'portal_url')
         mailfrom = purl.getPortalObject().email_from_address
         mailfrom_name = purl.getPortalObject().email_from_name
         if mailfrom_name:
             mailfrom = u"%s <%s>" % (safe_unicode(mailfrom_name), mailfrom)
-            
         mailhost = getToolByName(self.context, 'MailHost')
         subject = subject.encode('utf-8')
         subject = Header(subject, 'utf-8')
@@ -136,7 +135,6 @@ class MailNotify(object):
         message.add_header('From', mailfrom)
         message.add_header('To', receiver)
         message['Subject'] = subject
-        
         mailhost.send(messageText=message,
                       mto=receiver)
         self.context.REQUEST[sent_key] = 1

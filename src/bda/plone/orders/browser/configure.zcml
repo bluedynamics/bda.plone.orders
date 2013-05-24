@@ -8,14 +8,14 @@
   <browser:resource
     name="bda.plone.orders.css"
     file="orders.css" />
-  
+
   <browser:page
     for="*"
     name="orders"
     template="view.pt"
     permission="cmf.ModifyPortalContent"
     layer="..interfaces.IOrdersExtensionLayer" />
-  
+
   <browser:page
     for="*"
     name="orderstable"
@@ -23,14 +23,14 @@
     class=".views.OrdersTable"
     permission="cmf.ModifyPortalContent"
     layer="..interfaces.IOrdersExtensionLayer" />
-  
+
   <browser:page
     for="*"
     name="ordersdata"
     class=".views.OrdersData"
     permission="cmf.ModifyPortalContent"
     layer="..interfaces.IOrdersExtensionLayer" /> 
-  
+
   <browser:page
     for="*"
     name="order"
@@ -38,21 +38,21 @@
     class=".views.OrderView"
     permission="cmf.ModifyPortalContent"
     layer="..interfaces.IOrdersExtensionLayer" />
-  
+
   <browser:page
     for="*"
     name="statetransition"
     class=".views.StateTransition"
     permission="cmf.ModifyPortalContent"
     layer="..interfaces.IOrdersExtensionLayer" />
-  
+
   <browser:page
     for="*"
     name="salariedtransition"
     class=".views.SalariedTransition"
     permission="cmf.ModifyPortalContent"
     layer="..interfaces.IOrdersExtensionLayer" />
-  
+
   <browser:page
     for="*"
     name="exportorders"

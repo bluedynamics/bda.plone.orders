@@ -104,24 +104,24 @@ class OrdersCatalogFactory(object):
 
 
 class OrderCheckoutAdapter(CheckoutAdapter):
-    
+
     @instance_property
     def order(self):
         return OOBTNode()
-    
+
     @property
     def vessel(self):
         return self.order.attrs
-    
+
     @property
     def items(self):
         return extractitems(readcookie(self.request))
-    
+
     def ordernumber_exists(self, soup, ordernumber):
         for order in soup.query(Eq('ordernumber', ordernumber)):
             return bool(order)
         return False
-    
+
     def save(self, providers, widget, data):
         super(OrderCheckoutAdapter, self).save(providers, widget, data)
         creator = None
@@ -150,7 +150,7 @@ class OrderCheckoutAdapter(CheckoutAdapter):
         for booking in bookings:
             bookings_soup.add(booking)
         return uid
-    
+
     def create_bookings(self, order):
         ret = list()
         currency = get_data_provider(self.context).currency
@@ -177,22 +177,22 @@ class OrderCheckoutAdapter(CheckoutAdapter):
 
 
 class OrderData(object):
-    
+
     def __init__(self, context, uid):
         self.context = context
         if not isinstance(uid, uuid.UUID):
             uid = uuid.UUID(uid)
         self.uid = uid
-    
+
     @property
     def order(self):
         return get_order(self.context, self.uid)
-    
+
     @property
     def bookings(self):
         soup = get_soup('bda_plone_orders_bookings', self.context)
         return soup.query(Eq('order_uid', self.uid))
-    
+
     @property
     def net(self):
         ret = 0.0
@@ -200,7 +200,7 @@ class OrderData(object):
             count = float(booking.attrs['buyable_count'])
             ret += booking.attrs.get('net', 0.0) * count
         return ret
-    
+
     @property
     def vat(self):
         ret = 0.0
@@ -209,11 +209,11 @@ class OrderData(object):
             net = booking.attrs.get('net', 0.0) * count
             ret += net * booking.attrs.get('vat', 0.0) / 100
         return ret
-    
+
     @property
     def shipping(self):
         return float(self.order.attrs['shipping'])
-    
+
     @property
     def total(self):
         ret = 0.0
@@ -227,24 +227,24 @@ class OrderData(object):
 
 @implementer(ISixPaymentData)
 class SixPaymentData(object):
-    
+
     def __init__(self, context):
         self.context = context
-    
+
     @instance_property
     def order_data(self):
         return OrderData(self.context, self.order_uid)
-    
+
     @property
     def amount(self):
         amount = '%0.2f' % self.order_data.total
         amount = amount[:amount.index('.')] + amount[amount.index('.') + 1:]
         return amount
-    
+
     @property
     def currency(self):
         return get_data_provider(self.context).currency
-    
+
     @property
     def description(self):
         order = self.order_data.order
@@ -257,16 +257,16 @@ class SixPaymentData(object):
             attrs['billing_address.city'],
             amount])
         return description
-    
+
     @property
     def ordernumber(self):
         return self.order_data.order.attrs['ordernumber']
-    
+
     def uid_for(self, ordernumber):
         soup = get_soup('bda_plone_orders_orders', self.context)
         for order in soup.query(Eq('ordernumber', ordernumber)):
             return str(order.attrs['uid'])
-    
+
     def data(self, order_uid):
         self.order_uid = order_uid
         return {
@@ -294,16 +294,16 @@ def payment_failed(event):
 
 
 class OrderTransitions(object):
-    
+
     def __init__(self, context):
         self.context = context
-    
+
     def do_transition(self, uid, transition):
         """Do transition for order by UID and transition name.
-        
+
         @param uid: uuid.UUID or string representing a UUID
         @param transition: string
-        
+
         @return: order record
         """
         if not isinstance(uid, uuid.UUID):

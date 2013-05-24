@@ -6,13 +6,13 @@
      tal:define="order view/order">
 
   <h1 i18n:translate="order_details">Order Details</h1>
-  
+
   <strong i18n:translate="order_uid">Order UID:</strong>
   <span tal:replace="order/uid">UID</span>
   <br />
   <strong i18n:translate="order_number">Ordernumber:</strong>
   <span tal:replace="order/ordernumber">12345</span>
-  
+
   <div class="order_details_row">
     <div class="personal_data">
       <h3 i18n:translate="personal_data">Personal Data:</h3>
@@ -32,7 +32,7 @@
       <strong i18n:translate="order_phone">Phone:</strong>
       <span tal:replace="order/personal_data.phone">phone</span>
     </div>
-    
+
     <div class="billing_address">
       <h3 i18n:translate="billing_address">Billing Address:</h3>
       <strong i18n:translate="order_street">Street:</strong>
@@ -46,7 +46,7 @@
       <span tal:replace="order/billing_address.country">country</span>
     </div>
   </div>
-  
+
   <div class="order_details_row">
     <div class="order_state">
       <h3 i18n:translate="order_state_heading">Order State:</h3>
@@ -65,7 +65,7 @@
       <strong i18n:translate="order_state">State:</strong>
       <span tal:replace="python:view.state(order)">state</span>
     </div>
-    
+
     <div class="order_summary">
       <h3 i18n:translate="order_summary">Order Summary:</h3>
       <strong i18n:translate="currency">Currency:</strong>
@@ -94,7 +94,7 @@
       <strong tal:content="view/total">0.00</strong>
     </div>
   </div>
-  
+
   <div class="order_details_row">
     <div class="delivery_address"
          tal:condition="order/delivery_address.alternative_delivery">
@@ -116,7 +116,7 @@
       <strong i18n:translate="order_country">Country:</strong>
       <span tal:replace="order/delivery_address.country">country</span>
     </div>
-    
+
     <div class="delivery_address"
          tal:condition="not:order/delivery_address.alternative_delivery">
       <h3 i18n:translate="delivery_address">Delivery Address:</h3>
@@ -124,7 +124,7 @@
         No delivery Address defined
       </p>
     </div>
-    
+
     <div class="order_comment">
       <h3 i18n:translate="order_comment">Order Comment:</h3>
       <p tal:content="order/order_comment.comment"
@@ -135,7 +135,7 @@
       </p>
     </div>
   </div>
-  
+
   <div class="order_bookings">
     <h3 i18n:translate="order_bookings">Order Bookings:</h3>
     <table>

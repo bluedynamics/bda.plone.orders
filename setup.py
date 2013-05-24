@@ -6,7 +6,7 @@ shortdesc = "Orders"
 longdesc = (
             open(os.path.join(os.path.dirname(__file__), 'README.rst')).read() 
             + '\n' +
-            open('CHANGES.txt').read()
+            open('CHANGES.rst').read()
             + '\n')
 
 setup(name='bda.plone.orders',

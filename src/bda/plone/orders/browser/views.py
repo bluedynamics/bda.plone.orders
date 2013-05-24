@@ -56,12 +56,12 @@ class Dropdown(object):
     vocab = {}
     transitions = {}
     value = ''
-    
+
     def __init__(self, context, request, record):
         self.context = context
         self.request = request
         self.record = record
-    
+
     def create_items(self, transitions):
         uid = str(self.record.attrs['uid'])
         url = self.context.absolute_url()
@@ -72,17 +72,17 @@ class Dropdown(object):
                 'target': '%s?transition=%s&uid=%s' % (url, transition, uid)
             })
         return ret
-    
+
     @property
     def identifyer(self):
         return '%s-%s' % (self.name, str(self.record.attrs['uid']))
-    
+
     @property
     def ajax_action(self):
         return '%s:#%s-%s:replace' % (self.action,
                                       self.name,
                                       str(self.record.attrs['uid']))
-    
+
     @property
     def items(self):
         raise NotImplementedError(u"Abstract Dropdown does not implement "
@@ -95,6 +95,7 @@ state_vocab = {
     'cancelled': _('cancelled', 'Cancelled'),
 }
 
+
 class StateDropdown(Dropdown):
     name = 'state'
     css = 'dropdown change_order_state_dropdown'
@@ -105,11 +106,11 @@ class StateDropdown(Dropdown):
         'finish': _('finish', 'Finish'),
         'cancel': _('cancel', 'Cancel'),
     }
-    
+
     @property
     def value(self):
         return self.record.attrs['state']
-    
+
     @property
     def items(self):
         state = self.record.attrs['state']
@@ -127,6 +128,7 @@ salaried_vocab = {
     'failed': _('failed', 'Failed'),
 }
 
+
 class SalariedDropdown(Dropdown):
     name = 'salaried'
     css = 'dropdown change_order_salaried_dropdown'
@@ -136,11 +138,11 @@ class SalariedDropdown(Dropdown):
         'mark_salaried': _('mark_salaried', 'Mark salaried'),
         'mark_outstanding': _('mark_outstanding', 'Mark outstanding'),
     }
-    
+
     @property
     def value(self):
         return self.record.attrs.get('salaried', 'no')
-    
+
     @property
     def items(self):
         salaried = self.record.attrs.get('salaried', 'no')
@@ -154,7 +156,7 @@ class SalariedDropdown(Dropdown):
 
 class Transition(BrowserView):
     dropdown = None
-    
+
     def __call__(self):
         transition = self.request['transition']
         uid = self.request['uid']
@@ -173,7 +175,7 @@ class SalariedTransition(Transition):
 class TableData(BrowserView):
     soup_name = None
     search_text_index = None
-    
+
     @property
     def columns(self):
         """Return list of dicts with column definitions:
@@ -186,13 +188,13 @@ class TableData(BrowserView):
         """
         raise NotImplementedError(u"Abstract DataTable does not implement "
                                   u"``columns``.")
-    
+
     def query(self, soup):
         """Return 2-tuple with result length and lazy record iterator.
         """
         raise NotImplementedError(u"Abstract DataTable does not implement "
                                   u"``query``.")
-    
+
     def sort(self):
         columns = self.columns
         sortparams = dict()
@@ -200,7 +202,7 @@ class TableData(BrowserView):
         sortparams['index'] = columns[sortcols_idx]['id']
         sortparams['reverse'] = self.request.form.get('sSortDir_0') == 'desc'
         return sortparams
-    
+
     def all(self, soup):
         data = soup.storage.data
         sort = self.sort()
@@ -210,7 +212,7 @@ class TableData(BrowserView):
             for iid in iids:
                 yield LazyRecord(iid, soup)
         return soup.storage.length.value, lazyrecords()
-    
+
     def slice(self, fullresult):
         start = int(self.request.form['iDisplayStart'])
         length = int(self.request.form['iDisplayLength'])
@@ -221,12 +223,12 @@ class TableData(BrowserView):
             if count >= (start + length):
                 break
             count += 1
-    
+
     def column_def(self, colname):
         for column in self.columns:
             if column['id'] == colname:
                 return column
-    
+
     def __call__(self):
         soup = get_soup(self.soup_name, self.context)
         aaData = list()
@@ -258,15 +260,15 @@ class TableData(BrowserView):
 class OrdersTable(BrowserView):
     table_template = ViewPageTemplateFile('table.pt')
     table_id = 'bdaploneorders'
-    
+
     @property
     def rendered_table(self):
         return self.table_template(self)
-    
+
     @property
     def ajaxurl(self):
         return '%s/%s' % (self.context.absolute_url(), '@@ordersdata')
-    
+
     @property
     def columns(self):
         return [{
@@ -295,13 +297,13 @@ class OrdersTable(BrowserView):
             'label': _('state', 'State'),
             'renderer': self.render_state,
         }]
-    
+
     def render_dt(self, colname, record):
         value = record.attrs.get(colname, '')
         if value:
             value = value.strftime(DT_FORMAT)
         return value
-    
+
     def render_order_actions(self, colname, record):
         tag = Tag(Translate(self.request))
         target = '%s?uid=%s' % (self.context.absolute_url(),
@@ -315,10 +317,10 @@ class OrdersTable(BrowserView):
             'title': _('view_order', 'View Order'),
         }
         return tag('a', '&nbsp', **link_attrs)
-    
+
     def render_salaried(self, colname, record):
         return SalariedDropdown(self.context, self.request, record).render()
-    
+
     def render_state(self, colname, record):
         return StateDropdown(self.context, self.request, record).render()
 
@@ -326,7 +328,7 @@ class OrdersTable(BrowserView):
 class OrdersData(OrdersTable, TableData):
     soup_name = 'bda_plone_orders_orders'
     search_text_index = 'text'
-    
+
     def query(self, soup):
         columns = self.columns
         sort = self.sort()
@@ -342,35 +344,35 @@ class OrdersData(OrdersTable, TableData):
 
 
 class OrderView(BrowserView):
-    
+
     @property
     def uid(self):
         return self.request.form['uid']
-    
+
     @property
     def order(self):
         return dict(self.order_data.order.attrs)
-    
+
     @property
     def order_data(self):
         return OrderData(self.context, self.uid)
-    
+
     @property
     def net(self):
         return ascur(self.order_data.net)
-    
+
     @property
     def vat(self):
         return ascur(self.order_data.vat)
-    
+
     @property
     def shipping(self):
         return ascur(self.order_data.shipping)
-    
+
     @property
     def total(self):
         return ascur(self.order_data.total)
-    
+
     @property
     def currency(self):
         currency = None
@@ -380,7 +382,7 @@ class OrderView(BrowserView):
             if currency != booking.attrs.get('currency'):
                 return None
         return currency
-    
+
     @property
     def listing(self):
         ret = list()
@@ -396,7 +398,7 @@ class OrderView(BrowserView):
                 'currency': booking.attrs.get('currency'),
             })
         return ret
-    
+
     def gender(self, order):
         gender = order['personal_data.gender']
         if gender == 'male':
@@ -404,39 +406,40 @@ class OrderView(BrowserView):
         if gender == 'female':
             return _co('female', 'Female')
         return gender
-    
+
     def payment(self, order):
         name = order['payment_selection.payment']
         payment = Payments(self.context).get(name)
         if payment:
             return payment.label
         return name
-    
+
     def salaried(self, order):
         salaried = order.get('salaried', 'no')
         return salaried_vocab[salaried]
-    
+
     def tid(self, order):
         tid = order.get('tid', 'none')
         if tid == 'none':
             return _('none', 'None')
         return tid
-    
+
     def state(self, order):
         return state_vocab[order.get('state', 'new')]
-    
+
     def created(self, order):
         value = order.get('created', _('unknown', 'Unknown'))
         if value:
             value = value.strftime(DT_FORMAT)
         return value
-        
+
     def exported(self, item):
         return item['exported'] and _('yes', 'Yes') or _('no', 'No')
 
 
 class DialectExcelWithColons(csv.excel):    
     delimiter = ';'
+
 
 csv.register_dialect('excel-colon', DialectExcelWithColons)
 
@@ -485,7 +488,7 @@ class ExportOrdersForm(YAMLForm):
     form_template = 'bda.plone.orders.browser:forms/orders_export.yaml'
     message_factory = _
     action_resource = 'exportorders'
-    
+
     def __call__(self):
         self.prepare()
         controller = Controller(self.form, self.request)
@@ -493,7 +496,7 @@ class ExportOrdersForm(YAMLForm):
             self.rendered_form = controller.rendered
             return self.browser_template(self)
         return controller.next
-    
+
     def from_before_to(self, widget, data):
         from_date = data.fetch('exportorders.from').extracted
         to_date = data.fetch('exportorders.to').extracted
@@ -501,11 +504,11 @@ class ExportOrdersForm(YAMLForm):
             raise ExtractionError(_('from_date_before_to_date',
                                     'From-date after to-date'))
         return data.extracted
-    
+
     def export(self, widget, data):
         self.from_date = data.fetch('exportorders.from').extracted
         self.to_date = data.fetch('exportorders.to').extracted
-    
+
     def export_val(self, record, attr_name):
         val = record.attrs.get(attr_name)
         if isinstance(val, datetime.datetime):
@@ -516,7 +519,7 @@ class ExportOrdersForm(YAMLForm):
            isinstance(val, Decimal):
             val = str(val).replace('.', ',')
         return val
-    
+
     def csv(self, request):
         orders_soup = get_soup('bda_plone_orders_orders', self.context)
         bookings_soup = get_soup('bda_plone_orders_bookings', self.context)

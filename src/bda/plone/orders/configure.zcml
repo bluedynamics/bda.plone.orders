@@ -4,37 +4,37 @@
 
   <include package="souper.plone" />
   <include package="collective.js.datatables" />
-  
+
   <i18n:registerTranslations directory="locales" />
-  
+
   <include file="profiles.zcml" />
   <include package=".browser" />
-  
+
   <utility
     name="bda_plone_orders_bookings"
     factory=".common.BookingsCatalogFactory" />
-  
+
   <utility
     name="bda_plone_orders_orders"
     factory=".common.OrdersCatalogFactory" />
-  
+
   <adapter
     for="Products.Archetypes.interfaces.IBaseObject
          zope.publisher.interfaces.browser.IBrowserRequest"
     factory=".common.OrderCheckoutAdapter" />
-  
+
   <adapter
     for="Products.Archetypes.interfaces.IBaseObject"
     factory=".common.SixPaymentData" />
-  
+
   <subscriber
     for="bda.plone.payment.interfaces.IPaymentSuccessEvent"
     handler=".common.payment_success" />
-  
+
   <subscriber
     for="bda.plone.payment.interfaces.IPaymentSuccessEvent"
     handler=".mailnotify.notify_order" />
-  
+
   <subscriber
     for="bda.plone.payment.interfaces.IPaymentFailedEvent"
     handler=".common.payment_failed" />
