@@ -1,30 +1,33 @@
-from setuptools import setup, find_packages
 import os
+from setuptools import (
+    setup,
+    find_packages,
+)
 
-version = '1.0dev'
+
+version = '0.2dev'
 shortdesc = "Orders"
-longdesc = (
-            open(os.path.join(os.path.dirname(__file__), 'README.rst')).read() 
-            + '\n' +
-            open('CHANGES.rst').read()
-            + '\n')
+longdesc = open(os.path.join(os.path.dirname(__file__), 'README.rst')).read()
+longdesc += open(os.path.join(os.path.dirname(__file__), 'CHANGES.rst')).read()
+longdesc += open(os.path.join(os.path.dirname(__file__), 'LICENSE.rst')).read()
+
 
 setup(name='bda.plone.orders',
       version=version,
       description=shortdesc,
       long_description=longdesc,
       classifiers=[
-            'Environment :: Web Environment',
-            'License :: OSI Approved :: GNU General Public License (GPL)',
-            'Operating System :: OS Independent',
-            'Programming Language :: Python',
-            'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
+          'Environment :: Web Environment',
+          'License :: OSI Approved :: GNU General Public License (GPL)',
+          'Operating System :: OS Independent',
+          'Programming Language :: Python',
+          'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
       ],
       author='BlueDynamics Alliance',
       author_email='dev@bluedynamics.com',
       license='GNU General Public Licence',
       packages=find_packages('src'),
-      package_dir = {'': 'src'},
+      package_dir={'': 'src'},
       namespace_packages=['bda', 'bda.plone'],
       include_package_data=True,
       zip_safe=False,
@@ -41,4 +44,4 @@ setup(name='bda.plone.orders',
       [z3c.autoinclude.plugin]
       target = plone
       """,
-)
+      )

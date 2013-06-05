@@ -1,5 +1,6 @@
+================
 bda.plone.orders
-################
+================
 
 
 Create translations
@@ -14,8 +15,6 @@ Create translations
 Contributors
 ============
 
+- Robert Niederreiter, Author
 
-Robert Niederreiter, Author
-
-Harald Frießnegger, Webmeisterei GmbH
-
+- Harald Frießnegger, Webmeisterei GmbH
