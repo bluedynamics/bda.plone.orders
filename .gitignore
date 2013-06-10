@@ -1,2 +1,4 @@
 *.pyc
 src/bda.plone.orders.egg-info/
+
+.DS_Store
