@@ -179,7 +179,7 @@ class TableData(BrowserView):
     @property
     def columns(self):
         """Return list of dicts with column definitions:
-        
+
         [{
             'id': 'colid',
             'label': 'Col Label',
