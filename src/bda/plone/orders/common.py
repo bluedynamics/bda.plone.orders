@@ -26,8 +26,10 @@ from bda.plone.cart import (
     get_catalog_brain,
 )
 from bda.plone.cart import (
+    get_object_by_uid,
     get_data_provider,
     get_item_data_provider,
+    get_item_stock,
 )
 from bda.plone.shipping import Shippings
 from bda.plone.payment.six_payment import ISixPaymentData
@@ -164,7 +166,10 @@ class OrderCheckoutAdapter(CheckoutAdapter):
             if not cart_data.validate_count(uid, aggregated_count)['success']:
                 raise CheckoutError(u'Item no longer available')
             brain = get_catalog_brain(self.context, uid)
-            item_data = get_item_data_provider(brain.getObject())
+            obj = brain.getObject()
+            item_stock = get_item_stock(obj)
+            item_stock.available -= float(count)
+            item_data = get_item_data_provider(obj)
             booking = OOBTNode()
             booking.attrs['uid'] = uuid.uuid4()
             booking.attrs['buyable_uid'] = uid
@@ -230,6 +235,24 @@ class OrderData(object):
             ret += net
             ret += net * booking.attrs.get('vat', 0.0) / 100
         return ret + self.shipping
+
+    def increase_stock(self, bookings):
+        for booking in bookings:
+            obj = get_object_by_uid(self.context, booking.attrs['buyable_uid'])
+            # object no longer exists
+            if not obj:
+                continue
+            stock = get_item_stock(obj)
+            stock.available += float(booking.attrs['buyable_count'])
+
+    def decrease_stock(self, bookings):
+        for booking in bookings:
+            obj = get_object_by_uid(self.context, booking.attrs['buyable_uid'])
+            # object no longer exists
+            if not obj:
+                continue
+            stock = get_item_stock(obj)
+            stock.available -= float(booking.attrs['buyable_count'])
 
 
 @implementer(ISixPaymentData)
@@ -315,19 +338,22 @@ class OrderTransitions(object):
         """
         if not isinstance(uid, uuid.UUID):
             uid = uuid.UUID(uid)
-        record = get_order(self.context, uid)
+        order_data = OrderData(self.context, uid)
+        order = order_data.order
         if transition == 'mark_salaried':
-            record.attrs['salaried'] = 'yes'
+            order.attrs['salaried'] = 'yes'
         elif transition == 'mark_outstanding':
-            record.attrs['salaried'] = 'no'
+            order.attrs['salaried'] = 'no'
         elif transition == 'renew':
-            record.attrs['state'] = 'new'
+            order.attrs['state'] = 'new'
+            order_data.decrease_stock(order_data.bookings)
         elif transition == 'finish':
-            record.attrs['state'] = 'finished'
+            order.attrs['state'] = 'finished'
         elif transition == 'cancel':
-            record.attrs['state'] = 'cancelled'
+            order.attrs['state'] = 'cancelled'
+            order_data.increase_stock(order_data.bookings)
         else:
             raise ValueError(u"invalid transition: %s" % transition)
         soup = get_soup('bda_plone_orders_orders', self.context)
-        soup.reindex(records=[record])
-        return record
+        soup.reindex(records=[order])
+        return order
