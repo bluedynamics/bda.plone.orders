@@ -16,7 +16,10 @@ from souper.soup import (
 )
 from node.utils import instance_property
 from node.ext.zodb import OOBTNode
-from bda.plone.checkout import CheckoutAdapter
+from bda.plone.checkout import (
+    CheckoutAdapter,
+    CheckoutError,
+)
 from bda.plone.cart import (
     readcookie,
     extractitems,
@@ -153,9 +156,13 @@ class OrderCheckoutAdapter(CheckoutAdapter):
 
     def create_bookings(self, order):
         ret = list()
-        currency = get_data_provider(self.context).currency
+        cart_data = get_data_provider(self.context)
+        currency = cart_data.currency
         items = self.items
         for uid, count, comment in items:
+            aggregated_count = cart_data.aggregate_count_for(uid, items)
+            if not cart_data.validate_count(uid, aggregated_count)['success']:
+                raise CheckoutError(u'Item no longer available')
             brain = get_catalog_brain(self.context, uid)
             item_data = get_item_data_provider(brain.getObject())
             booking = OOBTNode()
