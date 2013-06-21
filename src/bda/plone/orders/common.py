@@ -23,13 +23,13 @@ from bda.plone.checkout import (
 from bda.plone.cart import (
     readcookie,
     extractitems,
-    get_catalog_brain,
-)
-from bda.plone.cart import (
-    get_object_by_uid,
+    aggregate_cart_item_count,
     get_data_provider,
     get_item_data_provider,
     get_item_stock,
+    get_item_state,
+    get_catalog_brain,
+    get_object_by_uid,
 )
 from bda.plone.shipping import Shippings
 from bda.plone.payment.six_payment import ISixPaymentData
@@ -162,11 +162,12 @@ class OrderCheckoutAdapter(CheckoutAdapter):
         currency = cart_data.currency
         items = self.items
         for uid, count, comment in items:
-            aggregated_count = cart_data.aggregate_count_for(uid, items)
-            if not cart_data.validate_count(uid, aggregated_count)['success']:
-                raise CheckoutError(u'Item no longer available')
             brain = get_catalog_brain(self.context, uid)
             obj = brain.getObject()
+            aggregated_count = aggregate_cart_item_count(uid, items)
+            item_state = get_item_state(obj, self.request)
+            if not item_state.validate_count(aggregated_count):
+                raise CheckoutError(u'Item no longer available')
             item_stock = get_item_stock(obj)
             item_stock.available -= float(count)
             item_data = get_item_data_provider(obj)
