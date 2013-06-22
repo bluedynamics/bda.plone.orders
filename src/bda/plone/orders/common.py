@@ -23,7 +23,6 @@ from bda.plone.checkout import (
 from bda.plone.cart import (
     readcookie,
     extractitems,
-    aggregate_cart_item_count,
     get_data_provider,
     get_item_data_provider,
     get_item_stock,
@@ -164,9 +163,8 @@ class OrderCheckoutAdapter(CheckoutAdapter):
         for uid, count, comment in items:
             brain = get_catalog_brain(self.context, uid)
             obj = brain.getObject()
-            aggregated_count = aggregate_cart_item_count(uid, items)
             item_state = get_item_state(obj, self.request)
-            if not item_state.validate_count(aggregated_count):
+            if not item_state.validate_count(item_state.aggregated_count):
                 raise CheckoutError(u'Item no longer available')
             item_stock = get_item_stock(obj)
             item_stock.available -= float(count)
