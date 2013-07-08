@@ -134,44 +134,43 @@ Pays: %(delivery_address.country)s
 # it
 ###############################################################################
 
-SUBJECT_IT = u'votre commande %s.'
+SUBJECT_IT = u'Il tuo ordine %s.'
 
 BODY_IT = """
-Date: %(date)s
+Data: %(date)s
 
-Nous vous remercions pour votre commande :
+Grazie per l'ordine effettuato:
 
-No. de commande: %(ordernumber)s
+Numero d'ordine: %(ordernumber)s
 
-Données personnelles:
-Nom: %(personal_data.firstname)s %(personal_data.lastname)s
-Entreprise: %(personal_data.company)s
-Téléphone: %(personal_data.phone)s
-E-Mail: %(personal_data.email)s
+Dati personali:
+Nome: %(personal_data.firstname)s %(personal_data.lastname)s
+Ditta: %(personal_data.company)s
+Telefono: %(personal_data.phone)s
 
-Adresse:
-Rue: %(billing_address.street)s
-No. Postal: %(billing_address.zip)s
-Localité: %(billing_address.city)s
-Pays: %(billing_address.country)s
+Indirizzo:
+Via: %(billing_address.street)s
+CAP: %(billing_address.zip)s
+Città: %(billing_address.city)s
+Nazione: %(billing_address.country)s
 %(delivery_address)s
-Commentaires:
+Commento:
 %(order_comment.comment)s
 
-Produit commandé:
+Articolo ordinato:
 %(item_listing)s
 
-Total: %(order_total)s
+Totale: %(order_total)s
 """
 
 DELIVERY_ADDRESS_IT = """
-Lieferadresse:
-Nom: %(delivery_address.firstname)s %(delivery_address.lastname)s
-Entreprise: %(delivery_address.company)s
-Rue: %(delivery_address.street)s
-No. Postal: %(delivery_address.zip)s
-Localité: %(delivery_address.city)s
-Pays: %(delivery_address.country)s
+Indirizzo di spedizione:
+Nome: %(delivery_address.firstname)s %(delivery_address.lastname)s
+Ditta: %(delivery_address.company)s
+Via: %(delivery_address.street)s
+CAP: %(delivery_address.zip)s
+Città: %(delivery_address.city)s
+Nazione: %(delivery_address.country)s
 """
 
 ###############################################################################
