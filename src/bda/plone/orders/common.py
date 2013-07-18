@@ -1,6 +1,7 @@
 import uuid
 import time
 import datetime
+from decimal import Decimal
 from zope.interface import implementer
 from repoze.catalog.catalog import Catalog
 from repoze.catalog.indexes.field import CatalogFieldIndex
@@ -272,7 +273,7 @@ class BuyableData(object):
                 booking.attrs['order_uid'], list())
             bookings.append(booking)
         orders_soup = get_soup('bda_plone_orders_orders', context)
-        count = 0
+        count = Decimal('0')
         for order_uid, bookings in order_bookings.items():
             order = [_ for _ in orders_soup.query(Eq('uid', order_uid))][0]
             if not state:
