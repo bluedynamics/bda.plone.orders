@@ -32,6 +32,7 @@ from bda.plone.cart import (
 )
 from bda.plone.shipping import Shippings
 from bda.plone.payment.six_payment import ISixPaymentData
+from bda.plone.shop.interfaces import IBuyable
 
 
 DT_FORMAT = '%d.%m.%Y %H:%M'
@@ -252,6 +253,36 @@ class OrderData(object):
                 continue
             stock = get_item_stock(obj)
             stock.available -= float(booking.attrs['buyable_count'])
+
+
+class BuyableData(object):
+
+    def __init__(self, context):
+        assert IBuyable.providedBy(context)
+        self.context = context
+
+    def item_ordered(self, state=[]):
+        """Return total count buyable item was ordered.
+        """
+        context = self.context
+        bookings_soup = get_soup('bda_plone_orders_bookings', context)
+        order_bookings = dict()
+        for booking in bookings_soup.query(Eq('buyable_uid', context.UID())):
+            bookings = order_bookings.setdefault(
+                booking.attrs['order_uid'], list())
+            bookings.append(booking)
+        orders_soup = get_soup('bda_plone_orders_orders', context)
+        count = 0
+        for order_uid, bookings in order_bookings.items():
+            order = [_ for _ in orders_soup.query(Eq('uid', order_uid))][0]
+            if not state:
+                for booking in bookings:
+                    count += booking.attrs['buyable_count']
+            else:
+                if order.attrs['state'] in state:
+                    for booking in bookings:
+                        count += booking.attrs['buyable_count']
+        return count
 
 
 @implementer(ISixPaymentData)
