@@ -4,12 +4,40 @@
 # en
 ###############################################################################
 
-SUBJECT_EN = u'Order %s received.'
+ORDER_SUBJECT_EN = u'Order %s received.'
 
-BODY_EN = """
+RESERVATION_SUBJECT_EN = u'Reservation %s received.'
+
+ORDER_BODY_EN = """
 Date: %(date)s
 
 Thank you for your order:
+
+Ordernumber: %(ordernumber)s
+
+Personal Data:
+Name: %(personal_data.firstname)s %(personal_data.lastname)s
+Company: %(personal_data.company)s
+Phone: %(personal_data.phone)s
+Email: %(personal_data.email)s
+
+Address:
+Street: %(billing_address.street)s
+ZIP: %(billing_address.zip)s
+City: %(billing_address.city)s
+Country: %(billing_address.country)s
+%(delivery_address)s
+Comment:
+%(order_comment.comment)s
+
+Ordered items:
+%(item_listing)s
+"""
+
+RESERVATION_BODY_EN = """
+Date: %(date)s
+
+Thank you for your reservation:
 
 Ordernumber: %(ordernumber)s
 
@@ -42,16 +70,47 @@ City: %(delivery_address.city)s
 Country: %(delivery_address.country)s
 """
 
+
 ###############################################################################
 # de
 ###############################################################################
 
-SUBJECT_DE = u'Bestellung %s erhalten.'
+ORDER_SUBJECT_DE = u'Bestellung %s erhalten.'
 
-BODY_DE = """
+RESERVATION_SUBJECT_DE = u'Reservierung %s erhalten.'
+
+ORDER_BODY_DE = """
 Datum: %(date)s
 
 Besten Dank für Ihre Bestellung:
+
+Bestellnummer: %(ordernumber)s
+
+Persönliche Angaben:
+Name: %(personal_data.firstname)s %(personal_data.lastname)s
+Firma: %(personal_data.company)s
+Telefon: %(personal_data.phone)s
+E-Mail: %(personal_data.email)s
+
+Adresse:
+Strasse: %(billing_address.street)s
+Postleitzahl: %(billing_address.zip)s
+Ort: %(billing_address.city)s
+Land: %(billing_address.country)s
+%(delivery_address)s
+Kommentar:
+%(order_comment.comment)s
+
+Bestellte Artikel:
+%(item_listing)s
+
+Total: %(order_total)s
+"""
+
+RESERVATION_BODY_DE = """
+Datum: %(date)s
+
+Besten Dank für Ihre Reservierung:
 
 Bestellnummer: %(ordernumber)s
 
@@ -86,16 +145,47 @@ Ort: %(delivery_address.city)s
 Land: %(delivery_address.country)s
 """
 
+
 ###############################################################################
 # fr
 ###############################################################################
 
-SUBJECT_FR = u'votre commande %s.'
+ORDER_SUBJECT_FR = u'votre commande %s.'
 
-BODY_FR = """
+RESERVATION_SUBJECT_FR = u'votre réservation %s.'
+
+ORDER_BODY_FR = """
 Date: %(date)s
 
-Nous vous remercions pour votre commande :
+Nous vous remercions pour votre commande:
+
+No. de commande: %(ordernumber)s
+
+Données personnelles:
+Nom: %(personal_data.firstname)s %(personal_data.lastname)s
+Entreprise: %(personal_data.company)s
+Téléphone: %(personal_data.phone)s
+E-Mail: %(personal_data.email)s
+
+Adresse:
+Rue: %(billing_address.street)s
+No. Postal: %(billing_address.zip)s
+Localité: %(billing_address.city)s
+Pays: %(billing_address.country)s
+%(delivery_address)s
+Commentaires:
+%(order_comment.comment)s
+
+Produit commandé:
+%(item_listing)s
+
+Total: %(order_total)s
+"""
+
+RESERVATION_BODY_FR = """
+Date: %(date)s
+
+Nous vous remercions pour votre réservation:
 
 No. de commande: %(ordernumber)s
 
@@ -130,16 +220,46 @@ Localité: %(delivery_address.city)s
 Pays: %(delivery_address.country)s
 """
 
+
 ###############################################################################
 # it
 ###############################################################################
 
-SUBJECT_IT = u'Il tuo ordine %s.'
+ORDER_SUBJECT_IT = u'Il tuo ordine %s.'
 
-BODY_IT = """
+RESERVATION_SUBJECT_IT = u'Il tuo prenotazione %s.'
+
+ORDER_BODY_IT = """
 Data: %(date)s
 
 Grazie per l'ordine effettuato:
+
+Numero d'ordine: %(ordernumber)s
+
+Dati personali:
+Nome: %(personal_data.firstname)s %(personal_data.lastname)s
+Ditta: %(personal_data.company)s
+Telefono: %(personal_data.phone)s
+
+Indirizzo:
+Via: %(billing_address.street)s
+CAP: %(billing_address.zip)s
+Città: %(billing_address.city)s
+Nazione: %(billing_address.country)s
+%(delivery_address)s
+Commento:
+%(order_comment.comment)s
+
+Articolo ordinato:
+%(item_listing)s
+
+Totale: %(order_total)s
+"""
+
+RESERVATION_BODY_IT = """
+Data: %(date)s
+
+Grazie per l'prenotazione effettuato:
 
 Numero d'ordine: %(ordernumber)s
 
@@ -173,29 +293,55 @@ Città: %(delivery_address.city)s
 Nazione: %(delivery_address.country)s
 """
 
+
 ###############################################################################
 # language templates
 ###############################################################################
 
-TEMPLATES = {
+ORDER_TEMPLATES = {
     'en': {
-        'subject': SUBJECT_EN,
-        'body': BODY_EN,
+        'subject': ORDER_SUBJECT_EN,
+        'body': ORDER_BODY_EN,
         'delivery_address': DELIVERY_ADDRESS_EN},
     'de': {
-        'subject': SUBJECT_DE,
-        'body': BODY_DE,
+        'subject': ORDER_SUBJECT_DE,
+        'body': ORDER_BODY_DE,
         'delivery_address': DELIVERY_ADDRESS_DE},
     'fr': {
-        'subject': SUBJECT_FR,
-        'body': BODY_FR,
+        'subject': ORDER_SUBJECT_FR,
+        'body': ORDER_BODY_FR,
         'delivery_address': DELIVERY_ADDRESS_FR},
     'it': {
-        'subject': SUBJECT_IT,
-        'body': BODY_IT,
+        'subject': ORDER_SUBJECT_IT,
+        'body': ORDER_BODY_IT,
         'delivery_address': DELIVERY_ADDRESS_IT}
 }
 
-def get_templates(context):
+RESERVATION_TEAMPLETS = {
+    'en': {
+        'subject': RESERVATION_SUBJECT_EN,
+        'body': RESERVATION_BODY_EN,
+        'delivery_address': DELIVERY_ADDRESS_EN},
+    'de': {
+        'subject': RESERVATION_SUBJECT_DE,
+        'body': RESERVATION_BODY_DE,
+        'delivery_address': DELIVERY_ADDRESS_DE},
+    'fr': {
+        'subject': RESERVATION_SUBJECT_FR,
+        'body': RESERVATION_BODY_FR,
+        'delivery_address': DELIVERY_ADDRESS_FR},
+    'it': {
+        'subject': RESERVATION_SUBJECT_IT,
+        'body': RESERVATION_BODY_IT,
+        'delivery_address': DELIVERY_ADDRESS_IT}
+}
+
+
+def get_order_templates(context):
     lang = context.restrictedTraverse('@@plone_portal_state').language()
-    return TEMPLATES.get(lang, TEMPLATES['en'])
+    return TEMPLATES.get(lang, ORDER_TEMPLATES['en'])
+
+
+def get_reservation_templates(context):
+    lang = context.restrictedTraverse('@@plone_portal_state').language()
+    return TEMPLATES.get(lang, RESERVATION_TEMPLATES['en'])

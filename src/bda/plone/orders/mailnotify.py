@@ -12,7 +12,10 @@ from .common import (
     DT_FORMAT,
     get_order,
 )
-from .mailtemplates import get_templates
+from .mailtemplates import (
+    get_order_templates,
+    get_reservation_templates,
+)
 from Products.CMFPlone.utils import safe_unicode
 from . import common
 
@@ -87,12 +90,8 @@ def create_mail_body(templates, context, attrs):
     return body_template % arguments
 
 
-def do_notify(context, order):
+def do_notify(context, order, templates):
     attrs = order.attrs
-    templates = dict()
-    templates.update(get_templates(context))
-    templates['item_listing_callback'] = create_mail_listing
-    templates['order_total_callback'] = create_order_total
     subject = templates['subject'] % attrs['ordernumber']
     message = create_mail_body(templates, context, attrs)
     customer_address = attrs['personal_data.email']
@@ -114,7 +113,11 @@ def notify_payment_success(event):
     """Send notification mail after payment succeed.
     """
     order = get_order(event.context, event.order_uid)
-    do_notify(event.context, order)
+    templates = dict()
+    templates.update(get_order_templates(context))
+    templates['item_listing_callback'] = create_mail_listing
+    templates['order_total_callback'] = create_order_total
+    do_notify(event.context, order, templates)
 
 
 def notify_reservation_if_payment_skipped(event):
@@ -126,7 +129,11 @@ def notify_reservation_if_payment_skipped(event):
     order = get_order(event.context, event.uid)
     if order.attrs['state'] != 'reserved':
         return
-    do_notify(event.context, order)
+    templates = dict()
+    templates.update(get_reservation_templates(context))
+    templates['item_listing_callback'] = create_mail_listing
+    templates['order_total_callback'] = create_order_total
+    do_notify(event.context, order, templates)
 
 
 class MailNotify(object):
