@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2012-11-07 16:35+0000\n"
+"POT-Creation-Date: 2013-07-22 15:19+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Domain: DOMAIN\n"
 
 #. Default: "Actions"
-#: ./browser/views.py:274
+#: ./browser/views.py:278
 msgid "actions"
 msgstr ""
 
@@ -65,17 +65,17 @@ msgid "booking_vat"
 msgstr ""
 
 #. Default: "Cancel"
-#: ./browser/views.py:106
+#: ./browser/views.py:109
 msgid "cancel"
 msgstr ""
 
 #. Default: "Cancelled"
-#: ./browser/views.py:95
+#: ./browser/views.py:96
 msgid "cancelled"
 msgstr ""
 
 #. Default: "City"
-#: ./browser/views.py:288
+#: ./browser/views.py:292
 msgid "city"
 msgstr ""
 
@@ -85,7 +85,7 @@ msgid "currency"
 msgstr ""
 
 #. Default: "Date"
-#: ./browser/views.py:278
+#: ./browser/views.py:282
 msgid "date"
 msgstr ""
 
@@ -95,7 +95,7 @@ msgid "delivery_address"
 msgstr ""
 
 #. Default: "Failed to send Notification to ${receiver}"
-#: ./mailnotify.py:102
+#: ./mailnotify.py:106
 msgid "email_sending_failed"
 msgstr ""
 
@@ -114,22 +114,22 @@ msgid "export_recent_orders"
 msgstr ""
 
 #. Default: "Failed"
-#: ./browser/views.py:127
+#: ./browser/views.py:130
 msgid "failed"
 msgstr ""
 
 #. Default: "Finish"
-#: ./browser/views.py:105
+#: ./browser/views.py:108
 msgid "finish"
 msgstr ""
 
 #. Default: "Finished"
-#: ./browser/views.py:94
+#: ./browser/views.py:95
 msgid "finished"
 msgstr ""
 
 #. Default: "First Name"
-#: ./browser/views.py:285
+#: ./browser/views.py:289
 msgid "firstname"
 msgstr ""
 
@@ -138,7 +138,7 @@ msgid "from_date"
 msgstr ""
 
 #. Default: "From-date after to-date"
-#: ./browser/views.py:500
+#: ./browser/views.py:506
 msgid "from_date_before_to_date"
 msgstr ""
 
@@ -152,7 +152,7 @@ msgid "inconsistent_currencies"
 msgstr ""
 
 #. Default: "Last Name"
-#: ./browser/views.py:282
+#: ./browser/views.py:286
 msgid "lastname"
 msgstr ""
 
@@ -162,27 +162,27 @@ msgid "loading_please_wait"
 msgstr ""
 
 #. Default: "Mark outstanding"
-#: ./browser/views.py:137
+#: ./browser/views.py:141
 msgid "mark_outstanding"
 msgstr ""
 
 #. Default: "Mark salaried"
-#: ./browser/views.py:136
+#: ./browser/views.py:140
 msgid "mark_salaried"
 msgstr ""
 
 #. Default: "New"
-#: ./browser/views.py:93
+#: ./browser/views.py:94
 msgid "new"
 msgstr ""
 
 #. Default: "No"
-#: ./browser/views.py:126
+#: ./browser/views.py:129
 msgid "no"
 msgstr ""
 
 #. Default: "None"
-#: ./browser/views.py:422
+#: ./browser/views.py:426
 msgid "none"
 msgstr ""
 
@@ -261,6 +261,11 @@ msgstr ""
 msgid "order_phone"
 msgstr ""
 
+#. Default: "Your Order number: ${number}"
+#: ./browser/reservation_done.pt:25
+msgid "order_reservation_id"
+msgstr ""
+
 #. Default: "Salaried:"
 #: ./browser/order.pt:59
 msgid "order_salaried"
@@ -322,17 +327,37 @@ msgid "personal_data"
 msgstr ""
 
 #. Default: "Renew"
-#: ./browser/views.py:104
+#: ./browser/views.py:107
 msgid "renew"
 msgstr ""
 
+#. Default: "Reservation Done"
+#: ./browser/reservation_done.pt:20
+msgid "reservation_done"
+msgstr ""
+
+#. Default: "continue"
+#: ./browser/reservation_done.pt:32
+msgid "reservation_done_continue"
+msgstr ""
+
+#. Default: "Thanks for your Reservation."
+#: ./browser/reservation_done.pt:28
+msgid "reservation_text"
+msgstr ""
+
+#. Default: "Reserved"
+#: ./browser/views.py:97
+msgid "reserved"
+msgstr ""
+
 #. Default: "Salaried"
-#: ./browser/views.py:291
+#: ./browser/views.py:295
 msgid "salaried"
 msgstr ""
 
 #. Default: "State"
-#: ./browser/views.py:295
+#: ./browser/views.py:299
 msgid "state"
 msgstr ""
 
@@ -350,17 +375,17 @@ msgid "transaction_id"
 msgstr ""
 
 #. Default: "Unknown"
-#: ./browser/views.py:429
+#: ./browser/views.py:433
 msgid "unknown"
 msgstr ""
 
 #. Default: "View Order"
-#: ./browser/views.py:315
+#: ./browser/views.py:319
 msgid "view_order"
 msgstr ""
 
 #. Default: "Yes"
-#: ./browser/views.py:125
+#: ./browser/views.py:128
 msgid "yes"
 msgstr ""
 
