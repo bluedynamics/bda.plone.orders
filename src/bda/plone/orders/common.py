@@ -142,10 +142,16 @@ class OrderCheckoutAdapter(CheckoutAdapter):
         uid = order.attrs['uid'] = uuid.uuid4()
         order.attrs['creator'] = creator
         order.attrs['created'] = created
-        order.attrs['state'] = 'new'
         order.attrs['salaried'] = 'no'
         bookings = self.create_bookings(order)
-        order.attrs['booking_uids'] = [_.attrs['uid'] for _ in bookings]
+        booking_uids = list()
+        all_available = True
+        for booking in bookings:
+            booking_uids.append(booking.attrs['uid'])
+            if booking.attrs['remaining_stock_available'] < 0:
+                all_available = False
+        order.attrs['booking_uids'] = booking_uids
+        order.attrs['state'] = all_available and 'new' or 'reserved'
         orders_soup = get_soup('bda_plone_orders_orders', self.context)
         ordernumber = create_ordernumber()
         while self.ordernumber_exists(orders_soup, ordernumber):
@@ -185,6 +191,7 @@ class OrderCheckoutAdapter(CheckoutAdapter):
             booking.attrs['vat'] = item_data.vat
             booking.attrs['currency'] = currency
             booking.attrs['quantity_unit'] = item_data.quantity_unit
+            booking.attrs['remaining_stock_available'] = item_stock.available
             ret.append(booking)
         return ret
 
