@@ -391,16 +391,23 @@ class OrderTransitions(object):
             uid = uuid.UUID(uid)
         order_data = OrderData(self.context, uid)
         order = order_data.order
+        # XXX: currently we need to delete attribute before setting to a new
+        #      value in order to persist change. fix in appropriate place.
         if transition == 'mark_salaried':
+            del order.attrs['salaried']
             order.attrs['salaried'] = 'yes'
         elif transition == 'mark_outstanding':
+            del order.attrs['salaried']
             order.attrs['salaried'] = 'no'
         elif transition == 'renew':
+            del order.attrs['state']
             order.attrs['state'] = 'new'
             order_data.decrease_stock(order_data.bookings)
         elif transition == 'finish':
+            del order.attrs['state']
             order.attrs['state'] = 'finished'
         elif transition == 'cancel':
+            del order.attrs['state']
             order.attrs['state'] = 'cancelled'
             order_data.increase_stock(order_data.bookings)
         else:

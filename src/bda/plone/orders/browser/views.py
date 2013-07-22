@@ -94,6 +94,7 @@ state_vocab = {
     'new': _('new', 'New'),
     'finished': _('finished', 'Finished'),
     'cancelled': _('cancelled', 'Cancelled'),
+    'reserved': _('reserved', 'Reserved'),
 }
 
 
@@ -116,7 +117,7 @@ class StateDropdown(Dropdown):
     def items(self):
         state = self.record.attrs['state']
         transitions = list()
-        if state == 'new':
+        if state in ['new', 'reserved']:
             transitions = ['finish', 'cancel']
         else:
             transitions = ['renew']
