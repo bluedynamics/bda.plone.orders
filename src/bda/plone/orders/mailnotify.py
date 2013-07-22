@@ -14,6 +14,7 @@ from .common import (
 )
 from .mailtemplates import get_templates
 from Products.CMFPlone.utils import safe_unicode
+from . import common
 
 
 _ = MessageFactory('bda.plone.orders')
@@ -86,11 +87,7 @@ def create_mail_body(templates, context, attrs):
     return body_template % arguments
 
 
-def notify_order(event):
-    """Send notification mail after checkout succeed.
-    """
-    context = event.context
-    order = get_order(context, event.order_uid)
+def do_notify(context, order):
     attrs = order.attrs
     templates = dict()
     templates.update(get_templates(context))
@@ -111,6 +108,25 @@ def notify_order(event):
                   'Failed to send Notification to ${receiver}',
                   mapping={'receiver': receiver}))
             status_message(context, msg)
+
+
+def notify_payment_success(event):
+    """Send notification mail after payment succeed.
+    """
+    order = get_order(event.context, event.order_uid)
+    do_notify(event.context, order)
+
+
+def notify_reservation_if_payment_skipped(event):
+    """Send notification mail after checkout done if reservation and payment
+    skipped.
+    """
+    if not common.SKIP_PAYMENT_IF_RESERVED:
+        return
+    order = get_order(event.context, event.uid)
+    if order.attrs['state'] != 'reserved':
+        return
+    do_notify(event.context, order)
 
 
 class MailNotify(object):

@@ -28,6 +28,7 @@ from bda.plone.cart import ascur
 from bda.plone.payment import Payments
 from ..common import (
     DT_FORMAT,
+    get_order,
     OrderData,
     OrderTransitions,
 )
@@ -548,3 +549,14 @@ class ExportOrdersForm(YAMLForm):
         self.request.response.setHeader('Content-Disposition', 
                                         'attachment; filename=%s' % filename)
         return sio.getvalue().decode('utf8')
+
+
+class ReservationDone(BrowserView):
+
+    def id(self):
+        uid = self.request.get('uid', None)
+        try:
+            order = get_order(self.context, uid)
+        except ValueError:
+            return None
+        return order.attrs.get('ordernumber')

@@ -109,6 +109,9 @@ class OrdersCatalogFactory(object):
         return catalog
 
 
+SKIP_PAYMENT_IF_RESERVED = True
+
+
 class OrderCheckoutAdapter(CheckoutAdapter):
 
     @instance_property
@@ -118,6 +121,16 @@ class OrderCheckoutAdapter(CheckoutAdapter):
     @property
     def vessel(self):
         return self.order.attrs
+
+    @property
+    def skip_payment(self):
+        return SKIP_PAYMENT_IF_RESERVED \
+            and self.order.attrs['state'] == 'reserved'
+
+    @property
+    def skip_payment_redirect_url(self):
+        return '%s/@@reservation_done?uid=%s' % (self.context.absolute_url(),
+                                                 self.order.attrs['uid'])
 
     @property
     def items(self):

@@ -60,4 +60,11 @@
     permission="cmf.ModifyPortalContent"
     layer="..interfaces.IOrdersExtensionLayer" />
 
+  <browser:page
+    for="*"
+    name="reservation_done"
+    template="reservation_done.pt"
+    class=".views.ReservationDone"
+    permission="zope2.View" />
+
 </configure>

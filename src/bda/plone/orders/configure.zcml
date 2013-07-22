@@ -42,15 +42,19 @@
     factory=".common.SixPaymentData" />
 
   <subscriber
+    for="bda.plone.payment.interfaces.IPaymentFailedEvent"
+    handler=".common.payment_failed" />
+
+  <subscriber
     for="bda.plone.payment.interfaces.IPaymentSuccessEvent"
     handler=".common.payment_success" />
 
   <subscriber
     for="bda.plone.payment.interfaces.IPaymentSuccessEvent"
-    handler=".mailnotify.notify_order" />
+    handler=".mailnotify.notify_payment_success" />
 
   <subscriber
-    for="bda.plone.payment.interfaces.IPaymentFailedEvent"
-    handler=".common.payment_failed" />
+    for="bda.plone.checkout.interfaces.ICheckoutDone"
+    handler=".mailnotify.notify_reservation_if_payment_skipped" />
 
 </configure>
