@@ -90,14 +90,14 @@ def create_mail_body(templates, context, attrs):
     return body_template % arguments
 
 
-def do_notify(context, order, templates):
+def do_notify(context, name, order, templates):
     attrs = order.attrs
     subject = templates['subject'] % attrs['ordernumber']
     message = create_mail_body(templates, context, attrs)
     customer_address = attrs['personal_data.email']
     props = getToolByName(context, 'portal_properties')
     shop_manager_address = props.site_properties.email_from_address
-    mail_notify = MailNotify(context)
+    mail_notify = MailNotify(context, name)
     for receiver in [customer_address, shop_manager_address]:
         try:
             mail_notify.send(subject, message, receiver)
@@ -114,10 +114,10 @@ def notify_payment_success(event):
     """
     order = get_order(event.context, event.order_uid)
     templates = dict()
-    templates.update(get_order_templates(context))
+    templates.update(get_order_templates(event.context))
     templates['item_listing_callback'] = create_mail_listing
     templates['order_total_callback'] = create_order_total
-    do_notify(event.context, order, templates)
+    do_notify(event.context, 'order', order, templates)
 
 
 def notify_reservation_if_payment_skipped(event):
@@ -130,21 +130,22 @@ def notify_reservation_if_payment_skipped(event):
     if order.attrs['state'] != 'reserved':
         return
     templates = dict()
-    templates.update(get_reservation_templates(context))
+    templates.update(get_reservation_templates(event.context))
     templates['item_listing_callback'] = create_mail_listing
     templates['order_total_callback'] = create_order_total
-    do_notify(event.context, order, templates)
+    do_notify(event.context, 'reservation', order, templates)
 
 
 class MailNotify(object):
     """Mail notifyer.
     """
 
-    def __init__(self, context):
+    def __init__(self, context, name):
         self.context = context
+        self.name = name
 
     def send(self, subject, message, receiver):
-        sent_key = '_order_mail_already_sent_%s' % receiver
+        sent_key = '_%s_mail_already_sent_%s' % (self.name, receiver)
         if self.context.REQUEST.get(sent_key):
             return
         purl = getToolByName(self.context, 'portal_url')

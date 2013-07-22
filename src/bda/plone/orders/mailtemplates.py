@@ -317,7 +317,7 @@ ORDER_TEMPLATES = {
         'delivery_address': DELIVERY_ADDRESS_IT}
 }
 
-RESERVATION_TEAMPLETS = {
+RESERVATION_TEMPLATES = {
     'en': {
         'subject': RESERVATION_SUBJECT_EN,
         'body': RESERVATION_BODY_EN,
@@ -339,9 +339,9 @@ RESERVATION_TEAMPLETS = {
 
 def get_order_templates(context):
     lang = context.restrictedTraverse('@@plone_portal_state').language()
-    return TEMPLATES.get(lang, ORDER_TEMPLATES['en'])
+    return ORDER_TEMPLATES.get(lang, ORDER_TEMPLATES['en'])
 
 
 def get_reservation_templates(context):
     lang = context.restrictedTraverse('@@plone_portal_state').language()
-    return TEMPLATES.get(lang, RESERVATION_TEMPLATES['en'])
+    return RESERVATION_TEMPLATES.get(lang, RESERVATION_TEMPLATES['en'])
