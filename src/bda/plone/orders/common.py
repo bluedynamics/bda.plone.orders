@@ -116,7 +116,7 @@ class OrderCheckoutAdapter(CheckoutAdapter):
 
     @instance_property
     def order(self):
-        return OOBTNode()
+        return Record()
 
     @property
     def vessel(self):
