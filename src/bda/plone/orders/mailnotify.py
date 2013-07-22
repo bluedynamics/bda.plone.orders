@@ -51,8 +51,7 @@ def create_order_total(context, attrs):
     return  "%.2f" %(ret + float(attrs['shipping']))
 
 
-def create_mail_body(context, attrs):
-    templates = get_templates(context)
+def create_mail_body(templates, context, attrs):
     arguments = dict()
     arguments['date'] = attrs['created'].strftime(DT_FORMAT)
     arguments['ordernumber'] = attrs['ordernumber']
@@ -79,8 +78,10 @@ def create_mail_body(context, attrs):
     else:
         arguments['delivery_address'] = ''
     arguments['order_comment.comment'] = attrs['order_comment.comment']
-    arguments['item_listing'] = create_mail_listing(context, attrs)
-    arguments['order_total'] = create_order_total(context, attrs)
+    item_listing_callback = templates['item_listing_callback']
+    arguments['item_listing'] = item_listing_callback(context, attrs)
+    order_total_callback = templates['order_total_callback']
+    arguments['order_total'] = order_total_callback(context, attrs)
     body_template = templates['body']
     return body_template % arguments
 
@@ -91,9 +92,12 @@ def notify_order(event):
     context = event.context
     order = get_order(context, event.order_uid)
     attrs = order.attrs
-    templates = get_templates(context)
+    templates = dict()
+    templates.update(get_templates(context))
+    templates['item_listing_callback'] = create_mail_listing
+    templates['order_total_callback'] = create_order_total
     subject = templates['subject'] % attrs['ordernumber']
-    message = create_mail_body(context, attrs)
+    message = create_mail_body(templates, context, attrs)
     customer_address = attrs['personal_data.email']
     props = getToolByName(context, 'portal_properties')
     shop_manager_address = props.site_properties.email_from_address
