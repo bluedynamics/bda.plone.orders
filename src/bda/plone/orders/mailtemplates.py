@@ -299,7 +299,7 @@ Nazione: %(delivery_address.country)s
 
 ORDER_SUBJECT_NO = u'Bestilling %s mottatt.'
 
-RESERVATION_SUBJECT_NO = u'Reservasjon %s motttt.'
+RESERVATION_SUBJECT_NO = u'Reservasjon/bestilling %s motttt.'
 
 ORDER_BODY_NO = """
 Dato: %(date)s
@@ -330,7 +330,7 @@ Bestilte produkter:
 RESERVATION_BODY_NO = """
 Dato: %(date)s
 
-Takk for din reservasjon:
+Takk for din reservasjon / bestilling:
 
 Ordernummer: %(ordernumber)s
 
