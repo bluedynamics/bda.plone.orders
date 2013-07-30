@@ -161,7 +161,8 @@ class OrderCheckoutAdapter(CheckoutAdapter):
         all_available = True
         for booking in bookings:
             booking_uids.append(booking.attrs['uid'])
-            if booking.attrs['remaining_stock_available'] < 0:
+            if booking.attrs['remaining_stock_available'] is not None \
+              and booking.attrs['remaining_stock_available'] < 0:
                 all_available = False
         order.attrs['booking_uids'] = booking_uids
         order.attrs['state'] = all_available and 'new' or 'reserved'
