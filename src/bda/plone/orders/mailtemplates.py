@@ -293,6 +293,76 @@ Città: %(delivery_address.city)s
 Nazione: %(delivery_address.country)s
 """
 
+###############################################################################
+# no
+###############################################################################
+
+ORDER_SUBJECT_NO = u'Bestilling %s mottatt.'
+
+RESERVATION_SUBJECT_NO = u'Reservasjon/bestilling %s motttt.'
+
+ORDER_BODY_NO = """
+Dato: %(date)s
+
+Takk for din bestilling:
+
+Ordernummer: %(ordernumber)s
+
+Personlig info:
+Navn: %(personal_data.firstname)s %(personal_data.lastname)s
+Firma: %(personal_data.company)s
+Telefon: %(personal_data.phone)s
+Epost: %(personal_data.email)s
+
+Adr:
+Gate/Vei: %(billing_address.street)s
+Postnr.: %(billing_address.zip)s
+Poststed: %(billing_address.city)s
+Land: %(billing_address.country)s
+%(delivery_address)s
+Kommentar:
+%(order_comment.comment)s
+
+Bestilte produkter:
+%(item_listing)s
+"""
+
+RESERVATION_BODY_NO = """
+Dato: %(date)s
+
+Takk for din reservasjon / bestilling:
+
+Ordernummer: %(ordernumber)s
+
+Personlig info:
+Navn: %(personal_data.firstname)s %(personal_data.lastname)s
+Firma: %(personal_data.company)s
+Telefon: %(personal_data.phone)s
+Epost: %(personal_data.email)s
+
+Adr:
+Gate/Vei: %(billing_address.street)s
+Postnr.: %(billing_address.zip)s
+Poststed: %(billing_address.city)s
+Land: %(billing_address.country)s
+%(delivery_address)s
+Kommentar:
+%(order_comment.comment)s
+
+Bestilte produkter:
+%(item_listing)s
+"""
+
+DELIVERY_ADDRESS_NO = """
+Leveringsadr.:
+Navn: %(delivery_address.firstname)s %(delivery_address.lastname)s
+Firma: %(delivery_address.company)s
+gate/Vei: %(delivery_address.street)s
+Postnr.: %(delivery_address.zip)s
+Poststed: %(delivery_address.city)s
+Land: %(delivery_address.country)s
+"""
+
 
 ###############################################################################
 # language templates
@@ -314,7 +384,11 @@ ORDER_TEMPLATES = {
     'it': {
         'subject': ORDER_SUBJECT_IT,
         'body': ORDER_BODY_IT,
-        'delivery_address': DELIVERY_ADDRESS_IT}
+        'delivery_address': DELIVERY_ADDRESS_IT},
+    'no': {
+        'subject': ORDER_SUBJECT_NO,
+        'body': ORDER_BODY_NO,
+        'delivery_address': DELIVERY_ADDRESS_NO}
 }
 
 RESERVATION_TEMPLATES = {
@@ -333,7 +407,11 @@ RESERVATION_TEMPLATES = {
     'it': {
         'subject': RESERVATION_SUBJECT_IT,
         'body': RESERVATION_BODY_IT,
-        'delivery_address': DELIVERY_ADDRESS_IT}
+        'delivery_address': DELIVERY_ADDRESS_IT},
+    'no': {
+        'subject': RESERVATION_SUBJECT_NO,
+        'body': RESERVATION_BODY_NO,
+        'delivery_address': DELIVERY_ADDRESS_NO}
 }
 
 
