@@ -185,9 +185,10 @@ class OrderCheckoutAdapter(CheckoutAdapter):
             brain = get_catalog_brain(self.context, uid)
             obj = brain.getObject()
             item_state = get_item_state(obj, self.request)
+            if not item_state.validate_count(item_state.aggregated_count):
+                raise CheckoutError(u'Item no longer available')
+            item_stock = get_item_stock(obj)
             item_stock.available -= float(count)
-            if item_stock.available is not None:
-                item_stock.available -= float(count)
             item_data = get_item_data_provider(obj)
             booking = OOBTNode()
             booking.attrs['uid'] = uuid.uuid4()
