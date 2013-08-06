@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: bda.plone.orders\n"
-"POT-Creation-Date: 2013-07-22 15:19+0000\n"
-"PO-Revision-Date: 2013-06-10 11:26+0100\n"
+"POT-Creation-Date: 2013-08-05 13:43+0000\n"
+"PO-Revision-Date: 2013-08-05 15:25+0100\n"
 "Last-Translator: Espen Moe-Nilssen <espen@medialog.no>\n"
 "Language-Team: <espen@medialog.no>\n"
 "MIME-Version: 1.0\n"
@@ -266,7 +266,7 @@ msgstr "Telefon:"
 #. Default: "Your Order number: ${number}"
 #: ./browser/reservation_done.pt:25
 msgid "order_reservation_id"
-msgstr ""
+msgstr "Ditt ordrenummer: ${number}"
 
 #. Default: "Salaried:"
 #: ./browser/order.pt:59
@@ -336,22 +336,22 @@ msgstr "Definer som ny"
 #. Default: "Reservation Done"
 #: ./browser/reservation_done.pt:20
 msgid "reservation_done"
-msgstr ""
+msgstr "Reservert"
 
 #. Default: "continue"
 #: ./browser/reservation_done.pt:32
 msgid "reservation_done_continue"
-msgstr ""
+msgstr "Videre"
 
 #. Default: "Thanks for your Reservation."
 #: ./browser/reservation_done.pt:28
 msgid "reservation_text"
-msgstr ""
+msgstr "Takkk for din bestilling"
 
 #. Default: "Reserved"
 #: ./browser/views.py:97
 msgid "reserved"
-msgstr ""
+msgstr "Reservert"
 
 #. Default: "Salaried"
 #: ./browser/views.py:295
