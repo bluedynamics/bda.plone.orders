@@ -40,6 +40,12 @@ setup(name='bda.plone.orders',
           'collective.js.jqueryui',
           'yafowil.widget.datetime',
       ],
+      extras_require={
+          'test': [
+              'plone.app.testing',
+              'bda.plone.orders',
+          ]
+      },
       entry_points="""
       [z3c.autoinclude.plugin]
       target = plone

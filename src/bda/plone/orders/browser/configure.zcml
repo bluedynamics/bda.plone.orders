@@ -3,11 +3,13 @@
 
   <browser:resource
     name="bda.plone.orders.js"
-    file="orders.js" />
+    file="orders.js"
+    layer="..interfaces.IOrdersExtensionLayer" />
 
   <browser:resource
     name="bda.plone.orders.css"
-    file="orders.css" />
+    file="orders.css"
+    layer="..interfaces.IOrdersExtensionLayer" />
 
   <browser:page
     for="*"
@@ -65,6 +67,7 @@
     name="reservation_done"
     template="reservation_done.pt"
     class=".views.ReservationDone"
-    permission="zope2.View" />
+    permission="zope2.View"
+    layer="..interfaces.IOrdersExtensionLayer" />
 
 </configure>
