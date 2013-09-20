@@ -4,7 +4,9 @@
            xmlns:zcml="http://namespaces.zope.org/zcml">
 
   <include package="souper.plone" />
+  <include package="collective.js.jqueryui" />
   <include package="collective.js.datatables" />
+  <include package="bda.plone.checkout" />
 
   <i18n:registerTranslations directory="locales" />
 
