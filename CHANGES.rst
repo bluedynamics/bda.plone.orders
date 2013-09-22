@@ -5,6 +5,9 @@ Changelog
 0.2dev
 ------
 
+- consider cart item stock where necessary.
+  [rnix]
+
 - Use Mailhost do send emails (see documentation_) to support
   setups with products such as `Products.PrintingMailHost`_
   [fRiSi]
@@ -16,4 +19,5 @@ Changelog
 0.1
 ---
 
-- initial release
+- initial work
+  [rnix]
