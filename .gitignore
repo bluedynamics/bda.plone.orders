@@ -2,3 +2,4 @@
 src/bda.plone.orders.egg-info/
 *.mo
 .DS_Store
+dist/

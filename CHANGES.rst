@@ -2,8 +2,8 @@
 Changelog
 =========
 
-0.2dev
-------
+0.2
+---
 
 - consider cart item stock where necessary.
   [rnix]
