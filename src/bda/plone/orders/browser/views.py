@@ -543,11 +543,11 @@ class ExportOrdersForm(YAMLForm):
                 ex.writerow(order_attrs + booking_attrs)
                 booking.attrs['exported'] = True
                 bookings_soup.reindex(booking)
-        s_start = self.from_date.strftime('%G-%m-%d_%H-%M-%S') 
+        s_start = self.from_date.strftime('%G-%m-%d_%H-%M-%S')
         s_end = self.to_date.strftime('%G-%m-%d_%H-%M-%S')
-        filename = 'orders-export-%s-%s.csv' % (s_start, s_end) 
+        filename = 'orders-export-%s-%s.csv' % (s_start, s_end)
         self.request.response.setHeader('Content-Type', 'text/csv')
-        self.request.response.setHeader('Content-Disposition', 
+        self.request.response.setHeader('Content-Disposition',
                                         'attachment; filename=%s' % filename)
         return sio.getvalue().decode('utf8')
 
