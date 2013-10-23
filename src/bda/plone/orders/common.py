@@ -32,7 +32,7 @@ from bda.plone.cart import (
     get_object_by_uid,
 )
 from bda.plone.shipping import Shippings
-from bda.plone.payment.six_payment import ISixPaymentData
+from bda.plone.payment.interfaces import IPaymentData
 from bda.plone.shop.interfaces import IBuyable
 
 
@@ -308,8 +308,8 @@ class BuyableData(object):
         return count
 
 
-@implementer(ISixPaymentData)
-class SixPaymentData(object):
+@implementer(IPaymentData)
+class PaymentData(object):
 
     def __init__(self, context):
         self.context = context
@@ -361,6 +361,8 @@ class SixPaymentData(object):
 
 
 def payment_success(event):
+    # XXX: move concrete payment specific changes to bda.plone.payment and
+    #      use ZCA for calling
     if event.payment.pid == 'six_payment':
         data = event.data
         order = get_order(event.context, event.order_uid)
@@ -369,6 +371,8 @@ def payment_success(event):
 
 
 def payment_failed(event):
+    # XXX: move concrete payment specific changes to bda.plone.payment and
+    #      use ZCA for calling
     if event.payment.pid == 'six_payment':
         data = event.data
         order = get_order(event.context, event.order_uid)

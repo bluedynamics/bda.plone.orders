@@ -36,12 +36,12 @@
   <adapter
     zcml:condition="installed Products.Archetypes"
     for="Products.Archetypes.interfaces.IBaseObject"
-    factory=".common.SixPaymentData" />
+    factory=".common.PaymentData" />
 
   <adapter
     zcml:condition="installed plone.dexterity"
     for="plone.dexterity.content.DexterityContent"
-    factory=".common.SixPaymentData" />
+    factory=".common.PaymentData" />
 
   <subscriber
     for="bda.plone.payment.interfaces.IPaymentFailedEvent"
