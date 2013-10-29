@@ -2,8 +2,8 @@
 Changelog
 =========
 
-0.3dev
-------
+0.3
+---
 
 - ``bda.plone.payment.six_payment.ISixPaymentData`` has been removed. Use
   ``bda.plone.payment.interfaces.IPaymentData`` instead.
