@@ -357,7 +357,7 @@ class OrderView(BrowserView):
 
     @property
     def order_data(self):
-        return OrderData(self.context, self.uid)
+        return OrderData(self.context, uid=self.uid)
 
     @property
     def net(self):

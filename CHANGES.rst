@@ -2,6 +2,14 @@
 Changelog
 =========
 
+0.4dev
+------
+
+- ``bda.plone.orders.common.OrderData`` now accepts either ``uid`` or ``order``
+  as keyword argument in ``__init__``.
+  [rnix]
+
+
 0.3
 ---
 

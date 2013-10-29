@@ -213,14 +213,24 @@ class OrderCheckoutAdapter(CheckoutAdapter):
 
 class OrderData(object):
 
-    def __init__(self, context, uid):
+    def __init__(self, context, uid=None, order=None):
+        assert(uid and not order or order and not uid)
         self.context = context
-        if not isinstance(uid, uuid.UUID):
+        if uid and not isinstance(uid, uuid.UUID):
             uid = uuid.UUID(uid)
-        self.uid = uid
+        self._uid = uid
+        self._order = order
+
+    @property
+    def uid(self):
+        if self._uid:
+            return self._uid
+        return self.order.attrs['uid']
 
     @property
     def order(self):
+        if self._order:
+            return self._order
         return get_order(self.context, self.uid)
 
     @property
@@ -316,7 +326,7 @@ class PaymentData(object):
 
     @instance_property
     def order_data(self):
-        return OrderData(self.context, self.order_uid)
+        return OrderData(self.context, uid=self.order_uid)
 
     @property
     def amount(self):
@@ -395,7 +405,7 @@ class OrderTransitions(object):
         """
         if not isinstance(uid, uuid.UUID):
             uid = uuid.UUID(uid)
-        order_data = OrderData(self.context, uid)
+        order_data = OrderData(self.context, uid=uid)
         order = order_data.order
         # XXX: currently we need to delete attribute before setting to a new
         #      value in order to persist change. fix in appropriate place.
