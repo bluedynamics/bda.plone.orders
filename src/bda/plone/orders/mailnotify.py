@@ -56,7 +56,9 @@ def create_order_total(context, attrs):
 
 
 def create_mail_body(templates, context, attrs):
-    arguments = dict()
+    # copy all order data to the attributes to support custom (string)fields out of the box
+    # to transform dates, patch this method
+    arguments = dict(attrs.items())
     arguments['date'] = attrs['created'].strftime(DT_FORMAT)
     arguments['ordernumber'] = attrs['ordernumber']
     arguments['personal_data.firstname'] = attrs['personal_data.firstname']
