@@ -5,6 +5,10 @@ Changelog
 0.4dev
 ------
 
+- Copy all order data in ``create_mail_body`` to the template attributes to
+  support custom (string)fields out of the box in mail templates.
+  [fRiSi, rnix]
+
 - ``bda.plone.orders.common.OrderData`` now accepts either ``uid`` or ``order``
   as keyword argument in ``__init__``.
   [rnix]

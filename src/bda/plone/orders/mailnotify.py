@@ -56,34 +56,13 @@ def create_order_total(context, attrs):
 
 
 def create_mail_body(templates, context, attrs):
-    # copy all order data to the attributes to support custom (string)fields out of the box
-    # to transform dates, patch this method
     arguments = dict(attrs.items())
     arguments['date'] = attrs['created'].strftime(DT_FORMAT)
-    arguments['ordernumber'] = attrs['ordernumber']
-    arguments['personal_data.firstname'] = attrs['personal_data.firstname']
-    arguments['personal_data.lastname'] = attrs['personal_data.lastname']
-    arguments['personal_data.company'] = attrs['personal_data.company']
-    arguments['personal_data.phone'] = attrs['personal_data.phone']
-    arguments['personal_data.email'] = attrs['personal_data.email']
-    arguments['billing_address.street'] = attrs['billing_address.street']
-    arguments['billing_address.zip'] = attrs['billing_address.zip']
-    arguments['billing_address.city'] = attrs['billing_address.city']
-    arguments['billing_address.country'] = attrs['billing_address.country']
     if attrs['delivery_address.alternative_delivery']:
-        delivery = dict()
-        delivery['delivery_address.firstname'] = attrs['delivery_address.firstname']
-        delivery['delivery_address.lastname'] = attrs['delivery_address.lastname']
-        delivery['delivery_address.company'] = attrs['delivery_address.company']
-        delivery['delivery_address.street'] = attrs['delivery_address.street']
-        delivery['delivery_address.zip'] = attrs['delivery_address.zip']
-        delivery['delivery_address.city'] = attrs['delivery_address.city']
-        delivery['delivery_address.country'] = attrs['delivery_address.country']
         delivery_address_template = templates['delivery_address']
-        arguments['delivery_address'] = delivery_address_template % delivery
+        arguments['delivery_address'] = delivery_address_template % arguments
     else:
         arguments['delivery_address'] = ''
-    arguments['order_comment.comment'] = attrs['order_comment.comment']
     item_listing_callback = templates['item_listing_callback']
     arguments['item_listing'] = item_listing_callback(context, attrs)
     order_total_callback = templates['order_total_callback']
