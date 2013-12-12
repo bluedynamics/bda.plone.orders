@@ -2,6 +2,7 @@ from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
 from bda.plone.cart import get_catalog_brain
 from bda.plone.orders import common
+from bda.plone.orders import message_factory as _
 from bda.plone.orders.common import DT_FORMAT
 from bda.plone.orders.common import get_order
 from bda.plone.orders.mailtemplates import get_order_templates
@@ -12,10 +13,6 @@ from email.Utils import formatdate
 from repoze.catalog.query import Any
 from souper.soup import get_soup
 from zope.i18n import translate
-from zope.i18nmessageid import MessageFactory
-
-
-_ = MessageFactory('bda.plone.orders')
 
 
 def status_message(context, msg):

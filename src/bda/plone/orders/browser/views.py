@@ -2,6 +2,8 @@ from Products.Five import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from StringIO import StringIO
 from bda.plone.cart import ascur
+from bda.plone.checkout import message_factory as _co
+from bda.plone.orders import message_factory as _
 from bda.plone.orders.common import DT_FORMAT
 from bda.plone.orders.common import OrderData
 from bda.plone.orders.common import OrderTransitions
@@ -20,15 +22,10 @@ from yafowil.plone.form import YAMLForm
 from yafowil.utils import Tag
 from zope.i18n import translate
 from zope.i18nmessageid import Message
-from zope.i18nmessageid import MessageFactory
 
 import csv
 import datetime
 import json
-
-
-_ = MessageFactory('bda.plone.orders')
-_co = MessageFactory('bda.plone.checkout')
 
 
 class Translate(object):
