@@ -1,23 +1,18 @@
-import smtplib
+from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.utils import safe_unicode
+from bda.plone.cart import get_catalog_brain
+from bda.plone.orders import common
+from bda.plone.orders.common import DT_FORMAT
+from bda.plone.orders.common import get_order
+from bda.plone.orders.mailtemplates import get_order_templates
+from bda.plone.orders.mailtemplates import get_reservation_templates
+from email.Header import Header
 from email.MIMEText import MIMEText
 from email.Utils import formatdate
-from email.Header import Header
+from repoze.catalog.query import Any
+from souper.soup import get_soup
 from zope.i18n import translate
 from zope.i18nmessageid import MessageFactory
-from souper.soup import get_soup
-from repoze.catalog.query import Any
-from Products.CMFCore.utils import getToolByName
-from bda.plone.cart import get_catalog_brain
-from .common import (
-    DT_FORMAT,
-    get_order,
-)
-from .mailtemplates import (
-    get_order_templates,
-    get_reservation_templates,
-)
-from Products.CMFPlone.utils import safe_unicode
-from . import common
 
 
 _ = MessageFactory('bda.plone.orders')
@@ -52,7 +47,7 @@ def create_order_total(context, attrs):
         net = booking.attrs.get('net', 0.0) * count
         ret += net
         ret += net * booking.attrs.get('vat', 0.0) / 100
-    return  "%.2f" %(ret + float(attrs['shipping']))
+    return "%.2f" % (ret + float(attrs['shipping']))
 
 
 def create_mail_body(templates, context, attrs):
@@ -82,7 +77,7 @@ def do_notify(context, name, order, templates):
     for receiver in [customer_address, shop_manager_address]:
         try:
             mail_notify.send(subject, message, receiver)
-        except Exception, e:
+        except Exception:
             msg = translate(
                 _('email_sending_failed',
                   'Failed to send Notification to ${receiver}',

@@ -1,37 +1,30 @@
-import json
-import csv
-import datetime
-from StringIO import StringIO
-from decimal import Decimal
-from zope.i18n import translate
-from zope.i18nmessageid import (
-    Message,
-    MessageFactory,
-)
 from Products.Five import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from repoze.catalog.query import (
-    Contains,
-    Eq,
-    Ge,
-    Le,
-)
-from souper.soup import (
-    get_soup,
-    LazyRecord,
-)
-from yafowil.utils import Tag
+from StringIO import StringIO
+from bda.plone.cart import ascur
+from bda.plone.orders.common import DT_FORMAT
+from bda.plone.orders.common import OrderData
+from bda.plone.orders.common import OrderTransitions
+from bda.plone.orders.common import get_order
+from bda.plone.payment import Payments
+from decimal import Decimal
+from repoze.catalog.query import Contains
+from repoze.catalog.query import Eq
+from repoze.catalog.query import Ge
+from repoze.catalog.query import Le
+from souper.soup import LazyRecord
+from souper.soup import get_soup
 from yafowil.base import ExtractionError
 from yafowil.controller import Controller
 from yafowil.plone.form import YAMLForm
-from bda.plone.cart import ascur
-from bda.plone.payment import Payments
-from ..common import (
-    DT_FORMAT,
-    get_order,
-    OrderData,
-    OrderTransitions,
-)
+from yafowil.utils import Tag
+from zope.i18n import translate
+from zope.i18nmessageid import Message
+from zope.i18nmessageid import MessageFactory
+
+import csv
+import datetime
+import json
 
 
 _ = MessageFactory('bda.plone.orders')
@@ -210,6 +203,7 @@ class TableData(BrowserView):
         sort = self.sort()
         sort_index = soup.catalog[sort['index']]
         iids = sort_index.sort(data.keys(), reverse=sort['reverse'])
+
         def lazyrecords():
             for iid in iids:
                 yield LazyRecord(iid, soup)
@@ -237,6 +231,7 @@ class TableData(BrowserView):
         length, lazydata = self.query(soup)
         columns = self.columns
         colnames = [_['id'] for _ in columns]
+
         def record2list(record):
             result = list()
             for colname in colnames:
@@ -332,7 +327,6 @@ class OrdersData(OrdersTable, TableData):
     search_text_index = 'text'
 
     def query(self, soup):
-        columns = self.columns
         sort = self.sort()
         term = self.request.form['sSearch'].decode('utf-8')
         if term:
@@ -439,7 +433,7 @@ class OrderView(BrowserView):
         return item['exported'] and _('yes', 'Yes') or _('no', 'No')
 
 
-class DialectExcelWithColons(csv.excel):    
+class DialectExcelWithColons(csv.excel):
     delimiter = ';'
 
 

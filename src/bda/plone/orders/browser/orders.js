@@ -39,7 +39,7 @@
                 trigger: '.dropdown_header'
             });
         }
-    }
+    };
 
     $.fn.ordersdropdownmenu = function(options) {
         var trigger = options.trigger;
@@ -58,6 +58,6 @@
             container.css('display', 'block');
         });
         return this;
-    }
+    };
 
-})(jQuery);
+}(jQuery));

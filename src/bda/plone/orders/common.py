@@ -1,39 +1,34 @@
-import uuid
-import time
-import datetime
+from bda.plone.cart import extractitems
+from bda.plone.cart import get_catalog_brain
+from bda.plone.cart import get_data_provider
+from bda.plone.cart import get_item_data_provider
+from bda.plone.cart import get_item_state
+from bda.plone.cart import get_item_stock
+from bda.plone.cart import get_object_by_uid
+from bda.plone.cart import readcookie
+from bda.plone.checkout import CheckoutAdapter
+from bda.plone.checkout import CheckoutError
+from bda.plone.payment.interfaces import IPaymentData
+from bda.plone.shipping import Shippings
+from bda.plone.shop.interfaces import IBuyable
 from decimal import Decimal
-from zope.interface import implementer
+from node.ext.zodb import OOBTNode
+from node.utils import instance_property
 from repoze.catalog.catalog import Catalog
 from repoze.catalog.indexes.field import CatalogFieldIndex
 from repoze.catalog.indexes.keyword import CatalogKeywordIndex
 from repoze.catalog.indexes.text import CatalogTextIndex
 from repoze.catalog.query import Eq
 from souper.interfaces import ICatalogFactory
-from souper.soup import (
-    get_soup,
-    Record,
-    NodeAttributeIndexer,
-    NodeTextIndexer,
-)
-from node.utils import instance_property
-from node.ext.zodb import OOBTNode
-from bda.plone.checkout import (
-    CheckoutAdapter,
-    CheckoutError,
-)
-from bda.plone.cart import (
-    readcookie,
-    extractitems,
-    get_data_provider,
-    get_item_data_provider,
-    get_item_stock,
-    get_item_state,
-    get_catalog_brain,
-    get_object_by_uid,
-)
-from bda.plone.shipping import Shippings
-from bda.plone.payment.interfaces import IPaymentData
-from bda.plone.shop.interfaces import IBuyable
+from souper.soup import NodeAttributeIndexer
+from souper.soup import NodeTextIndexer
+from souper.soup import Record
+from souper.soup import get_soup
+from zope.interface import implementer
+
+import datetime
+import time
+import uuid
 
 
 DT_FORMAT = '%d.%m.%Y %H:%M'
@@ -95,9 +90,13 @@ class OrdersCatalogFactory(object):
         salaried_indexer = NodeAttributeIndexer('salaried')
         catalog[u'salaried'] = CatalogFieldIndex(salaried_indexer)
         firstname_indexer = NodeAttributeIndexer('personal_data.firstname')
-        catalog[u'personal_data.firstname'] = CatalogFieldIndex(firstname_indexer)
+        catalog[u'personal_data.firstname'] = CatalogFieldIndex(
+            firstname_indexer
+        )
         lastname_indexer = NodeAttributeIndexer('personal_data.lastname')
-        catalog[u'personal_data.lastname'] = CatalogFieldIndex(lastname_indexer)
+        catalog[u'personal_data.lastname'] = CatalogFieldIndex(
+            lastname_indexer
+        )
         city_indexer = NodeAttributeIndexer('billing_address.city')
         catalog[u'billing_address.city'] = CatalogFieldIndex(city_indexer)
         search_attributes = ['personal_data.lastname',
@@ -161,8 +160,8 @@ class OrderCheckoutAdapter(CheckoutAdapter):
         all_available = True
         for booking in bookings:
             booking_uids.append(booking.attrs['uid'])
-            if booking.attrs['remaining_stock_available'] is not None \
-              and booking.attrs['remaining_stock_available'] < 0:
+            if booking.attrs['remaining_stock_available'] is not None\
+                    and booking.attrs['remaining_stock_available'] < 0:
                 all_available = False
         order.attrs['booking_uids'] = booking_uids
         order.attrs['state'] = all_available and 'new' or 'reserved'
@@ -342,7 +341,8 @@ class PaymentData(object):
     def description(self):
         order = self.order_data.order
         attrs = order.attrs
-        amount = '%s %s' % (self.currency, str(round(self.order_data.total, 2)))
+        amount = '%s %s' % (self.currency,
+                            str(round(self.order_data.total, 2)))
         description = ', '.join([
             attrs['created'].strftime(DT_FORMAT),
             attrs['personal_data.firstname'],

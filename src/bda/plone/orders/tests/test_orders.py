@@ -1,8 +1,7 @@
+from bda.plone.orders.tests import Orders_INTEGRATION_TESTING
+from bda.plone.orders.tests import set_browserlayer
+
 import unittest2 as unittest
-from bda.plone.orders.tests import (
-    Orders_INTEGRATION_TESTING,
-    set_browserlayer,
-)
 
 
 class TestOrders(unittest.TestCase):
