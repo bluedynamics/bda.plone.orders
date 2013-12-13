@@ -1,6 +1,6 @@
-from zope.interface import Interface
+from bda.plone.checkout.interfaces import ICheckoutExtensionLayer
 
 
-class IOrdersExtensionLayer(Interface):
+class IOrdersExtensionLayer(ICheckoutExtensionLayer):
     """Browser layer for bda.plone.orders
     """
