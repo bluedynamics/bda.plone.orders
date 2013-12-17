@@ -5,6 +5,9 @@ Changelog
 0.4dev
 ------
 
+- Render a link to the booked item in @@order view.
+  [thet]
+
 - Copy all order data in ``create_mail_body`` to the template attributes to
   support custom (string)fields out of the box in mail templates.
   [fRiSi, rnix]
