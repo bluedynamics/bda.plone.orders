@@ -1,3 +1,4 @@
+from Acquisition import aq_parent
 from bda.plone.cart import extractitems
 from bda.plone.cart import get_catalog_brain
 from bda.plone.cart import get_data_provider
@@ -9,11 +10,13 @@ from bda.plone.cart import readcookie
 from bda.plone.checkout import CheckoutAdapter
 from bda.plone.checkout import CheckoutError
 from bda.plone.payment.interfaces import IPaymentData
+from bda.plone.orders.interfaces import ISubShop
 from bda.plone.shipping import Shippings
 from bda.plone.shop.interfaces import IBuyable
 from decimal import Decimal
 from node.ext.zodb import OOBTNode
 from node.utils import instance_property
+from plone.uuid.interfaces import IUUID
 from repoze.catalog.catalog import Catalog
 from repoze.catalog.indexes.field import CatalogFieldIndex
 from repoze.catalog.indexes.keyword import CatalogKeywordIndex
@@ -24,6 +27,7 @@ from souper.soup import NodeAttributeIndexer
 from souper.soup import NodeTextIndexer
 from souper.soup import Record
 from souper.soup import get_soup
+from zope.component.interfaces import ISite
 from zope.interface import implementer
 
 import datetime
@@ -48,6 +52,20 @@ def get_order(context, uid):
     return [_ for _ in soup.query(Eq('uid', uid))][0]
 
 
+def get_shop(context):
+    """Returns the (nearest) sub shop or the main shop by traversing up the
+    content tree.
+    """
+    if ISubShop.providedBy(context) or ISite.providedBy(context):
+        return context
+    else:
+        parent = aq_parent(context)
+        if parent == context:
+            return context
+        else:
+            return get_shop(parent)
+
+
 @implementer(ICatalogFactory)
 class BookingsCatalogFactory(object):
 
@@ -59,6 +77,8 @@ class BookingsCatalogFactory(object):
         catalog[u'buyable_uid'] = CatalogFieldIndex(buyable_uid_indexer)
         order_uid_indexer = NodeAttributeIndexer('order_uid')
         catalog[u'order_uid'] = CatalogFieldIndex(order_uid_indexer)
+        shop_uid_indexer = NodeAttributeIndexer('shop_uid')
+        catalog[u'shop_uid'] = CatalogFieldIndex(shop_uid_indexer)
         creator_indexer = NodeAttributeIndexer('creator')
         catalog[u'creator'] = CatalogFieldIndex(creator_indexer)
         created_indexer = NodeAttributeIndexer('created')
@@ -180,6 +200,8 @@ class OrderCheckoutAdapter(CheckoutAdapter):
         ret = list()
         cart_data = get_data_provider(self.context)
         currency = cart_data.currency
+        shop = get_shop(self.context)
+        shop_uid = IUUID(shop)
         items = self.items
         for uid, count, comment in items:
             brain = get_catalog_brain(self.context, uid)
@@ -197,6 +219,7 @@ class OrderCheckoutAdapter(CheckoutAdapter):
             booking.attrs['buyable_count'] = count
             booking.attrs['buyable_comment'] = comment
             booking.attrs['order_uid'] = order.attrs['uid']
+            booking.attrs['shop_uid'] = shop_uid
             booking.attrs['creator'] = order.attrs['creator']
             booking.attrs['created'] = order.attrs['created']
             booking.attrs['exported'] = False
@@ -300,6 +323,8 @@ class BuyableData(object):
         bookings_soup = get_soup('bda_plone_orders_bookings', context)
         order_bookings = dict()
         for booking in bookings_soup.query(Eq('buyable_uid', context.UID())):
+            # TODO: BUG? why is bookings only scoped in this block and not used
+            # elsewhere?
             bookings = order_bookings.setdefault(
                 booking.attrs['order_uid'], list())
             bookings.append(booking)
