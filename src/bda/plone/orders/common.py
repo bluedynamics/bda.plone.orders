@@ -201,7 +201,7 @@ class OrderCheckoutAdapter(CheckoutAdapter):
         cart_data = get_data_provider(self.context)
         currency = cart_data.currency
         shop = get_shop(self.context)
-        shop_uid = IUUID(shop)
+        shop_uid = uuid.UUID(IUUID(shop))
         items = self.items
         for uid, count, comment in items:
             brain = get_catalog_brain(self.context, uid)
