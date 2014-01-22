@@ -5,6 +5,12 @@ Changelog
 0.4dev
 ------
 
+- Implement multi client functionality and assign bookings to a specific shop.
+  Allow definitions of sub shops via the ISubShop interface for multiple
+  clients/vendors.
+  TODO: not finished yet...
+  [thet]
+
 - Render a link to the booked item in @@order view.
   [thet]
 
