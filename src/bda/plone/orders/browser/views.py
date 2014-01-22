@@ -10,6 +10,7 @@ from bda.plone.orders.common import OrderTransitions
 from bda.plone.orders.common import get_order
 from bda.plone.payment import Payments
 from decimal import Decimal
+from plone.app.uuid.utils import uuidToURL
 from repoze.catalog.query import Contains
 from repoze.catalog.query import Eq
 from repoze.catalog.query import Ge
@@ -382,6 +383,7 @@ class OrderView(BrowserView):
         for booking in self.order_data.bookings:
             ret.append({
                 'title': booking.attrs['title'],
+                'url': uuidToURL(booking.attrs['buyable_uid']),
                 'count': booking.attrs['buyable_count'],
                 'net': ascur(booking.attrs.get('net', 0.0)),
                 'vat': booking.attrs.get('vat', 0.0),

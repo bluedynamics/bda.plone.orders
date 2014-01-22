@@ -1,6 +1,6 @@
-(function($) {
+(function ($) {
 
-    $(document).ready(function() {
+    $(document).ready(function () {
         var url = $('#bdaploneorders').attr('data-ajaxurl');
         var oTable = $('#bdaploneorders').dataTable({
             "bProcessing": true,
@@ -23,11 +23,11 @@
     });
 
     var orders = {
-        bind: function() {
+        bind: function () {
             $(this).bdajax();
         },
 
-        dropdown_binder: function(context) {
+        dropdown_binder: function (context) {
             var sel = '.change_order_salaried_dropdown';
             $(sel, context).ordersdropdownmenu({
                 menu: '.dropdown_items',
@@ -41,15 +41,15 @@
         }
     };
 
-    $.fn.ordersdropdownmenu = function(options) {
+    $.fn.ordersdropdownmenu = function (options) {
         var trigger = options.trigger;
         var menu = options.menu;
         this.unbind('click');
-        $(trigger, this).bind('click', function(event) {
+        $(trigger, this).bind('click', function (event) {
             event.preventDefault();
             var container = $(menu, $(this).parent().parent());
             $(document).unbind('mousedown')
-                       .bind('mousedown', function(event) {
+                       .bind('mousedown', function (event) {
                 if ($(event.target).parents(menu + ':first').length) {
                     return true;
                 }

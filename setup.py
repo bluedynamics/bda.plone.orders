@@ -39,6 +39,7 @@ setup(
         'collective.js.jqueryui',
         'souper.plone',
         'yafowil.widget.datetime',
+        'plone.app.uuid',
     ],
     extras_require={
         'test': [

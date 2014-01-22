@@ -152,7 +152,7 @@
       <tal:tr repeat="row view/listing">
         <tr tal:define="even repeat/row/even"
             tal:attributes="class python:even and 'even' or 'odd'">
-          <td tal:content="row/title">title</td>
+          <td><a href="row/url" target="_blank" tal:attributes="href row/url" tal:content="row/title">title</a></td>
           <td tal:content="row/count">count</td>
           <td tal:content="row/quantity_unit">quantity</td>
           <td tal:content="row/currency">EUR</td>

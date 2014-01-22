@@ -1,3 +1,7 @@
+#exposeMask {
+    z-index: 0 !important; /* render exposeMask BEHIND the overlay */
+}
+
 /* Orders */
 #bdaploneorders_wrapper {
     margin-top:1em;
