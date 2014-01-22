@@ -118,9 +118,6 @@ class MailNotify(object):
         self.name = name
 
     def send(self, subject, message, receiver):
-        sent_key = '_%s_mail_already_sent_%s' % (self.name, receiver)
-        if self.context.REQUEST.get(sent_key):
-            return
         purl = getToolByName(self.context, 'portal_url')
         mailfrom = purl.getPortalObject().email_from_address
         mailfrom_name = purl.getPortalObject().email_from_name
@@ -138,4 +135,3 @@ class MailNotify(object):
         message['Subject'] = subject
         mailhost.send(messageText=message,
                       mto=receiver)
-        self.context.REQUEST[sent_key] = 1
