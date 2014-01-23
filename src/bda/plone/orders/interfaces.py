@@ -1,8 +1,6 @@
+from zope.interface import Interface
+from zope.interface import Attribute
 from bda.plone.checkout.interfaces import ICheckoutExtensionLayer
-from zope.interface import (
-    Interface,
-    Attribute,
-)
 
 
 class IOrdersExtensionLayer(ICheckoutExtensionLayer):
@@ -13,6 +11,8 @@ class IOrdersExtensionLayer(ICheckoutExtensionLayer):
 class ISubShop(Interface):
     """A sub shop. Used to create multiple shops within a site for mutpliple
     vendors.
+
+    XXX: rename to IVendor
     """
 
 

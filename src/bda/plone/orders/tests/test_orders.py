@@ -1,11 +1,10 @@
+import unittest2 as unittest
+from zope.component.interfaces import ISite
+from zope.interface import alsoProvides
 from bda.plone.orders.tests import Orders_INTEGRATION_TESTING
 from bda.plone.orders.tests import set_browserlayer
 from bda.plone.orders.common import get_shop
 from bda.plone.orders.interfaces import ISubShop
-from zope.component.interfaces import ISite
-from zope.interface import alsoProvides
-
-import unittest2 as unittest
 
 
 class TestOrders(unittest.TestCase):
