@@ -95,7 +95,7 @@ def get_vendor_areas(user=None):
     return vendor_shops
 
 
-def get_allowed_orders(context, vendor=None):
+def get_allowed_orders(context, user=None):
     """Get all orders from bookings related to a shop, as the shop_uid is only
     indexed on bda_plone_orders_bookings soup and not on
     bda_plone_orders_orders.
@@ -108,7 +108,7 @@ def get_allowed_orders(context, vendor=None):
     >>> [it.attrs['order_uid'] for it in soup.query(Eq('creator', 'test'))]
 
     """
-    manageable_shops = get_vendor_areas(vendor)
+    manageable_shops = get_vendor_areas(user)
     query = Any('shop_uid', [IUUID(it) for it in manageable_shops])
     soup = get_soup('bda_plone_orders_bookings', context)
     res = soup.query(query)
