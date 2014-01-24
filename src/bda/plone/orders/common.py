@@ -29,7 +29,7 @@ from bda.plone.cart import readcookie
 from bda.plone.checkout import CheckoutAdapter
 from bda.plone.checkout import CheckoutError
 from bda.plone.payment.interfaces import IPaymentData
-from bda.plone.orders.interfaces import ISubShop
+from bda.plone.orders.interfaces import IVendor
 from bda.plone.shipping import Shippings
 from bda.plone.shop.interfaces import IBuyable
 
@@ -51,18 +51,18 @@ def get_order(context, uid):
     return [_ for _ in soup.query(Eq('uid', uid))][0]
 
 
-def get_shop(context):
-    """Returns the (nearest) sub shop or the main shop by traversing up the
+def get_vendor(context):
+    """Returns the (nearest) vendor or the main shop by traversing up the
     content tree.
     """
-    if ISubShop.providedBy(context) or ISite.providedBy(context):
+    if IVendor.providedBy(context) or ISite.providedBy(context):
         return context
     else:
         parent = aq_parent(context)
         if parent == context:
             return context
         else:
-            return get_shop(parent)
+            return get_vendor(parent)
 
 
 @implementer(ICatalogFactory)
@@ -199,7 +199,7 @@ class OrderCheckoutAdapter(CheckoutAdapter):
         ret = list()
         cart_data = get_data_provider(self.context)
         currency = cart_data.currency
-        shop = get_shop(self.context)
+        shop = get_vendor(self.context)
         shop_uid = uuid.UUID(IUUID(shop))
         items = self.items
         for uid, count, comment in items:

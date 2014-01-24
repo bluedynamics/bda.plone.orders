@@ -8,11 +8,9 @@ class IOrdersExtensionLayer(ICheckoutExtensionLayer):
     """
 
 
-class ISubShop(Interface):
-    """A sub shop. Used to create multiple shops within a site for mutpliple
+class IVendor(Interface):
+    """A Vendor. Used to create isolated areas within one shop for multiple
     vendors.
-
-    XXX: rename to IVendor
     """
 
 
