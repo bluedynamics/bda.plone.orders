@@ -20,12 +20,12 @@ from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from plone.app.uuid.utils import uuidToURL
 from bda.plone.cart import ascur
 from bda.plone.checkout import message_factory as _co
-from bda.plone.orders import message_factory as _
-from bda.plone.orders.common import DT_FORMAT
-from bda.plone.orders.common import OrderData
-from bda.plone.orders.common import OrderTransitions
-from bda.plone.orders.common import get_order
 from bda.plone.payment import Payments
+from .. import message_factory as _
+from ..common import DT_FORMAT
+from ..common import OrderData
+from ..common import OrderTransitions
+from ..common import get_order
 
 
 class Translate(object):
@@ -300,17 +300,28 @@ class OrdersTable(BrowserView):
 
     def render_order_actions(self, colname, record):
         tag = Tag(Translate(self.request))
-        target = '%s?uid=%s' % (self.context.absolute_url(),
-                                str(record.attrs['uid']))
-        link_attrs = {
+        view_order_target = '%s?uid=%s' % (
+            self.context.absolute_url(), str(record.attrs['uid']))
+        view_order_attrs = {
             'ajax:bind': 'click',
-            'ajax:target': target,
+            'ajax:target': view_order_target,
             'ajax:overlay': 'order',
             'class_': 'contenttype-document',
             'href': '',
             'title': _('view_order', 'View Order'),
         }
-        return tag('a', '&nbsp', **link_attrs)
+        view_order = tag('a', '&nbsp', **view_order_attrs)
+        # XXX: permission check
+        # if not notification_permitted:
+        #     return view_order
+        select_order_attrs = {
+            'name': 'notify_buyer',
+            'type': 'checkbox',
+            'value': record.attrs['uid'],
+            'class_': 'select_order',
+        }
+        select_order = tag('input', **select_order_attrs)
+        return select_order + view_order
 
     def render_salaried(self, colname, record):
         return SalariedDropdown(self.context, self.request, record).render()
