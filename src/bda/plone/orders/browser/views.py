@@ -380,12 +380,6 @@ class OrdersData(OrdersTable, TableData):
     search_text_index = 'text'
 
     def query(self, soup):
-        if ploneapi.user.is_anonymous():
-            # don't allow this for anonymous users
-            raise Unauthorized(
-                _('unauthorized_orders_view',
-                  default="You have to log in to access the orders view")
-            )
         query = None
         manageable_orders = get_allowed_orders(self.context)
         # vendor
