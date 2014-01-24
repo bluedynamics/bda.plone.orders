@@ -79,13 +79,14 @@ def get_all_vendors():
     return res
 
 
-def get_vendor_areas(vendor=None):
-    if not vendor:
-        vendor = ploneapi.user.get_current()
+def get_vendor_areas(user=None):
+    if not user:
+        user = ploneapi.user.get_current()
+    all_vendors = get_all_vendors()
     try:
         vendor_shops = [
             vendor for vendor in all_vendors
-                if ploneapi.user.get_permissions(user=vendor, obj=vendor).get(
+                if ploneapi.user.get_permissions(user=user, obj=vendor).get(
                     'bda.plone.orders: Vendor Orders')
         ]
     except ploneapi.exc.UserNotFoundError:
