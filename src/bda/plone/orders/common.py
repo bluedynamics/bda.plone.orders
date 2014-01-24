@@ -79,13 +79,14 @@ def get_all_vendors():
     return res
 
 
-def get_vendor_areas(vendor=None):
-    if not vendor:
-        vendor = ploneapi.user.get_current()
+def get_vendor_areas(user=None):
+    if not user:
+        user = ploneapi.user.get_current()
+    all_vendors = get_all_vendors()
     try:
         vendor_shops = [
             vendor for vendor in all_vendors
-                if ploneapi.user.get_permissions(user=vendor, obj=vendor).get(
+                if ploneapi.user.get_permissions(user=user, obj=vendor).get(
                     'bda.plone.orders: Vendor Orders')
         ]
     except ploneapi.exc.UserNotFoundError:
@@ -94,7 +95,7 @@ def get_vendor_areas(vendor=None):
     return vendor_shops
 
 
-def get_allowed_orders(context, vendor=None):
+def get_allowed_orders(context, user=None):
     """Get all orders from bookings related to a shop, as the shop_uid is only
     indexed on bda_plone_orders_bookings soup and not on
     bda_plone_orders_orders.
@@ -107,7 +108,7 @@ def get_allowed_orders(context, vendor=None):
     >>> [it.attrs['order_uid'] for it in soup.query(Eq('creator', 'test'))]
 
     """
-    manageable_shops = get_vendor_areas(vendor)
+    manageable_shops = get_vendor_areas(user)
     query = Any('shop_uid', [IUUID(it) for it in manageable_shops])
     soup = get_soup('bda_plone_orders_bookings', context)
     res = soup.query(query)
