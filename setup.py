@@ -42,7 +42,6 @@ setup(
     ],
     extras_require={
         'test': [
-            'bda.plone.orders',
             'plone.app.testing',
         ]
     },
