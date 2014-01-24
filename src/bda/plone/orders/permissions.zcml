@@ -1,0 +1,20 @@
+<configure
+  xmlns="http://namespaces.zope.org/zope">
+
+  <permission
+    id="bda.plone.orders.ViewOrders"
+    title="bda.plone.orders: View Orders" />
+
+  <permission
+    id="bda.plone.orders.AllOrders"
+    title="bda.plone.orders: All Orders" />
+
+  <permission
+    id="bda.plone.orders.VendorOrders"
+    title="bda.plone.orders: Vendor Orders" />
+
+  <permission
+    id="bda.plone.orders.CustomerOrders"
+    title="bda.plone.orders: Customer Orders" />
+
+</configure>

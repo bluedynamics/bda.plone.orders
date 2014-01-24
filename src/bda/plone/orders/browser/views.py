@@ -26,6 +26,7 @@ from ..common import DT_FORMAT
 from ..common import OrderData
 from ..common import OrderTransitions
 from ..common import get_order
+from ..common import get_allowed_orders
 
 
 class Translate(object):
@@ -260,11 +261,48 @@ class OrdersTable(BrowserView):
         return self.table_template(self)
 
     @property
+    def current_user(self):
+        user = ploneapi.user.get_current()
+        if not user:
+            return None
+        return user.getId()
+
+    @property
+    def is_shopadmin(self):
+        roles = ploneapi.user.get_roles()
+        return 'Manager' in roles or 'Shop Admin' in roles
+
+    @property
+    def is_vendor(self):
+        perm = 'bda.plone.shop: Manage this shop'
+        perms = ploneapi.user.get_permissions(obj=self.context)
+        return perm in perms and perms[perm] or False
+
+    @property
+    def allow_userfilter(self):
+        return self.is_shopadmin or self.is_vendor
+
+    @property
+    def url(self):
+        return self.request.getURL()
+
+    @property
     def ajaxurl(self):
-        return '%s/%s' % (self.context.absolute_url(), '@@ordersdata')
+        userid = self.request.form.get('user')
+        userid_qs = userid and '?userid=%s' % userid or ''
+        return '%s/%s%s' % (
+            self.context.absolute_url(), '@@ordersdata', userid_qs)
 
     @property
     def columns(self):
+        # XXX: anon should not be able to see this at all.
+        #      use general permission "view orders"
+        if ploneapi.user.is_anonymous():
+            # don't allow this for anonymous users
+            raise Unauthorized(
+                _('unauthorized_orders_view',
+                  default="You have to log in to access the orders view")
+            )
         return [{
             'id': 'actions',
             'label': _('actions', 'Actions'),
@@ -324,9 +362,15 @@ class OrdersTable(BrowserView):
         return select_order + view_order
 
     def render_salaried(self, colname, record):
+        # XXX: permission check
+        # if not permitted:
+        #     return record.attrs.get('salaried', 'no')
         return SalariedDropdown(self.context, self.request, record).render()
 
     def render_state(self, colname, record):
+        # XXX: permission check
+        # if not permitted:
+        #     return record.attrs['state']
         return StateDropdown(self.context, self.request, record).render()
 
 
@@ -335,16 +379,41 @@ class OrdersData(OrdersTable, TableData):
     search_text_index = 'text'
 
     def query(self, soup):
+        if ploneapi.user.is_anonymous():
+            # don't allow this for anonymous users
+            raise Unauthorized(
+                _('unauthorized_orders_view',
+                  default="You have to log in to access the orders view")
+            )
+        query = None
+        manageable_orders = get_allowed_orders(self.context)
+        # vendor
+        if manageable_orders:
+            _query = Any('uid', manageable_orders)
+            query = query and query & _query or _query
+        # vendor or admin
+        if manageable_orders or self.is_shopadmin:
+            userid = self.request.form.get('userid')
+        # user
+        else:
+            userid = ploneapi.user.get_current().getId()
+        if userid:
+            _query = Eq('creator', userid)
+            query = query and query & _query or _query
         sort = self.sort()
         term = self.request.form['sSearch'].decode('utf-8')
         if term:
-            res = soup.lazy(Contains(self.search_text_index, term),
+            _query = Contains(self.search_text_index, term)
+            query = query and query & _query or _query
+        if query:
+            res = soup.lazy(query,
                             sort_index=sort['index'],
                             reverse=sort['reverse'],
                             with_size=True)
             length = res.next()
             return length, res
-        return self.all(soup)
+        else:
+            return self.all(soup)
 
 
 class OrderView(BrowserView):

@@ -15,7 +15,7 @@
       for="*"
       name="orders"
       template="view.pt"
-      permission="cmf.ModifyPortalContent"
+      permission="bda.plone.orders.ViewOrders"
       layer="..interfaces.IOrdersExtensionLayer"/>
 
   <browser:page
@@ -23,14 +23,14 @@
       name="orderstable"
       template="orders.pt"
       class=".views.OrdersTable"
-      permission="cmf.ModifyPortalContent"
+      permission="bda.plone.orders.ViewOrders"
       layer="..interfaces.IOrdersExtensionLayer"/>
 
   <browser:page
       for="*"
       name="ordersdata"
       class=".views.OrdersData"
-      permission="cmf.ModifyPortalContent"
+      permission="bda.plone.orders.ViewOrders"
       layer="..interfaces.IOrdersExtensionLayer"/>
 
   <browser:page
@@ -38,7 +38,7 @@
       name="order"
       template="order.pt"
       class=".views.OrderView"
-      permission="cmf.ModifyPortalContent"
+      permission="bda.plone.orders.ViewOrders"
       layer="..interfaces.IOrdersExtensionLayer"/>
 
   <browser:page

@@ -1,6 +1,7 @@
 import datetime
 import time
 import uuid
+import plone.api as ploneapi
 from decimal import Decimal
 from node.ext.zodb import OOBTNode
 from node.utils import instance_property
@@ -9,6 +10,7 @@ from repoze.catalog.indexes.field import CatalogFieldIndex
 from repoze.catalog.indexes.keyword import CatalogKeywordIndex
 from repoze.catalog.indexes.text import CatalogTextIndex
 from repoze.catalog.query import Eq
+from repoze.catalog.query import Any
 from souper.interfaces import ICatalogFactory
 from souper.soup import NodeAttributeIndexer
 from souper.soup import NodeTextIndexer
@@ -29,9 +31,9 @@ from bda.plone.cart import readcookie
 from bda.plone.checkout import CheckoutAdapter
 from bda.plone.checkout import CheckoutError
 from bda.plone.payment.interfaces import IPaymentData
-from bda.plone.orders.interfaces import IVendor
 from bda.plone.shipping import Shippings
 from bda.plone.shop.interfaces import IBuyable
+from .interfaces import IVendor
 
 
 DT_FORMAT = '%d.%m.%Y %H:%M'
@@ -63,6 +65,55 @@ def get_vendor(context):
             return context
         else:
             return get_vendor(parent)
+
+
+def get_all_vendors():
+    cat = ploneapi.portal.get_tool('portal_catalog')
+    query = {}
+    query['object_provides'] = IVendor.__identifier__
+    res = cat.searchResults(query)
+    res = [it.getObject() for it in res]
+    root = ploneapi.portal.get()
+    if not IVendor.providedBy(root):
+        res.append(root)
+    return res
+
+
+def get_vendor_areas(vendor=None):
+    if not vendor:
+        vendor = ploneapi.user.get_current()
+    try:
+        vendor_shops = [
+            vendor for vendor in all_vendors
+                if ploneapi.user.get_permissions(user=vendor, obj=vendor).get(
+                    'bda.plone.orders: Vendor Orders')
+        ]
+    except ploneapi.exc.UserNotFoundError:
+        # might be Zope root user
+        return []
+    return vendor_shops
+
+
+def get_allowed_orders(context, vendor=None):
+    """Get all orders from bookings related to a shop, as the shop_uid is only
+    indexed on bda_plone_orders_bookings soup and not on
+    bda_plone_orders_orders.
+
+    If you had a previous version of bda.plone.shop without mutli client
+    feature installed, please run the bda.plone.orders "Add shop_uid to booking
+    records" upgrade step.
+
+    >>> [it[1].attrs['shop_uid'] for it in soup.data.items()]
+    >>> [it.attrs['order_uid'] for it in soup.query(Eq('creator', 'test'))]
+
+    """
+    manageable_shops = get_vendor_areas(vendor)
+    query = Any('shop_uid', [IUUID(it) for it in manageable_shops])
+    soup = get_soup('bda_plone_orders_bookings', context)
+    res = soup.query(query)
+    order_uids = [it.attrs['order_uid'] for it in res]
+    # TODO: make a set of order_uids
+    return order_uids
 
 
 @implementer(ICatalogFactory)
