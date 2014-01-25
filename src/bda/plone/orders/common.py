@@ -125,7 +125,7 @@ def get_allowed_orders(context, user=None):
 
     """
     manageable_shops = get_vendor_areas(user)
-    query = Any('shop_uid', [IUUID(it) for it in manageable_shops])
+    query = Any('shop_uid', [uuid.UUID(IUUID(it)) for it in manageable_shops])
     soup = get_soup('bda_plone_orders_bookings', context)
     res = soup.query(query)
     # make a set with order_uids. orders with multiple bookings are multiple
