@@ -6,6 +6,7 @@ from StringIO import StringIO
 from decimal import Decimal
 from zope.i18n import translate
 from zope.i18nmessageid import Message
+from repoze.catalog.query import Any
 from repoze.catalog.query import Contains
 from repoze.catalog.query import Eq
 from repoze.catalog.query import Ge
@@ -296,14 +297,6 @@ class OrdersTable(BrowserView):
 
     @property
     def columns(self):
-        # XXX: anon should not be able to see this at all.
-        #      use general permission "view orders"
-        if ploneapi.user.is_anonymous():
-            # don't allow this for anonymous users
-            raise Unauthorized(
-                _('unauthorized_orders_view',
-                  default="You have to log in to access the orders view")
-            )
         return [{
             'id': 'actions',
             'label': _('actions', 'Actions'),
