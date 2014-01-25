@@ -1,25 +1,5 @@
-import datetime
-import time
-import uuid
-import plone.api as ploneapi
-from decimal import Decimal
-from node.ext.zodb import OOBTNode
-from node.utils import instance_property
-from repoze.catalog.catalog import Catalog
-from repoze.catalog.indexes.field import CatalogFieldIndex
-from repoze.catalog.indexes.keyword import CatalogKeywordIndex
-from repoze.catalog.indexes.text import CatalogTextIndex
-from repoze.catalog.query import Eq
-from repoze.catalog.query import Any
-from souper.interfaces import ICatalogFactory
-from souper.soup import NodeAttributeIndexer
-from souper.soup import NodeTextIndexer
-from souper.soup import Record
-from souper.soup import get_soup
-from zope.component.interfaces import ISite
-from zope.interface import implementer
 from Acquisition import aq_parent
-from plone.uuid.interfaces import IUUID
+from Products.CMFPlone.interfaces import IPloneSiteRoot
 from bda.plone.cart import extractitems
 from bda.plone.cart import get_catalog_brain
 from bda.plone.cart import get_data_provider
@@ -33,10 +13,43 @@ from bda.plone.checkout import CheckoutError
 from bda.plone.payment.interfaces import IPaymentData
 from bda.plone.shipping import Shippings
 from bda.plone.shop.interfaces import IBuyable
+from decimal import Decimal
+from node.ext.zodb import OOBTNode
+from node.utils import instance_property
+from plone.uuid.interfaces import IUUID
+from repoze.catalog.catalog import Catalog
+from repoze.catalog.indexes.field import CatalogFieldIndex
+from repoze.catalog.indexes.keyword import CatalogKeywordIndex
+from repoze.catalog.indexes.text import CatalogTextIndex
+from repoze.catalog.query import Any
+from repoze.catalog.query import Eq
+from souper.interfaces import ICatalogFactory
+from souper.soup import NodeAttributeIndexer
+from souper.soup import NodeTextIndexer
+from souper.soup import Record
+from souper.soup import get_soup
+from zope.component import adapter
+from zope.component.interfaces import ISite
+from zope.interface import implementer
+
 from .interfaces import IVendor
+
+import datetime
+import plone.api as ploneapi
+import time
+import uuid
 
 
 DT_FORMAT = '%d.%m.%Y %H:%M'
+
+# static uuid for the PortalRoot, as it doesn't have a uuid by default
+UUID_PLONE_ROOT = '77c4390d-1179-44ba-9d57-46d23ac292c6'
+
+
+@implementer(IUUID)
+@adapter(IPloneSiteRoot)
+def plone_root_uuid(context):
+    return UUID_PLONE_ROOT
 
 
 def create_ordernumber():

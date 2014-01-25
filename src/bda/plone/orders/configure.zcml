@@ -22,6 +22,8 @@
       name="bda_plone_orders_orders"
       factory=".common.OrdersCatalogFactory"/>
 
+  <adapter factory=".common.plone_root_uuid" />
+
   <adapter
       zcml:condition="installed Products.Archetypes"
       for="Products.Archetypes.interfaces.IBaseObject

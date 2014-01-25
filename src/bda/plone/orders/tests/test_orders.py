@@ -1,10 +1,13 @@
-import unittest2 as unittest
-from zope.component.interfaces import ISite
-from zope.interface import alsoProvides
-from bda.plone.orders.tests import Orders_INTEGRATION_TESTING
-from bda.plone.orders.tests import set_browserlayer
+from bda.plone.orders.common import UUID_PLONE_ROOT
 from bda.plone.orders.common import get_vendor
 from bda.plone.orders.interfaces import IVendor
+from bda.plone.orders.tests import Orders_INTEGRATION_TESTING
+from bda.plone.orders.tests import set_browserlayer
+from plone.uuid.interfaces import IUUID
+from zope.component.interfaces import ISite
+from zope.interface import alsoProvides
+
+import unittest2 as unittest
 
 
 class TestOrders(unittest.TestCase):
@@ -15,9 +18,8 @@ class TestOrders(unittest.TestCase):
         self.request = self.layer['request']
         set_browserlayer(self.request)
 
-    def test_foo(self):
-        self.assertEquals(1, 1)
-
+    def test_plone_root_uuid(self):
+        self.assertEquals(IUUID(self.portal), UUID_PLONE_ROOT)
 
 
 class DummyContext(dict):
