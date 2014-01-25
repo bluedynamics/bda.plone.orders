@@ -128,8 +128,9 @@ def get_allowed_orders(context, user=None):
     query = Any('shop_uid', [IUUID(it) for it in manageable_shops])
     soup = get_soup('bda_plone_orders_bookings', context)
     res = soup.query(query)
-    order_uids = [it.attrs['order_uid'] for it in res]
-    # TODO: make a set of order_uids
+    # make a set with order_uids. orders with multiple bookings are multiple
+    # times in the result
+    order_uids = set(it.attrs['order_uid'] for it in res)
     return order_uids
 
 
