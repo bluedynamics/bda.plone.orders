@@ -268,8 +268,6 @@ class OrderCheckoutAdapter(CheckoutAdapter):
         ret = list()
         cart_data = get_data_provider(self.context)
         currency = cart_data.currency
-        shop = get_vendor(self.context)
-        shop_uid = uuid.UUID(IUUID(shop))
         items = self.items
         for uid, count, comment in items:
             brain = get_catalog_brain(self.context, uid)
@@ -281,6 +279,7 @@ class OrderCheckoutAdapter(CheckoutAdapter):
             if item_stock.available is not None:
                 item_stock.available -= float(count)
             item_data = get_item_data_provider(obj)
+            shop_uid = uuid.UUID(IUUID(get_vendor(obj)))
             booking = OOBTNode()
             booking.attrs['uid'] = uuid.uuid4()
             booking.attrs['buyable_uid'] = uid
@@ -325,8 +324,16 @@ class OrderData(object):
 
     @property
     def bookings(self):
+        # TODO: support querying bookings for individual vendors by passing a
+        # user object, from request
+        # TODO: don't restrict for shopadmins and customers!
+        allowed_vendor_areas = [
+            uuid.UUID(IUUID(it)) for it in get_vendor_areas()
+        ]
         soup = get_soup('bda_plone_orders_bookings', self.context)
-        return soup.query(Eq('order_uid', self.uid))
+        query = Eq('order_uid', self.uid)
+        query = query & Any('shop_uid', allowed_vendor_areas)
+        return soup.query(query)
 
     @property
     def net(self):
