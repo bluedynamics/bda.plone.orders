@@ -276,6 +276,8 @@ class OrdersTable(BrowserView):
 
     @property
     def is_vendor(self):
+        # TODO: REMOVE or adapt! this one checks the permissions on current
+        # context, but we want to be able to view @@orders on any context.
         perm = 'bda.plone.shop: Manage this shop'
         perms = ploneapi.user.get_permissions(obj=self.context)
         return perm in perms and perms[perm] or False
