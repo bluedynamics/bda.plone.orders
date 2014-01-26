@@ -178,6 +178,7 @@ class TableData(BrowserView):
         [{
             'id': 'colid',
             'label': 'Col Label',
+            'head': callback,
             'renderer': callback,
         }]
         """
@@ -302,6 +303,7 @@ class OrdersTable(BrowserView):
         return [{
             'id': 'actions',
             'label': _('actions', 'Actions'),
+            'head': self.render_order_actions_head,
             'renderer': self.render_order_actions,
         }, {
             'id': 'created',
@@ -332,6 +334,16 @@ class OrdersTable(BrowserView):
             value = value.strftime(DT_FORMAT)
         return value
 
+    def render_order_actions_head(self):
+        tag = Tag(Translate(self.request))
+        select_all_orders_attrs = {
+            'name': 'select_all_orders',
+            'type': 'checkbox',
+            'class_': 'select_all_orders',
+        }
+        select_all_orders = tag('input', **select_all_orders_attrs)
+        return select_all_orders
+
     def render_order_actions(self, colname, record):
         tag = Tag(Translate(self.request))
         view_order_target = '%s?uid=%s' % (
@@ -349,7 +361,7 @@ class OrdersTable(BrowserView):
         # if not notification_permitted:
         #     return view_order
         select_order_attrs = {
-            'name': 'notify_buyer',
+            'name': 'select_order',
             'type': 'checkbox',
             'value': record.attrs['uid'],
             'class_': 'select_order',

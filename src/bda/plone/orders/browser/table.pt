@@ -28,6 +28,9 @@
       <tr>
         <tal:loop repeat="colinfo columns">
           <th tal:attributes="class python: 'datarow-' + colinfo['id'];">
+            <tal:additional
+              condition="nocall:colinfo/head|nothing"
+              replace="structure colinfo/head" />
             <span tal:replace="python: colinfo['label']">Title</span>
           </th>
         </tal:loop>
