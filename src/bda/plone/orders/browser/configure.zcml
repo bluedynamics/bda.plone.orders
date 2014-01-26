@@ -14,7 +14,7 @@
   <browser:page
       for="*"
       name="orders"
-      template="view.pt"
+      template="orders_view.pt"
       permission="bda.plone.orders.ViewOrders"
       layer="..interfaces.IOrdersExtensionLayer"/>
 
