@@ -112,20 +112,15 @@ def get_vendor_areas(user=None):
 
 
 def get_allowed_orders(context, user=None):
-    """Get all orders from bookings related to a shop, as the shop_uid is only
-    indexed on bda_plone_orders_bookings soup and not on
-    bda_plone_orders_orders.
+    """Get all allowed orders by querying allowed bookings, where the
+    vendor_uid is one of the user's allowed vendor areas.
 
     If you had a previous version of bda.plone.shop without mutli client
-    feature installed, please run the bda.plone.orders "Add shop_uid to booking
-    records" upgrade step.
-
-    >>> [it[1].attrs['shop_uid'] for it in soup.data.items()]
-    >>> [it.attrs['order_uid'] for it in soup.query(Eq('creator', 'test'))]
-
+    feature installed, please run the bda.plone.orders "Add vendor_uid to
+    booking records" upgrade step.
     """
     manageable_shops = get_vendor_areas(user)
-    query = Any('shop_uid', [uuid.UUID(IUUID(it)) for it in manageable_shops])
+    query = Any('vendor_uid', [uuid.UUID(IUUID(it)) for it in manageable_shops])
     soup = get_soup('bda_plone_orders_bookings', context)
     res = soup.query(query)
     # make a set with order_uids. orders with multiple bookings are multiple
@@ -145,8 +140,8 @@ class BookingsCatalogFactory(object):
         catalog[u'buyable_uid'] = CatalogFieldIndex(buyable_uid_indexer)
         order_uid_indexer = NodeAttributeIndexer('order_uid')
         catalog[u'order_uid'] = CatalogFieldIndex(order_uid_indexer)
-        shop_uid_indexer = NodeAttributeIndexer('shop_uid')
-        catalog[u'shop_uid'] = CatalogFieldIndex(shop_uid_indexer)
+        vendor_uid_indexer = NodeAttributeIndexer('vendor_uid')
+        catalog[u'vendor_uid'] = CatalogFieldIndex(vendor_uid_indexer)
         creator_indexer = NodeAttributeIndexer('creator')
         catalog[u'creator'] = CatalogFieldIndex(creator_indexer)
         created_indexer = NodeAttributeIndexer('created')
@@ -279,14 +274,14 @@ class OrderCheckoutAdapter(CheckoutAdapter):
             if item_stock.available is not None:
                 item_stock.available -= float(count)
             item_data = get_item_data_provider(obj)
-            shop_uid = uuid.UUID(IUUID(get_vendor(obj)))
+            vendor_uid = uuid.UUID(IUUID(get_vendor(obj)))
             booking = OOBTNode()
             booking.attrs['uid'] = uuid.uuid4()
             booking.attrs['buyable_uid'] = uid
             booking.attrs['buyable_count'] = count
             booking.attrs['buyable_comment'] = comment
             booking.attrs['order_uid'] = order.attrs['uid']
-            booking.attrs['shop_uid'] = shop_uid
+            booking.attrs['vendor_uid'] = vendor_uid
             booking.attrs['creator'] = order.attrs['creator']
             booking.attrs['created'] = order.attrs['created']
             booking.attrs['exported'] = False
@@ -332,7 +327,7 @@ class OrderData(object):
         ]
         soup = get_soup('bda_plone_orders_bookings', self.context)
         query = Eq('order_uid', self.uid)
-        query = query & Any('shop_uid', allowed_vendor_areas)
+        query = query & Any('vendor_uid', allowed_vendor_areas)
         return soup.query(query)
 
     @property

@@ -5,10 +5,10 @@
   <genericsetup:upgradeStep
       source="1.0"
       destination="2"
-      title="Add shop_uid to booking records"
+      title="Add vendor_uid to booking records"
       description=""
       profile="bda.plone.orders:default"
-      handler=".upgrades.fix_bookings_shop_uid"
+      handler=".upgrades.fix_bookings_vendor_uid"
       />
 
 </configure>
