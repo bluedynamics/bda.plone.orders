@@ -35,7 +35,7 @@ from zope.interface import implementer
 from .interfaces import IVendor
 
 import datetime
-import plone.api as ploneapi
+import plone.api
 import time
 import uuid
 
@@ -87,13 +87,14 @@ def get_all_vendors():
     """Get all available vendor areas.
 
     :returns: Vendor area enabled content objects.
+    :rtype: List of content objects.
     """
-    cat = ploneapi.portal.get_tool('portal_catalog')
+    cat = plone.api.portal.get_tool('portal_catalog')
     query = {}
     query['object_provides'] = IVendor.__identifier__
     res = cat.searchResults(query)
     res = [it.getObject() for it in res]
-    root = ploneapi.portal.get()
+    root = plone.api.portal.get()
     if not IVendor.providedBy(root):
         res.append(root)
     return res
@@ -102,34 +103,44 @@ def get_all_vendors():
 def get_allowed_vendors(user=None):
     """Gel all allowed vendor areas for the current or a given user.
 
+    :param user: Optional user object to check permissions on vendor areas. If
+                 no user object is give, the current user is used.
+    :type user: MemberData object
     :returns: Allowed vendor area enabled content objects.
+    :rtype: List of content objects.
     """
     if not user:
-        user = ploneapi.user.get_current()
+        user = plone.api.user.get_current()
     all_vendors = get_all_vendors()
     try:
         vendor_shops = [
             vendor for vendor in all_vendors
-                if ploneapi.user.get_permissions(user=user, obj=vendor).get(
+                if plone.api.user.get_permissions(user=user, obj=vendor).get(
                     'bda.plone.orders: Vendor Orders')
         ]
-    except ploneapi.exc.UserNotFoundError:
+    except plone.api.exc.UserNotFoundError:
         # might be Zope root user
         return []
     return vendor_shops
 
 
-def get_allowed_orders(context, user=None):
+def get_allowed_orders(user=None):
     """Get all allowed orders by querying allowed bookings, where the
     vendor_uid is one of the user's allowed vendor areas.
 
     If you had a previous version of bda.plone.shop without mutli client
     feature installed, please run the bda.plone.orders "Add vendor_uid to
     booking records" upgrade step.
+
+    :param user: Optional user object to check permissions on vendor areas. If
+                 no user object is give, the current user is used.
+    :type user: MemberData object
+    :returns: List of order UUID for all allowed orders.
+    :rtype: List of strings.
     """
     manageable_shops = get_allowed_vendors(user)
     query = Any('vendor_uid', [uuid.UUID(IUUID(it)) for it in manageable_shops])
-    soup = get_soup('bda_plone_orders_bookings', context)
+    soup = get_soup('bda_plone_orders_bookings', plone.api.portal.get())
     res = soup.query(query)
     # make a set with order_uids. orders with multiple bookings are multiple
     # times in the result

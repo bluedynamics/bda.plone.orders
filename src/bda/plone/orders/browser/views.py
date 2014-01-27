@@ -1,7 +1,7 @@
 import csv
 import datetime
 import json
-import plone.api as ploneapi
+import plone.api
 from StringIO import StringIO
 from decimal import Decimal
 from zope.i18n import translate
@@ -265,14 +265,14 @@ class OrdersTable(BrowserView):
 
     @property
     def current_user(self):
-        user = ploneapi.user.get_current()
+        user = plone.api.user.get_current()
         if not user:
             return None
         return user.getId()
 
     @property
     def is_shopadmin(self):
-        roles = ploneapi.user.get_roles()
+        roles = plone.api.user.get_roles()
         return 'Manager' in roles or 'Shop Admin' in roles
 
     @property
@@ -280,7 +280,7 @@ class OrdersTable(BrowserView):
         # TODO: REMOVE or adapt! this one checks the permissions on current
         # context, but we want to be able to view @@orders on any context.
         perm = 'bda.plone.shop: Manage this shop'
-        perms = ploneapi.user.get_permissions(obj=self.context)
+        perms = plone.api.user.get_permissions(obj=self.context)
         return perm in perms and perms[perm] or False
 
     @property
@@ -388,7 +388,7 @@ class OrdersData(OrdersTable, TableData):
 
     def query(self, soup):
         query = None
-        manageable_orders = get_allowed_orders(self.context)
+        manageable_orders = get_allowed_orders()
         # vendor
         if manageable_orders:
             _query = Any('uid', manageable_orders)
@@ -398,7 +398,7 @@ class OrdersData(OrdersTable, TableData):
             userid = self.request.form.get('userid')
         # user
         else:
-            userid = ploneapi.user.get_current().getId()
+            userid = plone.api.user.get_current().getId()
         if userid:
             _query = Eq('creator', userid)
             query = query and query & _query or _query
