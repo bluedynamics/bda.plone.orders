@@ -84,6 +84,10 @@ def get_vendor(context):
 
 
 def get_all_vendors():
+    """Get all available vendor areas.
+
+    :returns: Vendor area enabled content objects.
+    """
     cat = ploneapi.portal.get_tool('portal_catalog')
     query = {}
     query['object_provides'] = IVendor.__identifier__
@@ -95,7 +99,11 @@ def get_all_vendors():
     return res
 
 
-def get_vendor_areas(user=None):
+def get_allowed_vendors(user=None):
+    """Gel all allowed vendor areas for the current or a given user.
+
+    :returns: Allowed vendor area enabled content objects.
+    """
     if not user:
         user = ploneapi.user.get_current()
     all_vendors = get_all_vendors()
@@ -119,7 +127,7 @@ def get_allowed_orders(context, user=None):
     feature installed, please run the bda.plone.orders "Add vendor_uid to
     booking records" upgrade step.
     """
-    manageable_shops = get_vendor_areas(user)
+    manageable_shops = get_allowed_vendors(user)
     query = Any('vendor_uid', [uuid.UUID(IUUID(it)) for it in manageable_shops])
     soup = get_soup('bda_plone_orders_bookings', context)
     res = soup.query(query)
@@ -323,7 +331,7 @@ class OrderData(object):
         # user object, from request
         # TODO: don't restrict for shopadmins and customers!
         allowed_vendor_areas = [
-            uuid.UUID(IUUID(it)) for it in get_vendor_areas()
+            uuid.UUID(IUUID(it)) for it in get_allowed_vendors()
         ]
         soup = get_soup('bda_plone_orders_bookings', self.context)
         query = Eq('order_uid', self.uid)
