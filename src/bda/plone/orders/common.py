@@ -245,7 +245,7 @@ class OrderCheckoutAdapter(CheckoutAdapter):
     def save(self, providers, widget, data):
         super(OrderCheckoutAdapter, self).save(providers, widget, data)
         creator = None
-        member = self.context.portal_membership.getAuthenticatedMember()
+        member = plone.api.user.get_current()
         if member:
             creator = member.getId()
         created = datetime.datetime.now()
@@ -340,13 +340,24 @@ class OrderData(object):
     def bookings(self):
         # TODO: support querying bookings for individual vendors by passing a
         # user object, from request
-        # TODO: don't restrict for shopadmins and customers!
-        allowed_vendor_areas = [
-            uuid.UUID(IUUID(it)) for it in get_allowed_vendors()
-        ]
+
+        # CASE CUSTOMER: can see all bookings
+        # CASE ADMIN: can see all bookings
+        # CASE VENDOR: can see only bookings belonging to vendor
+        # admin can be vendor can be customer
+
         soup = get_soup('bda_plone_orders_bookings', self.context)
         query = Eq('order_uid', self.uid)
-        query = query & Any('vendor_uid', allowed_vendor_areas)
+
+        order_user_id = self.order.attrs['creator']
+        current_user_id = plone.api.user.get_current().getId()
+        if current_user_id != order_user_id:
+            # Restrict to allowed bookings
+            # Must be a vendor, wanting to check bookings belonging to him
+            allowed_vendor_areas = [
+                uuid.UUID(IUUID(it)) for it in get_allowed_vendors()
+            ]
+            query = query & Any('vendor_uid', allowed_vendor_areas)
         return soup.query(query)
 
     @property
