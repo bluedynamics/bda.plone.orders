@@ -3,6 +3,7 @@ import datetime
 import json
 import plone.api
 import yafowil.loader  # loads registry
+from AccessControl import Unauthorized
 from Products.Five import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from StringIO import StringIO
@@ -267,6 +268,8 @@ class OrdersTable(BrowserView):
 
     @property
     def rendered_vendor_selector(self):
+        if not self.is_shopadmin:
+            raise Unauthorized
         value = None
         all_vendors = all_vendors_vocab()
         select = factory(
