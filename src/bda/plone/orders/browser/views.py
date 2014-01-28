@@ -2,10 +2,16 @@ import csv
 import datetime
 import json
 import plone.api
+import yafowil.loader  # loads registry
+from Products.Five import BrowserView
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from StringIO import StringIO
+from bda.plone.cart import ascur
+from bda.plone.checkout import message_factory as _co
+from bda.plone.orders.vocabularies import all_vendors_vocab
+from bda.plone.payment import Payments
 from decimal import Decimal
-from zope.i18n import translate
-from zope.i18nmessageid import Message
+from plone.app.uuid.utils import uuidToURL
 from repoze.catalog.query import Any
 from repoze.catalog.query import Contains
 from repoze.catalog.query import Eq
@@ -14,21 +20,21 @@ from repoze.catalog.query import Le
 from souper.soup import LazyRecord
 from souper.soup import get_soup
 from yafowil.base import ExtractionError
+from yafowil.base import factory
 from yafowil.controller import Controller
 from yafowil.plone.form import YAMLForm
 from yafowil.utils import Tag
-from Products.Five import BrowserView
-from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from plone.app.uuid.utils import uuidToURL
-from bda.plone.cart import ascur
-from bda.plone.checkout import message_factory as _co
-from bda.plone.payment import Payments
+from zope.i18n import translate
+from zope.i18nmessageid import Message
 from .. import message_factory as _
 from ..common import DT_FORMAT
 from ..common import OrderData
 from ..common import OrderTransitions
-from ..common import get_order
 from ..common import get_allowed_orders
+from ..common import get_order
+
+
+yafowil.loader  # pep8
 
 
 class Translate(object):
@@ -255,11 +261,6 @@ class TableData(BrowserView):
         return json.dumps(data)
 
 
-from yafowil.base import factory
-from bda.plone.orders.vocabularies import all_vendors_vocab
-import yafowil.loader  # loads registry
-yafowil.loader  # pep8 
-
 class OrdersTable(BrowserView):
     table_template = ViewPageTemplateFile('table.pt')
     table_id = 'bdaploneorders'
@@ -271,8 +272,7 @@ class OrdersTable(BrowserView):
         select = factory(
                 'select', name='vendor_selector', value=value, props={'vocabulary': all_vendors}
         )
-        controller = Controller(select, self.request)
-        return controller.rendered
+        return select(request=self.request)
 
     @property
     def rendered_table(self):
