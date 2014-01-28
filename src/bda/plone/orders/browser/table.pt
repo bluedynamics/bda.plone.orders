@@ -4,6 +4,7 @@
     i18n:domain="bda.plone.orders"
     tal:omit-tag="">
 
+  <tal:aha replace="structure view/rendered_vendor_selector"/>
   <ul tal:condition="view/allow_userfilter">
     <li>
       <a href="."
