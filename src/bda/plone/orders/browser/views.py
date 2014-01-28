@@ -258,18 +258,21 @@ class TableData(BrowserView):
 from yafowil.base import factory
 from bda.plone.orders.vocabularies import all_vendors_vocab
 import yafowil.loader  # loads registry
+yafowil.loader  # pep8 
 
 class OrdersTable(BrowserView):
     table_template = ViewPageTemplateFile('table.pt')
     table_id = 'bdaploneorders'
 
+    @property
     def rendered_vendor_selector(self):
         value = None
         all_vendors = all_vendors_vocab()
         select = factory(
                 'select', name='vendor_selector', value=value, props={'vocabulary': all_vendors}
         )
-        return select()
+        controller = Controller(select, self.request)
+        return controller.rendered
 
     @property
     def rendered_table(self):
