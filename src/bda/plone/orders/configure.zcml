@@ -12,6 +12,8 @@
 
   <include file="permissions.zcml"/>
   <include file="profiles.zcml"/>
+  <include file="upgrades.zcml"/>
+  <include file="vocabularies.zcml"/>
   <include package=".browser"/>
 
   <utility
