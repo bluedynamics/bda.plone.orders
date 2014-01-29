@@ -69,9 +69,14 @@ def get_order(context, uid):
     return [_ for _ in soup.query(Eq('uid', uid))][0]
 
 
-def get_vendor(context):
-    """Returns the (nearest) vendor or the main shop by traversing up the
-    content tree.
+def get_nearest_vendor(context):
+    """Returns the nearest vendor or the main shop by traversing up the
+    content tree, starting from a context (shop item).
+
+    :param context: The context to start searching for the nearest vendor.
+    :type context: Content object
+    :returns: The vendor, a shop item is belonging to.
+    :rtype: Content object
     """
     if IVendor.providedBy(context) or ISite.providedBy(context):
         return context
@@ -80,7 +85,7 @@ def get_vendor(context):
         if parent == context:
             return context
         else:
-            return get_vendor(parent)
+            return get_nearest_vendor(parent)
 
 
 def get_all_vendors():
@@ -293,7 +298,7 @@ class OrderCheckoutAdapter(CheckoutAdapter):
             if item_stock.available is not None:
                 item_stock.available -= float(count)
             item_data = get_item_data_provider(obj)
-            vendor_uid = uuid.UUID(IUUID(get_vendor(obj)))
+            vendor_uid = uuid.UUID(IUUID(get_nearest_vendor(obj)))
             booking = OOBTNode()
             booking.attrs['uid'] = uuid.uuid4()
             booking.attrs['buyable_uid'] = uid

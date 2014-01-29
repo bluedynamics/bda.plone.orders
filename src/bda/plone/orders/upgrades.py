@@ -1,4 +1,4 @@
-from bda.plone.orders.common import get_vendor
+from bda.plone.orders.common import get_nearest_vendor
 from plone.app.uuid.utils import uuidToObject
 from plone.uuid.interfaces import IUUID
 from souper.soup import get_soup
@@ -22,7 +22,7 @@ def fix_bookings_vendor_uid(ctx=None):
                 or not isinstance(item.attrs['vendor_uid'], uuid.UUID):
             buyable_uid = item.attrs['buyable_uid']
             obj = uuidToObject(buyable_uid)
-            shop = get_vendor(obj)
+            shop = get_nearest_vendor(obj)
             vendor_uid = uuid.UUID(IUUID(shop))
             item.attrs['vendor_uid'] = vendor_uid
             need_reindex = True
