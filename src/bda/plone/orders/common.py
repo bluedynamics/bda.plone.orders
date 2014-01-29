@@ -117,15 +117,12 @@ def get_allowed_vendors(user=None):
     if not user:
         user = plone.api.user.get_current()
     all_vendors = get_all_vendors()
-    try:
-        vendor_shops = [
-            vendor for vendor in all_vendors
-                if plone.api.user.get_permissions(user=user, obj=vendor).get(
-                    'bda.plone.orders: Vendor Orders')
-        ]
-    except plone.api.exc.UserNotFoundError:
-        # might be Zope root user
-        return []
+    vendor_shops = [
+        vendor for vendor in all_vendors
+        if bool(user.checkPermission(
+            'bda.plone.orders: Vendor Orders', vendor
+        ))
+    ]
     return vendor_shops
 
 
@@ -143,8 +140,8 @@ def get_allowed_orders(user=None):
     :returns: List of order UUID for all allowed orders.
     :rtype: List of strings.
     """
-    manageable_shops = get_allowed_vendors(user)
-    query = Any('vendor_uid', [uuid.UUID(IUUID(it)) for it in manageable_shops])
+    allowed_vendors = get_allowed_vendors(user)
+    query = Any('vendor_uid', [uuid.UUID(IUUID(it)) for it in allowed_vendors])
     soup = get_soup('bda_plone_orders_bookings', plone.api.portal.get())
     res = soup.query(query)
     # make a set with order_uids. orders with multiple bookings are multiple
