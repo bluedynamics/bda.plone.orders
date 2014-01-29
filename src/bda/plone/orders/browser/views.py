@@ -327,7 +327,7 @@ class OrdersTable(BrowserView):
 
     @property
     def ajaxurl(self):
-        userid = self.request.form.get('user')
+        userid = self.request.form.get('userid')
         userid_qs = userid and '?userid=%s' % userid or ''
         return '%s/%s%s' % (
             self.context.absolute_url(), '@@ordersdata', userid_qs)
