@@ -1,4 +1,5 @@
 from bda.plone.orders.common import get_all_vendors
+from bda.plone.orders.common import get_allowed_vendors
 from bda.plone.orders.common import get_allowed_orders_uid
 from bda.plone.orders.common import get_order
 from plone.uuid.interfaces import IUUID
@@ -14,6 +15,16 @@ def all_vendors_vocab():
     vocab = [(IUUID(it),
              '{0} ({1})'.format(it.Title(), it.absolute_url_path()))
              for it in all_vendors]
+    return vocab
+
+
+def allowed_vendors_vocab(user=None):
+    """Vocabulary for allowed vendors.
+    """
+    allowed_vendors = get_allowed_vendors(user=user)
+    vocab = [(IUUID(it),
+             '{0} ({1})'.format(it.Title(), it.absolute_url_path()))
+             for it in allowed_vendors]
     return vocab
 
 

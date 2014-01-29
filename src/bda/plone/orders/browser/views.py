@@ -3,13 +3,12 @@ import datetime
 import json
 import plone.api
 import yafowil.loader  # loads registry
-from AccessControl import Unauthorized
 from Products.Five import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from StringIO import StringIO
 from bda.plone.cart import ascur
 from bda.plone.checkout import message_factory as _co
-from bda.plone.orders.vocabularies import all_vendors_vocab
+from bda.plone.orders.vocabularies import allowed_vendors_vocab
 from bda.plone.orders.vocabularies import allowed_customers_vocab
 from bda.plone.payment import Payments
 from decimal import Decimal
@@ -267,31 +266,44 @@ class OrdersTable(BrowserView):
     table_template = ViewPageTemplateFile('table.pt')
     table_id = 'bdaploneorders'
 
-    @property
-    def render_vendor_selector(self):
-        if not self.is_shopadmin:
-            raise Unauthorized
-        value = None
-        all_vendors = all_vendors_vocab()
-        select = factory(
-            'select',
-            name='vendor_selector',
-            value=value,
-            props={'vocabulary': all_vendors}
-        )
-        return select(request=self.request)
+    def render_filter(self):
 
-    @property
-    def render_customer_selector(self):
-        value = None
+        allowed_vendors = allowed_vendors_vocab()
+        vendor_selector = None
+        # TODO: change to >2, after adding a "undefined" item
+        if len(allowed_vendors) > 1:
+            vendor_selector = factory(
+                'select',
+                name='vendor_selector',
+                value=None,
+                props={'vocabulary': allowed_vendors}
+            )
+
         allowed_customers = allowed_customers_vocab()
-        select = factory(
-            'select',
-            name='customer_selector',
-            value=value,
-            props={'vocabulary': allowed_customers}
-        )
-        return select(request=self.request)
+        customer_selector = None
+        # TODO: change to >2, after adding a "undefined" item
+        if len(allowed_customers) > 1:
+            customer_selector = factory(
+                'select',
+                name='customer_selector',
+                value=None,
+                props={'vocabulary': allowed_customers}
+            )
+
+        if vendor_selector or customer_selector:
+            form = factory('form', name='ordersfilter', props={'action': '.'})
+            if vendor_selector:
+                form['vendor_selector'] = vendor_selector
+            if customer_selector:
+                form['customer_selector'] = customer_selector
+            form['submit'] = factory(
+                'submit',
+                name='filter',
+                props={'action': True, 'label': 'Filter'}
+            )
+            return form(request=self.request)
+
+        return
 
     @property
     def rendered_table(self):
