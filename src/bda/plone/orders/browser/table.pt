@@ -5,6 +5,7 @@
     tal:omit-tag="">
 
   <tal:vendor_selector tal:condition="view/is_shopadmin" replace="structure view/rendered_vendor_selector"/>
+  <tal:customer_selector tal:condition="view/is_shopadmin" replace="structure view/rendered_customer_selector"/>
 
   <ul tal:condition="view/allow_userfilter">
     <li>

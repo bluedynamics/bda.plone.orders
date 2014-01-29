@@ -10,6 +10,7 @@ from StringIO import StringIO
 from bda.plone.cart import ascur
 from bda.plone.checkout import message_factory as _co
 from bda.plone.orders.vocabularies import all_vendors_vocab
+from bda.plone.orders.vocabularies import allowed_customers_vocab
 from bda.plone.payment import Payments
 from decimal import Decimal
 from plone.app.uuid.utils import uuidToURL
@@ -273,7 +274,22 @@ class OrdersTable(BrowserView):
         value = None
         all_vendors = all_vendors_vocab()
         select = factory(
-                'select', name='vendor_selector', value=value, props={'vocabulary': all_vendors}
+            'select',
+            name='vendor_selector',
+            value=value,
+            props={'vocabulary': all_vendors}
+        )
+        return select(request=self.request)
+
+    @property
+    def rendered_customer_selector(self):
+        value = None
+        allowed_customers = allowed_customers_vocab()
+        select = factory(
+            'select',
+            name='customer_selector',
+            value=value,
+            props={'vocabulary': allowed_customers}
         )
         return select(request=self.request)
 
