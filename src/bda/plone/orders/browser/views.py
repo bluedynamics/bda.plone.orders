@@ -268,7 +268,7 @@ class OrdersTable(BrowserView):
     table_id = 'bdaploneorders'
 
     @property
-    def rendered_vendor_selector(self):
+    def render_vendor_selector(self):
         if not self.is_shopadmin:
             raise Unauthorized
         value = None
@@ -282,7 +282,7 @@ class OrdersTable(BrowserView):
         return select(request=self.request)
 
     @property
-    def rendered_customer_selector(self):
+    def render_customer_selector(self):
         value = None
         allowed_customers = allowed_customers_vocab()
         select = factory(
