@@ -126,7 +126,7 @@ def get_allowed_vendors(user=None):
     return vendor_shops
 
 
-def get_allowed_orders(user=None):
+def get_allowed_orders_uid(user=None):
     """Get all allowed orders by querying allowed bookings, where the
     vendor_uid is one of the user's allowed vendor areas.
 

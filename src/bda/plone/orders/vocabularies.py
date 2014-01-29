@@ -1,5 +1,5 @@
 from bda.plone.orders.common import get_all_vendors
-from bda.plone.orders.common import get_allowed_orders
+from bda.plone.orders.common import get_allowed_orders_uid
 from bda.plone.orders.common import get_order
 from plone.uuid.interfaces import IUUID
 from zope.component.hooks import getSite
@@ -18,7 +18,7 @@ def all_vendors_vocab():
 
 
 def allowed_customers_vocab(user=None):
-    allowed_orders = get_allowed_orders(user=user)
+    allowed_orders = get_allowed_orders_uid(user=user)
     context = getSite()
     res = set(get_order(context, it).attrs['creator'] for it in allowed_orders)
     vocab = []

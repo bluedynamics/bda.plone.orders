@@ -32,7 +32,7 @@ from .. import message_factory as _
 from ..common import DT_FORMAT
 from ..common import OrderData
 from ..common import OrderTransitions
-from ..common import get_allowed_orders
+from ..common import get_allowed_orders_uid
 from ..common import get_order
 
 
@@ -422,7 +422,7 @@ class OrdersData(OrdersTable, TableData):
 
     def query(self, soup):
         query = None
-        manageable_orders = get_allowed_orders()
+        manageable_orders = get_allowed_orders_uid()
         # vendor
         if manageable_orders:
             _query = Any('uid', manageable_orders)
