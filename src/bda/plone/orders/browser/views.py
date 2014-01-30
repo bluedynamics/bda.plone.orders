@@ -33,6 +33,7 @@ from ..common import OrderData
 from ..common import OrderTransitions
 from ..common import get_allowed_orders_uid
 from ..common import get_order
+from ..common import get_vendor_orders_uid
 
 
 yafowil.loader  # pep8
@@ -274,7 +275,7 @@ class OrdersTable(BrowserView):
         if len(allowed_vendors) > 1:
             vendor_selector = factory(
                 'select',
-                name='vendor_selector',
+                name='vendor',
                 value=None,
                 props={'vocabulary': allowed_vendors}
             )
@@ -285,17 +286,22 @@ class OrdersTable(BrowserView):
         if len(allowed_customers) > 1:
             customer_selector = factory(
                 'select',
-                name='customer_selector',
+                name='customer',
                 value=None,
                 props={'vocabulary': allowed_customers}
             )
 
         if vendor_selector or customer_selector:
-            form = factory('form', name='ordersfilter', props={'action': '.'})
+            action = self.request.getURL()
+            form = factory(
+                'form',
+                name='ordersfilter',
+                props={'action': action},
+            )
             if vendor_selector:
-                form['vendor_selector'] = vendor_selector
+                form['vendor'] = vendor_selector
             if customer_selector:
-                form['customer_selector'] = customer_selector
+                form['customer'] = customer_selector
             form['submit'] = factory(
                 'submit',
                 name='filter',
@@ -339,10 +345,14 @@ class OrdersTable(BrowserView):
 
     @property
     def ajaxurl(self):
-        userid = self.request.form.get('userid')
-        userid_qs = userid and '?userid=%s' % userid or ''
+        vendor = self.request.form.get('ordersfilter.vendor')
+        customer = self.request.form.get('ordersfilter.customer')
+        qslist = [vendor and 'vendor={0}'.format(vendor) or '',
+                  customer and 'customer={0}'.format(customer) or '']
+        qs = '&'.join([it for it in qslist if it])
+        qs = qs and '?{0}'.format(qs) or ''
         return '%s/%s%s' % (
-            self.context.absolute_url(), '@@ordersdata', userid_qs)
+            self.context.absolute_url(), '@@ordersdata', qs)
 
     @property
     def columns(self):
@@ -433,21 +443,33 @@ class OrdersData(OrdersTable, TableData):
     search_text_index = 'text'
 
     def query(self, soup):
-        query = None
+
         manageable_orders = get_allowed_orders_uid()
-        # vendor
-        if manageable_orders:
-            _query = Any('uid', manageable_orders)
-            query = query and query & _query or _query
-        # vendor or admin
-        if manageable_orders or self.is_shopadmin:
-            userid = self.request.form.get('userid')
-        # user
+        query = None
+
+        if not manageable_orders and not self.is_shopadmin:
+            # user
+            customer = plone.api.user.get_current().getId()
+
         else:
-            userid = plone.api.user.get_current().getId()
-        if userid:
-            _query = Eq('creator', userid)
+            # vendor or admin
+            vendor = self.request.form.get('vendor')
+            customer = self.request.form.get('customer')
+
+            if vendor:
+                vendor_orders = get_vendor_orders_uid(vendor)
+                _query = Any('uid', vendor_orders)
+                query = query and query & _query or _query
+
+            elif manageable_orders and not self.is_shopadmin:
+                # no need to check permissions for shopadmins
+                _query = Any('uid', manageable_orders)
+                query = query and query & _query or _query
+
+        if customer:
+            _query = Eq('creator', customer)
             query = query and query & _query or _query
+
         sort = self.sort()
         term = self.request.form['sSearch'].decode('utf-8')
         if term:
