@@ -6,22 +6,6 @@
 
   <tal:filter replace="structure view/render_filter"/>
 
-  <ul tal:condition="view/allow_userfilter">
-    <li>
-      <a href="."
-         tal:attributes="href view/url"
-         tal:condition="view/is_shopadmin">
-        View all orders
-      </a>
-    </li>
-    <li>
-      <a href="?user="
-         tal:attributes="href string:${view/url}/?user=${view/current_user}">
-        View own orders
-      </a>
-    </li>
-  </ul>
-
   <table tal:define="ajaxurl view/ajaxurl;
                      columns view/columns"
          tal:attributes="data-ajaxurl ajaxurl;

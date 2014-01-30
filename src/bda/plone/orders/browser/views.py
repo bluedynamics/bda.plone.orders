@@ -317,30 +317,6 @@ class OrdersTable(BrowserView):
         return self.table_template(self)
 
     @property
-    def current_user(self):
-        user = plone.api.user.get_current()
-        if not user:
-            return None
-        return user.getId()
-
-    @property
-    def is_shopadmin(self):
-        roles = plone.api.user.get_roles()
-        return 'Manager' in roles or 'Shop Admin' in roles
-
-    @property
-    def is_vendor(self):
-        # TODO: REMOVE or adapt! this one checks the permissions on current
-        # context, but we want to be able to view @@orders on any context.
-        perm = 'bda.plone.shop: Manage this shop'
-        perms = plone.api.user.get_permissions(obj=self.context)
-        return perm in perms and perms[perm] or False
-
-    @property
-    def allow_userfilter(self):
-        return self.is_shopadmin or self.is_vendor
-
-    @property
     def url(self):
         return self.request.getURL()
 
@@ -448,7 +424,7 @@ class OrdersData(OrdersTable, TableData):
         manageable_orders = get_allowed_orders_uid()
         query = None
 
-        if not manageable_orders and not self.is_shopadmin:
+        if not manageable_orders:
             # user
             customer = plone.api.user.get_current().getId()
 
@@ -462,7 +438,7 @@ class OrdersData(OrdersTable, TableData):
                 _query = Any('uid', vendor_orders)
                 query = query and query & _query or _query
 
-            elif manageable_orders and not self.is_shopadmin:
+            else:
                 # no need to check permissions for shopadmins
                 _query = Any('uid', manageable_orders)
                 query = query and query & _query or _query
