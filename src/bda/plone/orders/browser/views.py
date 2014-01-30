@@ -276,20 +276,26 @@ class OrdersTable(BrowserView):
         # first item is empty.
         if len(allowed_vendors) > 2:
             vendor_selector = factory(
-                'select',
+                'label:select',
                 name='vendor',
                 value=None,
-                props={'vocabulary': allowed_vendors}
+                props={
+                    'vocabulary': allowed_vendors,
+                    'label': 'Filter for vendors'
+                }
             )
 
         allowed_customers = allowed_customers_vocab()
         customer_selector = None
         if len(allowed_customers) > 2:
             customer_selector = factory(
-                'select',
+                'label:select',
                 name='customer',
                 value=None,
-                props={'vocabulary': allowed_customers}
+                props={
+                    'vocabulary': allowed_customers,
+                    'label': 'Filter for customers'
+                }
             )
 
         if vendor_selector or customer_selector:

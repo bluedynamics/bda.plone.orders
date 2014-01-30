@@ -144,6 +144,16 @@
     cursor:pointer;
 }
 
+/* ordersfilter */
+#form-ordersfilter label {
+    margin-right: 0.5em;
+}
+#form-ordersfilter select,
+#form-ordersfilter input {
+    margin-right: 1em;
+}
+
+
 /* export form */
 #field-exportorders-from,
 #field-exportorders-to {
