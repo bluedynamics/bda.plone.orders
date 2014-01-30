@@ -1,3 +1,4 @@
+from AccessControl import Unauthorized
 from Acquisition import aq_parent
 from Products.CMFPlone.interfaces import IPloneSiteRoot
 from bda.plone.cart import extractitems
@@ -130,22 +131,49 @@ def get_allowed_orders_uid(user=None):
     """Get all allowed orders by querying allowed bookings, where the
     vendor_uid is one of the user's allowed vendor areas.
 
-    If you had a previous version of bda.plone.shop without mutli client
-    feature installed, please run the bda.plone.orders "Add vendor_uid to
-    booking records" upgrade step.
-
     :param user: Optional user object to check permissions on vendor areas. If
                  no user object is give, the current user is used.
     :type user: MemberData object
     :returns: List of order UUID for all allowed orders.
     :rtype: List of strings.
     """
-    allowed_vendors = get_allowed_vendors(user)
-    query = Any('vendor_uid', [uuid.UUID(IUUID(it)) for it in allowed_vendors])
+    allowed_vendors = [
+        uuid.UUID(IUUID(it)) for it in get_allowed_vendors(user)
+    ]
+    query = Any('vendor_uid', allowed_vendors)
     soup = get_soup('bda_plone_orders_bookings', plone.api.portal.get())
     res = soup.query(query)
     # make a set with order_uids. orders with multiple bookings are multiple
     # times in the result
+    order_uids = set(it.attrs['order_uid'] for it in res)
+    return order_uids
+
+
+def get_vendor_orders_uid(vendor_uid):
+    """Get all all orders for a given vendor.
+
+    :param vendor_uid: Vendor uid, which should be used to filter the
+                       orders.
+    :typwe vendor_uid: string
+    :returns: List of order UUID for all allowed orders.
+    :rtype: List of strings.
+    """
+    from plone.app.uuid.utils import uuidToObject
+    user = plone.api.user.get_current()
+    obj = uuidToObject(vendor_uid)
+
+    # Check, if we are allowed to see the orders in the vendor object
+    try:
+        assert(bool(
+            user.checkPermission('bda.plone.orders: Vendor Orders', obj)
+        ))
+    except AssertionError:
+        raise Unauthorized
+
+    vendor_uid = uuid.UUID(vendor_uid)
+    query = Eq('vendor_uid', vendor_uid)
+    soup = get_soup('bda_plone_orders_bookings', plone.api.portal.get())
+    res = soup.query(query)
     order_uids = set(it.attrs['order_uid'] for it in res)
     return order_uids
 
