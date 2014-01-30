@@ -39,6 +39,7 @@ setup(
         'souper.plone',
         'yafowil.widget.datetime',
         'plone.app.uuid',
+        'plone.api',
     ],
     extras_require={
         'test': [
