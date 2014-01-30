@@ -2,6 +2,7 @@ import csv
 import datetime
 import json
 import plone.api
+import urllib
 import yafowil.loader  # loads registry
 from Products.Five import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
@@ -271,8 +272,9 @@ class OrdersTable(BrowserView):
 
         allowed_vendors = allowed_vendors_vocab()
         vendor_selector = None
-        # TODO: change to >2, after adding a "undefined" item
-        if len(allowed_vendors) > 1:
+        # only include filter, if there are more than one vendors.
+        # first item is empty.
+        if len(allowed_vendors) > 2:
             vendor_selector = factory(
                 'select',
                 name='vendor',
@@ -282,8 +284,7 @@ class OrdersTable(BrowserView):
 
         allowed_customers = allowed_customers_vocab()
         customer_selector = None
-        # TODO: change to >2, after adding a "undefined" item
-        if len(allowed_customers) > 1:
+        if len(allowed_customers) > 2:
             customer_selector = factory(
                 'select',
                 name='customer',
@@ -345,11 +346,11 @@ class OrdersTable(BrowserView):
 
     @property
     def ajaxurl(self):
-        vendor = self.request.form.get('ordersfilter.vendor')
-        customer = self.request.form.get('ordersfilter.customer')
-        qslist = [vendor and 'vendor={0}'.format(vendor) or '',
-                  customer and 'customer={0}'.format(customer) or '']
-        qs = '&'.join([it for it in qslist if it])
+        qslist = [
+            ('vendor', self.request.form.get('ordersfilter.vendor')),
+            ('customer', self.request.form.get('ordersfilter.customer'))
+        ]
+        qs = urllib.urlencode(dict([it for it in qslist if it[1]]))
         qs = qs and '?{0}'.format(qs) or ''
         return '%s/%s%s' % (
             self.context.absolute_url(), '@@ordersdata', qs)
