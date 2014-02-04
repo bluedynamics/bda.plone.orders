@@ -30,7 +30,7 @@ class NotifyCustomers(YAMLBaseForm):
         return UNSET
 
     def send(self, widget, data):
-        # uids get hooked up by JS
+        # uids get hooked up by JS in ``orders.notification_form_binder``
         uids = [_ for _ in self.request.form.get('uids', []) if _]
         print uids
 

@@ -34,3 +34,23 @@ msgstr ""
 # export
 msgid "export"
 msgstr ""
+
+# notify_customers_heading
+msgid "notify_customers_heading"
+msgstr ""
+
+# template
+msgid "template"
+msgstr ""
+
+# text
+msgid "text"
+msgstr ""
+
+# text_required
+msgid "text_required"
+msgstr ""
+
+# send
+msgid "send"
+msgstr ""
