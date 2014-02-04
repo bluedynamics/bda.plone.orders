@@ -29,7 +29,7 @@
     width:120px;
 }
 #bdaploneorders td {
-    padding:1px 3px 1px 1em;
+    padding:1px 3px 1px 10px;
     border-right:#ddd 1px solid;
 }
 #bdaploneorders a.contenttype-document {
@@ -37,6 +37,18 @@
 }
 #bdaploneorders_paginate a:hover {
     color:#fff !important;
+}
+input.select_all_orders,
+input.select_order {
+    position:relative;
+    top:2px;
+}
+a.notify_customers {
+    border-bottom:none !important;
+    display:inline-block;
+    line-height:16px;
+    padding-left:20px !important;
+    background:url('++resource++bda.plone.orders/notify_customers.png') 4px 0px no-repeat;
 }
 
 /* Order */
@@ -152,7 +164,6 @@
 #form-ordersfilter input {
     margin-right: 1em;
 }
-
 
 /* export form */
 #field-exportorders-from,

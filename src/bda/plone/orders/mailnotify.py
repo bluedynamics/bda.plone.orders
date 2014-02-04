@@ -77,7 +77,7 @@ def do_notify(context, name, order, templates):
         except Exception:
             msg = translate(
                 _('email_sending_failed',
-                  'Failed to send Notification to ${receiver}',
+                  default=u'Failed to send Notification to ${receiver}',
                   mapping={'receiver': receiver}))
             status_message(context, msg)
 

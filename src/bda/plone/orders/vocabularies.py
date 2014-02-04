@@ -44,7 +44,6 @@ def allowed_customers_vocab(user=None):
             last = customer.getProperty('lastname', '')
             # fallback
             full = customer.getProperty('fullname', '')
-
             name = (first or last) and '{0}, {1}'.format(first, last) or full
         else:
             name = it
