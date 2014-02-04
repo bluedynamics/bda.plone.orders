@@ -22,7 +22,7 @@ widgets:
     props:
         label: i18n:text
         required: i18n:text_required
-        rows: 30
+        rows: 26
         cols: 80
 - send:
     factory: submit

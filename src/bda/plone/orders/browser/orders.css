@@ -2,7 +2,46 @@
     z-index: 0 !important; /* render exposeMask BEHIND the overlay */
 }
 
-/* Orders */
+/* dropdown menu */
+.dropdown {
+    padding:0;
+    margin:0;
+    position:relative;
+}
+.dropdown_items {
+    display:none;
+    position:absolute;
+    left:0;
+    margin-left:0 !important;
+    margin-top:3px;
+    padding:6px 3px 3px 3px;
+    z-index:10000;
+    width:200px;
+    list-style-type:none !important;
+    list-style-image:none !important;
+    border:#ccc 4px solid;
+    background-color:#fff;
+    border-radius:3px;
+    -moz-border-radius:3px;
+    -webkit-border-radius:3px;
+    -o-border-radius:3px;
+}
+.dropdown_items li {
+    margin:0;
+    padding-left:5px;
+}
+.dropdown_items li a {
+    text-decoration:none;
+    border:none !important;
+    padding-left:3px;
+    padding-bottom:2px;
+    line-height:16px;
+}
+.dropdown_header {
+    cursor:pointer;
+}
+
+/* orders */
 #bdaploneorders_wrapper {
     margin-top:1em;
     margin-bottom:2.2em;
@@ -51,7 +90,52 @@ a.notify_customers {
     background:url('++resource++bda.plone.orders/notify_customers.png') 4px 0px no-repeat;
 }
 
-/* Order */
+/* orders filter */
+#form-ordersfilter label {
+    margin-right: 0.5em;
+}
+#form-ordersfilter select,
+#form-ordersfilter input {
+    margin-right: 1em;
+}
+
+/* export form */
+#field-exportorders-from,
+#field-exportorders-to {
+    margin:0.4em;
+}
+
+/* notification form */
+#form-notify_customers {
+    margin:2em;
+}
+
+/* order state colors */
+.state-value-reserved {
+    color:#00b400;
+}
+.state-value-new {
+    color:#ffcc00;
+}
+.state-value-finished {
+    color:#1600e5;
+}
+.state-value-cancelled {
+    color:#e50000;
+}
+
+/* order salaried colors */
+.salaried-value-yes {
+    color:#1600e5;
+}
+.salaried-value-no {
+    color:#ffcc00;
+}
+.salaried-value-failed {
+    color:#e50000;
+}
+
+/* order */
 .order_details {
     padding:1.2em;
 }
@@ -90,83 +174,4 @@ a.notify_customers {
 }
 .order_bookings tr.odd td {
     background-color:#fbfbfb;
-}
-
-/* Order state colors */
-.state-value-reserved {
-    color:#00b400;
-}
-.state-value-new {
-    color:#ffcc00;
-}
-.state-value-finished {
-    color:#1600e5;
-}
-.state-value-cancelled {
-    color:#e50000;
-}
-
-/* Order salaried colors */
-.salaried-value-yes {
-    color:#1600e5;
-}
-.salaried-value-no {
-    color:#ffcc00;
-}
-.salaried-value-failed {
-    color:#e50000;
-}
-
-/* Dropdown menu */
-.dropdown {
-    padding:0;
-    margin:0;
-    position:relative;
-}
-.dropdown_items {
-    display:none;
-    position:absolute;
-    left:0;
-    margin-left:0 !important;
-    margin-top:3px;
-    padding:6px 3px 3px 3px;
-    z-index:10000;
-    width:200px;
-    list-style-type:none !important;
-    list-style-image:none !important;
-    border:#ccc 4px solid;
-    background-color:#fff;
-    border-radius:3px;
-    -moz-border-radius:3px;
-    -webkit-border-radius:3px;
-    -o-border-radius:3px;
-}
-.dropdown_items li {
-    margin:0;
-    padding-left:5px;
-}
-.dropdown_items li a {
-    text-decoration:none;
-    border:none !important;
-    padding-left:3px;
-    padding-bottom:2px;
-    line-height:16px;
-}
-.dropdown_header {
-    cursor:pointer;
-}
-
-/* ordersfilter */
-#form-ordersfilter label {
-    margin-right: 0.5em;
-}
-#form-ordersfilter select,
-#form-ordersfilter input {
-    margin-right: 1em;
-}
-
-/* export form */
-#field-exportorders-from,
-#field-exportorders-to {
-    margin:0.4em;
 }
