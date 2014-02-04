@@ -40,6 +40,13 @@
 
     <browser:page
         for="*"
+        name="notify_customers"
+        class=".notify_customers.NotifyCustomers"
+        permission="bda.plone.orders.VendorOrders"
+        layer="..interfaces.IOrdersExtensionLayer"/>
+
+    <browser:page
+        for="*"
         name="order"
         template="order.pt"
         class=".views.OrderView"

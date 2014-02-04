@@ -21,6 +21,7 @@
             orders_dropdown_menus: orders.dropdown_binder
         });
         orders.order_select_binder(document);
+        orders.notification_binder(document);
     });
 
     var orders = {
@@ -44,6 +45,31 @@
                 .bind('change', function(event) {
                     orders.do_order_selection($(this));
                 });
+        },
+
+        selected_order_uids: function() {
+            var uids = new Array();
+            $('input:checkbox[name=select_order]:checked').each(function() {
+                uids.push($(this).val());
+            });
+            return uids;
+        },
+
+        notification_binder: function(context) {
+            $('a.notify_customers', context).bind('click', function(evt) {
+                evt.preventDefault();
+                var elem = $(this);
+                var target = elem.attr('ajax:target');
+                var uids = orders.selected_order_uids();
+                if (uids.length === 0) {
+                    bdajax.warning('No Orders Selected.');
+                    return;
+                }
+                bdajax.overlay({
+                    'action': 'notify_customers',
+                    'target': target
+                });
+            });
         },
 
         dropdown_binder: function (context) {

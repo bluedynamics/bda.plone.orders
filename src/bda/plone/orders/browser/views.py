@@ -381,14 +381,16 @@ class OrdersTable(BrowserView):
                        default=u'Select all visible orders'),
         }
         select_all_orders = tag('input', **select_all_orders_attrs)
-        notify_customer_attributes = {
+        notify_customers_target = self.context.absolute_url()
+        notify_customers_attributes = {
+            'ajax:target': notify_customers_target,
             'class_': 'notify_customers',
             'href': '',
             'title': _('notify_customers',
                        default=u'Notify customers of selected orders'),
         }
-        notify_customer = tag('a', '&nbsp', **notify_customer_attributes)
-        return select_all_orders + notify_customer
+        notify_customers = tag('a', '&nbsp', **notify_customers_attributes)
+        return select_all_orders + notify_customers
 
     def render_order_actions(self, colname, record):
         tag = Tag(Translate(self.request))
