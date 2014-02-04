@@ -18,7 +18,8 @@
             "fnDrawCallback": orders.bind
         });
         $.extend(bdajax.binders, {
-            orders_dropdown_menus: orders.dropdown_binder
+            orders_dropdown_menus: orders.dropdown_binder,
+            orders_notification_form_binder: orders.notification_form_binder
         });
         orders.order_select_binder(document);
         orders.notification_binder(document);
@@ -69,6 +70,14 @@
                     'action': 'notify_customers',
                     'target': target
                 });
+            });
+        },
+
+        notification_form_binder: function(context) {
+            var form = $('#form-notify_customers');
+            $(orders.selected_order_uids()).each(function() {
+                form.append(
+                    '<input type="hidden" name="uids" value="' + this + '" />');
             });
         },
 

@@ -4,15 +4,6 @@ props:
     action: context.form_action
     class: ajax
 widgets:
-- bda.plone.ajax.form.selector:
-    factory: proxy
-    value: context.selector_value
-- bda.plone.ajax.form.mode:
-    factory: proxy
-    value: context.mode_value
-- uids:
-    factory: hidden
-    value: UNSET
 - heading:
     factory: tag
     props:
@@ -31,8 +22,8 @@ widgets:
     props:
         label: i18n:text
         required: i18n:text_required
-        rows: 25
-        cols: 60
+        rows: 30
+        cols: 80
 - send:
     factory: submit
     props:
