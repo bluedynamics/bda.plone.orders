@@ -2,12 +2,12 @@
     xmlns="http://namespaces.zope.org/zope"
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup">
 
-    <genericsetup:upgradeStep
-        source="1.0"
-        destination="2"
-        title="Add vendor_uid to booking records"
-        description=""
-        profile="bda.plone.orders:default"
-        handler=".upgrades.fix_bookings_vendor_uid"/>
+  <genericsetup:upgradeStep
+    source="1.0"
+    destination="2"
+    title="Add vendor_uid to booking records"
+    description=""
+    profile="bda.plone.orders:default"
+    handler=".upgrades.fix_bookings_vendor_uid"/>
 
 </configure>
