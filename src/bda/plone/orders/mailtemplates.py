@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+from BTrees import OOBTree
+from zope.interface import implementer
+from .interfaces import IDynamicMailTemplateLibrary
 
 ###############################################################################
 # en
@@ -476,3 +479,73 @@ class DynamicMailTemplate(object):
             if key not in data:
                 raise KeyError('Required key {0} is missing.'.format(key))
         return template.format(**data)
+
+
+DYNAMIC_MAIL_LIBRARY_KEY = "bda.plone.order.dynamic_mail_lib"
+
+@implementer(IDynamicMailTemplateLibrary)
+class DynamicMailTemplateLibraryAquierer(object):
+
+    def __init__(self, context):
+        self.context = context
+
+    @property
+    def _parent(self):
+        if not hasattr(self.context, __parent__):
+            return None
+        dmt_lib = queryAdapter(
+            self.context.__parent__,
+            IDynamicMailTemplateLibrary
+        )
+        return dmt_lib
+
+    def keys(self):
+        parent = self._parent
+        if parent is None:
+            return []
+        return parent.keys()
+
+    def __getitem__(self, name):
+        parent = self._parent
+        if parent is not None:
+            return parent[name]
+        raise KeyError('Can not aquire key %s' % name)
+
+    def __setitem__(name, template):
+        raise NotImplementedError('do not set on parent (permissions')
+
+    def __delitem__(name):
+        raise NotImplementedError('do not delete on parent (permissions')
+
+
+@implementer(IDynamicMailTemplateLibrary)
+class DynamicMailTemplateLibraryStorage(DynamicMailTemplateLibraryAquierer):
+
+    @property
+    def _storage(self):
+        annotations = IAnnotations(self.context)
+        if DYNAMIC_MAIL_LIBRARY_KEY not in  annotations:
+            annotations[DYNAMIC_MAIL_LIBRARY_KEY] = OOBTree()
+        return annotations[DYNAMIC_MAIL_LIBRARY_KEY]
+
+    def keys(self):
+        result = [_ for _ in self._storage.keys()]
+        parent_keys = super(DynamicMailTemplateLibraryStorage, self).keys()
+        for key in parent_keys:
+            if key not in result:  # child wins
+                result.append(key)
+        return result
+
+    def __getitem__(self, name):
+        try:
+            return self._storage[name]
+        except KeyError:
+            return super(DynamicMailTemplateLibraryStorage,
+                         self).__getitem__(name)
+
+    def __setitem__(name, template):
+        self._storage[name] = template
+
+    def __delitem__(name):
+        del self._storage[name]
+

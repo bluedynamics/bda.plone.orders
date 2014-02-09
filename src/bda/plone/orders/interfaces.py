@@ -27,3 +27,24 @@ class IPaymentText(Interface):
     """Interface for providing payment related order notification text.
     """
     payment_text = Attribute(u"Text sent after successful checkout for payment")
+
+
+class IDynamicMailTemplateLibrary(Interface):
+    """A set of named templates
+    """
+
+    def keys():
+        """list names of templates
+        """
+
+    def __getitem__(name):
+        """return template by name
+        """
+
+    def __setitem__(name, template):
+        """store template under a name
+        """
+
+    def __delitem__(name):
+        """remove template with this name
+        """
