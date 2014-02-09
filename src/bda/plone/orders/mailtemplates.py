@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
-from BTrees import OOBTree
+from BTrees.OOBTree import OOBTree
+from zope.annotation import IAnnotations
 from zope.interface import implementer
+from zope.component import queryAdapter
 from .interfaces import IDynamicMailTemplateLibrary
 
 ###############################################################################
@@ -489,33 +491,37 @@ class DynamicMailTemplateLibraryAquierer(object):
     def __init__(self, context):
         self.context = context
 
-    @property
     def _parent(self):
-        if not hasattr(self.context, __parent__):
+        if not hasattr(self.context, '__parent__'):
             return None
-        dmt_lib = queryAdapter(
-            self.context.__parent__,
-            IDynamicMailTemplateLibrary
-        )
-        return dmt_lib
+        if self.context.__parent__:
+            dmt_lib = queryAdapter(
+                self.context.__parent__,
+                IDynamicMailTemplateLibrary,
+            )
+            return dmt_lib
 
     def keys(self):
-        parent = self._parent
+        parent = self._parent()
         if parent is None:
             return []
         return parent.keys()
 
     def __getitem__(self, name):
-        parent = self._parent
+        parent = self._parent()
         if parent is not None:
             return parent[name]
         raise KeyError('Can not aquire key %s' % name)
 
-    def __setitem__(name, template):
-        raise NotImplementedError('do not set on parent (permissions')
+    def __setitem__(self, name, template):
+        raise NotImplementedError(
+            'acquierer do not set on parent (permissions)'
+        )
 
-    def __delitem__(name):
-        raise NotImplementedError('do not delete on parent (permissions')
+    def __delitem__(self, name):
+        raise NotImplementedError(
+            'acquierer do not delete on parent (permissions)'
+        )
 
 
 @implementer(IDynamicMailTemplateLibrary)
@@ -540,12 +546,14 @@ class DynamicMailTemplateLibraryStorage(DynamicMailTemplateLibraryAquierer):
         try:
             return self._storage[name]
         except KeyError:
-            return super(DynamicMailTemplateLibraryStorage,
-                         self).__getitem__(name)
+            return super(
+                DynamicMailTemplateLibraryStorage,
+                self
+            ).__getitem__(name)
 
-    def __setitem__(name, template):
+    def __setitem__(self, name, template):
         self._storage[name] = template
 
-    def __delitem__(name):
+    def __delitem__(self, name):
         del self._storage[name]
 
