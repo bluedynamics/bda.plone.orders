@@ -1,0 +1,33 @@
+factory: form
+name: notify_customers
+props:
+    action: context.form_action
+    class: ajax
+widgets:
+- heading:
+    factory: tag
+    props:
+        structural: True
+        tag: h3
+        text: i18n:notify_customers_heading
+- template:
+    factory: "#field:select"
+    value: context.template_value
+    props:
+        label: i18n:template
+        vocabulary: context.template_vocabulary
+- text:
+    factory: "#field:textarea"
+    value: context.text_value
+    props:
+        label: i18n:text
+        required: i18n:text_required
+        rows: 26
+        cols: 80
+- send:
+    factory: submit
+    props:
+        label: i18n:send
+        action: send
+        handler: context.send
+        next: context.send_success

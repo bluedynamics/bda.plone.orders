@@ -2,110 +2,7 @@
     z-index: 0 !important; /* render exposeMask BEHIND the overlay */
 }
 
-/* Orders */
-#bdaploneorders_wrapper {
-    margin-top:1em;
-    margin-bottom:2.2em;
-}
-#bdaploneorders_length {
-    margin-bottom:0.8em;
-}
-#bdaploneorders_length select,
-#bdaploneorders_filter input {
-    font-size:90%;
-}
-#bdaploneorders {
-    margin-bottom:1em;
-    border:#ddd 1px solid;
-}
-#bdaploneorders thead {
-    background-color:#fafafa;
-}
-#bdaploneorders th {
-    border-right:#ddd 1px solid;
-    border-bottom:#ddd 1px solid;
-}
-#bdaploneorders th.datarow-actions {
-    width:120px;
-}
-#bdaploneorders td {
-    padding:1px 3px 1px 1em;
-    border-right:#ddd 1px solid;
-}
-#bdaploneorders a.contenttype-document {
-    border:none !important;
-}
-#bdaploneorders_paginate a:hover {
-    color:#fff !important;
-}
-
-/* Order */
-.order_details {
-    padding:1.2em;
-}
-.order_details_row {
-    display:table-row;
-}
-.order_details_row div {
-    display:table-cell;
-    width:380px;
-    padding:0.4em;
-}
-.order_bookings {
-    padding:0 0.4em 0.4em 0.4em;
-}
-.order_bookings h3 {
-    margin-top:0.8em;
-    margin-bottom:0.3em;
-}
-.order_bookings table {
-    width:100%;
-    border:#ddd 1px solid;
-    border-spacing:0;
-    border-collapse:collapse;
-}
-.order_bookings table th {
-    padding:5px 3px 5px 1em;
-    text-align:left;
-    background-color:#fafafa;
-    border-right:#ddd 1px solid;
-    border-bottom:#ddd 1px solid;
-    font-weight:bold;
-}
-.order_bookings table td {
-    padding:5px 3px 5px 1em;
-    border-right:#ddd 1px solid;
-}
-.order_bookings tr.odd td {
-    background-color:#fbfbfb;
-}
-
-/* Order state colors */
-.state-value-reserved {
-    color:#00b400;
-}
-.state-value-new {
-    color:#ffcc00;
-}
-.state-value-finished {
-    color:#1600e5;
-}
-.state-value-cancelled {
-    color:#e50000;
-}
-
-/* Order salaried colors */
-.salaried-value-yes {
-    color:#1600e5;
-}
-.salaried-value-no {
-    color:#ffcc00;
-}
-.salaried-value-failed {
-    color:#e50000;
-}
-
-/* Dropdown menu */
+/* dropdown menu */
 .dropdown {
     padding:0;
     margin:0;
@@ -144,7 +41,56 @@
     cursor:pointer;
 }
 
-/* ordersfilter */
+/* orders */
+#bdaploneorders_wrapper {
+    margin-top:1em;
+    margin-bottom:2.2em;
+}
+#bdaploneorders_length {
+    margin-bottom:0.8em;
+}
+#bdaploneorders_length select,
+#bdaploneorders_filter input {
+    font-size:90%;
+}
+#bdaploneorders {
+    margin-bottom:1em;
+    border:#ddd 1px solid;
+}
+#bdaploneorders thead {
+    background-color:#fafafa;
+}
+#bdaploneorders th {
+    border-right:#ddd 1px solid;
+    border-bottom:#ddd 1px solid;
+}
+#bdaploneorders th.datarow-actions {
+    width:120px;
+}
+#bdaploneorders td {
+    padding:1px 3px 1px 10px;
+    border-right:#ddd 1px solid;
+}
+#bdaploneorders a.contenttype-document {
+    border:none !important;
+}
+#bdaploneorders_paginate a:hover {
+    color:#fff !important;
+}
+input.select_all_orders,
+input.select_order {
+    position:relative;
+    top:2px;
+}
+a.notify_customers {
+    border-bottom:none !important;
+    display:inline-block;
+    line-height:16px;
+    padding-left:20px !important;
+    background:url('++resource++bda.plone.orders/notify_customers.png') 4px 0px no-repeat;
+}
+
+/* orders filter */
 #form-ordersfilter label {
     margin-right: 0.5em;
 }
@@ -153,9 +99,79 @@
     margin-right: 1em;
 }
 
-
 /* export form */
 #field-exportorders-from,
 #field-exportorders-to {
     margin:0.4em;
+}
+
+/* notification form */
+#form-notify_customers {
+    margin:2em;
+}
+
+/* order state colors */
+.state-value-reserved {
+    color:#00b400;
+}
+.state-value-new {
+    color:#ffcc00;
+}
+.state-value-finished {
+    color:#1600e5;
+}
+.state-value-cancelled {
+    color:#e50000;
+}
+
+/* order salaried colors */
+.salaried-value-yes {
+    color:#1600e5;
+}
+.salaried-value-no {
+    color:#ffcc00;
+}
+.salaried-value-failed {
+    color:#e50000;
+}
+
+/* order */
+.order_details {
+    padding:1.2em;
+}
+.order_details_row {
+    display:table-row;
+}
+.order_details_row div {
+    display:table-cell;
+    width:380px;
+    padding:0.4em;
+}
+.order_bookings {
+    padding:0 0.4em 0.4em 0.4em;
+}
+.order_bookings h3 {
+    margin-top:0.8em;
+    margin-bottom:0.3em;
+}
+.order_bookings table {
+    width:100%;
+    border:#ddd 1px solid;
+    border-spacing:0;
+    border-collapse:collapse;
+}
+.order_bookings table th {
+    padding:5px 3px 5px 1em;
+    text-align:left;
+    background-color:#fafafa;
+    border-right:#ddd 1px solid;
+    border-bottom:#ddd 1px solid;
+    font-weight:bold;
+}
+.order_bookings table td {
+    padding:5px 3px 5px 1em;
+    border-right:#ddd 1px solid;
+}
+.order_bookings tr.odd td {
+    background-color:#fbfbfb;
 }

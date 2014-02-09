@@ -453,8 +453,6 @@ class BuyableData(object):
         bookings_soup = get_soup('bda_plone_orders_bookings', context)
         order_bookings = dict()
         for booking in bookings_soup.query(Eq('buyable_uid', context.UID())):
-            # TODO: BUG? why is bookings only scoped in this block and not used
-            # elsewhere?
             bookings = order_bookings.setdefault(
                 booking.attrs['order_uid'], list())
             bookings.append(booking)

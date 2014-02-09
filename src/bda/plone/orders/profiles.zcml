@@ -4,10 +4,10 @@
   <include package="Products.GenericSetup" file="meta.zcml"/>
 
   <genericsetup:registerProfile
-      name="default"
-      title="bda.plone.orders"
-      directory="profiles/default"
-      description="bda.plone.orders"
-      provides="Products.GenericSetup.interfaces.EXTENSION"/>
+    name="default"
+    title="bda.plone.orders"
+    directory="profiles/default"
+    description="bda.plone.orders"
+    provides="Products.GenericSetup.interfaces.EXTENSION"/>
 
 </configure>

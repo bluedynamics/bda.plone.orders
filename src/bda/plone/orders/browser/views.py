@@ -93,10 +93,10 @@ class Dropdown(object):
 
 
 state_vocab = {
-    'new': _('new', 'New'),
-    'finished': _('finished', 'Finished'),
-    'cancelled': _('cancelled', 'Cancelled'),
-    'reserved': _('reserved', 'Reserved'),
+    'new': _('new', default=u'New'),
+    'finished': _('finished', default=u'Finished'),
+    'cancelled': _('cancelled', default=u'Cancelled'),
+    'reserved': _('reserved', default=u'Reserved'),
 }
 
 
@@ -106,9 +106,9 @@ class StateDropdown(Dropdown):
     action = 'statetransition'
     vocab = state_vocab
     transitions = {
-        'renew': _('renew', 'Renew'),
-        'finish': _('finish', 'Finish'),
-        'cancel': _('cancel', 'Cancel'),
+        'renew': _('renew', default=u'Renew'),
+        'finish': _('finish', default=u'Finish'),
+        'cancel': _('cancel', default=u'Cancel'),
     }
 
     @property
@@ -127,9 +127,9 @@ class StateDropdown(Dropdown):
 
 
 salaried_vocab = {
-    'yes': _('yes', 'Yes'),
-    'no': _('no', 'No'),
-    'failed': _('failed', 'Failed'),
+    'yes': _('yes', default=u'Yes'),
+    'no': _('no', default=u'No'),
+    'failed': _('failed', default=u'Failed'),
 }
 
 
@@ -139,8 +139,8 @@ class SalariedDropdown(Dropdown):
     action = 'salariedtransition'
     vocab = salaried_vocab
     transitions = {
-        'mark_salaried': _('mark_salaried', 'Mark salaried'),
-        'mark_outstanding': _('mark_outstanding', 'Mark outstanding'),
+        'mark_salaried': _('mark_salaried', default=u'Mark salaried'),
+        'mark_outstanding': _('mark_outstanding', default=u'Mark outstanding'),
     }
 
     @property
@@ -269,11 +269,9 @@ class OrdersTable(BrowserView):
     table_id = 'bdaploneorders'
 
     def render_filter(self):
-
         allowed_vendors = allowed_vendors_vocab()
         vendor_selector = None
-        # only include filter, if there are more than one vendors.
-        # first item is empty.
+        # vendor selection, include if more than one vendor
         if len(allowed_vendors) > 2:
             vendor_selector = factory(
                 'label:select',
@@ -284,7 +282,7 @@ class OrdersTable(BrowserView):
                     'label': 'Filter for vendors'
                 }
             )
-
+        # customers selection, include if more than one customer
         allowed_customers = allowed_customers_vocab()
         customer_selector = None
         if len(allowed_customers) > 2:
@@ -297,26 +295,24 @@ class OrdersTable(BrowserView):
                     'label': 'Filter for customers'
                 }
             )
-
-        if vendor_selector or customer_selector:
-            action = self.request.getURL()
-            form = factory(
-                'form',
-                name='ordersfilter',
-                props={'action': action},
-            )
-            if vendor_selector:
-                form['vendor'] = vendor_selector
-            if customer_selector:
-                form['customer'] = customer_selector
-            form['submit'] = factory(
-                'submit',
-                name='filter',
-                props={'action': True, 'label': 'Filter'}
-            )
-            return form(request=self.request)
-
-        return
+        if not vendor_selector and not customer_selector:
+            return
+        action = self.request.getURL()
+        form = factory(
+            'form',
+            name='ordersfilter',
+            props={'action': action},
+        )
+        if vendor_selector:
+            form['vendor'] = vendor_selector
+        if customer_selector:
+            form['customer'] = customer_selector
+        form['submit'] = factory(
+            'submit',
+            name='filter',
+            props={'action': True, 'label': 'Filter'}
+        )
+        return form(request=self.request)
 
     @property
     def rendered_table(self):
@@ -341,29 +337,29 @@ class OrdersTable(BrowserView):
     def columns(self):
         return [{
             'id': 'actions',
-            'label': _('actions', 'Actions'),
+            'label': _('actions', default=u'Actions'),
             'head': self.render_order_actions_head,
             'renderer': self.render_order_actions,
         }, {
             'id': 'created',
-            'label': _('date', 'Date'),
+            'label': _('date', default=u'Date'),
             'renderer': self.render_dt,
         }, {
             'id': 'personal_data.lastname',
-            'label': _('lastname', 'Last Name'),
+            'label': _('lastname', default=u'Last Name'),
         }, {
             'id': 'personal_data.firstname',
-            'label': _('firstname', 'First Name'),
+            'label': _('firstname', default=u'First Name'),
         }, {
             'id': 'billing_address.city',
-            'label': _('city', 'City'),
+            'label': _('city', default=u'City'),
         }, {
             'id': 'salaried',
-            'label': _('salaried', 'Salaried'),
+            'label': _('salaried', default=u'Salaried'),
             'renderer': self.render_salaried,
         }, {
             'id': 'state',
-            'label': _('state', 'State'),
+            'label': _('state', default=u'State'),
             'renderer': self.render_state,
         }]
 
@@ -374,14 +370,27 @@ class OrdersTable(BrowserView):
         return value
 
     def render_order_actions_head(self):
+        # XXX: permission check
+        # if not notification_permitted:
         tag = Tag(Translate(self.request))
         select_all_orders_attrs = {
             'name': 'select_all_orders',
             'type': 'checkbox',
             'class_': 'select_all_orders',
+            'title': _('select_all_orders',
+                       default=u'Select all visible orders'),
         }
         select_all_orders = tag('input', **select_all_orders_attrs)
-        return select_all_orders
+        notify_customers_target = self.context.absolute_url()
+        notify_customers_attributes = {
+            'ajax:target': notify_customers_target,
+            'class_': 'notify_customers',
+            'href': '',
+            'title': _('notify_customers',
+                       default=u'Notify customers of selected orders'),
+        }
+        notify_customers = tag('a', '&nbsp', **notify_customers_attributes)
+        return select_all_orders + notify_customers
 
     def render_order_actions(self, colname, record):
         tag = Tag(Translate(self.request))
@@ -393,7 +402,7 @@ class OrdersTable(BrowserView):
             'ajax:overlay': 'order',
             'class_': 'contenttype-document',
             'href': '',
-            'title': _('view_order', 'View Order'),
+            'title': _('view_order', default=u'View Order'),
         }
         view_order = tag('a', '&nbsp', **view_order_attrs)
         # XXX: permission check
@@ -548,20 +557,21 @@ class OrderView(BrowserView):
     def tid(self, order):
         tid = order.get('tid', 'none')
         if tid == 'none':
-            return _('none', 'None')
+            return _('none', default=u'None')
         return tid
 
     def state(self, order):
         return state_vocab[order.get('state', 'new')]
 
     def created(self, order):
-        value = order.get('created', _('unknown', 'Unknown'))
+        value = order.get('created', _('unknown', default=u'Unknown'))
         if value:
             value = value.strftime(DT_FORMAT)
         return value
 
     def exported(self, item):
-        return item['exported'] and _('yes', 'Yes') or _('no', 'No')
+        return item['exported'] \
+            and _('yes', default=u'Yes') or _('no', default=u'No')
 
 
 class DialectExcelWithColons(csv.excel):
@@ -629,7 +639,7 @@ class ExportOrdersForm(YAMLForm):
         to_date = data.fetch('exportorders.to').extracted
         if to_date <= from_date:
             raise ExtractionError(_('from_date_before_to_date',
-                                    'From-date after to-date'))
+                                    default=u'From-date after to-date'))
         return data.extracted
 
     def export(self, widget, data):

@@ -16,51 +16,51 @@
   <include package=".browser"/>
 
   <utility
-      name="bda_plone_orders_bookings"
-      factory=".common.BookingsCatalogFactory"/>
+    name="bda_plone_orders_bookings"
+    factory=".common.BookingsCatalogFactory"/>
 
   <utility
-      name="bda_plone_orders_orders"
-      factory=".common.OrdersCatalogFactory"/>
+    name="bda_plone_orders_orders"
+    factory=".common.OrdersCatalogFactory"/>
 
   <adapter factory=".common.plone_root_uuid" />
 
   <adapter
-      zcml:condition="installed Products.Archetypes"
-      for="Products.Archetypes.interfaces.IBaseObject
-           zope.publisher.interfaces.browser.IBrowserRequest"
-      factory=".common.OrderCheckoutAdapter"/>
+    zcml:condition="installed Products.Archetypes"
+    for="Products.Archetypes.interfaces.IBaseObject
+         zope.publisher.interfaces.browser.IBrowserRequest"
+    factory=".common.OrderCheckoutAdapter"/>
 
   <adapter
-      zcml:condition="installed plone.dexterity"
-      for="plone.dexterity.content.DexterityContent
-           zope.publisher.interfaces.browser.IBrowserRequest"
-      factory=".common.OrderCheckoutAdapter"/>
+    zcml:condition="installed plone.dexterity"
+    for="plone.dexterity.content.DexterityContent
+         zope.publisher.interfaces.browser.IBrowserRequest"
+    factory=".common.OrderCheckoutAdapter"/>
 
   <adapter
-      zcml:condition="installed Products.Archetypes"
-      for="Products.Archetypes.interfaces.IBaseObject"
-      factory=".common.PaymentData"/>
+    zcml:condition="installed Products.Archetypes"
+    for="Products.Archetypes.interfaces.IBaseObject"
+    factory=".common.PaymentData"/>
 
   <adapter
-      zcml:condition="installed plone.dexterity"
-      for="plone.dexterity.content.DexterityContent"
-      factory=".common.PaymentData"/>
+    zcml:condition="installed plone.dexterity"
+    for="plone.dexterity.content.DexterityContent"
+    factory=".common.PaymentData"/>
 
   <subscriber
-      for="bda.plone.payment.interfaces.IPaymentFailedEvent"
-      handler=".common.payment_failed"/>
+    for="bda.plone.payment.interfaces.IPaymentFailedEvent"
+    handler=".common.payment_failed"/>
 
   <subscriber
-      for="bda.plone.payment.interfaces.IPaymentSuccessEvent"
-      handler=".common.payment_success"/>
+    for="bda.plone.payment.interfaces.IPaymentSuccessEvent"
+    handler=".common.payment_success"/>
 
   <subscriber
-      for="bda.plone.payment.interfaces.IPaymentSuccessEvent"
-      handler=".mailnotify.notify_payment_success"/>
+    for="bda.plone.payment.interfaces.IPaymentSuccessEvent"
+    handler=".mailnotify.notify_payment_success"/>
 
   <subscriber
-      for="bda.plone.checkout.interfaces.ICheckoutDone"
-      handler=".mailnotify.notify_reservation_if_payment_skipped"/>
+    for="bda.plone.checkout.interfaces.ICheckoutDone"
+    handler=".mailnotify.notify_reservation_if_payment_skipped"/>
 
 </configure>
