@@ -26,4 +26,4 @@ class INotificationText(Interface):
 class IPaymentText(Interface):
     """Interface for providing payment related order notification text.
     """
-    text = Attribute(u"Text sent after successful checkout for payment")
+    payment_text = Attribute(u"Text sent after successful checkout for payment")

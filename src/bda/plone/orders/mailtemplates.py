@@ -423,3 +423,56 @@ def get_order_templates(context):
 def get_reservation_templates(context):
     lang = context.restrictedTraverse('@@plone_portal_state').language()
     return RESERVATION_TEMPLATES.get(lang, RESERVATION_TEMPLATES['en'])
+
+
+class DynamicMailTemplate(object):
+    """Dynamic Mail Template based on str.format
+    """
+
+    def __init__(self, required=[], defaults={}):
+        """Initialize a new template
+
+        required
+            a list of keys which are required in the data to be rendered.
+            all other values are taken from defaults if not provided.
+
+        defaults
+            a complete set of values for the template. used for validation,
+            so it has to include all required as well.
+        """
+        for key in required:
+            if key in defaults:
+                continue
+            raise ValueError(
+                'All required must be in defaults too, missing: '
+                '{0}'.format(key)
+            )
+        self.required = required
+        self.defaults = defaults
+
+    def validate(self, template):
+        """validates if the template can be rendered.
+
+        uses default values to achieve this
+
+        template
+            a unicode string meant to be rendered using python string format
+            method
+
+        """
+        assert isinstance(template, unicode), 'template must be unicode'
+        try:
+            self(template, self.defaults)
+        except KeyError, e:
+            return False, u'Variable "{0}" is not available.'.format(e.message)
+        except Exception, e:
+            return False, e.message
+        return True, ''
+
+    def __call__(self, template, data):
+        """render template with data"""
+        assert isinstance(template, unicode), 'template must be unicode'
+        for key in self.required:
+            if key not in data:
+                raise KeyError('Required key {0} is missing.'.format(key))
+        return template.format(**data)
