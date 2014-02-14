@@ -17,8 +17,8 @@
 <metal:main fill-slot="main">
   <tal:main-macro metal:define-macro="main">
 
-    <div id="orders_wrapper">
-      <tal:view content="structure context/@@orderstable" />
+    <div id="mailtemplates_wrapper">
+      <tal:view content="structure context/@@mailtemplatesform" />
     </div>
 
   </tal:main-macro>

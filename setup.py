@@ -38,6 +38,7 @@ setup(
         'collective.js.jqueryui',
         'souper.plone',
         'yafowil.widget.datetime',
+        'yafowil.widget.array',
         'plone.app.uuid',
         'plone.api',
     ],

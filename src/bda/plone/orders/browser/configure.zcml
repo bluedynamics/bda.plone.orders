@@ -82,4 +82,18 @@
     permission="zope2.View"
     layer="..interfaces.IOrdersExtensionLayer"/>
 
+  <browser:page
+    for="*"
+    name="mailtemplatesform"
+    class=".mailtemplates.MailtemplatesForm"
+    permission="cmf.ModifyPortalContent"
+    layer="..interfaces.IOrdersExtensionLayer"/>
+
+  <browser:page
+    for="*"
+    name="mailtemplates"
+    template="mailtemplates_view.pt"
+    permission="cmf.ModifyPortalContent"
+    layer="..interfaces.IOrdersExtensionLayer"/>
+
 </configure>

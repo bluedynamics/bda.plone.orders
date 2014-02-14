@@ -1,0 +1,30 @@
+factory: form
+name: notify_customers
+props:
+    action: context.form_action
+widgets:
+- array:
+    factory: "#field:array"
+    value: context.value_templates
+    props:
+        label: i18n:label_mailtemplatelib_array
+        array.label: "&nbsp;"
+    widgets:
+    - title:
+        factory: "#field:text"
+        props:
+            label: i18n:label_mailtemplatelib_title
+    - text:
+        factory: "#field:textarea"
+        props:
+            label: i18n:label_mailtemplatelib_template
+            required: i18n:text_required
+            rows: 26
+            cols: 80
+- save:
+    factory: submit
+    props:
+          label: i18n:label_mailtemplatelib_save
+          action: save
+          handler: context.save
+          next: context.next

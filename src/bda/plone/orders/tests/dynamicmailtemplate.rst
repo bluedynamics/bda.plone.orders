@@ -65,7 +65,7 @@ non-renderable::
     >>> dmt.validate(tpl)
     (False, u'Variable "nonexistent" is not available.')
 
-    >>> tpl = u'[{uid}] {title}: {description:8.2f}}'
+    >>> tpl = u'[{uid}] {title}: {description:8.2f}'
     >>> dmt.validate(tpl)
     (False, "Unknown format code 'f' for object of type 'unicode'")
 
