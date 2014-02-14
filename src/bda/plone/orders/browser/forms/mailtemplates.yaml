@@ -5,22 +5,31 @@ props:
 widgets:
 - array:
     factory: "#field:array"
-    value: context.value_templates
+    value: context.value_tpl
     props:
         label: i18n:label_mailtemplatelib_array
         array.label: "&nbsp;"
+        sort: False
     widgets:
-    - title:
-        factory: "#field:text"
-        props:
-            label: i18n:label_mailtemplatelib_title
-    - text:
-        factory: "#field:textarea"
-        props:
-            label: i18n:label_mailtemplatelib_template
-            required: i18n:text_required
-            rows: 26
-            cols: 80
+    - template:
+        factory: compound
+        widgets:
+        - title:
+            factory: "#field:text"
+            props:
+                label: i18n:label_mailtemplatelib_title
+                required: i18n:text_required
+        - text:
+            factory: "#field:*validatetpl:textarea"
+            props:
+                label: i18n:label_mailtemplatelib_template
+                required: i18n:text_required
+                rows: 15
+                cols: 80
+            custom:
+                validatetpl:
+                    extractors:
+                        - context.validate_tpl
 - save:
     factory: submit
     props:
