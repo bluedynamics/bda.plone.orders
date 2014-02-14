@@ -430,6 +430,33 @@ def get_reservation_templates(context):
     return RESERVATION_TEMPLATES.get(lang, RESERVATION_TEMPLATES['en'])
 
 
+# list of template attributes which are required. by default, no attributes are
+# required.
+REQUIRED_TEMPLATE_ATTRS = list()
+
+
+# dictionary with attributes valid in mail template as keys, values are used
+# for template validation
+DEFAULT_TEMPLATE_ATTRS = {
+    'created': '14.2.2014 14:42',
+    'ordernumber': '123456',
+    'salaried': 'no',
+    'state': 'new',
+    'personal_data.company': 'ACME LTD.',
+    'personal_data.email': 'max.mustermann@example.com',
+    'personal_data.gender': 'male',
+    'personal_data.firstname': 'Max',
+    'personal_data.phone': '+43 123 456 78 90',
+    'personal_data.lastname': 'Mustermann',
+    'billing_address.city': 'Springfield',
+    'billing_address.country': 'Austria',
+    'billing_address.street': 'Musterstrasse',
+    'billing_address.zip': '1234',
+    'order_comment.comment': 'Comment',
+    'payment_selection.payment': 'six_payment',
+}
+
+
 class DynamicMailTemplate(object):
     """Dynamic Mail Template based on str.format
     """
