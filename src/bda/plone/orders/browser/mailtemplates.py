@@ -7,6 +7,14 @@ from bda.plone.orders import message_factory as _
 from node.utils import UNSET
 from yafowil.base import ExtractionError
 from yafowil.plone.form import YAMLForm
+from bda.plone.orders.mailtemplates import DynamicMailTemplate
+from bda.plone.orders.mailtemplates import REQUIRED_TEMPLATE_ATTRS
+from bda.plone.orders.mailtemplates import DEFAULT_TEMPLATE_ATTRS
+
+TEMPLATE = DynamicMailTemplate(
+    required=REQUIRED_TEMPLATE_ATTRS,
+    defaults=DEFAULT_TEMPLATE_ATTRS
+)
 
 
 class MailtemplatesForm(YAMLForm):
@@ -19,7 +27,10 @@ class MailtemplatesForm(YAMLForm):
         return UNSET
 
     def validate_tpl(self, widget, data):
-        raise ExtractionError('fooo')
+        state, msg = TEMPLATE.validate(data.extracted.decode('utf8'))
+        if not state:
+            raise ExtractionError(msg)
+        return data.extracted
 
     def form_action(self, widget, data):
         return '%s/@@mailtemplates' % self.context.absolute_url()
