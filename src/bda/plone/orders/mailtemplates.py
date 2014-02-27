@@ -483,6 +483,21 @@ class DynamicMailTemplate(object):
             )
         self.required = required
         self.defaults = defaults
+        
+    def normalized(self, keys=[], indict={}):
+        if keys and indict:
+            raise ValueError('Only one kwargs please.')    
+        if keys:
+            result = []
+            for key in keys:
+                result.append(key.replace('.', '_'))
+            return result
+        if indict:
+            result = {}
+            for key, value in indict.items():
+                result[key.replace('.', '_')] = value
+            return result
+        raise ValueError('Only one kwargs please.')
 
     def validate(self, template):
         """validates if the template can be rendered.
@@ -509,7 +524,7 @@ class DynamicMailTemplate(object):
         for key in self.required:
             if key not in data:
                 raise KeyError('Required key {0} is missing.'.format(key))
-        return template.format(**data)
+        return template.format(**self.normalized(indict=data))
 
 
 DYNAMIC_MAIL_LIBRARY_KEY = "bda.plone.order.dynamic_mail_lib"

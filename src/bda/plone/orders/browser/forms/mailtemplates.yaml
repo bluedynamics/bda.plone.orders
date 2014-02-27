@@ -24,7 +24,7 @@ widgets:
             props:
                 label: i18n:label_mailtemplatelib_template:Template
                 required: i18n:text_required
-                rows: 15
+                rows: 8
                 cols: 80
             custom:
                 validatetpl:

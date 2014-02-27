@@ -16,10 +16,44 @@
 
 <metal:main fill-slot="main">
   <tal:main-macro metal:define-macro="main">
+  
+    <h1 class="documentFirstHeading" 
+        i18n:translate="heading_mailtemplatelib_main">Mailtemplates for Order Notifications</h1>
+    <h2 i18n:translate="heading_mailtemplatelib_using">Using placeholder:</h2>
+    <p i18n:translate="heading_mailtemplatelib_example">
+        In templates named placeholders can be used. A placeholder is inserted 
+        by inserting the name of the placeholder in curly braces, like so:
+        <pre i18n:name="example">Hello Mr. {personal_data_lastname}, ...</pre>   
+    </p>
 
+
+    <h2 i18n:translate="heading_mailtemplatelib_library">Edit</h2>
     <div id="mailtemplates_wrapper">
       <tal:view content="structure context/@@mailtemplatesform" />
     </div>
+
+    <h2 tal:condition="view/rendered" 
+        i18n:translate="heading_mailtemplatelib_preview">Preview</h2>
+    <tal:loop tal:repeat="item view/rendered">
+
+    <h3 tal:content="item/title"></h3>
+    <pre tal:content="item/preview"></pre>
+    </tal:loop>
+
+    <h2 i18n:translate="heading_mailtemplatelib_available">Available placeholders:</h2>
+    <table class="plain">
+        <thead>
+            <tr>
+                <th i18n:translate="th_mailtemplatelib_placeholder">Placeholder</th>
+                <th i18n:translate="th_mailtemplatelib_example">Example Value</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr tal:repeat="item python:view.default_attrs()">
+                <td>{<span tal:content="item/placeholder">placeholder</span>}</td>
+                <td tal:content="item/example">example</td>
+            </tr>
+        </tbody>
 
   </tal:main-macro>
 </metal:main>

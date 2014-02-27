@@ -92,6 +92,7 @@
   <browser:page
     for="*"
     name="mailtemplates"
+    class=".mailtemplates.MailtemplatesView"
     template="mailtemplates_view.pt"
     permission="cmf.ModifyPortalContent"
     layer="..interfaces.IOrdersExtensionLayer"/>
