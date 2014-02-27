@@ -4,6 +4,8 @@ from zope.annotation import IAnnotations
 from zope.interface import implementer
 from zope.component import queryAdapter
 from .interfaces import IDynamicMailTemplateLibrary
+from .interfaces import IDynamicMailTemplateLibraryStorage
+
 
 ###############################################################################
 # en
@@ -551,7 +553,7 @@ class DynamicMailTemplateLibraryAquierer(object):
         )
 
 
-@implementer(IDynamicMailTemplateLibrary)
+@implementer(IDynamicMailTemplateLibraryStorage)
 class DynamicMailTemplateLibraryStorage(DynamicMailTemplateLibraryAquierer):
 
     @property
@@ -561,8 +563,11 @@ class DynamicMailTemplateLibraryStorage(DynamicMailTemplateLibraryAquierer):
             annotations[DYNAMIC_MAIL_LIBRARY_KEY] = OOBTree()
         return annotations[DYNAMIC_MAIL_LIBRARY_KEY]
 
+    def direct_keys(self):
+        return [_ for _ in self._storage.keys()]
+
     def keys(self):
-        result = [_ for _ in self._storage.keys()]
+        result = self.direct_keys()
         parent_keys = super(DynamicMailTemplateLibraryStorage, self).keys()
         for key in parent_keys:
             if key not in result:  # child wins

@@ -7,7 +7,7 @@ widgets:
     factory: "#field:array"
     value: context.value_tpl
     props:
-        label: i18n:label_mailtemplatelib_array
+        label: i18n:label_mailtemplatelib_array:Template Library
         array.label: "&nbsp;"
         sort: False
     widgets:
@@ -17,12 +17,12 @@ widgets:
         - title:
             factory: "#field:text"
             props:
-                label: i18n:label_mailtemplatelib_title
+                label: i18n:label_mailtemplatelib_title:Title
                 required: i18n:text_required
-        - text:
+        - template:
             factory: "#field:*validatetpl:textarea"
             props:
-                label: i18n:label_mailtemplatelib_template
+                label: i18n:label_mailtemplatelib_template:Template
                 required: i18n:text_required
                 rows: 15
                 cols: 80
@@ -33,7 +33,7 @@ widgets:
 - save:
     factory: submit
     props:
-          label: i18n:label_mailtemplatelib_save
+          label: i18n:label_mailtemplatelib_save:Save
           action: save
           handler: context.save
           next: context.next

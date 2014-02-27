@@ -47,6 +47,11 @@
     zcml:condition="installed plone.dexterity"
     for="plone.dexterity.content.DexterityContent"
     factory=".common.PaymentData"/>
+  
+  <adapter
+    for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+    provides=".interfaces.IDynamicMailTemplateLibraryStorage"
+    factory=".mailtemplates.DynamicMailTemplateLibraryStorage"/>
 
   <subscriber
     for="bda.plone.payment.interfaces.IPaymentFailedEvent"
@@ -63,5 +68,5 @@
   <subscriber
     for="bda.plone.checkout.interfaces.ICheckoutDone"
     handler=".mailnotify.notify_reservation_if_payment_skipped"/>
-
+    
 </configure>
