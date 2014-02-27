@@ -41,6 +41,13 @@ class IDynamicMailTemplateLibrary(Interface):
         """return template by name
         """
 
+
+class IDynamicMailTemplateLibraryStorage(IDynamicMailTemplateLibrary):
+    
+    def direct_keys(self):
+        """non acquired keys
+        """
+
     def __setitem__(name, template):
         """store template under a name
         """
