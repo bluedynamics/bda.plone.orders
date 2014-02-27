@@ -161,7 +161,6 @@ def get_vendor_orders_uid(vendor_uid):
     from plone.app.uuid.utils import uuidToObject
     user = plone.api.user.get_current()
     obj = uuidToObject(vendor_uid)
-
     # Check, if we are allowed to see the orders in the vendor object
     try:
         assert(bool(
@@ -169,7 +168,6 @@ def get_vendor_orders_uid(vendor_uid):
         ))
     except AssertionError:
         raise Unauthorized
-
     vendor_uid = uuid.UUID(vendor_uid)
     query = Eq('vendor_uid', vendor_uid)
     soup = get_soup('bda_plone_orders_bookings', plone.api.portal.get())
@@ -311,37 +309,38 @@ class OrderCheckoutAdapter(CheckoutAdapter):
     def create_bookings(self, order):
         ret = list()
         cart_data = get_data_provider(self.context)
-        currency = cart_data.currency
-        items = self.items
-        for uid, count, comment in items:
-            brain = get_catalog_brain(self.context, uid)
-            obj = brain.getObject()
-            item_state = get_item_state(obj, self.request)
-            if not item_state.validate_count(item_state.aggregated_count):
-                raise CheckoutError(u'Item no longer available')
-            item_stock = get_item_stock(obj)
-            if item_stock.available is not None:
-                item_stock.available -= float(count)
-            item_data = get_item_data_provider(obj)
-            vendor_uid = uuid.UUID(IUUID(get_nearest_vendor(obj)))
-            booking = OOBTNode()
-            booking.attrs['uid'] = uuid.uuid4()
-            booking.attrs['buyable_uid'] = uid
-            booking.attrs['buyable_count'] = count
-            booking.attrs['buyable_comment'] = comment
-            booking.attrs['order_uid'] = order.attrs['uid']
-            booking.attrs['vendor_uid'] = vendor_uid
-            booking.attrs['creator'] = order.attrs['creator']
-            booking.attrs['created'] = order.attrs['created']
-            booking.attrs['exported'] = False
-            booking.attrs['title'] = brain and brain.Title or 'unknown'
-            booking.attrs['net'] = item_data.net
-            booking.attrs['vat'] = item_data.vat
-            booking.attrs['currency'] = currency
-            booking.attrs['quantity_unit'] = item_data.quantity_unit
-            booking.attrs['remaining_stock_available'] = item_stock.available
-            ret.append(booking)
+        for uid, count, comment in self.items:
+            ret.append(self.create_booking(cart_data, uid, count, comment))
         return ret
+
+    def create_booking(self, cart_data, uid, count, comment):
+        brain = get_catalog_brain(self.context, uid)
+        obj = brain.getObject()
+        item_state = get_item_state(obj, self.request)
+        if not item_state.validate_count(item_state.aggregated_count):
+            raise CheckoutError(u'Item no longer available')
+        item_stock = get_item_stock(obj)
+        if item_stock.available is not None:
+            item_stock.available -= float(count)
+        item_data = get_item_data_provider(obj)
+        vendor_uid = uuid.UUID(IUUID(get_nearest_vendor(obj)))
+        booking = OOBTNode()
+        booking.attrs['uid'] = uuid.uuid4()
+        booking.attrs['buyable_uid'] = uid
+        booking.attrs['buyable_count'] = count
+        booking.attrs['buyable_comment'] = comment
+        booking.attrs['order_uid'] = order.attrs['uid']
+        booking.attrs['vendor_uid'] = vendor_uid
+        booking.attrs['creator'] = order.attrs['creator']
+        booking.attrs['created'] = order.attrs['created']
+        booking.attrs['exported'] = False
+        booking.attrs['title'] = brain and brain.Title or 'unknown'
+        booking.attrs['net'] = item_data.net
+        booking.attrs['vat'] = item_data.vat
+        booking.attrs['currency'] = cart_data.currency
+        booking.attrs['quantity_unit'] = item_data.quantity_unit
+        booking.attrs['remaining_stock_available'] = item_stock.available
+        return booking
 
 
 class OrderData(object):

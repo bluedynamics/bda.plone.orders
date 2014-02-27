@@ -5,6 +5,10 @@ Changelog
 0.4dev
 ------
 
+- Implement dedicated ``create_booking`` function in ``OrderCheckoutAdapter``
+  for better customization purposes.
+  [rnix]
+
 - Implement multi client functionality with Shop Admin, Vendor and Customer
   roles and appropriate permissions. Restrict views and results to introduced
   permissions. Assign bookings to vendors. Allow definitions of vendor areas
