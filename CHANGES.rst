@@ -5,6 +5,15 @@ Changelog
 0.4dev
 ------
 
+- Introduce ``bda.plone.orders.interfaces.INotificationText`` and
+  ``bda.plone.orders.interfaces.IPaymentText`` used for mail notification
+  after checkout.
+  [rnix]
+
+- ``OrderCheckoutAdapter`` no longer fails if uid in cart cookie which item
+  not exists any longer.
+  [rnix]
+
 - Implement dedicated ``create_booking`` function in ``OrderCheckoutAdapter``
   for better customization purposes.
   [rnix]

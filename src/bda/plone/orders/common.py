@@ -310,11 +310,17 @@ class OrderCheckoutAdapter(CheckoutAdapter):
         ret = list()
         cart_data = get_data_provider(self.context)
         for uid, count, comment in self.items:
-            ret.append(self.create_booking(cart_data, uid, count, comment))
+            booking = self.create_booking(
+                order, cart_data, uid, count, comment)
+            if booking:
+                ret.append(booking)
         return ret
 
-    def create_booking(self, cart_data, uid, count, comment):
+    def create_booking(self, order, cart_data, uid, count, comment):
         brain = get_catalog_brain(self.context, uid)
+        # brain could be None if uid for item in cookie which no longer exists.
+        if not brain:
+            return
         obj = brain.getObject()
         item_state = get_item_state(obj, self.request)
         if not item_state.validate_count(item_state.aggregated_count):
