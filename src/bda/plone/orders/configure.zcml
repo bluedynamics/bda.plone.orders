@@ -53,6 +53,11 @@
     provides=".interfaces.IDynamicMailTemplateLibraryStorage"
     factory=".mailtemplates.DynamicMailTemplateLibraryStorage"/>
 
+  <adapter
+    for="bda.plone.orders.interfaces.IVendor"
+    provides=".interfaces.IDynamicMailTemplateLibraryStorage"
+    factory=".mailtemplates.DynamicMailTemplateLibraryStorage"/>
+
   <subscriber
     for="bda.plone.payment.interfaces.IPaymentFailedEvent"
     handler=".common.payment_failed"/>

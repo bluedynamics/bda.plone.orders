@@ -89,15 +89,32 @@
     permission="zope2.View"
     layer="..interfaces.IOrdersExtensionLayer"/>
 
+  <!-- global mail templates -->
   <browser:page
-    for="*"
+    for="Products.CMFPlone.interfaces.IPloneSiteRoot"
     name="mailtemplatesform"
     class=".mailtemplates.MailtemplatesForm"
     permission="cmf.ModifyPortalContent"
     layer="..interfaces.IOrdersExtensionLayer"/>
 
   <browser:page
-    for="*"
+    for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+    name="mailtemplates"
+    class=".mailtemplates.MailtemplatesView"
+    template="mailtemplates_view.pt"
+    permission="cmf.ModifyPortalContent"
+    layer="..interfaces.IOrdersExtensionLayer"/>
+
+  <!-- vendor mail templates -->
+  <browser:page
+    for="..interfaces.IVendor"
+    name="mailtemplatesform"
+    class=".mailtemplates.MailtemplatesForm"
+    permission="cmf.ModifyPortalContent"
+    layer="..interfaces.IOrdersExtensionLayer"/>
+
+  <browser:page
+    for="..interfaces.IVendor"
     name="mailtemplates"
     class=".mailtemplates.MailtemplatesView"
     template="mailtemplates_view.pt"
