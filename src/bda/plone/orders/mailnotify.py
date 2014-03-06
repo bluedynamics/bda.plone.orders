@@ -74,14 +74,14 @@ def create_mail_body(templates, context, attrs):
     return body_template % arguments
 
 
-def do_notify(context, name, order, templates):
+def do_notify(context, order, templates):
     attrs = order.attrs
     subject = templates['subject'] % attrs['ordernumber']
     message = create_mail_body(templates, context, attrs)
     customer_address = attrs['personal_data.email']
     props = getToolByName(context, 'portal_properties')
     shop_manager_address = props.site_properties.email_from_address
-    mail_notify = MailNotify(context, name)
+    mail_notify = MailNotify(context)
     for receiver in [customer_address, shop_manager_address]:
         try:
             mail_notify.send(subject, message, receiver)
@@ -102,7 +102,7 @@ def notify_payment_success(event):
     templates['item_listing_callback'] = create_mail_listing
     templates['order_total_callback'] = create_order_total
     templates['payment_text_callback'] = create_payment_text
-    do_notify(event.context, 'order', order, templates)
+    do_notify(event.context, order, templates)
 
 
 def notify_reservation_if_payment_skipped(event):
@@ -119,16 +119,15 @@ def notify_reservation_if_payment_skipped(event):
     templates['item_listing_callback'] = create_mail_listing
     templates['order_total_callback'] = create_order_total
     templates['payment_text_callback'] = create_payment_text
-    do_notify(event.context, 'reservation', order, templates)
+    do_notify(event.context, order, templates)
 
 
 class MailNotify(object):
     """Mail notifyer.
     """
 
-    def __init__(self, context, name):
+    def __init__(self, context):
         self.context = context
-        self.name = name
 
     def send(self, subject, message, receiver):
         purl = getToolByName(self.context, 'portal_url')

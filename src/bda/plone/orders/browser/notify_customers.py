@@ -5,11 +5,15 @@ from bda.plone.ajax import AjaxOverlay
 from bda.plone.ajax import ajax_continue
 from bda.plone.ajax import ajax_form_fiddle
 from bda.plone.orders import message_factory as _
+from bda.plone.orders.common import get_order
+from bda.plone.orders.mailnotify import MailNotify
 from bda.plone.orders.interfaces import IDynamicMailTemplateLibrary
+from bda.plone.orders.mailtemplates import IDynamicMailTemplateLibrary
 from node.utils import UNSET
 from yafowil.base import ExtractionError
 from yafowil.plone.form import YAMLBaseForm
 import json
+
 
 class NotifyCustomers(YAMLBaseForm):
     """Notify customers form.
@@ -49,11 +53,24 @@ class NotifyCustomers(YAMLBaseForm):
         if not state:
             raise ExtractionError(msg)
         return data.extracted
+    
+    def _sendmail(self, notifier, uid, tpl, subject):
+        order = get_order(self.context, uid)
+        data = {}
+        for key in TEMPLATE.defaults:
+            if key in order.attrs:
+                data[key] = order.attrs[key]
+        body = TEMPLATE(tpl, data)
+        notifier.send(subject, body, order.attrs['personal_data.email'])
 
     def send(self, widget, data):
-        # uids get hooked up by JS in ``orders.notification_form_binder``
-        uids = [_ for _ in self.request.form.get('uids', []) if _]
-        print uids
+        tpl = data['text'].extracted.decode('utf8')
+        subject = data['subject'].extracted.decode('utf8')
+        notifier = MailNotify(self.context)
+        for uid in self.request.form.get('uids', []):
+            if not uid:
+                continue
+            self._sendmail(notifier, uid, tpl, subject)
 
     def ajax_url(self, widget, data):
         url = "{0}/@@load_notification_template".format(
@@ -82,5 +99,8 @@ class LoadTemplate(BrowserView):
     def __call__(self):
         self.request.response.setHeader('Content-Type', 'application/json')
         tpllib = IDynamicMailTemplateLibrary(self.context)
-        tpl = tpllib[self.request.form['name']]
+        try:
+            tpl = tpllib[self.request.form['name']]
+        except:
+            tpl = ""
         return json.dumps({'tpl': tpl})
