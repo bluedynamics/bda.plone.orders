@@ -10,18 +10,23 @@ widgets:
         structural: True
         tag: h3
         text: i18n:notify_customers_heading
+- subject:
+    factory: "#field:text"
+    props:
+        label: i18n:subject:Subject
+        required: "i18n:subject_required:No mail without subject!"
 - template:
     factory: "#field:select"
     value: context.template_value
     props:
-        label: i18n:template
+        label: i18n:template:Template
         vocabulary: context.template_vocabulary
         select.data: "context.ajax_url"
 - text:
     factory: "#field:*validatetpl:textarea"
     value: context.text_value
     props:
-        label: i18n:text
+        label: i18n:text_placeholders:Text with placeholders
         rows: 26
         cols: 80
     custom:

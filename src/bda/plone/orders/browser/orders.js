@@ -77,7 +77,7 @@
             var form = $('#form-notify_customers');
             $(orders.selected_order_uids()).each(function() {
                 form.append(
-                    '<input type="hidden" name="uids" value="' + this + '" />');
+                    '<input type="hidden" name="uids:list" value="' + this + '" />');
             });
             $('#input-notify_customers-template').change(function(event) {
                 var url = $('#input-notify_customers-template').data('tplurl');
