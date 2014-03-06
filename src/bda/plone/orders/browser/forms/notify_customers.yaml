@@ -1,7 +1,7 @@
 factory: form
 name: notify_customers
 props:
-    action: context.form_action
+    action: "context.form_action"
     class: ajax
 widgets:
 - heading:
@@ -16,14 +16,18 @@ widgets:
     props:
         label: i18n:template
         vocabulary: context.template_vocabulary
+        select.data: "context.ajax_url"
 - text:
-    factory: "#field:textarea"
+    factory: "#field:*validatetpl:textarea"
     value: context.text_value
     props:
         label: i18n:text
-        required: i18n:text_required
         rows: 26
         cols: 80
+    custom:
+        validatetpl:
+            extractors:
+                - context.validate_tpl
 - send:
     factory: submit
     props:

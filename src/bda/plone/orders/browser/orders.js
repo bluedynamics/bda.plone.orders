@@ -79,6 +79,16 @@
                 form.append(
                     '<input type="hidden" name="uids" value="' + this + '" />');
             });
+            $('#input-notify_customers-template').change(function(event) {
+                var url = $('#input-notify_customers-template').data('tplurl');
+                $.ajax({
+                    url: url,
+                    data: {name: $('#input-notify_customers-template').val()},
+                    success: function(data, status, request) {
+                        $('#input-notify_customers-text').val(data.tpl);
+                    }
+                });
+            });
         },
 
         dropdown_binder: function (context) {

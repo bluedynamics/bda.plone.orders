@@ -47,6 +47,13 @@
 
   <browser:page
     for="*"
+    name="load_notification_template"
+    class=".notify_customers.LoadTemplate"
+    permission="bda.plone.orders.VendorOrders"
+    layer="..interfaces.IOrdersExtensionLayer"/>
+
+  <browser:page
+    for="*"
     name="order"
     template="order.pt"
     class=".views.OrderView"
