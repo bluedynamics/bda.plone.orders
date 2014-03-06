@@ -1,9 +1,3 @@
-from email.Header import Header
-from email.MIMEText import MIMEText
-from email.Utils import formatdate
-from repoze.catalog.query import Any
-from souper.soup import get_soup
-from zope.i18n import translate
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
 from bda.plone.cart import get_catalog_brain
@@ -11,14 +5,28 @@ from bda.plone.orders import common
 from bda.plone.orders import message_factory as _
 from bda.plone.orders.common import DT_FORMAT
 from bda.plone.orders.common import get_order
+from bda.plone.orders.interfaces import INotificationText
 from bda.plone.orders.mailtemplates import get_order_templates
 from bda.plone.orders.mailtemplates import get_reservation_templates
+from email.Header import Header
+from email.MIMEText import MIMEText
+from email.Utils import formatdate
+from repoze.catalog.query import Any
+from souper.soup import get_soup
+from zope.i18n import translate
+import textwrap
 
 
 def status_message(context, msg):
     putils = getToolByName(context, 'plone_utils')
     putils.addPortalMessage(msg)
 
+def _indent(text, ind=5, width=80):
+    text = textwrap(text, width - col)
+    lines = []
+    for line in text.split('\n'):
+        lines.append(' ' * col + line)
+    return '\n'.join(lines)
 
 def create_mail_listing(context, attrs):
     """Create item listing for notification mail.
@@ -27,13 +35,24 @@ def create_mail_listing(context, attrs):
     bookings = soup.query((Any('uid', attrs['booking_uids'])))
     lines = []
     for booking in bookings:
-        buyable = get_catalog_brain(context, booking.attrs['buyable_uid'])
-        title = buyable.Title
+        brain = get_catalog_brain(context, booking.attrs['buyable_uid'])
+        buyable = brain.getObject()
+        title = brain.Title
         comment = booking.attrs['buyable_comment']
         if comment:
             title = '%s (%s)' % (title, comment)
-        line = '    %s %s' % (booking.attrs['buyable_count'], title)
+        line = '{count: 4f} {title}'.format(
+            count=booking.attrs['buyable_count'],
+            title=title
+        )
         lines.append(line)
+        if comment:
+            lines.append(_indent('({0})'.format(comment)))
+        notificationtext = INotificationText(buyable)
+        if attrs['state'] == 'reserved' and notificationtext.overbook_text:
+            lines.append(_indent(notificationtext.overbook_text))
+        elif attrs['state'] == 'new' and notificationtext.order_text:
+            lines.append(_indent(notificationtext.order_text))
     return '\n'.join(lines)
 
 
