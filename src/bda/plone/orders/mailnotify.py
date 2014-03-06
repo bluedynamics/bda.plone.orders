@@ -157,7 +157,6 @@ class MailNotify(object):
         if mailfrom_name:
             mailfrom = u"%s <%s>" % (safe_unicode(mailfrom_name), mailfrom)
         mailhost = getToolByName(self.context, 'MailHost')
-        subject = subject.encode('utf-8')
         subject = Header(subject, 'utf-8')
         message = MIMEText(message, _subtype='plain')
         message.set_charset('utf-8')
