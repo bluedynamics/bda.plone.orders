@@ -54,14 +54,6 @@ def create_order_total(context, attrs):
     return "%.2f" % (ret + float(attrs['shipping']))
 
 
-def create_order_text(context, attrs):
-    pass
-
-
-def create_reservation_text(context, attrs):
-    pass
-
-
 def create_payment_text(context, attrs):
     pass
 
@@ -109,7 +101,6 @@ def notify_payment_success(event):
     templates.update(get_order_templates(event.context))
     templates['item_listing_callback'] = create_mail_listing
     templates['order_total_callback'] = create_order_total
-    templates['order_text_callback'] = create_order_text
     templates['payment_text_callback'] = create_payment_text
     do_notify(event.context, 'order', order, templates)
 
@@ -127,7 +118,6 @@ def notify_reservation_if_payment_skipped(event):
     templates.update(get_reservation_templates(event.context))
     templates['item_listing_callback'] = create_mail_listing
     templates['order_total_callback'] = create_order_total
-    templates['order_text_callback'] = create_reservation_text
     templates['payment_text_callback'] = create_payment_text
     do_notify(event.context, 'reservation', order, templates)
 

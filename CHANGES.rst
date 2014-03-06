@@ -24,7 +24,7 @@ Changelog
   via the ``IVendor`` interface.
   [thet]
 
-- Render a link to the booked item in @@order view.
+- Render a link to the booked item in ``@@order`` view.
   [thet]
 
 - Fix BrowserLayer order precedence.
