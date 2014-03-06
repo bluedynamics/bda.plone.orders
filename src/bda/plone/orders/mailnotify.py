@@ -21,12 +21,14 @@ def status_message(context, msg):
     putils = getToolByName(context, 'plone_utils')
     putils.addPortalMessage(msg)
 
+
 def _indent(text, ind=5, width=80):
-    text = textwrap(text, width - col)
+    text = textwrap.wrap(text, width - ind)
     lines = []
-    for line in text.split('\n'):
-        lines.append(' ' * col + line)
+    for line in text:
+        lines.append(' ' * ind + line)
     return '\n'.join(lines)
+
 
 def create_mail_listing(context, attrs):
     """Create item listing for notification mail.
