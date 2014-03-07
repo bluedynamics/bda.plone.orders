@@ -1,3 +1,4 @@
+from .interfaces import IVendor
 from AccessControl import Unauthorized
 from Acquisition import aq_parent
 from Products.CMFPlone.interfaces import IPloneSiteRoot
@@ -32,9 +33,6 @@ from souper.soup import get_soup
 from zope.component import adapter
 from zope.component.interfaces import ISite
 from zope.interface import implementer
-
-from .interfaces import IVendor
-
 import datetime
 import plone.api
 import time

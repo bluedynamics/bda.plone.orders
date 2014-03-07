@@ -5,7 +5,8 @@ from bda.plone.orders import common
 from bda.plone.orders import message_factory as _
 from bda.plone.orders.common import DT_FORMAT
 from bda.plone.orders.common import get_order
-from bda.plone.orders.interfaces import INotificationText
+from bda.plone.orders.interfaces import IItemNotificationText
+from bda.plone.orders.interfaces import IGlobalNotificationText
 from bda.plone.orders.mailtemplates import get_order_templates
 from bda.plone.orders.mailtemplates import get_reservation_templates
 from email.Header import Header
@@ -50,12 +51,21 @@ def create_mail_listing(context, attrs):
         lines.append(line)
         if comment:
             lines.append(_indent('({0})'.format(comment)))
-        notificationtext = INotificationText(buyable)
+        notificationtext = IItemNotificationText(buyable)
         if attrs['state'] == 'reserved' and notificationtext.overbook_text:
             lines.append(_indent(notificationtext.overbook_text))
         elif attrs['state'] == 'new' and notificationtext.order_text:
             lines.append(_indent(notificationtext.order_text))
     return '\n'.join(lines)
+
+
+def create_global_text(context, attrs):
+        notificationtext = IGlobalNotificationText(context)
+        if attrs['state'] == 'reserved' \
+           and notificationtext.global_overbook_text:
+            return _indent(notificationtext.global_overbook_text, ind=0)
+        elif attrs['state'] == 'new' and notificationtext.global_order_text:
+            return _indent(notificationtext.global_order_text, ind=0)
 
 
 def create_order_total(context, attrs):
@@ -80,6 +90,17 @@ def create_payment_text(context, attrs):
 
 
 def create_mail_body(templates, context, attrs):
+    """Creates a rendered mail body
+
+    templates
+        Dict with a bunch of callbacks and the body template itself.
+
+    context
+        Some object in Plone which can be used as a context to acquire from
+
+    attrs
+        Order-data. This are node attributes, which are in fact dict-like
+    """
     arguments = dict(attrs.items())
     arguments['date'] = attrs['created'].strftime(DT_FORMAT)
     if attrs['delivery_address.alternative_delivery']:
@@ -91,6 +112,7 @@ def create_mail_body(templates, context, attrs):
     arguments['item_listing'] = item_listing_callback(context, attrs)
     order_total_callback = templates['order_total_callback']
     arguments['order_total'] = order_total_callback(context, attrs)
+    arguments['global_text'] = templates['global_text_callback'](context, attrs)
     body_template = templates['body']
     return body_template % arguments
 
@@ -123,6 +145,7 @@ def notify_payment_success(event):
     templates['item_listing_callback'] = create_mail_listing
     templates['order_total_callback'] = create_order_total
     templates['payment_text_callback'] = create_payment_text
+    templates['global_text_callback'] = create_global_text
     do_notify(event.context, order, templates)
 
 
@@ -140,6 +163,7 @@ def notify_reservation_if_payment_skipped(event):
     templates['item_listing_callback'] = create_mail_listing
     templates['order_total_callback'] = create_order_total
     templates['payment_text_callback'] = create_payment_text
+    templates['global_text_callback'] = create_global_text
     do_notify(event.context, order, templates)
 
 

@@ -5,7 +5,7 @@ Changelog
 0.4dev
 ------
 
-- Introduce ``bda.plone.orders.interfaces.INotificationText`` and
+- Introduce ``bda.plone.orders.interfaces.IItemNotificationText`` and
   ``bda.plone.orders.interfaces.IPaymentText`` used for mail notification
   after checkout.
   [rnix]

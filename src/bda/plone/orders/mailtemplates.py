@@ -39,6 +39,8 @@ Comment:
 
 Ordered items:
 %(item_listing)s
+
+%(global_text)s
 """
 
 RESERVATION_BODY_EN = """
@@ -65,6 +67,10 @@ Comment:
 
 Ordered items:
 %(item_listing)s
+
+Total: %(order_total)s
+
+%(global_text)s
 """
 
 DELIVERY_ADDRESS_EN = """
@@ -112,6 +118,8 @@ Bestellte Artikel:
 %(item_listing)s
 
 Total: %(order_total)s
+
+%(global_text)s
 """
 
 RESERVATION_BODY_DE = """
@@ -140,6 +148,8 @@ Bestellte Artikel:
 %(item_listing)s
 
 Total: %(order_total)s
+
+%(global_text)s
 """
 
 DELIVERY_ADDRESS_DE = """
@@ -187,6 +197,8 @@ Produit commandé:
 %(item_listing)s
 
 Total: %(order_total)s
+
+%(global_text)s
 """
 
 RESERVATION_BODY_FR = """
@@ -215,6 +227,8 @@ Produit commandé:
 %(item_listing)s
 
 Total: %(order_total)s
+
+%(global_text)s
 """
 
 DELIVERY_ADDRESS_FR = """
@@ -261,6 +275,8 @@ Articolo ordinato:
 %(item_listing)s
 
 Totale: %(order_total)s
+
+%(global_text)s
 """
 
 RESERVATION_BODY_IT = """
@@ -288,6 +304,8 @@ Articolo ordinato:
 %(item_listing)s
 
 Totale: %(order_total)s
+
+%(global_text)s
 """
 
 DELIVERY_ADDRESS_IT = """
@@ -332,6 +350,10 @@ Kommentar:
 
 Bestilte produkter:
 %(item_listing)s
+
+Total: %(order_total)s
+
+%(global_text)s
 """
 
 RESERVATION_BODY_NO = """
@@ -358,6 +380,10 @@ Kommentar:
 
 Bestilte produkter:
 %(item_listing)s
+
+Totale: %(order_total)s
+
+%(global_text)s
 """
 
 DELIVERY_ADDRESS_NO = """
