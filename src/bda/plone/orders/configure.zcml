@@ -34,7 +34,7 @@
 
   <adapter
     zcml:condition="installed plone.dexterity"
-    for="plone.dexterity.content.DexterityContent
+    for="plone.dexterity.interfaces.IDexterityContent
          zope.publisher.interfaces.browser.IBrowserRequest"
     factory=".common.OrderCheckoutAdapter"/>
 
