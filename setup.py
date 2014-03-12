@@ -36,11 +36,12 @@ setup(
         'bda.plone.checkout',
         'collective.js.datatables',
         'collective.js.jqueryui',
-        'souper.plone',
-        'yafowil.widget.datetime',
-        'yafowil.widget.array',
-        'plone.app.uuid',
         'plone.api',
+        'plone.app.uuid',
+        'souper.plone',
+        'yafowil.plone',
+        'yafowil.widget.array',
+        'yafowil.widget.datetime',
     ],
     extras_require={
         'test': [

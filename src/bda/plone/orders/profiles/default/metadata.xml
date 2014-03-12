@@ -6,5 +6,6 @@
     <dependency>profile-souper.plone:default</dependency>
     <dependency>profile-collective.js.datatables:default</dependency>
     <dependency>profile-collective.js.jqueryui:default</dependency>
+    <dependency>profile-yafowil.plone:default</dependency>
   </dependencies>
 </metadata>

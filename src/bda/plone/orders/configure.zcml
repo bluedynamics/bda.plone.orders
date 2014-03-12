@@ -4,6 +4,7 @@
            xmlns:zcml="http://namespaces.zope.org/zcml"
            i18n_domain="bda.plone.orders">
 
+  <include package="yafowil.plone" />
   <include package="souper.plone"/>
   <include package="collective.js.jqueryui"/>
   <include package="collective.js.datatables"/>
