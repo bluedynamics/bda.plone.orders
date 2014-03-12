@@ -6,6 +6,7 @@ Setup Test Env
 
 Set up ZCA::
 
+    >>> from bda.plone.orders.interfaces import IDynamicMailTemplateLibraryStorage
     >>> from bda.plone.orders.mailtemplates import DynamicMailTemplateLibraryAquierer
     >>> from bda.plone.orders.mailtemplates import DynamicMailTemplateLibraryStorage
 
@@ -21,7 +22,9 @@ Set up ZCA::
     >>> @implementer(IAttributeAnnotatable)
     ... class MockStorageContext(object): pass
 
-    >>> provideAdapter(DynamicMailTemplateLibraryStorage, (MockStorageContext,))
+    >>> provideAdapter(DynamicMailTemplateLibraryStorage,
+    ...                (MockStorageContext,),
+    ...                provides=IDynamicMailTemplateLibraryStorage)
 
 
 provide some mock data tree::
