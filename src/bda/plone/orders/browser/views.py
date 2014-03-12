@@ -1,19 +1,14 @@
-import csv
-import datetime
-import json
-import plone.api
-import urllib
-import yafowil.loader  # loads registry
 from Products.Five import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from StringIO import StringIO
 from bda.plone.cart import ascur
 from bda.plone.checkout import message_factory as _co
-from bda.plone.orders.vocabularies import allowed_vendors_vocab
 from bda.plone.orders.vocabularies import allowed_customers_vocab
+from bda.plone.orders.vocabularies import allowed_vendors_vocab
 from bda.plone.payment import Payments
 from decimal import Decimal
 from plone.app.uuid.utils import uuidToURL
+from plone.uuid.interfaces import IUUID
 from repoze.catalog.query import Any
 from repoze.catalog.query import Contains
 from repoze.catalog.query import Eq
@@ -33,8 +28,16 @@ from ..common import DT_FORMAT
 from ..common import OrderData
 from ..common import OrderTransitions
 from ..common import get_allowed_orders_uid
+from ..common import get_allowed_vendors
 from ..common import get_order
 from ..common import get_vendor_orders_uid
+import csv
+import datetime
+import json
+import plone.api
+import urllib
+import uuid
+import yafowil.loader  # loads registry
 
 
 yafowil.loader  # pep8
@@ -610,6 +613,7 @@ ORDER_EXPORT_ATTRS = [
 ]
 BOOKING_EXPORT_ATTRS = [
     'title',
+    'url',
     'buyable_comment',
     'buyable_count',
     'quantity_unit',
@@ -660,24 +664,41 @@ class ExportOrdersForm(YAMLForm):
     def csv(self, request):
         orders_soup = get_soup('bda_plone_orders_orders', self.context)
         bookings_soup = get_soup('bda_plone_orders_bookings', self.context)
-        query = Ge('created', self.from_date) & Le('created', self.to_date)
+
+        o_query = Ge('created', self.from_date) & Le('created', self.to_date)
+        # Restrict to allowed orders
+        manageable_orders = get_allowed_orders_uid()
+        o_query = o_query & Any('uid', manageable_orders)
+
+        allowed_vendor_areas = [
+            uuid.UUID(IUUID(it)) for it in get_allowed_vendors()
+        ]
+        b_query_base = Any('vendor_uid', allowed_vendor_areas)
+
         sio = StringIO()
         ex = csv.writer(sio, dialect='excel-colon')
         ex.writerow(ORDER_EXPORT_ATTRS + BOOKING_EXPORT_ATTRS)
-        for order in orders_soup.query(query):
+
+        for order in orders_soup.query(o_query):
+
             order_attrs = list()
             for attr_name in ORDER_EXPORT_ATTRS:
                 val = self.export_val(order, attr_name)
                 order_attrs.append(val)
-            booking_query = Eq('order_uid', order.attrs['uid'])
-            for booking in bookings_soup.query(booking_query):
+
+            b_query = b_query_base & Eq('order_uid', order.attrs['uid'])
+            for booking in bookings_soup.query(b_query):
                 booking_attrs = list()
                 for attr_name in BOOKING_EXPORT_ATTRS:
-                    val = self.export_val(booking, attr_name)
+                    if attr_name == 'url':
+                        val = uuidToURL(booking.attrs.get('buyable_uid'))
+                    else:
+                        val = self.export_val(booking, attr_name)
                     booking_attrs.append(val)
                 ex.writerow(order_attrs + booking_attrs)
                 booking.attrs['exported'] = True
                 bookings_soup.reindex(booking)
+
         s_start = self.from_date.strftime('%G-%m-%d_%H-%M-%S')
         s_end = self.to_date.strftime('%G-%m-%d_%H-%M-%S')
         filename = 'orders-export-%s-%s.csv' % (s_start, s_end)

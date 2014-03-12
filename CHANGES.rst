@@ -5,6 +5,13 @@ Changelog
 0.4dev
 ------
 
+- Restrict orders and bookings in @@exportorders to what the user is allowed to
+  see.
+  [thet]
+
+- Include Booking URL in @@exportorders. Titles can easily be ambiguous.
+  [thet]
+
 - Introduce ``bda.plone.orders.interfaces.IItemNotificationText`` and
   ``bda.plone.orders.interfaces.IPaymentText`` used for mail notification
   after checkout.
