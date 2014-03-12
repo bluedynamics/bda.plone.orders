@@ -78,7 +78,7 @@
     for="*"
     name="exportorders"
     class=".views.ExportOrdersForm"
-    permission="cmf.ModifyPortalContent"
+    permission="bda.plone.orders.ViewOrders"
     layer="..interfaces.IOrdersExtensionLayer"/>
 
   <browser:page
