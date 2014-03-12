@@ -667,13 +667,13 @@ class ExportOrdersForm(YAMLForm):
 
         o_query = Ge('created', self.from_date) & Le('created', self.to_date)
         # Restrict to allowed orders
-        manageable_orders = get_allowed_orders_uid()
-        o_query = o_query & Any('uid', manageable_orders)
+        #manageable_orders = get_allowed_orders_uid()
+        #o_query = o_query & Any('uid', manageable_orders)
 
-        allowed_vendor_areas = [
-            uuid.UUID(IUUID(it)) for it in get_allowed_vendors()
-        ]
-        b_query_base = Any('vendor_uid', allowed_vendor_areas)
+        #allowed_vendor_areas = [
+        #    uuid.UUID(IUUID(it)) for it in get_allowed_vendors()
+        #]
+        #b_query_base = Any('vendor_uid', allowed_vendor_areas)
 
         sio = StringIO()
         ex = csv.writer(sio, dialect='excel-colon')
@@ -686,7 +686,8 @@ class ExportOrdersForm(YAMLForm):
                 val = self.export_val(order, attr_name)
                 order_attrs.append(val)
 
-            b_query = b_query_base & Eq('order_uid', order.attrs['uid'])
+            #b_query = b_query_base & Eq('order_uid', order.attrs['uid'])
+            b_query = Eq('order_uid', order.attrs['uid'])
             for booking in bookings_soup.query(b_query):
                 booking_attrs = list()
                 for attr_name in BOOKING_EXPORT_ATTRS:
