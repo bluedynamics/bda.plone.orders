@@ -76,8 +76,9 @@
         notification_form_binder: function(context) {
             var form = $('#form-notify_customers');
             $(orders.selected_order_uids()).each(function() {
-                form.append(
-                    '<input type="hidden" name="uids:list" value="' + this + '" />');
+                form.append('<input type="hidden" ' +
+                                   'name="uids:list" ' +
+                                   'value="' + this + '" />');
             });
             $('#input-notify_customers-template').change(function(event) {
                 var url = $('#input-notify_customers-template').data('tplurl');

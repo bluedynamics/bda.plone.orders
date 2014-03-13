@@ -60,12 +60,12 @@ def create_mail_listing(context, attrs):
 
 
 def create_global_text(context, attrs):
-        notificationtext = IGlobalNotificationText(context)
-        if attrs['state'] == 'reserved' \
-           and notificationtext.global_overbook_text:
-            return _indent(notificationtext.global_overbook_text, ind=0)
-        elif attrs['state'] == 'new' and notificationtext.global_order_text:
-            return _indent(notificationtext.global_order_text, ind=0)
+    notificationtext = IGlobalNotificationText(context)
+    if attrs['state'] == 'reserved' \
+       and notificationtext.global_overbook_text:
+        return _indent(notificationtext.global_overbook_text, ind=0)
+    elif attrs['state'] == 'new' and notificationtext.global_order_text:
+        return _indent(notificationtext.global_order_text, ind=0)
 
 
 def create_order_total(context, attrs):
@@ -181,13 +181,11 @@ class MailNotify(object):
         if mailfrom_name:
             mailfrom = u"%s <%s>" % (safe_unicode(mailfrom_name), mailfrom)
         mailhost = getToolByName(self.context, 'MailHost')
-        subject = Header(subject, 'utf-8')
         message = MIMEText(message, _subtype='plain')
         message.set_charset('utf-8')
-        message.add_header('Date',  formatdate(localtime=True))
-        message.add_header('From_', mailfrom)
-        message.add_header('From', mailfrom)
-        message.add_header('To', receiver)
-        message['Subject'] = subject
-        mailhost.send(messageText=message,
-                      mto=receiver)
+        message['Subject'] = Header(subject, 'utf-8')
+        message['From_'] = Header(mailfrom, 'utf-8')
+        message['From'] = Header(mailfrom, 'utf-8')
+        message['To'] = Header(receiver, 'utf-8')
+        message.add_header('Date', formatdate(localtime=True))
+        mailhost.send(messageText=message, mto=receiver)

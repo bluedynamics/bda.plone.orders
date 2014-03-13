@@ -17,6 +17,7 @@ class IVendor(Interface):
 class IItemNotificationText(Interface):
     """Interface for providing buyable item order notification text.
     """
+
     order_text = Attribute(u"Text sent after successful checkout for item")
 
     overbook_text = Attribute(
@@ -27,6 +28,7 @@ class IItemNotificationText(Interface):
 class IGlobalNotificationText(Interface):
     """Interface for providing one notification text per order.
     """
+
     global_order_text = Attribute(
         u"Text sent after successful checkout for order"
     )
@@ -39,6 +41,7 @@ class IGlobalNotificationText(Interface):
 class IPaymentText(Interface):
     """Interface for providing payment related order notification text.
     """
+
     payment_text = Attribute(u"Text sent after successful checkout for payment")
 
 
