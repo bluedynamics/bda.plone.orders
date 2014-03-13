@@ -651,6 +651,10 @@ class ExportOrdersForm(YAMLForm):
         self.to_date = data.fetch('exportorders.to').extracted
 
     def export_val(self, record, attr_name):
+        if attr_name == 'url':
+            # BOOKING URL. not ORDERs
+            # TODO: if orders_soup provides an URL, this can break!
+            return uuidToURL(record.attrs.get('buyable_uid'))
         val = record.attrs.get(attr_name)
         if isinstance(val, datetime.datetime):
             val = val.strftime(DT_FORMAT)
@@ -691,10 +695,7 @@ class ExportOrdersForm(YAMLForm):
             for booking in bookings_soup.query(b_query):
                 booking_attrs = list()
                 for attr_name in BOOKING_EXPORT_ATTRS:
-                    if attr_name == 'url':
-                        val = uuidToURL(booking.attrs.get('buyable_uid'))
-                    else:
-                        val = self.export_val(booking, attr_name)
+                    val = self.export_val(booking, attr_name)
                     booking_attrs.append(val)
                 ex.writerow(order_attrs + booking_attrs)
                 booking.attrs['exported'] = True
