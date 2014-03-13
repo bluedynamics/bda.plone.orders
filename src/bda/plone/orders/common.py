@@ -282,6 +282,11 @@ class OrderCheckoutAdapter(CheckoutAdapter):
             creator = member.getId()
         created = datetime.datetime.now()
         order = self.order
+        # XXX: payment name
+        #      payment type
+        #      payment total
+        #      shipping name
+        #      shipping vat
         sid = data.fetch('checkout.shipping_selection.shipping').extracted
         shipping = Shippings(self.context).get(sid)
         order.attrs['shipping'] = shipping.calculate(self.items)
@@ -377,8 +382,10 @@ class OrderData(object):
 
     @property
     def bookings(self):
+        """XXX: make this function always return all bookings of an order again
+        """
         # TODO: support querying bookings for individual vendors by passing a
-        # user object, from request
+        # user object or a user id
 
         # CASE CUSTOMER: can see all bookings
         # CASE ADMIN: can see all bookings
@@ -398,6 +405,17 @@ class OrderData(object):
             ]
             query = query & Any('vendor_uid', allowed_vendor_areas)
         return soup.query(query)
+
+    @property
+    def vendor_bookings(self, user=None, user_id=None):
+        """XXX: take from above and improve.
+
+        # CASE CUSTOMER: can see all bookings
+        # CASE ADMIN: can see all bookings
+        # CASE VENDOR: can see only bookings belonging to vendor
+        # admin can be vendor can be customer
+        """
+        pass
 
     @property
     def net(self):
