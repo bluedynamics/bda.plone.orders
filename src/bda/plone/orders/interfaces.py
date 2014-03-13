@@ -23,6 +23,7 @@ class IItemNotificationText(Interface):
         u"Text sent after successful checkout for item if stock overbooked"
     )
 
+
 class IGlobalNotificationText(Interface):
     """Interface for providing one notification text per order.
     """
