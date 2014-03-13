@@ -27,7 +27,7 @@ def _indent(text, ind=5, width=80):
     text = textwrap.wrap(text, width - ind)
     lines = []
     for line in text:
-        lines.append(u' ' * ind + line)
+        lines.append(u' ' * ind + safe_unicode(line))
     return u'\n'.join(lines).encode('utf-8')
 
 
