@@ -5,6 +5,10 @@ Changelog
 0.4dev
 ------
 
+- Also register ``bda.plone.orders.common.OrderCheckoutAdapter`` for
+  ``Products.CMFPlone.interfaces.IPloneSiteRoot``.
+  [rnix]
+
 - Restrict orders and bookings in @@exportorders to what the user is allowed to
   see.
   [thet]

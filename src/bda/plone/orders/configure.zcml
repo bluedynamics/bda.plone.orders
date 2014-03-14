@@ -28,6 +28,11 @@
   <adapter factory=".common.plone_root_uuid" />
 
   <adapter
+    for="Products.CMFPlone.interfaces.IPloneSiteRoot
+         zope.publisher.interfaces.browser.IBrowserRequest"
+    factory=".common.OrderCheckoutAdapter"/>
+
+  <adapter
     zcml:condition="installed Products.Archetypes"
     for="Products.Archetypes.interfaces.IBaseObject
          zope.publisher.interfaces.browser.IBrowserRequest"
