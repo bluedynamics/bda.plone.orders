@@ -7,7 +7,6 @@
   </roles>
 
   <permissions>
-
     <permission name="bda.plone.orders: View Orders" acquire="True">
       <role name="Manager" />
       <role name="Shop Admin" />
@@ -33,5 +32,7 @@
       <role name="Customer" />
     </permission>
 
+    <permission name="bda.plone.orders: Delegate Vendor Role" acquire="False">
+    </permission>
   </permissions>
 </rolemap>

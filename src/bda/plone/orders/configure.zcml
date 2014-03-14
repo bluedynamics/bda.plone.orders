@@ -18,6 +18,10 @@
   <include package=".browser"/>
 
   <utility
+    name="Vendor"
+    factory=".localroles.VendorRole" />
+
+  <utility
     name="bda_plone_orders_bookings"
     factory=".common.BookingsCatalogFactory"/>
 

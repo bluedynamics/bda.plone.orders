@@ -5,6 +5,16 @@ Changelog
 0.4dev
 ------
 
+- Add ``bda.plone.orders.permissions`` and call ``setFedaultRoles`` for
+  contained permissions
+  [rnix]
+
+- Introduce ``bda.plone.orders: Delegate Vendor Role`` permission, and
+  implement ``Vendor`` role as named utility instead of Generic Setup.
+  Thus the visibility of vendor role in sharing view can be controlled
+  explicitly.
+  [rnix]
+
 - Also register ``bda.plone.orders.common.OrderCheckoutAdapter`` for
   ``Products.CMFPlone.interfaces.IPloneSiteRoot``.
   [rnix]

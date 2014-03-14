@@ -18,4 +18,8 @@
     id="bda.plone.orders.CustomerOrders"
     title="bda.plone.orders: Customer Orders" />
 
+  <permission
+    id="bda.plone.orders.DelegateVendorRole"
+    title="bda.plone.orders: Delegate Vendor Role" />
+
 </configure>
