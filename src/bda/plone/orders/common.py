@@ -116,7 +116,7 @@ def get_vendors_for(user=None):
     if user is None:
         user = plone.api.user.get_current()
     def permitted(obj):
-        return bool(user.checkPermission(permissions.VendorOrders, obj))
+        return bool(user.checkPermission(permissions.ModifyOrders, obj))
     return [vendor for vendor in get_all_vendors() if permitted(vendor)]
 
 

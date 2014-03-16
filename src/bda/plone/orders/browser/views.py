@@ -275,7 +275,7 @@ class OrdersViewBase(BrowserView):
     table_view_name = '@@orderstable'
 
     def orders_table(self):
-        return self.context.restrictedTraverse(self.table_view_name)
+        return self.context.restrictedTraverse(self.table_view_name)()
 
 
 class OrdersView(OrdersViewBase):
