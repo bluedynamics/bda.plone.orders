@@ -1,3 +1,4 @@
+from AccessControl import Unauthorized
 from Products.Five import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from StringIO import StringIO
@@ -169,6 +170,7 @@ class Transition(BrowserView):
     dropdown = None
 
     def __call__(self):
+        # XXX: security check
         transition = self.request['transition']
         uid = self.request['uid']
         record = OrderTransitions(self.context).do_transition(uid, transition)
@@ -220,7 +222,6 @@ class TableData(BrowserView):
         sort = self.sort()
         sort_index = soup.catalog[sort['index']]
         iids = sort_index.sort(data.keys(), reverse=sort['reverse'])
-
         def lazyrecords():
             for iid in iids:
                 yield LazyRecord(iid, soup)
@@ -270,72 +271,59 @@ class TableData(BrowserView):
         return json.dumps(data)
 
 
-class OrdersTable(BrowserView):
+class OrdersViewBase(BrowserView):
+    table_view_name = '@@orderstable'
+
+    def orders_table(self):
+        return self.context.restrictedTraverse(self.table_view_name)
+
+
+class OrdersView(OrdersViewBase):
+
+    def __call__(self):
+        # check if authenticated user is vendor
+        if not get_vendors_for():
+            raise Unauthorized
+        return super(OrdersView, self).__call__()
+
+
+class MyOrdersView(OrdersViewBase):
+    table_view_name = '@@myorderstable'
+
+
+class OrdersTableBase(BrowserView):
     table_template = ViewPageTemplateFile('table.pt')
     table_id = 'bdaploneorders'
-
-    def render_filter(self):
-        vendors = vendors_vocab_for() # vendor areas of current user
-        vendor_selector = None
-        # vendor selection, include if more than one vendor
-        if len(vendors) > 2:
-            vendor_selector = factory(
-                'label:select',
-                name='vendor',
-                value=None,
-                props={
-                    'vocabulary': vendors,
-                    'label': 'Filter for vendors'
-                }
-            )
-        # customers selection, include if more than one customer
-        customers = customers_vocab_for() # customers of current user
-        customer_selector = None
-        if len(customers) > 2:
-            customer_selector = factory(
-                'label:select',
-                name='customer',
-                value=None,
-                props={
-                    'vocabulary': customers,
-                    'label': 'Filter for customers'
-                }
-            )
-        if not vendor_selector and not customer_selector:
-            return
-        action = self.request.getURL()
-        form = factory(
-            'form',
-            name='ordersfilter',
-            props={'action': action},
-        )
-        if vendor_selector:
-            form['vendor'] = vendor_selector
-        if customer_selector:
-            form['customer'] = customer_selector
-        form['submit'] = factory(
-            'submit',
-            name='filter',
-            props={'action': True, 'label': 'Filter'}
-        )
-        return form(request=self.request)
+    data_view_name = '@@ordersdata'
 
     def rendered_table(self):
         return self.table_template(self)
 
-    @property
-    def url(self):
-        return self.request.getURL()
+    def render_filter(self):
+        return None
+
+    def render_order_actions_head(self):
+        return None
+
+    def render_order_actions(self, colname, record):
+        return None
+
+    def render_salaried(self, colname, record):
+        return record.attrs.get('salaried', 'no')
+
+    def render_state(self, colname, record):
+        return record.attrs['state']
+
+    def render_dt(self, colname, record):
+        value = record.attrs.get(colname, '')
+        if value:
+            value = value.strftime(DT_FORMAT)
+        return value
 
     @property
     def ajaxurl(self):
-        qslist = [
-            ('vendor', self.request.form.get('ordersfilter.vendor')),
-            ('customer', self.request.form.get('ordersfilter.customer'))
-        ]
-        qs = urllib.urlencode(dict([it for it in qslist if it[1]]))
-        qs = qs and '?{0}'.format(qs) or ''
-        return '%s/%s%s' % (self.context.absolute_url(), '@@ordersdata', qs)
+        site = plone.api.portal.get()
+        return '%s/%s%s' % (site.absolute_url(), self.data_view_name)
 
     @property
     def columns(self):
@@ -367,11 +355,56 @@ class OrdersTable(BrowserView):
             'renderer': self.render_state,
         }]
 
-    def render_dt(self, colname, record):
-        value = record.attrs.get(colname, '')
-        if value:
-            value = value.strftime(DT_FORMAT)
-        return value
+
+class OrdersTable(OrdersTableBase):
+
+    def render_filter(self):
+        # vendor areas of current user
+        vendors = vendors_vocab_for()
+        vendor_selector = None
+        # vendor selection, include if more than one vendor
+        if len(vendors) > 2:
+            vendor_selector = factory(
+                'label:select',
+                name='vendor',
+                value=None,
+                props={
+                    'vocabulary': vendors,
+                    'label': 'Filter for vendors'
+                }
+            )
+        # customers selection, include if more than one customer
+        customers = customers_vocab_for() # customers of current user
+        customer_selector = None
+        if len(customers) > 2:
+            customer_selector = factory(
+                'label:select',
+                name='customer',
+                value=None,
+                props={
+                    'vocabulary': customers,
+                    'label': 'Filter for customers'
+                }
+            )
+        if not vendor_selector and not customer_selector:
+            return
+        # create filter form
+        action = self.request.getURL()
+        form = factory(
+            'form',
+            name='ordersfilter',
+            props={'action': action},
+        )
+        if vendor_selector:
+            form['vendor'] = vendor_selector
+        if customer_selector:
+            form['customer'] = customer_selector
+        form['submit'] = factory(
+            'submit',
+            name='filter',
+            props={'action': True, 'label': 'Filter'}
+        )
+        return form(request=self.request)
 
     def render_order_actions_head(self):
         #user = plone.api.user.get_current()
@@ -436,6 +469,27 @@ class OrdersTable(BrowserView):
         #     return record.attrs['state']
         return StateDropdown(self.context, self.request, record).render()
 
+    @property
+    def ajaxurl(self):
+        params = [
+            ('vendor', self.request.form.get('ordersfilter.vendor')),
+            ('customer', self.request.form.get('ordersfilter.customer'))
+        ]
+        query = urllib.urlencode(dict([it for it in params if it[1]]))
+        query = query and '?{0}'.format(query) or ''
+        site = plone.api.portal.get()
+        return '%s/%s%s' % (site.absolute_url(), self.data_view_name, query)
+
+    def __call__(self):
+        # check if authenticated user is vendor
+        if not get_vendors_for():
+            raise Unauthorized
+        return super(OrdersTable, self).__call__()
+
+
+class MyOrdersTable(OrdersTableBase):
+    data_view_name = '@@myordersdata'
+
 
 class OrdersData(OrdersTable, TableData):
     soup_name = 'bda_plone_orders_orders'
@@ -448,12 +502,10 @@ class OrdersData(OrdersTable, TableData):
         if not order_uids:
             # user
             customer = plone.api.user.get_current().getId()
-
         else:
             # vendor or admin
             vendor = self.request.form.get('vendor')
             customer = self.request.form.get('customer')
-
             if vendor:
                 vendor_orders = get_vendor_order_uids(self.context, vendor)
                 _query = Any('uid', vendor_orders)
@@ -463,11 +515,9 @@ class OrdersData(OrdersTable, TableData):
                 # no need to check permissions for shopadmins
                 _query = Any('uid', order_uids)
                 query = query and query & _query or _query
-
         if customer:
             _query = Eq('creator', customer)
             query = query and query & _query or _query
-
         sort = self.sort()
         term = self.request.form['sSearch'].decode('utf-8')
         if term:
@@ -482,6 +532,14 @@ class OrdersData(OrdersTable, TableData):
             return length, res
         else:
             return self.all(soup)
+
+
+class MyOrdersData(OrdersTable, TableData):
+    soup_name = 'bda_plone_orders_orders'
+    search_text_index = 'text'
+
+    def query(self, soup):
+        return []
 
 
 class OrderView(BrowserView):
@@ -527,6 +585,7 @@ class OrderView(BrowserView):
     @property
     def listing(self):
         ret = list()
+        # XXX: reduce bookings for authenticated members vendor area bookings
         for booking in self.order_data.bookings:
             ret.append({
                 'title': booking.attrs['title'],
@@ -634,6 +693,7 @@ class ExportOrdersForm(YAMLForm):
     action_resource = 'exportorders'
 
     def __call__(self):
+        # XXX: security check -> current user has valid vandor area?
         self.prepare()
         controller = Controller(self.form, self.request)
         if not controller.next:

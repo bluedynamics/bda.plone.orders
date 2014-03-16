@@ -1,6 +1,5 @@
 from . import permissions
 from .interfaces import IVendor
-from AccessControl import Unauthorized
 from Acquisition import aq_parent
 from Acquisition import aq_inner
 from Products.CMFPlone.interfaces import IPloneSiteRoot

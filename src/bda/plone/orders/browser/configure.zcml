@@ -1,6 +1,7 @@
 <configure xmlns="http://namespaces.zope.org/zope"
            xmlns:browser="http://namespaces.zope.org/browser">
 
+  <!-- resources -->
   <browser:resource
     name="bda.plone.orders.js"
     file="orders.js"
@@ -16,15 +17,26 @@
     directory="resources"
     layer="..interfaces.IOrdersExtensionLayer"/>
 
+  <!-- orders view -->
   <browser:page
-    for="*"
+    for="Products.CMFPlone.interfaces.IPloneSiteRoot"
     name="orders"
     template="orders_view.pt"
+    class=".views.OrdersView"
     permission="bda.plone.orders.ViewOrders"
     layer="..interfaces.IOrdersExtensionLayer"/>
 
   <browser:page
-    for="*"
+    for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+    name="myorders"
+    template="orders_view.pt"
+    class=".views.MyOrdersView"
+    permission="bda.plone.orders.ViewOrders"
+    layer="..interfaces.IOrdersExtensionLayer"/>
+
+  <!-- orders table -->
+  <browser:page
+    for="Products.CMFPlone.interfaces.IPloneSiteRoot"
     name="orderstable"
     template="orders.pt"
     class=".views.OrdersTable"
@@ -32,55 +44,91 @@
     layer="..interfaces.IOrdersExtensionLayer"/>
 
   <browser:page
-    for="*"
+    for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+    name="myorderstable"
+    template="orders.pt"
+    class=".views.MyOrdersTable"
+    permission="bda.plone.orders.ViewOrders"
+    layer="..interfaces.IOrdersExtensionLayer"/>
+
+  <!-- orders data -->
+  <browser:page
+    for="Products.CMFPlone.interfaces.IPloneSiteRoot"
     name="ordersdata"
     class=".views.OrdersData"
     permission="bda.plone.orders.ViewOrders"
     layer="..interfaces.IOrdersExtensionLayer"/>
 
   <browser:page
-    for="*"
+    for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+    name="myordersdata"
+    class=".views.MyOrdersData"
+    permission="bda.plone.orders.ViewOrders"
+    layer="..interfaces.IOrdersExtensionLayer"/>
+
+  <!-- customer notification -->
+  <browser:page
+    for="Products.CMFPlone.interfaces.IPloneSiteRoot"
     name="notify_customers"
     class=".notify_customers.NotifyCustomers"
-    permission="bda.plone.orders.VendorOrders"
+    permission="bda.plone.orders.ViewOrders"
     layer="..interfaces.IOrdersExtensionLayer"/>
 
   <browser:page
-    for="*"
+    for="Products.CMFPlone.interfaces.IPloneSiteRoot"
     name="load_notification_template"
     class=".notify_customers.LoadTemplate"
-    permission="bda.plone.orders.VendorOrders"
+    permission="bda.plone.orders.ViewOrders"
     layer="..interfaces.IOrdersExtensionLayer"/>
 
+  <!-- order view -->
   <browser:page
-    for="*"
+    for="Products.CMFPlone.interfaces.IPloneSiteRoot"
     name="order"
     template="order.pt"
     class=".views.OrderView"
     permission="bda.plone.orders.ViewOrders"
     layer="..interfaces.IOrdersExtensionLayer"/>
 
+  <!-- order transitions for plone root -->
   <browser:page
-    for="*"
+    for="Products.CMFPlone.interfaces.IPloneSiteRoot"
     name="statetransition"
     class=".views.StateTransition"
-    permission="cmf.ModifyPortalContent"
+    permission="bda.plone.orders.ModifyOrders"
     layer="..interfaces.IOrdersExtensionLayer"/>
 
   <browser:page
-    for="*"
+    for="Products.CMFPlone.interfaces.IPloneSiteRoot"
     name="salariedtransition"
     class=".views.SalariedTransition"
-    permission="cmf.ModifyPortalContent"
+    permission="bda.plone.orders.ModifyOrders"
+    layer="..interfaces.IOrdersExtensionLayer"/>
+
+  <!-- order transitions for vendor -->
+  <browser:page
+    for="bda.plone.orders.interfaces.IVendor"
+    name="statetransition"
+    class=".views.StateTransition"
+    permission="bda.plone.orders.ModifyOrders"
     layer="..interfaces.IOrdersExtensionLayer"/>
 
   <browser:page
-    for="*"
+    for="bda.plone.orders.interfaces.IVendor"
+    name="salariedtransition"
+    class=".views.SalariedTransition"
+    permission="bda.plone.orders.ModifyOrders"
+    layer="..interfaces.IOrdersExtensionLayer"/>
+
+  <!-- export orders -->
+  <browser:page
+    for="Products.CMFPlone.interfaces.IPloneSiteRoot"
     name="exportorders"
     class=".views.ExportOrdersForm"
     permission="bda.plone.orders.ViewOrders"
     layer="..interfaces.IOrdersExtensionLayer"/>
 
+  <!-- reservation done view -->
   <browser:page
     for="*"
     name="reservation_done"
@@ -94,7 +142,7 @@
     for="Products.CMFPlone.interfaces.IPloneSiteRoot"
     name="mailtemplatesform"
     class=".mailtemplates.MailtemplatesForm"
-    permission="cmf.ModifyPortalContent"
+    permission="bda.plone.orders.ManageTemplates"
     layer="..interfaces.IOrdersExtensionLayer"/>
 
   <browser:page
@@ -102,7 +150,7 @@
     name="mailtemplates"
     class=".mailtemplates.MailtemplatesView"
     template="mailtemplates_view.pt"
-    permission="cmf.ModifyPortalContent"
+    permission="bda.plone.orders.ManageTemplates"
     layer="..interfaces.IOrdersExtensionLayer"/>
 
   <!-- vendor mail templates -->
@@ -110,7 +158,7 @@
     for="..interfaces.IVendor"
     name="mailtemplatesform"
     class=".mailtemplates.MailtemplatesForm"
-    permission="cmf.ModifyPortalContent"
+    permission="bda.plone.orders.ManageTemplates"
     layer="..interfaces.IOrdersExtensionLayer"/>
 
   <browser:page
@@ -118,7 +166,7 @@
     name="mailtemplates"
     class=".mailtemplates.MailtemplatesView"
     template="mailtemplates_view.pt"
-    permission="cmf.ModifyPortalContent"
+    permission="bda.plone.orders.ManageTemplates"
     layer="..interfaces.IOrdersExtensionLayer"/>
 
 </configure>

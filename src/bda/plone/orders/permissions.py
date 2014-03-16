@@ -1,29 +1,27 @@
 from Products.CMFCore.permissions import setDefaultRoles
 
 
+# view orders
 ViewOrders = 'bda.plone.orders: View Orders'
 setDefaultRoles(ViewOrders,
-                ('Manager', 'Site Administrator', 'Vendor', 'Customer'))
+                ('Manager', 'Site Administrator', 'Authenticated'))
 
-AllOrders = 'bda.plone.orders: All Orders'
-setDefaultRoles(AllOrders,
-                ('Manager', 'Site Administrator'))
-
-VendorOrders = 'bda.plone.orders: Vendor Orders'
-setDefaultRoles(VendorOrders,
-                ('Manager', 'Site Administrator', 'Vendor'))
-
-CustomerOrders = 'bda.plone.orders: Customer Orders'
-setDefaultRoles(CustomerOrders,
-                ('Manager', 'Site Administrator', 'Vendor', 'Customer'))
-
+# modify orders
 ModifyOrders = 'bda.plone.orders: Modify Orders'
 setDefaultRoles(ModifyOrders,
                 ('Manager', 'Site Administrator', 'Vendor'))
 
+# manage templates
+ManageTemplates = 'bda.plone.orders: Manage Templates'
+setDefaultRoles(ManageTemplates,
+                ('Manager', 'Site Administrator', 'Vendor'))
+
+# delegate customer role
 DelegateCustomerRole = 'bda.plone.orders: Delegate Customer Role'
 setDefaultRoles(DelegateCustomerRole,
                 ('Manager', 'Site Administrator'))
 
+# delegate vendor role
 DelegateVendorRole = 'bda.plone.orders: Delegate Vendor Role'
-setDefaultRoles(DelegateVendorRole, tuple())
+setDefaultRoles(DelegateVendorRole,
+                tuple())

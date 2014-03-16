@@ -7,20 +7,12 @@
     title="bda.plone.orders: View Orders" />
 
   <permission
-    id="bda.plone.orders.AllOrders"
-    title="bda.plone.orders: All Orders" />
-
-  <permission
-    id="bda.plone.orders.VendorOrders"
-    title="bda.plone.orders: Vendor Orders" />
-
-  <permission
-    id="bda.plone.orders.CustomerOrders"
-    title="bda.plone.orders: Customer Orders" />
-
-  <permission
     id="bda.plone.orders.ModifyOrders"
     title="bda.plone.orders: Modify Orders" />
+
+  <permission
+    id="bda.plone.orders.ManageTemplates"
+    title="bda.plone.orders: Manage Templates" />
 
   <permission
     id="bda.plone.orders.DelegateCustomerRole"

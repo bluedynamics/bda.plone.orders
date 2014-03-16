@@ -89,6 +89,7 @@ class NotifyCustomers(YAMLBaseForm):
         return True
 
     def __call__(self):
+        # XXX: security check -> current user has valid vandor area?
         ajax_form_fiddle(
             self.request, 'form[id=form-notify_customers]', 'replace')
         return self.render_form()
@@ -97,6 +98,7 @@ class NotifyCustomers(YAMLBaseForm):
 class LoadTemplate(BrowserView):
 
     def __call__(self):
+        # XXX: security check -> current user has valid vandor area?
         self.request.response.setHeader('Content-Type', 'application/json')
         tpllib = IDynamicMailTemplateLibrary(self.context)
         try:

@@ -18,7 +18,7 @@
   <tal:main-macro metal:define-macro="main">
 
     <div id="orders_wrapper">
-      <tal:view content="structure context/@@orderstable" />
+      <tal:table replace="structure view/orders_table" />
     </div>
 
   </tal:main-macro>
