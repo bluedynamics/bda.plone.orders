@@ -4,6 +4,7 @@ from StringIO import StringIO
 from bda.plone.cart import ascur
 from bda.plone.checkout import message_factory as _co
 from bda.plone.orders import message_factory as _
+from bda.plone.orders import permissions
 from bda.plone.orders.common import DT_FORMAT
 from bda.plone.orders.common import OrderData
 from bda.plone.orders.common import OrderTransitions
@@ -319,7 +320,6 @@ class OrdersTable(BrowserView):
         )
         return form(request=self.request)
 
-    @property
     def rendered_table(self):
         return self.table_template(self)
 
@@ -374,6 +374,9 @@ class OrdersTable(BrowserView):
         return value
 
     def render_order_actions_head(self):
+        #user = plone.api.user.get_current()
+        #if not bool(user.checkPermission(permissions.VendorOrders, obj))
+
         # XXX: permission check
         # if not notification_permitted:
         tag = Tag(Translate(self.request))

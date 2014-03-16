@@ -100,7 +100,7 @@ def get_all_vendors():
     """
     cat = plone.api.portal.get_tool('portal_catalog')
     query = { 'object_provides': IVendor.__identifier__ }
-    vendors = [brain.getObject() for brain in cat.query(**query)]
+    vendors = [brain.getObject() for brain in cat(**query)]
     return vendors + [plone.api.portal.get()]
 
 

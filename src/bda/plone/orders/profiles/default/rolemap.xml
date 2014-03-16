@@ -32,6 +32,12 @@
       <role name="Customer" />
     </permission>
 
+    <permission name="bda.plone.orders: Modify Orders" acquire="True">
+      <role name="Manager" />
+      <role name="Shop Admin" />
+      <role name="Vendor" />
+    </permission>
+
     <permission name="bda.plone.orders: Delegate Vendor Role" acquire="False">
     </permission>
   </permissions>
