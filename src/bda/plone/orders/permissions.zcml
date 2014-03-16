@@ -23,6 +23,10 @@
     title="bda.plone.orders: Modify Orders" />
 
   <permission
+    id="bda.plone.orders.DelegateCustomerRole"
+    title="bda.plone.orders: Delegate Customer Role" />
+
+  <permission
     id="bda.plone.orders.DelegateVendorRole"
     title="bda.plone.orders: Delegate Vendor Role" />
 

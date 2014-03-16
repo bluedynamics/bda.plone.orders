@@ -21,5 +21,9 @@ ModifyOrders = 'bda.plone.orders: Modify Orders'
 setDefaultRoles(ModifyOrders,
                 ('Manager', 'Site Administrator', 'Vendor'))
 
+DelegateCustomerRole = 'bda.plone.orders: Delegate Customer Role'
+setDefaultRoles(DelegateCustomerRole,
+                ('Manager', 'Site Administrator'))
+
 DelegateVendorRole = 'bda.plone.orders: Delegate Vendor Role'
 setDefaultRoles(DelegateVendorRole, tuple())
