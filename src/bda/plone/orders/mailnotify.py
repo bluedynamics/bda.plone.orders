@@ -1,4 +1,3 @@
-from .common import get_bookings_soup
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
 from bda.plone.cart import get_catalog_brain
@@ -6,6 +5,7 @@ from bda.plone.orders import common
 from bda.plone.orders import message_factory as _
 from bda.plone.orders.common import DT_FORMAT
 from bda.plone.orders.common import get_order
+from bda.plone.orders.common import get_bookings_soup
 from bda.plone.orders.interfaces import IItemNotificationText
 from bda.plone.orders.interfaces import IGlobalNotificationText
 from bda.plone.orders.mailtemplates import get_order_templates

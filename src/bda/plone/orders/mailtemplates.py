@@ -3,8 +3,8 @@ from BTrees.OOBTree import OOBTree
 from zope.annotation import IAnnotations
 from zope.interface import implementer
 from zope.component import queryAdapter
-from .interfaces import IDynamicMailTemplateLibrary
-from .interfaces import IDynamicMailTemplateLibraryStorage
+from bda.plone.orders.interfaces import IDynamicMailTemplateLibrary
+from bda.plone.orders.interfaces import IDynamicMailTemplateLibraryStorage
 
 
 ###############################################################################

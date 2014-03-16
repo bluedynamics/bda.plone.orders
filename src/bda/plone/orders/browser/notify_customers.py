@@ -1,4 +1,3 @@
-from .mailtemplates import TEMPLATE
 from Products.Five import BrowserView
 from bda.plone.ajax import AjaxMessage
 from bda.plone.ajax import AjaxOverlay
@@ -9,6 +8,7 @@ from bda.plone.orders.common import get_order
 from bda.plone.orders.mailnotify import MailNotify
 from bda.plone.orders.interfaces import IDynamicMailTemplateLibrary
 from bda.plone.orders.mailtemplates import IDynamicMailTemplateLibrary
+from bda.plone.orders.browser.mailtemplates import TEMPLATE
 from node.utils import UNSET
 from yafowil.base import ExtractionError
 from yafowil.plone.form import YAMLBaseForm
