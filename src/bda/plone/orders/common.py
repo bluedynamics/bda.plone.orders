@@ -114,50 +114,72 @@ def get_vendors_for(user=None):
     :returns: Allowed vendor area enabled content objects.
     :rtype: List of content objects.
     """
-    if not user:
+    if user is None:
         user = plone.api.user.get_current()
     def permitted(obj):
         return bool(user.checkPermission(permissions.VendorOrders, obj))
     return [vendor for vendor in get_all_vendors() if permitted(vendor)]
 
 
-def get_order_uids_for(user=None):
-    """Get all order uids a given or authenticated user has vendor
+def get_vendor_order_uids(context, vendor_uid):
+    """Get all order uids for a given vendor uid.
+
+    :param vendor_uid: Vendor uid, which is used to filter the orders.
+    :type vendor_uid: string or uuid.UUID object
+    :returns: List of order UUID objects.
+    :rtype: List of uuid.UUID
+    """
+    if vendor_uid and not isinstance(vendor_uid, uuid.UUID):
+        vendor_uid = uuid.UUID(vendor_uid)
+    soup = get_bookings_soup(context)
+    res = soup.query(Eq('vendor_uid', vendor_uid))
+    order_uids = set(booking.attrs['order_uid'] for booking in res)
+    return order_uids
+
+
+def get_vendor_order_uids_for(context, user=None):
+    """Get order uids all orders a given or current user has vendor
     permissions for.
 
     :param user: Optional user object to check permissions on vendor areas. If
                  no user object is give, the current user is used.
     :type user: MemberData object
-    :returns: List of order UUID for all allowed orders.
-    :rtype: List of strings.
+    :returns: List of order UUID objects.
+    :rtype: List of uuid.UUID
     """
     vendors = [uuid.UUID(IUUID(vendor)) for vendor in get_vendors_for(user)]
-    query = Any('vendor_uid', vendors)
-    # XXX: expect soup lookup context as argument, soup not always stored on
-    #      portal root
-    soup = get_bookings_soup(plone.api.portal.get())
-    result = soup.query(query)
-    order_uids = set(booking.attrs['order_uid'] for booking in result)
-    return order_uids
-
-
-def get_vendor_orders_uid(vendor_uid):
-    """Get all order uids for a given vendor.
-
-    :param vendor_uid: Vendor uid, which is used to filter the orders.
-    :type vendor_uid: string or uuid.UUID object
-    :returns: List of order UUID for all allowed orders.
-    :rtype: List of strings. XXX: really strings? or uuid.UUID objects
-    """
-    if vendor_uid and not isinstance(vendor_uid, uuid.UUID):
-        vendor_uid = uuid.UUID(vendor_uid)
-    query = Eq('vendor_uid', vendor_uid)
-    # XXX: expect soup lookup context as argument, soup not always stored on
-    #      portal root
-    soup = get_bookings_soup(plone.api.portal.get())
-    res = soup.query(query)
+    soup = get_bookings_soup(context)
+    res = soup.query(Any('vendor_uid', vendors))
     order_uids = set(booking.attrs['order_uid'] for booking in res)
     return order_uids
+
+
+def get_customer_order_uids(context, customer):
+    """Get all order uids for a given customer.
+
+    :param creator: Customer aka user id aka creator.
+    :type creator: string
+    :returns: List of order UUID objects.
+    :rtype: List of uuid.UUID
+    """
+    soup = get_orders_soup(context)
+    res = soup.query(Eq('creator', customer))
+    order_uids = set(order.attrs['uid'] for order in res)
+    return order_uids
+
+
+def get_customer_order_uids_for(context, user=None):
+    """Get order uids of all orders a given or current user has made.
+
+    :param user: Optional user object representing the customer. If
+                 no user object is give, the current user is used.
+    :type user: MemberData object
+    :returns: List of order UUID objects.
+    :rtype: List of uuid.UUID
+    """
+    if user is None:
+        user = plone.api.user.get_current()
+    return get_customer_order_uids(context, user.getId())
 
 
 @implementer(ICatalogFactory)
@@ -345,7 +367,7 @@ class OrderCheckoutAdapter(CheckoutAdapter):
 
 
 class OrderData(object):
-    """Specific order related data.
+    """Object for extracting order information.
     """
 
     def __init__(self, context, uid=None, order=None, vendor_uid=None):

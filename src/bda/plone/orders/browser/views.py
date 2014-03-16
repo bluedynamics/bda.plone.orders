@@ -3,8 +3,17 @@ from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from StringIO import StringIO
 from bda.plone.cart import ascur
 from bda.plone.checkout import message_factory as _co
-from bda.plone.orders.vocabularies import allowed_customers_vocab
-from bda.plone.orders.vocabularies import allowed_vendors_vocab
+from bda.plone.orders import message_factory as _
+from bda.plone.orders.common import DT_FORMAT
+from bda.plone.orders.common import OrderData
+from bda.plone.orders.common import OrderTransitions
+from bda.plone.orders.common import get_orders_soup
+from bda.plone.orders.common import get_vendor_order_uids_for
+from bda.plone.orders.common import get_vendors_for
+from bda.plone.orders.common import get_order
+from bda.plone.orders.common import get_vendor_order_uids
+from bda.plone.orders.vocabularies import customers_vocab_for
+from bda.plone.orders.vocabularies import vendors_vocab_for
 from bda.plone.payment import Payments
 from decimal import Decimal
 from plone.app.uuid.utils import uuidToURL
@@ -23,15 +32,6 @@ from yafowil.plone.form import YAMLForm
 from yafowil.utils import Tag
 from zope.i18n import translate
 from zope.i18nmessageid import Message
-from .. import message_factory as _
-from ..common import DT_FORMAT
-from ..common import OrderData
-from ..common import OrderTransitions
-from ..common import get_orders_soup
-from ..common import get_order_uids_for
-from ..common import get_vendors_for
-from ..common import get_order
-from ..common import get_vendor_orders_uid
 import csv
 import datetime
 import json
@@ -247,7 +247,6 @@ class TableData(BrowserView):
         length, lazydata = self.query(soup)
         columns = self.columns
         colnames = [_['id'] for _ in columns]
-
         def record2list(record):
             result = list()
             for colname in colnames:
@@ -275,29 +274,29 @@ class OrdersTable(BrowserView):
     table_id = 'bdaploneorders'
 
     def render_filter(self):
-        allowed_vendors = allowed_vendors_vocab()
+        vendors = vendors_vocab_for() # vendor areas of current user
         vendor_selector = None
         # vendor selection, include if more than one vendor
-        if len(allowed_vendors) > 2:
+        if len(vendors) > 2:
             vendor_selector = factory(
                 'label:select',
                 name='vendor',
                 value=None,
                 props={
-                    'vocabulary': allowed_vendors,
+                    'vocabulary': vendors,
                     'label': 'Filter for vendors'
                 }
             )
         # customers selection, include if more than one customer
-        allowed_customers = allowed_customers_vocab()
+        customers = customers_vocab_for() # customers of current user
         customer_selector = None
-        if len(allowed_customers) > 2:
+        if len(customers) > 2:
             customer_selector = factory(
                 'label:select',
                 name='customer',
                 value=None,
                 props={
-                    'vocabulary': allowed_customers,
+                    'vocabulary': customers,
                     'label': 'Filter for customers'
                 }
             )
@@ -336,8 +335,7 @@ class OrdersTable(BrowserView):
         ]
         qs = urllib.urlencode(dict([it for it in qslist if it[1]]))
         qs = qs and '?{0}'.format(qs) or ''
-        return '%s/%s%s' % (
-            self.context.absolute_url(), '@@ordersdata', qs)
+        return '%s/%s%s' % (self.context.absolute_url(), '@@ordersdata', qs)
 
     @property
     def columns(self):
@@ -441,11 +439,10 @@ class OrdersData(OrdersTable, TableData):
     search_text_index = 'text'
 
     def query(self, soup):
-
-        manageable_orders = get_order_uids_for()
+        # orders related to current user
+        order_uids = get_vendor_order_uids_for(self.context)
         query = None
-
-        if not manageable_orders:
+        if not order_uids:
             # user
             customer = plone.api.user.get_current().getId()
 
@@ -455,13 +452,13 @@ class OrdersData(OrdersTable, TableData):
             customer = self.request.form.get('customer')
 
             if vendor:
-                vendor_orders = get_vendor_orders_uid(vendor)
+                vendor_orders = get_vendor_order_uids(self.context, vendor)
                 _query = Any('uid', vendor_orders)
                 query = query and query & _query or _query
 
             else:
                 # no need to check permissions for shopadmins
-                _query = Any('uid', manageable_orders)
+                _query = Any('uid', order_uids)
                 query = query and query & _query or _query
 
         if customer:
@@ -674,8 +671,8 @@ class ExportOrdersForm(YAMLForm):
 
         o_query = Ge('created', self.from_date) & Le('created', self.to_date)
         # Restrict to allowed orders
-        #manageable_orders = get_order_uids_for()
-        #o_query = o_query & Any('uid', manageable_orders)
+        #order_uids = get_vendor_order_uids_for(self.context)
+        #o_query = o_query & Any('uid', order_uids)
 
         #allowed_vendor_areas = [
         #    uuid.UUID(IUUID(it)) for it in get_vendors_for()
