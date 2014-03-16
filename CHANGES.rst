@@ -42,8 +42,8 @@ Changelog
   for better customization purposes.
   [rnix]
 
-- Implement multi client functionality with Shop Admin, Vendor and Customer
-  roles and appropriate permissions. Restrict views and results to introduced
+- Implement multi client functionality with Vendor and Customer roles and
+  appropriate permissions. Restrict views and results to introduced
   permissions. Assign bookings to vendors. Allow definitions of vendor areas
   via the ``IVendor`` interface.
   [thet]

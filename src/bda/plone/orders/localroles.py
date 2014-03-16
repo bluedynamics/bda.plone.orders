@@ -7,6 +7,13 @@ from bda.plone.orders.interfaces import IVendor
 
 @implementer(ISharingPageRole)
 class VendorRole(object):
-    title = _(u"title_is_vendor", default=u"Is Vendor")
+    title = _(u"title_vendor_role", default=u"Can Sell")
     required_permission = permissions.DelegateVendorRole
     required_interface = IVendor
+
+
+@implementer(ISharingPageRole)
+class CustomerRole(object):
+    title = _(u"title_customer_role", default=u"Can Buy")
+    required_permission = permissions.DelegateCustomerRole
+    required_interface = None

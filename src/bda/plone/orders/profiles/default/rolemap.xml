@@ -1,44 +1,48 @@
 <?xml version="1.0"?>
 <rolemap>
   <roles>
-    <role name="Customer"/>
     <role name="Vendor"/>
-    <role name="Shop Admin"/>
+    <role name="Customer" />
   </roles>
 
   <permissions>
     <permission name="bda.plone.orders: View Orders" acquire="True">
       <role name="Manager" />
-      <role name="Shop Admin" />
+      <role name="Site Administrator" />
       <role name="Vendor" />
       <role name="Customer" />
     </permission>
 
     <permission name="bda.plone.orders: All Orders" acquire="True">
       <role name="Manager" />
-      <role name="Shop Admin" />
+      <role name="Site Administrator" />
     </permission>
 
     <permission name="bda.plone.orders: Vendor Orders" acquire="True">
       <role name="Manager" />
-      <role name="Shop Admin" />
+      <role name="Site Administrator" />
       <role name="Vendor" />
     </permission>
 
     <permission name="bda.plone.orders: Customer Orders" acquire="True">
       <role name="Manager" />
-      <role name="Shop Admin" />
+      <role name="Site Administrator" />
       <role name="Vendor" />
       <role name="Customer" />
     </permission>
 
     <permission name="bda.plone.orders: Modify Orders" acquire="True">
       <role name="Manager" />
-      <role name="Shop Admin" />
+      <role name="Site Administrator" />
       <role name="Vendor" />
     </permission>
 
     <permission name="bda.plone.orders: Delegate Vendor Role" acquire="False">
+    </permission>
+
+    <permission name="bda.plone.orders: Delegate Customer Role" acquire="True">
+      <role name="Manager" />
+      <role name="Site Administrator" />
     </permission>
   </permissions>
 </rolemap>

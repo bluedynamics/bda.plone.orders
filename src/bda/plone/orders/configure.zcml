@@ -17,10 +17,11 @@
   <include file="upgrades.zcml"/>
   <include package=".browser"/>
 
-  <utility
-    name="Vendor"
-    factory=".localroles.VendorRole" />
+  <!-- roles -->
+  <utility name="Vendor" factory=".localroles.VendorRole" />
+  <utility name="Customer" factory=".localroles.CustomerRole" />
 
+  <!-- souper soups -->
   <utility
     name="bda_plone_orders_bookings"
     factory=".common.BookingsCatalogFactory"/>
@@ -29,8 +30,10 @@
     name="bda_plone_orders_orders"
     factory=".common.OrdersCatalogFactory"/>
 
+  <!-- IUUID adapter for plone root -->
   <adapter factory=".common.plone_root_uuid" />
 
+  <!-- order checkout adapter -->
   <adapter
     for="Products.CMFPlone.interfaces.IPloneSiteRoot
          zope.publisher.interfaces.browser.IBrowserRequest"
@@ -48,6 +51,7 @@
          zope.publisher.interfaces.browser.IBrowserRequest"
     factory=".common.OrderCheckoutAdapter"/>
 
+  <!-- payment data adapter -->
   <adapter
     zcml:condition="installed Products.Archetypes"
     for="Products.Archetypes.interfaces.IBaseObject"
@@ -57,7 +61,8 @@
     zcml:condition="installed plone.dexterity"
     for="plone.dexterity.content.DexterityContent"
     factory=".common.PaymentData"/>
-  
+
+  <!-- mail templates storage -->
   <adapter
     for="Products.CMFPlone.interfaces.IPloneSiteRoot"
     provides=".interfaces.IDynamicMailTemplateLibraryStorage"
@@ -68,6 +73,7 @@
     provides=".interfaces.IDynamicMailTemplateLibraryStorage"
     factory=".mailtemplates.DynamicMailTemplateLibraryStorage"/>
 
+  <!-- event subscribers -->
   <subscriber
     for="bda.plone.payment.interfaces.IPaymentFailedEvent"
     handler=".common.payment_failed"/>
@@ -83,5 +89,5 @@
   <subscriber
     for="bda.plone.checkout.interfaces.ICheckoutDone"
     handler=".mailnotify.notify_reservation_if_payment_skipped"/>
-    
+
 </configure>
