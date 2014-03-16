@@ -1,6 +1,6 @@
 from bda.plone.orders.common import get_all_vendors
-from bda.plone.orders.common import get_allowed_vendors
-from bda.plone.orders.common import get_allowed_orders_uid
+from bda.plone.orders.common import get_vendors_for
+from bda.plone.orders.common import get_order_uids_for
 from bda.plone.orders.common import get_order
 from plone.uuid.interfaces import IUUID
 from zope.component.hooks import getSite
@@ -8,7 +8,7 @@ from zope.component.hooks import getSite
 import plone.api
 
 
-NULL_SELECTION = [('', '---')]
+NULL_SELECTION = [('', '-')]
 
 
 def all_vendors_vocab():
@@ -24,7 +24,7 @@ def all_vendors_vocab():
 def allowed_vendors_vocab(user=None):
     """Vocabulary for allowed vendors.
     """
-    allowed_vendors = get_allowed_vendors(user=user)
+    allowed_vendors = get_vendors_for(user=user)
     vocab = [(IUUID(it),
              '{0} ({1})'.format(it.Title(), it.absolute_url_path()))
              for it in allowed_vendors]
@@ -32,7 +32,7 @@ def allowed_vendors_vocab(user=None):
 
 
 def allowed_customers_vocab(user=None):
-    allowed_orders = get_allowed_orders_uid(user=user)
+    allowed_orders = get_order_uids_for(user=user)
     context = getSite()
     res = set(get_order(context, it).attrs['creator'] for it in allowed_orders)
     vocab = []

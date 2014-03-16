@@ -27,8 +27,9 @@ from .. import message_factory as _
 from ..common import DT_FORMAT
 from ..common import OrderData
 from ..common import OrderTransitions
-from ..common import get_allowed_orders_uid
-from ..common import get_allowed_vendors
+from ..common import get_orders_soup
+from ..common import get_order_uids_for
+from ..common import get_vendors_for
 from ..common import get_order
 from ..common import get_vendor_orders_uid
 import csv
@@ -97,6 +98,7 @@ class Dropdown(object):
 
 state_vocab = {
     'new': _('new', default=u'New'),
+    'processing': _('processing', default=u'Processing'),
     'finished': _('finished', default=u'Finished'),
     'cancelled': _('cancelled', default=u'Cancelled'),
     'reserved': _('reserved', default=u'Reserved'),
@@ -110,6 +112,7 @@ class StateDropdown(Dropdown):
     vocab = state_vocab
     transitions = {
         'renew': _('renew', default=u'Renew'),
+        'process': _('process', default=u'Process'),
         'finish': _('finish', default=u'Finish'),
         'cancel': _('cancel', default=u'Cancel'),
     }
@@ -123,7 +126,7 @@ class StateDropdown(Dropdown):
         state = self.record.attrs['state']
         transitions = list()
         if state in ['new', 'reserved']:
-            transitions = ['finish', 'cancel']
+            transitions = ['process', 'finish', 'cancel']
         else:
             transitions = ['renew']
         return self.create_items(transitions)
@@ -439,7 +442,7 @@ class OrdersData(OrdersTable, TableData):
 
     def query(self, soup):
 
-        manageable_orders = get_allowed_orders_uid()
+        manageable_orders = get_order_uids_for()
         query = None
 
         if not manageable_orders:
@@ -666,16 +669,16 @@ class ExportOrdersForm(YAMLForm):
         return val
 
     def csv(self, request):
-        orders_soup = get_soup('bda_plone_orders_orders', self.context)
-        bookings_soup = get_soup('bda_plone_orders_bookings', self.context)
+        orders_soup = get_orders_soup(self.context)
+        bookings_soup = get_bookings_soup(self.context)
 
         o_query = Ge('created', self.from_date) & Le('created', self.to_date)
         # Restrict to allowed orders
-        #manageable_orders = get_allowed_orders_uid()
+        #manageable_orders = get_order_uids_for()
         #o_query = o_query & Any('uid', manageable_orders)
 
         #allowed_vendor_areas = [
-        #    uuid.UUID(IUUID(it)) for it in get_allowed_vendors()
+        #    uuid.UUID(IUUID(it)) for it in get_vendors_for()
         #]
         #b_query_base = Any('vendor_uid', allowed_vendor_areas)
 

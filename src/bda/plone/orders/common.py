@@ -1,6 +1,8 @@
+from . import permissions
 from .interfaces import IVendor
 from AccessControl import Unauthorized
 from Acquisition import aq_parent
+from Acquisition import aq_inner
 from Products.CMFPlone.interfaces import IPloneSiteRoot
 from bda.plone.cart import extractitems
 from bda.plone.cart import get_catalog_brain
@@ -61,30 +63,33 @@ def create_ordernumber():
     return '1%s' % str(onum)
 
 
+def get_orders_soup(context):
+    return get_soup('bda_plone_orders_orders', context)
+
+
+def get_bookings_soup(context):
+    return get_soup('bda_plone_orders_bookings', context)
+
+
 def get_order(context, uid):
     if not isinstance(uid, uuid.UUID):
         uid = uuid.UUID(uid)
-    soup = get_soup('bda_plone_orders_orders', context)
+    soup = get_orders_soup(context)
     return [_ for _ in soup.query(Eq('uid', uid))][0]
 
 
-def get_nearest_vendor(context):
-    """Returns the nearest vendor or the main shop by traversing up the
-    content tree, starting from a context (shop item).
+def acquire_vendor_or_shop_root(context):
+    """Returns the acquired vendor or the main shop by traversing up the
+    content tree, starting from a context.
 
     :param context: The context to start searching for the nearest vendor.
     :type context: Content object
     :returns: The vendor, a shop item is belonging to.
     :rtype: Content object
     """
-    if IVendor.providedBy(context) or ISite.providedBy(context):
-        return context
-    else:
-        parent = aq_parent(context)
-        if parent == context:
-            return context
-        else:
-            return get_nearest_vendor(parent)
+    while not IVendor.providedBy(context) and not ISite.providedBy(context):
+        context = aq_parent(aq_inner(context))
+    return context
 
 
 def get_all_vendors():
@@ -94,18 +99,14 @@ def get_all_vendors():
     :rtype: List of content objects.
     """
     cat = plone.api.portal.get_tool('portal_catalog')
-    query = {}
-    query['object_provides'] = IVendor.__identifier__
-    res = cat.searchResults(query)
-    res = [it.getObject() for it in res]
-    root = plone.api.portal.get()
-    if not IVendor.providedBy(root):
-        res.append(root)
-    return res
+    query = { 'object_provides': IVendor.__identifier__ }
+    vendors = [brain.getObject() for brain in cat.query(**query)]
+    return vendors + [plone.api.portal.get()]
 
 
-def get_allowed_vendors(user=None):
-    """Gel all allowed vendor areas for the current or a given user.
+def get_vendors_for(user=None):
+    """Gel all vendor containers a given or authenticated user has vendor
+    permissions for.
 
     :param user: Optional user object to check permissions on vendor areas. If
                  no user object is give, the current user is used.
@@ -115,19 +116,14 @@ def get_allowed_vendors(user=None):
     """
     if not user:
         user = plone.api.user.get_current()
-    all_vendors = get_all_vendors()
-    vendor_shops = [
-        vendor for vendor in all_vendors
-        if bool(user.checkPermission(
-            'bda.plone.orders: Vendor Orders', vendor
-        ))
-    ]
-    return vendor_shops
+    def permitted(obj):
+        return bool(user.checkPermission(permissions.VendorOrders, obj))
+    return [vendor for vendor in get_all_vendors() if permitted(vendor)]
 
 
-def get_allowed_orders_uid(user=None):
-    """Get all allowed orders by querying allowed bookings, where the
-    vendor_uid is one of the user's allowed vendor areas.
+def get_order_uids_for(user=None):
+    """Get all order uids a given or authenticated user has vendor
+    permissions for.
 
     :param user: Optional user object to check permissions on vendor areas. If
                  no user object is give, the current user is used.
@@ -135,42 +131,32 @@ def get_allowed_orders_uid(user=None):
     :returns: List of order UUID for all allowed orders.
     :rtype: List of strings.
     """
-    allowed_vendors = [
-        uuid.UUID(IUUID(it)) for it in get_allowed_vendors(user)
-    ]
-    query = Any('vendor_uid', allowed_vendors)
-    soup = get_soup('bda_plone_orders_bookings', plone.api.portal.get())
-    res = soup.query(query)
-    # make a set with order_uids. orders with multiple bookings are multiple
-    # times in the result
-    order_uids = set(it.attrs['order_uid'] for it in res)
+    vendors = [uuid.UUID(IUUID(vendor)) for vendor in get_vendors_for(user)]
+    query = Any('vendor_uid', vendors)
+    # XXX: expect soup lookup context as argument, soup not always stored on
+    #      portal root
+    soup = get_bookings_soup(plone.api.portal.get())
+    result = soup.query(query)
+    order_uids = set(booking.attrs['order_uid'] for booking in result)
     return order_uids
 
 
 def get_vendor_orders_uid(vendor_uid):
-    """Get all all orders for a given vendor.
+    """Get all order uids for a given vendor.
 
-    :param vendor_uid: Vendor uid, which should be used to filter the
-                       orders.
-    :typwe vendor_uid: string
+    :param vendor_uid: Vendor uid, which is used to filter the orders.
+    :type vendor_uid: string or uuid.UUID object
     :returns: List of order UUID for all allowed orders.
-    :rtype: List of strings.
+    :rtype: List of strings. XXX: really strings? or uuid.UUID objects
     """
-    from plone.app.uuid.utils import uuidToObject
-    user = plone.api.user.get_current()
-    obj = uuidToObject(vendor_uid)
-    # Check, if we are allowed to see the orders in the vendor object
-    try:
-        assert(bool(
-            user.checkPermission('bda.plone.orders: Vendor Orders', obj)
-        ))
-    except AssertionError:
-        raise Unauthorized
-    vendor_uid = uuid.UUID(vendor_uid)
+    if vendor_uid and not isinstance(vendor_uid, uuid.UUID):
+        vendor_uid = uuid.UUID(vendor_uid)
     query = Eq('vendor_uid', vendor_uid)
-    soup = get_soup('bda_plone_orders_bookings', plone.api.portal.get())
+    # XXX: expect soup lookup context as argument, soup not always stored on
+    #      portal root
+    soup = get_bookings_soup(plone.api.portal.get())
     res = soup.query(query)
-    order_uids = set(it.attrs['order_uid'] for it in res)
+    order_uids = set(booking.attrs['order_uid'] for booking in res)
     return order_uids
 
 
@@ -304,13 +290,13 @@ class OrderCheckoutAdapter(CheckoutAdapter):
                 all_available = False
         order.attrs['booking_uids'] = booking_uids
         order.attrs['state'] = all_available and 'new' or 'reserved'
-        orders_soup = get_soup('bda_plone_orders_orders', self.context)
+        orders_soup = get_orders_soup(self.context)
         ordernumber = create_ordernumber()
         while self.ordernumber_exists(orders_soup, ordernumber):
             ordernumber = create_ordernumber()
         order.attrs['ordernumber'] = ordernumber
         orders_soup.add(order)
-        bookings_soup = get_soup('bda_plone_orders_bookings', self.context)
+        bookings_soup = get_bookings_soup(self.context)
         for booking in bookings:
             bookings_soup.add(booking)
         return uid
@@ -330,22 +316,22 @@ class OrderCheckoutAdapter(CheckoutAdapter):
         # brain could be None if uid for item in cookie which no longer exists.
         if not brain:
             return
-        obj = brain.getObject()
-        item_state = get_item_state(obj, self.request)
+        buyable = brain.getObject()
+        item_state = get_item_state(buyable, self.request)
         if not item_state.validate_count(item_state.aggregated_count):
             raise CheckoutError(u'Item no longer available')
-        item_stock = get_item_stock(obj)
+        item_stock = get_item_stock(buyable)
         if item_stock.available is not None:
             item_stock.available -= float(count)
-        item_data = get_item_data_provider(obj)
-        vendor_uid = uuid.UUID(IUUID(get_nearest_vendor(obj)))
+        item_data = get_item_data_provider(buyable)
+        vendor = acquire_vendor_or_shop_root(buyable)
         booking = OOBTNode()
         booking.attrs['uid'] = uuid.uuid4()
         booking.attrs['buyable_uid'] = uid
         booking.attrs['buyable_count'] = count
         booking.attrs['buyable_comment'] = comment
         booking.attrs['order_uid'] = order.attrs['uid']
-        booking.attrs['vendor_uid'] = vendor_uid
+        booking.attrs['vendor_uid'] = uuid.UUID(IUUID(vendor))
         booking.attrs['creator'] = order.attrs['creator']
         booking.attrs['created'] = order.attrs['created']
         booking.attrs['exported'] = False
@@ -359,14 +345,28 @@ class OrderCheckoutAdapter(CheckoutAdapter):
 
 
 class OrderData(object):
+    """Specific order related data.
+    """
 
-    def __init__(self, context, uid=None, order=None):
+    def __init__(self, context, uid=None, order=None, vendor_uid=None):
+        """Create order data object by criteria
+
+        :param uid: Order uid. XOR with order
+        :type uid: string or uuid.UUID object
+        :param order: Order record. XOR with uid
+        :type order: souper.soup.Record object
+        :param vendor_uid: Vendor uid, used to filter order bookings.
+        :type vendor_uid: string uuid.UUID object
+        """
         assert(uid and not order or order and not uid)
-        self.context = context
         if uid and not isinstance(uid, uuid.UUID):
             uid = uuid.UUID(uid)
+        if vendor_uid and not isinstance(vendor_uid, uuid.UUID):
+            vendor_uid = uuid.UUID(vendor_uid)
+        self.context = context
         self._uid = uid
         self._order = order
+        self.vendor_uid = vendor_uid
 
     @property
     def uid(self):
@@ -382,40 +382,11 @@ class OrderData(object):
 
     @property
     def bookings(self):
-        """XXX: make this function always return all bookings of an order again
-        """
-        # TODO: support querying bookings for individual vendors by passing a
-        # user object or a user id
-
-        # CASE CUSTOMER: can see all bookings
-        # CASE ADMIN: can see all bookings
-        # CASE VENDOR: can see only bookings belonging to vendor
-        # admin can be vendor can be customer
-
-        soup = get_soup('bda_plone_orders_bookings', self.context)
+        soup = get_bookings_soup(self.context)
         query = Eq('order_uid', self.uid)
-
-        order_user_id = self.order.attrs['creator']
-        current_user_id = plone.api.user.get_current().getId()
-        if current_user_id != order_user_id:
-            # Restrict to allowed bookings
-            # Must be a vendor, wanting to check bookings belonging to him
-            allowed_vendor_areas = [
-                uuid.UUID(IUUID(it)) for it in get_allowed_vendors()
-            ]
-            query = query & Any('vendor_uid', allowed_vendor_areas)
+        if self.vendor_uid:
+            query = query & Eq('vendor_uid', self.vendor_uid)
         return soup.query(query)
-
-    @property
-    def vendor_bookings(self, user=None, user_id=None):
-        """XXX: take from above and improve.
-
-        # CASE CUSTOMER: can see all bookings
-        # CASE ADMIN: can see all bookings
-        # CASE VENDOR: can see only bookings belonging to vendor
-        # admin can be vendor can be customer
-        """
-        pass
 
     @property
     def net(self):
@@ -477,13 +448,13 @@ class BuyableData(object):
         """Return total count buyable item was ordered.
         """
         context = self.context
-        bookings_soup = get_soup('bda_plone_orders_bookings', context)
+        bookings_soup = get_bookings_soup(context)
         order_bookings = dict()
         for booking in bookings_soup.query(Eq('buyable_uid', context.UID())):
             bookings = order_bookings.setdefault(
                 booking.attrs['order_uid'], list())
             bookings.append(booking)
-        orders_soup = get_soup('bda_plone_orders_orders', context)
+        orders_soup = get_orders_soup(context)
         count = Decimal('0')
         for order_uid, bookings in order_bookings.items():
             order = [_ for _ in orders_soup.query(Eq('uid', order_uid))][0]
@@ -536,7 +507,7 @@ class PaymentData(object):
         return self.order_data.order.attrs['ordernumber']
 
     def uid_for(self, ordernumber):
-        soup = get_soup('bda_plone_orders_orders', self.context)
+        soup = get_orders_soup(self.context)
         for order in soup.query(Eq('ordernumber', ordernumber)):
             return str(order.attrs['uid'])
 
@@ -599,6 +570,9 @@ class OrderTransitions(object):
             del order.attrs['state']
             order.attrs['state'] = 'new'
             order_data.decrease_stock(order_data.bookings)
+        elif transition == 'process':
+            del order.attrs['state']
+            order.attrs['state'] = 'processing'
         elif transition == 'finish':
             del order.attrs['state']
             order.attrs['state'] = 'finished'
@@ -608,6 +582,6 @@ class OrderTransitions(object):
             order_data.increase_stock(order_data.bookings)
         else:
             raise ValueError(u"invalid transition: %s" % transition)
-        soup = get_soup('bda_plone_orders_orders', self.context)
+        soup = get_orders_soup(self.context)
         soup.reindex(records=[order])
         return order

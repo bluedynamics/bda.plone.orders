@@ -1,7 +1,7 @@
-from bda.plone.orders.common import get_nearest_vendor
+from bda.plone.orders.common import acquire_vendor_or_shop_root
+from bda.plone.orders.common import get_bookings_soup
 from plone.app.uuid.utils import uuidToObject
 from plone.uuid.interfaces import IUUID
-from souper.soup import get_soup
 from zope.component.hooks import getSite
 
 import logging
@@ -14,7 +14,7 @@ def fix_bookings_vendor_uid(ctx=None):
     """Add vendor_uid attribute to booking records.
     """
     portal = getSite()
-    soup = get_soup('bda_plone_orders_bookings', portal)
+    soup = get_bookings_soup(portal)
     data = soup.storage.data
     need_reindex = False
     for item in data.values():
@@ -22,7 +22,7 @@ def fix_bookings_vendor_uid(ctx=None):
                 or not isinstance(item.attrs['vendor_uid'], uuid.UUID):
             buyable_uid = item.attrs['buyable_uid']
             obj = uuidToObject(buyable_uid)
-            shop = get_nearest_vendor(obj)
+            shop = acquire_vendor_or_shop_root(obj)
             vendor_uid = uuid.UUID(IUUID(shop))
             item.attrs['vendor_uid'] = vendor_uid
             need_reindex = True

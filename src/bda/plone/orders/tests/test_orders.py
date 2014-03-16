@@ -1,5 +1,5 @@
 from bda.plone.orders.common import UUID_PLONE_ROOT
-from bda.plone.orders.common import get_nearest_vendor
+from bda.plone.orders.common import acquire_vendor_or_shop_root
 from bda.plone.orders.interfaces import IVendor
 from bda.plone.orders.tests import Orders_INTEGRATION_TESTING
 from bda.plone.orders.tests import set_browserlayer
@@ -43,10 +43,10 @@ class TestOrdersUnit(unittest.TestCase):
         alsoProvides(root['sub1'], IVendor)
         self.root = root
 
-    def test_get_nearest_vendor(self):
+    def test_acquire_vendor_or_shop_root(self):
         root = self.root
         self.assertEquals(
-            get_nearest_vendor(root['sub1']['subsub1']),
+            acquire_vendor_or_shop_root(root['sub1']['subsub1']),
             root['sub1']
         )
-        self.assertEquals(get_nearest_vendor(root['sub2']), root)
+        self.assertEquals(acquire_vendor_or_shop_root(root['sub2']), root)

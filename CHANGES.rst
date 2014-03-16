@@ -5,8 +5,11 @@ Changelog
 0.4dev
 ------
 
-- Add ``bda.plone.orders.permissions`` and call ``setFedaultRoles`` for
-  contained permissions
+- Order can have state ``processing``.
+  [rnix]
+
+- Add ``bda.plone.orders.permissions`` and call ``setDefaultRoles`` for
+  contained permissions.
   [rnix]
 
 - Introduce ``bda.plone.orders: Delegate Vendor Role`` permission, and
@@ -56,7 +59,7 @@ Changelog
   [fRiSi, rnix]
 
 - ``bda.plone.orders.common.OrderData`` now accepts either ``uid`` or ``order``
-  as keyword argument in ``__init__``.
+  as keyword argument, and optional ``vendor_uid`` in ``__init__``.
   [rnix]
 
 

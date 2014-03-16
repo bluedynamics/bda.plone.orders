@@ -1,3 +1,4 @@
+from .common import get_bookings_soup
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
 from bda.plone.cart import get_catalog_brain
@@ -13,7 +14,6 @@ from email.Header import Header
 from email.MIMEText import MIMEText
 from email.Utils import formatdate
 from repoze.catalog.query import Any
-from souper.soup import get_soup
 from zope.i18n import translate
 import textwrap
 
@@ -34,7 +34,7 @@ def _indent(text, ind=5, width=80):
 def create_mail_listing(context, attrs):
     """Create item listing for notification mail.
     """
-    soup = get_soup('bda_plone_orders_bookings', context)
+    soup = get_bookings_soup(context)
     bookings = soup.query((Any('uid', attrs['booking_uids'])))
     lines = []
     for booking in bookings:
@@ -74,7 +74,7 @@ def create_order_total(context, attrs):
     XXX: use CartItemCalculator? Problem - lives in bda.plone.shop
     XXX: also consider discount here once implemented
     """
-    soup = get_soup('bda_plone_orders_bookings', context)
+    soup = get_bookings_soup(context)
     bookings = soup.query((Any('uid', attrs['booking_uids'])))
     ret = 0.0
     for booking in bookings:
