@@ -12,27 +12,22 @@ Changelog
   contained permissions.
   [rnix]
 
-- Introduce ``bda.plone.orders: Delegate Vendor Role`` permission, and
-  implement ``Vendor`` role as named utility instead of Generic Setup.
-  Thus the visibility of vendor role in sharing view can be controlled
-  explicitly.
-  [rnix]
-
 - Also register ``bda.plone.orders.common.OrderCheckoutAdapter`` for
   ``Products.CMFPlone.interfaces.IPloneSiteRoot``.
   [rnix]
 
-- Restrict orders and bookings in @@exportorders to what the user is allowed to
-  see.
+- Restrict orders and bookings in ``@@exportorders`` to what the user is
+  allowed to see.
   [thet]
 
-- Include Booking URL in @@exportorders. Titles can easily be ambiguous.
+- Include Booking URL in ``@@exportorders``. Titles can easily be ambiguous.
   [thet]
 
-- Introduce ``bda.plone.orders.interfaces.IItemNotificationText`` and
+- Introduce ``bda.plone.orders.interfaces.IItemNotificationText``,
+  ``bda.plone.orders.interfaces.IGlobalNotificationText`` and
   ``bda.plone.orders.interfaces.IPaymentText`` used for mail notification
   after checkout.
-  [rnix]
+  [rnix, jensens]
 
 - ``OrderCheckoutAdapter`` no longer fails if uid in cart cookie which item
   not exists any longer.
@@ -42,11 +37,13 @@ Changelog
   for better customization purposes.
   [rnix]
 
-- Implement multi client functionality with Vendor and Customer roles and
-  appropriate permissions. Restrict views and results to introduced
+- Implement multi client functionality with ``Vendor`` role and appropriate
   permissions. Assign bookings to vendors. Allow definitions of vendor areas
   via the ``IVendor`` interface.
-  [thet]
+  [thet, rnix]
+
+- Introduce ``Customer`` Role.
+  [thet, rnix]
 
 - Render a link to the booked item in ``@@order`` view.
   [thet]
