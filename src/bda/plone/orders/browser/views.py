@@ -3,6 +3,7 @@ from Products.Five import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from StringIO import StringIO
 from bda.plone.cart import ascur
+from bda.plone.cart import get_object_by_uid
 from bda.plone.checkout import message_factory as _co
 from bda.plone.orders import message_factory as _
 from bda.plone.orders import permissions
@@ -57,7 +58,7 @@ class Translate(object):
         return translate(msg, context=self.request)
 
 
-class Dropdown(object):
+class OrderDropdown(object):
     render = ViewPageTemplateFile('dropdown.pt')
     name = ''
     css = 'dropdown'
@@ -72,9 +73,22 @@ class Dropdown(object):
         self.record = record
 
     def create_items(self, transitions):
-        uid = str(self.record.attrs['uid'])
-        url = self.context.absolute_url()
         ret = list()
+        # lookup vendor of order, used to perform transitions
+        vendor = get_object_by_uid(self.record.attrs['vendor_uid'])
+        if vendor:
+            url = vendor.absolute_url()
+        # defined vendor not exists any longer
+        else:
+            # get site and check if user can modify orders globally
+            site = plone.api.portal.get()
+            user = plone.api.user.get_current()
+            if not user.checkPermission(permissions.ModifyOrders, site):
+                # not permitted, return empty transitions
+                return ret
+            url = site.absolute_url()
+        # create and return available transitions for order
+        uid = str(self.record.attrs['uid'])
         for transition in transitions:
             ret.append({
                 'title': self.transitions[transition],
@@ -107,7 +121,7 @@ state_vocab = {
 }
 
 
-class StateDropdown(Dropdown):
+class StateDropdown(OrderDropdown):
     name = 'state'
     css = 'dropdown change_order_state_dropdown'
     action = 'statetransition'
@@ -141,7 +155,7 @@ salaried_vocab = {
 }
 
 
-class SalariedDropdown(Dropdown):
+class SalariedDropdown(OrderDropdown):
     name = 'salaried'
     css = 'dropdown change_order_salaried_dropdown'
     action = 'salariedtransition'
@@ -170,9 +184,13 @@ class Transition(BrowserView):
     dropdown = None
 
     def __call__(self):
-        # XXX: security check
         transition = self.request['transition']
         uid = self.request['uid']
+        order = get_order(self.context, uid)
+        vendor = get_object_by_uid(order.attrs['vendor_uid'])
+        user = plone.api.user.get_current()
+        if not user.checkPermission(permissions.ModifyOrders, vendor):
+            raise Unauthorized
         record = OrderTransitions(self.context).do_transition(uid, transition)
         return self.dropdown(self.context, self.request, record).render()
 
@@ -373,9 +391,10 @@ class OrdersTable(OrdersTableBase):
                     'label': 'Filter for vendors'
                 }
             )
-        # customers selection, include if more than one customer
-        customers = customers_vocab_for() # customers of current user
+        # customers of current user
+        customers = customers_vocab_for()
         customer_selector = None
+        # customers selection, include if more than one customer
         if len(customers) > 2:
             customer_selector = factory(
                 'label:select',
@@ -407,11 +426,6 @@ class OrdersTable(OrdersTableBase):
         return form(request=self.request)
 
     def render_order_actions_head(self):
-        #user = plone.api.user.get_current()
-        #if not bool(user.checkPermission(permissions.VendorOrders, obj))
-
-        # XXX: permission check
-        # if not notification_permitted:
         tag = Tag(Translate(self.request))
         select_all_orders_attrs = {
             'name': 'select_all_orders',
@@ -445,9 +459,6 @@ class OrdersTable(OrdersTableBase):
             'title': _('view_order', default=u'View Order'),
         }
         view_order = tag('a', '&nbsp', **view_order_attrs)
-        # XXX: permission check
-        # if not notification_permitted:
-        #     return view_order
         select_order_attrs = {
             'name': 'select_order',
             'type': 'checkbox',
@@ -457,16 +468,20 @@ class OrdersTable(OrdersTableBase):
         select_order = tag('input', **select_order_attrs)
         return select_order + view_order
 
+    def check_modify_order(self, order):
+        vendor = get_object_by_uid(order.attrs['vendor_uid'])
+        user = plone.api.user.get_current()
+        if user.checkPermission(permissions.ModifyOrders, vendor):
+            return True
+
     def render_salaried(self, colname, record):
-        # XXX: permission check
-        # if not permitted:
-        #     return record.attrs.get('salaried', 'no')
+        if not self.check_modify_order(record):
+            return record.attrs['salaried']
         return SalariedDropdown(self.context, self.request, record).render()
 
     def render_state(self, colname, record):
-        # XXX: permission check
-        # if not permitted:
-        #     return record.attrs['state']
+        if not self.check_modify_order(record):
+            return record.attrs['state']
         return StateDropdown(self.context, self.request, record).render()
 
     @property
@@ -496,42 +511,34 @@ class OrdersData(OrdersTable, TableData):
     search_text_index = 'text'
 
     def query(self, soup):
-        # orders related to current user
-        order_uids = get_vendor_order_uids_for(self.context)
-        query = None
-        if not order_uids:
-            # user
-            customer = plone.api.user.get_current().getId()
+        # fetch user vendor uids
+        vendor_uids = [uuid.UUID(IUUID(obj)) for obj in get_vendors_for()]
+        # filter by given vendor uid or user vendor uids
+        vendor = self.request.form.get('vendor')
+        if vendor:
+            vendor_uid = uuid.UUID(vendor_uid)
+            # raise if given vendor uid not in user vendor uids
+            if not vendor_uid in vendor_uids:
+                raise Unauthorized
+            query = Eq('vendor_uid', vendor_uid)
         else:
-            # vendor or admin
-            vendor = self.request.form.get('vendor')
-            customer = self.request.form.get('customer')
-            if vendor:
-                vendor_orders = get_vendor_order_uids(self.context, vendor)
-                _query = Any('uid', vendor_orders)
-                query = query and query & _query or _query
-
-            else:
-                # no need to check permissions for shopadmins
-                _query = Any('uid', order_uids)
-                query = query and query & _query or _query
+            query = Any('vendor_uid', vendor_uids)
+        # filter by customer if given
+        customer = self.request.form.get('customer')
         if customer:
-            _query = Eq('creator', customer)
-            query = query and query & _query or _query
-        sort = self.sort()
+            query = query & Eq('creator', customer)
+        # filter by search term if given
         term = self.request.form['sSearch'].decode('utf-8')
         if term:
-            _query = Contains(self.search_text_index, term)
-            query = query and query & _query or _query
-        if query:
-            res = soup.lazy(query,
-                            sort_index=sort['index'],
-                            reverse=sort['reverse'],
-                            with_size=True)
-            length = res.next()
-            return length, res
-        else:
-            return self.all(soup)
+            query = query & Contains(self.search_text_index, term)
+        # query orders and return result
+        sort = self.sort()
+        res = soup.lazy(query,
+                        sort_index=sort['index'],
+                        reverse=sort['reverse'],
+                        with_size=True)
+        length = res.next()
+        return length, res
 
 
 class MyOrdersData(OrdersTable, TableData):
@@ -539,7 +546,19 @@ class MyOrdersData(OrdersTable, TableData):
     search_text_index = 'text'
 
     def query(self, soup):
-        return []
+        query = Eq('creator', plone.api.user.get_current().getId())
+        # filter by search term if given
+        term = self.request.form['sSearch'].decode('utf-8')
+        if term:
+            query = query & Contains(self.search_text_index, term)
+        # query orders and return result
+        sort = self.sort()
+        res = soup.lazy(query,
+                        sort_index=sort['index'],
+                        reverse=sort['reverse'],
+                        with_size=True)
+        length = res.next()
+        return length, res
 
 
 class OrderView(BrowserView):

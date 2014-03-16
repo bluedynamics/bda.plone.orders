@@ -1,5 +1,3 @@
-from . import permissions
-from .interfaces import IVendor
 from Acquisition import aq_parent
 from Acquisition import aq_inner
 from Products.CMFPlone.interfaces import IPloneSiteRoot
@@ -13,6 +11,8 @@ from bda.plone.cart import get_object_by_uid
 from bda.plone.cart import readcookie
 from bda.plone.checkout import CheckoutAdapter
 from bda.plone.checkout import CheckoutError
+from bda.plone.orders import permissions
+from bda.plone.orders.interfaces import IVendor
 from bda.plone.payment.interfaces import IPaymentData
 from bda.plone.shipping import Shippings
 from bda.plone.shop.interfaces import IBuyable
@@ -116,7 +116,7 @@ def get_vendors_for(user=None):
     if user is None:
         user = plone.api.user.get_current()
     def permitted(obj):
-        return bool(user.checkPermission(permissions.ModifyOrders, obj))
+        return user.checkPermission(permissions.ModifyOrders, obj)
     return [vendor for vendor in get_all_vendors() if permitted(vendor)]
 
 
