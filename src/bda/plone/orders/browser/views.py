@@ -362,11 +362,21 @@ class OrdersTableBase(BrowserView):
         }]
 
 
+def vendors_form_vocab():
+    vendors = vendors_vocab_for()
+    return [('', _('all', default='All'))] + vendors
+
+
+def customers_form_vocab():
+    customers = customers_vocab_for()
+    return [('', _('all', default='All'))] + customers
+
+
 class OrdersTable(OrdersTableBase):
 
     def render_filter(self):
         # vendor areas of current user
-        vendors = vendors_vocab_for()
+        vendors = vendors_form_vocab()
         vendor_selector = None
         # vendor selection, include if more than one vendor
         if len(vendors) > 2:
@@ -380,7 +390,7 @@ class OrdersTable(OrdersTableBase):
                 }
             )
         # customers of current user
-        customers = customers_vocab_for()
+        customers = customers_form_vocab()
         customer_selector = None
         # customers selection, include if more than one customer
         if len(customers) > 2:
@@ -708,6 +718,18 @@ class ExportOrdersForm(YAMLForm):
             return self.browser_template(self)
         return controller.next
 
+    def vendor_vocabulary(self):
+        return vendors_form_vocab()
+
+    def vendor_mode(self):
+        return len(vendors_form_vocab()) > 2 and 'edit' or 'skip'
+
+    def customer_vocabulary(self):
+        return customers_form_vocab()
+
+    def customer_mode(self):
+        return len(customers_form_vocab()) > 2 and 'edit' or 'skip'
+
     def from_before_to(self, widget, data):
         from_date = data.fetch('exportorders.from').extracted
         to_date = data.fetch('exportorders.to').extracted
@@ -717,14 +739,12 @@ class ExportOrdersForm(YAMLForm):
         return data.extracted
 
     def export(self, widget, data):
+        self.vendor = data.fetch('exportorders.vendor').extracted
+        self.customer = data.fetch('exportorders.customer').extracted
         self.from_date = data.fetch('exportorders.from').extracted
         self.to_date = data.fetch('exportorders.to').extracted
 
     def export_val(self, record, attr_name):
-        if attr_name == 'url':
-            # BOOKING URL. not ORDERs
-            # TODO: if orders_soup provides an URL, this can break!
-            return uuidToURL(record.attrs.get('buyable_uid'))
         val = record.attrs.get(attr_name)
         if isinstance(val, datetime.datetime):
             val = val.strftime(DT_FORMAT)
@@ -758,7 +778,12 @@ class ExportOrdersForm(YAMLForm):
             for booking in bookings_soup.query(b_query):
                 booking_attrs = list()
                 for attr_name in BOOKING_EXPORT_ATTRS:
-                    val = self.export_val(booking, attr_name)
+                    # special case URL
+                    # XXX: still looks odd
+                    if attr_name == 'url':
+                        val = uuidToURL(booking.attrs['buyable_uid'])
+                    else:
+                        val = self.export_val(booking, attr_name)
                     booking_attrs.append(val)
                 ex.writerow(order_attrs + booking_attrs)
                 booking.attrs['exported'] = True

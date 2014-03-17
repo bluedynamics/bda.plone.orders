@@ -13,6 +13,23 @@ widgets:
         props:
             structural: True
         widgets:
+        - vendor:
+            factory: "td:#field:select"
+            props:
+                label: i18n:vendor_filter
+                vocabulary: expr:context.vendor_vocabulary
+            mode: expr:context.vendor_mode
+        - customer:
+            factory: "td:#field:select"
+            props:
+                label: i18n:customer_filter
+                vocabulary: expr:context.customer_vocabulary
+            mode: expr:context.customer_mode
+    - tr:
+        factory: tr
+        props:
+            structural: True
+        widgets:
         - from:
             factory: "td:#field:datetime"
             props:

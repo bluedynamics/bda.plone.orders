@@ -8,9 +8,6 @@ from zope.component.hooks import getSite
 import plone.api
 
 
-NULL_SELECTION = [('', '-')]
-
-
 def all_vendors_vocab():
     """Vocabulary for all vendor areas by uuid.
     """
@@ -18,7 +15,7 @@ def all_vendors_vocab():
     vocab = [(IUUID(vendor),
              '{0} ({1})'.format(vendor.Title(), vendor.absolute_url_path()))
              for vendor in vendors]
-    return NULL_SELECTION + vocab
+    return vocab
 
 
 def vendors_vocab_for(user=None):
@@ -28,7 +25,7 @@ def vendors_vocab_for(user=None):
     vocab = [(IUUID(vendor),
              '{0} ({1})'.format(vendor.Title(), vendor.absolute_url_path()))
              for vendor in vendors]
-    return NULL_SELECTION + vocab
+    return vocab
 
 
 def customers_vocab_for(user=None):
@@ -52,4 +49,4 @@ def customers_vocab_for(user=None):
             name = creator
         title = name and '{0} ({1})'.format(creator, name) or creator
         vocab.append((creator, title))
-    return NULL_SELECTION + vocab
+    return vocab
