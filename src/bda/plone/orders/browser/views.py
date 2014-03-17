@@ -12,6 +12,7 @@ from bda.plone.orders.common import OrderTransitions
 from bda.plone.orders.common import get_orders_soup
 from bda.plone.orders.common import get_order
 from bda.plone.orders.common import get_vendors_for
+from bda.plone.orders.common import get_vendor_uids_for
 from bda.plone.orders.common import get_vendor_by_uid
 from bda.plone.orders.vocabularies import customers_vocab_for
 from bda.plone.orders.vocabularies import vendors_vocab_for
@@ -504,6 +505,21 @@ class OrdersTable(OrdersTableBase):
 class MyOrdersTable(OrdersTableBase):
     data_view_name = '@@myordersdata'
 
+    def render_order_actions(self, colname, record):
+        tag = Tag(Translate(self.request))
+        view_order_target = '%s?uid=%s' % (
+            self.context.absolute_url(), str(record.attrs['uid']))
+        view_order_attrs = {
+            'ajax:bind': 'click',
+            'ajax:target': view_order_target,
+            'ajax:overlay': 'myorder',
+            'class_': 'contenttype-document',
+            'href': '',
+            'title': _('view_order', default=u'View Order'),
+        }
+        view_order = tag('a', '&nbsp', **view_order_attrs)
+        return view_order
+
 
 class OrdersData(OrdersTable, TableData):
     soup_name = 'bda_plone_orders_orders'
@@ -511,7 +527,7 @@ class OrdersData(OrdersTable, TableData):
 
     def query(self, soup):
         # fetch user vendor uids
-        vendor_uids = [uuid.UUID(IUUID(obj)) for obj in get_vendors_for()]
+        vendor_uids = get_vendor_uids_for()
         # filter by given vendor uid or user vendor uids
         vendor_uid = self.request.form.get('vendor')
         if vendor_uid:
@@ -562,7 +578,7 @@ class MyOrdersData(MyOrdersTable, TableData):
         return length, res
 
 
-class OrderView(BrowserView):
+class OrderViewBase(BrowserView):
 
     @property
     def uid(self):
@@ -605,7 +621,6 @@ class OrderView(BrowserView):
     @property
     def listing(self):
         ret = list()
-        # XXX: reduce bookings for authenticated members vendor area bookings
         for booking in self.order_data.bookings:
             ret.append({
                 'title': booking.attrs['title'],
@@ -657,6 +672,32 @@ class OrderView(BrowserView):
     def exported(self, item):
         return item['exported'] \
             and _('yes', default=u'Yes') or _('no', default=u'No')
+
+
+class OrderView(OrderViewBase):
+
+    def __call__(self):
+        # check if authenticated user is vendor
+        self.vendor_uids = get_vendor_uids_for()
+        if not self.vendor_uids:
+            raise Unauthorized
+        return super(OrderView, self).__call__()
+
+    @property
+    def order_data(self):
+        return OrderData(self.context,
+                         uid=self.uid,
+                         vendor_uids=self.vendor_uids)
+
+
+class MyOrderView(OrderViewBase):
+
+    def __call__(self):
+        # check if order was created by authenticated user
+        user = plone.api.user.get_current()
+        if user.getId() != self.order.attrs['creator']:
+            raise Unauthorized
+        return super(MyOrderView, self).__call__()
 
 
 class DialectExcelWithColons(csv.excel):
@@ -773,7 +814,7 @@ class ExportOrdersForm(YAMLForm):
         # get bookings soup
         bookings_soup = get_bookings_soup(self.context)
         # fetch user vendor uids
-        vendor_uids = [uuid.UUID(IUUID(obj)) for obj in get_vendors_for()]
+        vendor_uids = get_vendor_uids_for()
         # base query for time range
         query = Ge('created', self.from_date) & Le('created', self.to_date)
         # filter by given vendor uid or user vendor uids

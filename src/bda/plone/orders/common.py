@@ -137,6 +137,19 @@ def get_vendors_for(user=None):
     return [vendor for vendor in get_all_vendors() if permitted(vendor)]
 
 
+def get_vendor_uids_for(user=None):
+    """Gel all vendor container uids a given or authenticated user has vendor
+    permissions for.
+
+    :param user: Optional user object to check permissions on vendor areas. If
+                 no user object is give, the current user is used.
+    :type user: MemberData object
+    :returns: Allowed vendor area uids for given or authenticated member.
+    :rtype: List of uuid.UUID objects.
+    """
+    return [uuid.UUID(IUUID(vendor)) for vendor in get_vendors_for(user=user)]
+
+
 # TODO: no longer used right now
 def get_vendor_order_uids(context, vendor_uid):
     """Get all order uids for a given vendor uid.
@@ -165,7 +178,7 @@ def get_vendor_order_uids_for(context, user=None):
     :returns: List of order UUID objects.
     :rtype: List of uuid.UUID
     """
-    vendors = [uuid.UUID(IUUID(vendor)) for vendor in get_vendors_for(user)]
+    vendors = get_vendor_uids_for(user=user)
     soup = get_bookings_soup(context)
     res = soup.query(Any('vendor_uid', vendors))
     order_uids = set(booking.attrs['order_uid'] for booking in res)

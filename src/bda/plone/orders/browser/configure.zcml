@@ -90,6 +90,14 @@
     permission="bda.plone.orders.ViewOrders"
     layer="..interfaces.IOrdersExtensionLayer"/>
 
+  <browser:page
+    for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+    name="myorder"
+    template="order.pt"
+    class=".views.MyOrderView"
+    permission="bda.plone.orders.ViewOrders"
+    layer="..interfaces.IOrdersExtensionLayer"/>
+
   <!-- order transitions for plone root -->
   <browser:page
     for="Products.CMFPlone.interfaces.IPloneSiteRoot"
