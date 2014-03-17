@@ -103,6 +103,23 @@ def get_all_vendors():
     return vendors + [plone.api.portal.get()]
 
 
+def get_vendor_by_uid(context, vendor_uid):
+    """Return vendor object by uid or site root as fallback if requested vendor
+    not exists.
+
+    :param vendor_uid: Vendor uid.
+    :type vendor_uid: string or uuid.UUID object
+    :returns: Vendor Object
+    :rtype: IVendor implementing content Object
+    """
+    if not isinstance(vendor_uid, uuid.UUID):
+        vendor_uid = uuid.UUID(vendor_uid)
+    vendor = get_object_by_uid(vendor_uid)
+    if vendor is None:
+        vendor = plone.api.portal.get()
+    return vendor
+
+
 def get_vendors_for(user=None):
     """Gel all vendor containers a given or authenticated user has vendor
     permissions for.
@@ -120,6 +137,7 @@ def get_vendors_for(user=None):
     return [vendor for vendor in get_all_vendors() if permitted(vendor)]
 
 
+# no longer used right now
 def get_vendor_order_uids(context, vendor_uid):
     """Get all order uids for a given vendor uid.
 
@@ -136,6 +154,7 @@ def get_vendor_order_uids(context, vendor_uid):
     return order_uids
 
 
+# used in vocabularies, remove if possible
 def get_vendor_order_uids_for(context, user=None):
     """Get order uids all orders a given or current user has vendor
     permissions for.
@@ -153,6 +172,7 @@ def get_vendor_order_uids_for(context, user=None):
     return order_uids
 
 
+# no longer used right now
 def get_customer_order_uids(context, customer):
     """Get all order uids for a given customer.
 
@@ -167,6 +187,7 @@ def get_customer_order_uids(context, customer):
     return order_uids
 
 
+# no longer used right now
 def get_customer_order_uids_for(context, user=None):
     """Get order uids of all orders a given or current user has made.
 

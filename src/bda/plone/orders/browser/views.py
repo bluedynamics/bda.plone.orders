@@ -3,7 +3,6 @@ from Products.Five import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from StringIO import StringIO
 from bda.plone.cart import ascur
-from bda.plone.cart import get_object_by_uid
 from bda.plone.checkout import message_factory as _co
 from bda.plone.orders import message_factory as _
 from bda.plone.orders import permissions
@@ -11,10 +10,9 @@ from bda.plone.orders.common import DT_FORMAT
 from bda.plone.orders.common import OrderData
 from bda.plone.orders.common import OrderTransitions
 from bda.plone.orders.common import get_orders_soup
-from bda.plone.orders.common import get_vendor_order_uids_for
-from bda.plone.orders.common import get_vendors_for
 from bda.plone.orders.common import get_order
-from bda.plone.orders.common import get_vendor_order_uids
+from bda.plone.orders.common import get_vendors_for
+from bda.plone.orders.common import get_vendor_by_uid
 from bda.plone.orders.vocabularies import customers_vocab_for
 from bda.plone.orders.vocabularies import vendors_vocab_for
 from bda.plone.payment import Payments
@@ -75,18 +73,8 @@ class OrderDropdown(object):
     def create_items(self, transitions):
         ret = list()
         # lookup vendor of order, used to perform transitions
-        vendor = get_object_by_uid(self.record.attrs['vendor_uid'])
-        if vendor:
-            url = vendor.absolute_url()
-        # defined vendor not exists any longer
-        else:
-            # get site and check if user can modify orders globally
-            site = plone.api.portal.get()
-            user = plone.api.user.get_current()
-            if not user.checkPermission(permissions.ModifyOrders, site):
-                # not permitted, return empty transitions
-                return ret
-            url = site.absolute_url()
+        vendor = get_vendor_by_uid(self.record.attrs['vendor_uid'])
+        url = vendor.absolute_url()
         # create and return available transitions for order
         uid = str(self.record.attrs['uid'])
         for transition in transitions:
@@ -187,7 +175,7 @@ class Transition(BrowserView):
         transition = self.request['transition']
         uid = self.request['uid']
         order = get_order(self.context, uid)
-        vendor = get_object_by_uid(order.attrs['vendor_uid'])
+        vendor = get_vendor_by_uid(order.attrs['vendor_uid'])
         user = plone.api.user.get_current()
         if not user.checkPermission(permissions.ModifyOrders, vendor):
             raise Unauthorized
@@ -469,7 +457,7 @@ class OrdersTable(OrdersTableBase):
         return select_order + view_order
 
     def check_modify_order(self, order):
-        vendor = get_object_by_uid(order.attrs['vendor_uid'])
+        vendor = get_vendor_by_uid(order.attrs['vendor_uid'])
         user = plone.api.user.get_current()
         if user.checkPermission(permissions.ModifyOrders, vendor):
             return True
@@ -752,14 +740,7 @@ class ExportOrdersForm(YAMLForm):
         bookings_soup = get_bookings_soup(self.context)
 
         o_query = Ge('created', self.from_date) & Le('created', self.to_date)
-        # Restrict to allowed orders
-        #order_uids = get_vendor_order_uids_for(self.context)
-        #o_query = o_query & Any('uid', order_uids)
-
-        #allowed_vendor_areas = [
-        #    uuid.UUID(IUUID(it)) for it in get_vendors_for()
-        #]
-        #b_query_base = Any('vendor_uid', allowed_vendor_areas)
+        # XXX: extend query to restrict export orders to vendor
 
         sio = StringIO()
         ex = csv.writer(sio, dialect='excel-colon')
