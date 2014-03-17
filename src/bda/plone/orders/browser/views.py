@@ -17,6 +17,7 @@ from bda.plone.orders.vocabularies import customers_vocab_for
 from bda.plone.orders.vocabularies import vendors_vocab_for
 from bda.plone.payment import Payments
 from decimal import Decimal
+from odict import odict
 from plone.app.uuid.utils import uuidToURL
 from plone.uuid.interfaces import IUUID
 from repoze.catalog.query import Any
@@ -518,9 +519,11 @@ class OrdersData(OrdersTable, TableData):
             # raise if given vendor uid not in user vendor uids
             if not vendor_uid in vendor_uids:
                 raise Unauthorized
-            query = Eq('vendor_uid', vendor_uid)
+            query = Contains('vendor_uids', vendor_uid)
         else:
-            query = Any('vendor_uid', vendor_uids)
+            # XXX: maybe we need to iterate vendor uids here and work with
+            #      logical OR on separate uids
+            query = Contains('vendor_uids', vendor_uids)
         # filter by customer if given
         customer = self.request.form.get('customer')
         if customer:
@@ -690,9 +693,9 @@ ORDER_EXPORT_ATTRS = [
     'order_comment.comment',
     'payment_selection.payment',
 ]
+COMPUTER_ORDER_EXPORT_ATTRS = odict()
 BOOKING_EXPORT_ATTRS = [
     'title',
-    'url',
     'buyable_comment',
     'buyable_count',
     'quantity_unit',
@@ -701,6 +704,13 @@ BOOKING_EXPORT_ATTRS = [
     'currency',
     'exported',
 ]
+COMPUTER_BOOKING_EXPORT_ATTRS = odict()
+
+
+def resolve_buyable_url(context, booking):
+    return uuidToURL(booking.attrs['buyable_uid'])
+
+COMPUTER_BOOKING_EXPORT_ATTRS['url'] = resolve_buyable_url
 
 
 class ExportOrdersForm(YAMLForm):
@@ -710,7 +720,9 @@ class ExportOrdersForm(YAMLForm):
     action_resource = 'exportorders'
 
     def __call__(self):
-        # XXX: security check -> current user has valid vandor area?
+        # check if authenticated user is vendor
+        if not get_vendors_for():
+            raise Unauthorized
         self.prepare()
         controller = Controller(self.form, self.request)
         if not controller.next:
@@ -759,36 +771,63 @@ class ExportOrdersForm(YAMLForm):
         orders_soup = get_orders_soup(self.context)
         bookings_soup = get_bookings_soup(self.context)
 
+        """
+        # fetch user vendor uids
+        vendor_uids = [uuid.UUID(IUUID(obj)) for obj in get_vendors_for()]
+        # filter by given vendor uid or user vendor uids
+        vendor_uid = self.request.form.get('vendor')
+        if vendor_uid:
+            vendor_uid = uuid.UUID(vendor_uid)
+            # raise if given vendor uid not in user vendor uids
+            if not vendor_uid in vendor_uids:
+                raise Unauthorized
+            query = Eq('vendor_uid', vendor_uid)
+        else:
+            query = Any('vendor_uid', vendor_uids)
+        # filter by customer if given
+        customer = self.request.form.get('customer')
+        if customer:
+            query = query & Eq('creator', customer)
+        """
+
         o_query = Ge('created', self.from_date) & Le('created', self.to_date)
         # XXX: extend query to restrict export orders to vendor
 
         sio = StringIO()
         ex = csv.writer(sio, dialect='excel-colon')
-        ex.writerow(ORDER_EXPORT_ATTRS + BOOKING_EXPORT_ATTRS)
+        ex.writerow(ORDER_EXPORT_ATTRS +
+                    COMPUTER_ORDER_EXPORT_ATTRS.keys() +
+                    BOOKING_EXPORT_ATTRS +
+                    COMPUTER_BOOKING_EXPORT_ATTRS.keys())
 
         for order in orders_soup.query(o_query):
-
             order_attrs = list()
+            # order export attrs
             for attr_name in ORDER_EXPORT_ATTRS:
                 val = self.export_val(order, attr_name)
                 order_attrs.append(val)
-
-            #b_query = b_query_base & Eq('order_uid', order.attrs['uid'])
-            b_query = Eq('order_uid', order.attrs['uid'])
-            for booking in bookings_soup.query(b_query):
+            # computed order export attrs
+            for attr_name in COMPUTER_ORDER_EXPORT_ATTRS:
+                cb = COMPUTER_ORDER_EXPORT_ATTRS[attr_name]
+                val = cb(self.context, order)
+                order_attrs.append(val)
+            # only order bookings for current vendor_uids
+            order_data = OrderData(order=order, vendor_uids=vendor_uids)
+            for booking in order_data.bookings:
                 booking_attrs = list()
+                # booking export attrs
                 for attr_name in BOOKING_EXPORT_ATTRS:
-                    # special case URL
-                    # XXX: still looks odd
-                    if attr_name == 'url':
-                        val = uuidToURL(booking.attrs['buyable_uid'])
-                    else:
-                        val = self.export_val(booking, attr_name)
+                    val = self.export_val(booking, attr_name)
+                    booking_attrs.append(val)
+                # computed booking export attrs
+                for attr_name in COMPUTER_BOOKING_EXPORT_ATTRS:
+                    cb = COMPUTER_ORDER_EXPORT_ATTRS[attr_name]
+                    val = cb(self.context, booking)
                     booking_attrs.append(val)
                 ex.writerow(order_attrs + booking_attrs)
                 booking.attrs['exported'] = True
                 bookings_soup.reindex(booking)
-
+        # create and return response
         s_start = self.from_date.strftime('%G-%m-%d_%H-%M-%S')
         s_end = self.to_date.strftime('%G-%m-%d_%H-%M-%S')
         filename = 'orders-export-%s-%s.csv' % (s_start, s_end)

@@ -237,6 +237,8 @@ class OrdersCatalogFactory(object):
         catalog[u'ordernumber'] = CatalogFieldIndex(ordernumber_indexer)
         booking_uids_indexer = NodeAttributeIndexer('booking_uids')
         catalog[u'booking_uids'] = CatalogKeywordIndex(booking_uids_indexer)
+        vendor_uids_indexer = NodeAttributeIndexer('vendor_uids')
+        catalog[u'vendor_uids'] = CatalogKeywordIndex(vendor_uids_indexer)
         creator_indexer = NodeAttributeIndexer('creator')
         catalog[u'creator'] = CatalogFieldIndex(creator_indexer)
         created_indexer = NodeAttributeIndexer('created')
@@ -324,13 +326,16 @@ class OrderCheckoutAdapter(CheckoutAdapter):
         order.attrs['salaried'] = 'no'
         bookings = self.create_bookings(order)
         booking_uids = list()
+        vendor_uids = set()
         all_available = True
         for booking in bookings:
             booking_uids.append(booking.attrs['uid'])
+            vendor_uids.add(booking.attrs['vendor_uid'])
             if booking.attrs['remaining_stock_available'] is not None\
                     and booking.attrs['remaining_stock_available'] < 0:
                 all_available = False
         order.attrs['booking_uids'] = booking_uids
+        order.attrs['vendor_uids'] = list(vendor_uids)
         order.attrs['state'] = all_available and 'new' or 'reserved'
         orders_soup = get_orders_soup(self.context)
         ordernumber = create_ordernumber()
