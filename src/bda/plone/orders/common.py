@@ -98,7 +98,7 @@ def get_all_vendors():
     :rtype: List of content objects.
     """
     cat = plone.api.portal.get_tool('portal_catalog')
-    query = { 'object_provides': IVendor.__identifier__ }
+    query = {'object_provides': IVendor.__identifier__}
     vendors = [brain.getObject() for brain in cat(**query)]
     return vendors + [plone.api.portal.get()]
 
@@ -137,7 +137,7 @@ def get_vendors_for(user=None):
     return [vendor for vendor in get_all_vendors() if permitted(vendor)]
 
 
-# no longer used right now
+# TODO: no longer used right now
 def get_vendor_order_uids(context, vendor_uid):
     """Get all order uids for a given vendor uid.
 
@@ -154,7 +154,7 @@ def get_vendor_order_uids(context, vendor_uid):
     return order_uids
 
 
-# used in vocabularies, remove if possible
+# TODO: used in vocabularies, remove if possible
 def get_vendor_order_uids_for(context, user=None):
     """Get order uids all orders a given or current user has vendor
     permissions for.
@@ -172,7 +172,7 @@ def get_vendor_order_uids_for(context, user=None):
     return order_uids
 
 
-# no longer used right now
+# TODO: no longer used right now
 def get_customer_order_uids(context, customer):
     """Get all order uids for a given customer.
 
@@ -187,7 +187,7 @@ def get_customer_order_uids(context, customer):
     return order_uids
 
 
-# no longer used right now
+# TODO: no longer used right now
 def get_customer_order_uids_for(context, user=None):
     """Get order uids of all orders a given or current user has made.
 

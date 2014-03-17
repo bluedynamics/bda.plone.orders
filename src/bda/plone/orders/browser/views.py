@@ -329,7 +329,7 @@ class OrdersTableBase(BrowserView):
     @property
     def ajaxurl(self):
         site = plone.api.portal.get()
-        return '%s/%s%s' % (site.absolute_url(), self.data_view_name)
+        return '%s/%s' % (site.absolute_url(), self.data_view_name)
 
     @property
     def columns(self):
@@ -502,8 +502,8 @@ class OrdersData(OrdersTable, TableData):
         # fetch user vendor uids
         vendor_uids = [uuid.UUID(IUUID(obj)) for obj in get_vendors_for()]
         # filter by given vendor uid or user vendor uids
-        vendor = self.request.form.get('vendor')
-        if vendor:
+        vendor_uid = self.request.form.get('vendor')
+        if vendor_uid:
             vendor_uid = uuid.UUID(vendor_uid)
             # raise if given vendor uid not in user vendor uids
             if not vendor_uid in vendor_uids:
@@ -529,7 +529,7 @@ class OrdersData(OrdersTable, TableData):
         return length, res
 
 
-class MyOrdersData(OrdersTable, TableData):
+class MyOrdersData(MyOrdersTable, TableData):
     soup_name = 'bda_plone_orders_orders'
     search_text_index = 'text'
 
