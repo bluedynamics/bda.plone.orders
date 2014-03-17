@@ -35,6 +35,29 @@ Create translations
     $ ./i18n.sh
 
 
+TODO
+----
+
+- Store order state on each booking to make it possible each vendor can handle
+  state of bookings in order belonging to him
+
+- Adopt order transitions affecting only bookings belonging to vendor
+  triggering the change
+
+- Extend plone.app.workflow to throw a LocalrolesModifiedEvent
+
+- Add customer_role index storing all usernames which have customer role on
+  several areas of the portal
+
+- as is_customer utility
+
+- improve customers vocabulary utility to be more cpu friendly
+
+- search text in orders view needs to consider vendor and customer filter
+
+- ajaxify orders table if filters get changed
+
+
 Contributors
 ------------
 
