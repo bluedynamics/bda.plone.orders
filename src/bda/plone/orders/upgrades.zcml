@@ -10,4 +10,12 @@
     profile="bda.plone.orders:default"
     handler=".upgrades.fix_bookings_vendor_uid"/>
 
+  <genericsetup:upgradeStep
+    source="2"
+    destination="3"
+    title="Add vendor_uids to order records"
+    description=""
+    profile="bda.plone.orders:default"
+    handler=".upgrades.fix_orders_vendor_uids"/>
+
 </configure>
