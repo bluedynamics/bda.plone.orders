@@ -18,7 +18,7 @@ def fix_bookings_vendor_uid(ctx=None):
     portal = getSite()
     soup = get_bookings_soup(portal)
     data = soup.storage.data
-    need_reindex = False
+    need_rebuild = False
     for item in data.values():
         if not 'vendor_uid' in item.attrs\
                 or not isinstance(item.attrs['vendor_uid'], uuid.UUID):
@@ -27,13 +27,13 @@ def fix_bookings_vendor_uid(ctx=None):
             shop = acquire_vendor_or_shop_root(obj)
             vendor_uid = uuid.UUID(IUUID(shop))
             item.attrs['vendor_uid'] = vendor_uid
-            need_reindex = True
+            need_rebuild = True
             logging.info(
                 "Added vendor_uid to booking {0}".format(item.attrs['uid'])
             )
-    if need_reindex:
-        soup.reindex()
-        logging.info("Reindexed bookings souper storage")
+    if need_rebuild:
+        soup.rebuild()
+        logging.info("Rebuilt bookings catalog")
 
 
 def fix_orders_vendor_uids(ctx=None):
@@ -42,7 +42,7 @@ def fix_orders_vendor_uids(ctx=None):
     portal = getSite()
     soup = get_bookings_soup(portal)
     data = soup.storage.data
-    need_reindex = False
+    need_rebuild = False
     for item in data.values():
         if not 'vendor_uids' in item.attrs\
                 or not isinstance(item.attrs['vendor_uids'], list):
@@ -51,10 +51,10 @@ def fix_orders_vendor_uids(ctx=None):
             for booking in order_data.bookings:
                 vendor_uids.add(booking.attrs['vendor_uid'])
             item.attrs['vendor_uids'] = list(vendor_uids)
-            need_reindex = True
+            need_rebuild = True
             logging.info(
                 "Added vendor_uids to order {0}".format(item.attrs['uid'])
             )
-    if need_reindex:
-        soup.reindex()
-        logging.info("Reindexed orders souper storage")
+    if need_rebuild:
+        soup.rebuild()
+        logging.info("Rebuilt orders catalog")
