@@ -408,7 +408,7 @@ class OrderData(object):
         assert(uid and not order or order and not uid)
         if uid and not isinstance(uid, uuid.UUID):
             uid = uuid.UUID(uid)
-        vendor_uids = [uuid.UUID(str(uid)) for uid in vendor_uids]
+        vendor_uids = [uuid.UUID(str(vuid)) for vuid in vendor_uids]
         self.context = context
         self._uid = uid
         self._order = order
