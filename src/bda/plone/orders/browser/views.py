@@ -751,8 +751,8 @@ class ExportOrdersForm(YAMLForm):
         return data.extracted
 
     def export(self, widget, data):
-        self.vendor = data.fetch('exportorders.vendor').extracted
-        self.customer = data.fetch('exportorders.customer').extracted
+        self.vendor = self.request.form.get('exportorders.vendor')
+        self.customer = self.request.form.get('exportorders.customer')
         self.from_date = data.fetch('exportorders.from').extracted
         self.to_date = data.fetch('exportorders.to').extracted
 
@@ -768,39 +768,40 @@ class ExportOrdersForm(YAMLForm):
         return val
 
     def csv(self, request):
+        # get orders soup
         orders_soup = get_orders_soup(self.context)
+        # get bookings soup
         bookings_soup = get_bookings_soup(self.context)
-
-        """
         # fetch user vendor uids
         vendor_uids = [uuid.UUID(IUUID(obj)) for obj in get_vendors_for()]
+        # base query for time range
+        query = Ge('created', self.from_date) & Le('created', self.to_date)
         # filter by given vendor uid or user vendor uids
-        vendor_uid = self.request.form.get('vendor')
+        vendor_uid = self.vendor
         if vendor_uid:
             vendor_uid = uuid.UUID(vendor_uid)
             # raise if given vendor uid not in user vendor uids
             if not vendor_uid in vendor_uids:
                 raise Unauthorized
-            query = Eq('vendor_uid', vendor_uid)
+            query = Contains('vendor_uids', vendor_uid)
         else:
-            query = Any('vendor_uid', vendor_uids)
+            # XXX: maybe we need to iterate vendor uids here and work with
+            #      logical OR on separate uids
+            query = Contains('vendor_uids', vendor_uids)
         # filter by customer if given
-        customer = self.request.form.get('customer')
+        customer = self.customer
         if customer:
             query = query & Eq('creator', customer)
-        """
-
-        o_query = Ge('created', self.from_date) & Le('created', self.to_date)
-        # XXX: extend query to restrict export orders to vendor
-
+        # prepare csv writer
         sio = StringIO()
         ex = csv.writer(sio, dialect='excel-colon')
+        # exported column keys as first line
         ex.writerow(ORDER_EXPORT_ATTRS +
                     COMPUTER_ORDER_EXPORT_ATTRS.keys() +
                     BOOKING_EXPORT_ATTRS +
                     COMPUTER_BOOKING_EXPORT_ATTRS.keys())
-
-        for order in orders_soup.query(o_query):
+        # query orders
+        for order in orders_soup.query(query):
             order_attrs = list()
             # order export attrs
             for attr_name in ORDER_EXPORT_ATTRS:
