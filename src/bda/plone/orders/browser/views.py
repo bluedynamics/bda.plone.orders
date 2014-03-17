@@ -18,6 +18,7 @@ from bda.plone.orders.vocabularies import customers_vocab_for
 from bda.plone.orders.vocabularies import vendors_vocab_for
 from bda.plone.payment import Payments
 from decimal import Decimal
+from node.utils import UNSET
 from odict import odict
 from plone.app.uuid.utils import uuidToURL
 from plone.uuid.interfaces import IUUID
@@ -386,7 +387,7 @@ class OrdersTable(OrdersTableBase):
             vendor_selector = factory(
                 'label:select',
                 name='vendor',
-                value=None,
+                value=self.request.form.get('ordersfilter.vendor', UNSET),
                 props={
                     'vocabulary': vendors,
                     'label': 'Filter for vendors'
@@ -400,7 +401,7 @@ class OrdersTable(OrdersTableBase):
             customer_selector = factory(
                 'label:select',
                 name='customer',
-                value=None,
+                value=self.request.form.get('ordersfilter.customer', UNSET),
                 props={
                     'vocabulary': customers,
                     'label': 'Filter for customers'
