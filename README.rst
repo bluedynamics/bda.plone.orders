@@ -19,6 +19,13 @@ Integration notes
   part of Sunburst's base.css.
 
 
+Restrictions with souper.plone
+------------------------------
+
+- Make sure you do not move orders or bookings soup away from portal root. This
+  will end up in unexpected behavior and errors.
+
+
 Create translations
 -------------------
 

@@ -75,7 +75,8 @@ class OrderDropdown(object):
     def create_items(self, transitions):
         ret = list()
         # lookup vendor of order, used to perform transitions
-        vendor = get_vendor_by_uid(self.record.attrs['vendor_uid'])
+        #vendor = get_vendor_by_uid(self.record.attrs['vendor_uid'])
+        vendor = self.context
         url = vendor.absolute_url()
         # create and return available transitions for order
         uid = str(self.record.attrs['uid'])
@@ -469,10 +470,12 @@ class OrdersTable(OrdersTableBase):
         return select_order + view_order
 
     def check_modify_order(self, order):
-        vendor = get_vendor_by_uid(order.attrs['vendor_uid'])
-        user = plone.api.user.get_current()
-        if user.checkPermission(permissions.ModifyOrders, vendor):
-            return True
+        return True
+        # XXX: crap
+        #vendor = get_vendor_by_uid(order.attrs['vendor_uid'])
+        #user = plone.api.user.get_current()
+        #if user.checkPermission(permissions.ModifyOrders, vendor):
+        #    return True
 
     def render_salaried(self, colname, record):
         if not self.check_modify_order(record):
@@ -499,6 +502,9 @@ class OrdersTable(OrdersTableBase):
         # check if authenticated user is vendor
         if not get_vendors_for():
             raise Unauthorized
+        #self.vendor_uids = get_vendor_uids_for()
+        #if not self.vendor_uids:
+        #    raise Unauthorized
         return super(OrdersTable, self).__call__()
 
 
@@ -535,10 +541,8 @@ class OrdersData(OrdersTable, TableData):
             # raise if given vendor uid not in user vendor uids
             if not vendor_uid in vendor_uids:
                 raise Unauthorized
-            query = Any('vendor_uids', vendor_uid)
+            query = Any('vendor_uids', [vendor_uid])
         else:
-            # XXX: maybe we need to iterate vendor uids here and work with
-            #      logical OR on separate uids
             query = Any('vendor_uids', vendor_uids)
         # filter by customer if given
         customer = self.request.form.get('customer')
@@ -695,7 +699,7 @@ class MyOrderView(OrderViewBase):
     def __call__(self):
         # check if order was created by authenticated user
         user = plone.api.user.get_current()
-        if user.getId() != self.order.attrs['creator']:
+        if user.getId() != self.order['creator']:
             raise Unauthorized
         return super(MyOrderView, self).__call__()
 
@@ -824,10 +828,8 @@ class ExportOrdersForm(YAMLForm):
             # raise if given vendor uid not in user vendor uids
             if not vendor_uid in vendor_uids:
                 raise Unauthorized
-            query = Any('vendor_uids', vendor_uid)
+            query = Any('vendor_uids', [vendor_uid])
         else:
-            # XXX: maybe we need to iterate vendor uids here and work with
-            #      logical OR on separate uids
             query = Any('vendor_uids', vendor_uids)
         # filter by customer if given
         customer = self.customer
