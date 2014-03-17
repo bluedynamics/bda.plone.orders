@@ -390,25 +390,24 @@ class OrderData(object):
     """Object for extracting order information.
     """
 
-    def __init__(self, context, uid=None, order=None, vendor_uid=None):
+    def __init__(self, context, uid=None, order=None, vendor_uids=list()):
         """Create order data object by criteria
 
         :param uid: Order uid. XOR with order
         :type uid: string or uuid.UUID object
         :param order: Order record. XOR with uid
         :type order: souper.soup.Record object
-        :param vendor_uid: Vendor uid, used to filter order bookings.
-        :type vendor_uid: string uuid.UUID object
+        :param vendor_uids: Vendor uids, used to filter order bookings.
+        :type vendor_uids: List of vendor uids as string or uuid.UUID object.
         """
         assert(uid and not order or order and not uid)
         if uid and not isinstance(uid, uuid.UUID):
             uid = uuid.UUID(uid)
-        if vendor_uid and not isinstance(vendor_uid, uuid.UUID):
-            vendor_uid = uuid.UUID(vendor_uid)
+        vendor_uids = [uuid.UUID(str(uid)) for uid in vendor_uids]
         self.context = context
         self._uid = uid
         self._order = order
-        self.vendor_uid = vendor_uid
+        self.vendor_uids = vendor_uids
 
     @property
     def uid(self):
@@ -426,8 +425,8 @@ class OrderData(object):
     def bookings(self):
         soup = get_bookings_soup(self.context)
         query = Eq('order_uid', self.uid)
-        if self.vendor_uid:
-            query = query & Eq('vendor_uid', self.vendor_uid)
+        if self.vendor_uids:
+            query = query & Any('vendor_uid', self.vendor_uids)
         return soup.query(query)
 
     @property
