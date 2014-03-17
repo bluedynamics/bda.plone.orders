@@ -535,11 +535,11 @@ class OrdersData(OrdersTable, TableData):
             # raise if given vendor uid not in user vendor uids
             if not vendor_uid in vendor_uids:
                 raise Unauthorized
-            query = Contains('vendor_uids', vendor_uid)
+            query = Any('vendor_uids', vendor_uid)
         else:
             # XXX: maybe we need to iterate vendor uids here and work with
             #      logical OR on separate uids
-            query = Contains('vendor_uids', vendor_uids)
+            query = Any('vendor_uids', vendor_uids)
         # filter by customer if given
         customer = self.request.form.get('customer')
         if customer:
@@ -824,11 +824,11 @@ class ExportOrdersForm(YAMLForm):
             # raise if given vendor uid not in user vendor uids
             if not vendor_uid in vendor_uids:
                 raise Unauthorized
-            query = Contains('vendor_uids', vendor_uid)
+            query = Any('vendor_uids', vendor_uid)
         else:
             # XXX: maybe we need to iterate vendor uids here and work with
             #      logical OR on separate uids
-            query = Contains('vendor_uids', vendor_uids)
+            query = Any('vendor_uids', vendor_uids)
         # filter by customer if given
         customer = self.customer
         if customer:
