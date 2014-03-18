@@ -38,6 +38,8 @@ Create translations
 TODO
 ----
 
+- Consider vendor UIS's and booking based state in mail notification
+
 - Store order state on each booking to make it possible each vendor can handle
   state of bookings in order belonging to him
 
