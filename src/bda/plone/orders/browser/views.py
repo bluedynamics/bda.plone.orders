@@ -232,6 +232,7 @@ class TableData(BrowserView):
         sort = self.sort()
         sort_index = soup.catalog[sort['index']]
         iids = sort_index.sort(data.keys(), reverse=sort['reverse'])
+
         def lazyrecords():
             for iid in iids:
                 yield LazyRecord(iid, soup)
