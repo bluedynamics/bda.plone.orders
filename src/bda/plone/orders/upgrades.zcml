@@ -18,4 +18,12 @@
     profile="bda.plone.orders:default"
     handler=".upgrades.fix_orders_vendor_uids"/>
 
+  <genericsetup:upgradeStep
+    source="3"
+    destination="4"
+    title="Move state and salaried from orders to bookings"
+    description=""
+    profile="bda.plone.orders:default"
+    handler=".upgrades.fix_bookings_state_salaried"/>
+
 </configure>

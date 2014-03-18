@@ -132,6 +132,7 @@ def get_vendors_for(user=None):
     """
     if user is None:
         user = plone.api.user.get_current()
+
     def permitted(obj):
         return user.checkPermission(permissions.ModifyOrders, obj)
     return [vendor for vendor in get_all_vendors() if permitted(vendor)]
@@ -236,6 +237,11 @@ class BookingsCatalogFactory(object):
         catalog[u'exported'] = CatalogFieldIndex(exported_indexer)
         title_indexer = NodeAttributeIndexer('title')
         catalog[u'title'] = CatalogFieldIndex(title_indexer)
+        state_indexer = NodeAttributeIndexer('state')
+        catalog[u'state'] = CatalogFieldIndex(state_indexer)
+        salaried_indexer = NodeAttributeIndexer('salaried')
+        catalog[u'salaried'] = CatalogFieldIndex(salaried_indexer)
+
         return catalog
 
 
@@ -256,10 +262,6 @@ class OrdersCatalogFactory(object):
         catalog[u'creator'] = CatalogFieldIndex(creator_indexer)
         created_indexer = NodeAttributeIndexer('created')
         catalog[u'created'] = CatalogFieldIndex(created_indexer)
-        state_indexer = NodeAttributeIndexer('state')
-        catalog[u'state'] = CatalogFieldIndex(state_indexer)
-        salaried_indexer = NodeAttributeIndexer('salaried')
-        catalog[u'salaried'] = CatalogFieldIndex(salaried_indexer)
         firstname_indexer = NodeAttributeIndexer('personal_data.firstname')
         catalog[u'personal_data.firstname'] = CatalogFieldIndex(
             firstname_indexer
@@ -300,6 +302,7 @@ class OrderCheckoutAdapter(CheckoutAdapter):
 
     @property
     def skip_payment(self):
+        # TODO: seperate hirning session required
         return SKIP_PAYMENT_IF_RESERVED \
             and self.order.attrs['state'] == 'reserved'
 
@@ -336,20 +339,14 @@ class OrderCheckoutAdapter(CheckoutAdapter):
         uid = order.attrs['uid'] = uuid.uuid4()
         order.attrs['creator'] = creator
         order.attrs['created'] = created
-        order.attrs['salaried'] = 'no'
         bookings = self.create_bookings(order)
         booking_uids = list()
         vendor_uids = set()
-        all_available = True
         for booking in bookings:
             booking_uids.append(booking.attrs['uid'])
             vendor_uids.add(booking.attrs['vendor_uid'])
-            if booking.attrs['remaining_stock_available'] is not None\
-                    and booking.attrs['remaining_stock_available'] < 0:
-                all_available = False
         order.attrs['booking_uids'] = booking_uids
         order.attrs['vendor_uids'] = list(vendor_uids)
-        order.attrs['state'] = all_available and 'new' or 'reserved'
         orders_soup = get_orders_soup(self.context)
         ordernumber = create_ordernumber()
         while self.ordernumber_exists(orders_soup, ordernumber):
@@ -383,6 +380,7 @@ class OrderCheckoutAdapter(CheckoutAdapter):
         item_stock = get_item_stock(buyable)
         if item_stock.available is not None:
             item_stock.available -= float(count)
+        available = item_stock.available
         item_data = get_item_data_provider(buyable)
         vendor = acquire_vendor_or_shop_root(buyable)
         booking = OOBTNode()
@@ -400,7 +398,9 @@ class OrderCheckoutAdapter(CheckoutAdapter):
         booking.attrs['vat'] = item_data.vat
         booking.attrs['currency'] = cart_data.currency
         booking.attrs['quantity_unit'] = item_data.quantity_unit
-        booking.attrs['remaining_stock_available'] = item_stock.available
+        booking.attrs['remaining_stock_available'] = available
+        booking.attrs['state'] = available < 0 and 'reserved' or 'new'
+        booking.attrs['salaried'] = 'no'
         return booking
 
 
@@ -418,9 +418,10 @@ class OrderData(object):
         :param vendor_uids: Vendor uids, used to filter order bookings.
         :type vendor_uids: List of vendor uids as string or uuid.UUID object.
         """
-        assert(uid and not order or order and not uid)
+        assert(bool(uid) != bool(order))  # ^= xor
         if uid and not isinstance(uid, uuid.UUID):
             uid = uuid.UUID(uid)
+
         vendor_uids = [uuid.UUID(str(vuid)) for vuid in vendor_uids]
         self.context = context
         self._uid = uid
@@ -446,6 +447,40 @@ class OrderData(object):
         if self.vendor_uids:
             query = query & Any('vendor_uid', self.vendor_uids)
         return soup.query(query)
+
+    @property
+    def state(self):
+        ret = None
+        for booking in self.bookings:
+            val = booking.attrs['state']
+            if ret and ret != val:
+                ret = 'mixed'
+                break
+            else:
+                ret = val
+        return ret
+
+    @state.setter
+    def state(self, value):
+        for booking in self.bookings:
+            booking.attrs['state'] = value
+
+    @property
+    def salaried(self):
+        ret = None
+        for booking in self.bookings:
+            val = booking.attrs['salaried']
+            if ret and ret != val:
+                ret = 'mixed'
+                break
+            else:
+                ret = val
+        return ret
+
+    @salaried.setter
+    def salaried(self, value):
+        for booking in self.bookings:
+            booking.attrs['salaried'] = value
 
     @property
     def net(self):
@@ -513,17 +548,12 @@ class BuyableData(object):
             bookings = order_bookings.setdefault(
                 booking.attrs['order_uid'], list())
             bookings.append(booking)
-        orders_soup = get_orders_soup(context)
         count = Decimal('0')
         for order_uid, bookings in order_bookings.items():
-            order = [_ for _ in orders_soup.query(Eq('uid', order_uid))][0]
-            if not state:
-                for booking in bookings:
-                    count += booking.attrs['buyable_count']
-            else:
-                if order.attrs['state'] in state:
-                    for booking in bookings:
-                        count += booking.attrs['buyable_count']
+            for booking in bookings:
+                if state and booking.attrs['state'] not in state:
+                    continue
+                count += booking.attrs['buyable_count']
         return count
 
 
@@ -585,9 +615,10 @@ def payment_success(event):
     #      use ZCA for calling
     if event.payment.pid == 'six_payment':
         data = event.data
-        order = get_order(event.context, event.order_uid)
-        order.attrs['salaried'] = 'yes'
-        order.attrs['tid'] = data['tid']
+        order = OrderData(event.context, uid=event.order_uid)
+        order.salaried = 'yes'
+        ordernode = order.order
+        ordernode.attrs['tid'] = data['tid']
 
 
 def payment_failed(event):
@@ -595,14 +626,15 @@ def payment_failed(event):
     #      use ZCA for calling
     if event.payment.pid == 'six_payment':
         data = event.data
-        order = get_order(event.context, event.order_uid)
-        order.attrs['salaried'] = 'failed'
-        order.attrs['tid'] = data['tid']
+        order = OrderData(event.context, uid=event.order_uid)
+        order.salaried = 'failed'
+        ordernode = order.order
+        ordernode.attrs['tid'] = data['tid']
 
 
 class OrderTransitions(object):
 
-    def __init__(self, context):
+    def __init__(self, context, vendor_uids=list()):
         self.context = context
 
     def do_transition(self, uid, transition):
@@ -615,32 +647,47 @@ class OrderTransitions(object):
         """
         if not isinstance(uid, uuid.UUID):
             uid = uuid.UUID(uid)
-        order_data = OrderData(self.context, uid=uid)
+        vendor_uids = self.vendor_uids
+        order_data = OrderData(self.context, uid=uid, vendor_uids=vendor_uids)
         order = order_data.order
         # XXX: currently we need to delete attribute before setting to a new
         #      value in order to persist change. fix in appropriate place.
-        if transition == 'mark_salaried':
-            del order.attrs['salaried']
-            order.attrs['salaried'] = 'yes'
-        elif transition == 'mark_outstanding':
-            del order.attrs['salaried']
-            order.attrs['salaried'] = 'no'
-        elif transition == 'renew':
-            del order.attrs['state']
-            order.attrs['state'] = 'new'
+
+        # TODO: ueber bookings iterieren, und status setzen
+
+        for booking in order_data.bookings:
+            # TODO: move to BookingTransitions
+            if transition == 'mark_salaried':
+                del booking.attrs['salaried']
+                booking.attrs['salaried'] = 'yes'
+            elif transition == 'mark_outstanding':
+                del booking.attrs['salaried']
+                booking.attrs['salaried'] = 'no'
+            elif transition == 'renew':
+                del booking.attrs['state']
+                booking.attrs['state'] = 'new'
+            elif transition == 'process':
+                del booking.attrs['state']
+                booking.attrs['state'] = 'processing'
+            elif transition == 'finish':
+                del booking.attrs['state']
+                booking.attrs['state'] = 'finished'
+            elif transition == 'cancel':
+                del booking.attrs['state']
+                booking.attrs['state'] = 'cancelled'
+            else:
+                raise ValueError(u"invalid transition: %s" % transition)
+
+        # TODO: check, if this should be done elsewhere. BookingData, or even
+        # directly here?
+        if transition == 'renew':
             order_data.decrease_stock(order_data.bookings)
-        elif transition == 'process':
-            del order.attrs['state']
-            order.attrs['state'] = 'processing'
-        elif transition == 'finish':
-            del order.attrs['state']
-            order.attrs['state'] = 'finished'
         elif transition == 'cancel':
-            del order.attrs['state']
-            order.attrs['state'] = 'cancelled'
             order_data.increase_stock(order_data.bookings)
-        else:
-            raise ValueError(u"invalid transition: %s" % transition)
+
         soup = get_orders_soup(self.context)
         soup.reindex(records=[order])
+        # TODO: reindex bookings
         return order
+
+# ADD BOOKING TRANSITIONS

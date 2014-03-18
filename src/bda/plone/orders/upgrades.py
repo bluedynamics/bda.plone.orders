@@ -59,3 +59,47 @@ def fix_orders_vendor_uids(ctx=None):
     if need_rebuild:
         soup.rebuild()
         logging.info("Rebuilt orders catalog")
+
+
+def fix_bookings_state_salaried(ctx=None):
+    portal = getSite()
+    soup = get_orders_soup(portal)
+    data = soup.storage.data
+    need_rebuild = False
+
+    for item in data.values():
+        order_data = OrderData(portal, order=item)
+        state = item.attrs.get('state', None)
+        salaried = item.attrs.get('salaried', None)
+
+        for booking in order_data.bookings:
+            # add too booking node
+
+            if state and 'state' not in booking.attrs:
+                booking.attrs['state'] = state
+                need_rebuild = True
+                logging.info(
+                    "Added state {0} to booking {2}".format(
+                        state, item.attrs['uid']
+                    )
+                )
+
+            if salaried and 'salaried' not in booking.attrs:
+                booking.attrs['salaried'] = salaried
+                need_rebuild = True
+                logging.info(
+                    "Added salaried {0} to booking {2}".format(
+                        salaried, item.attrs['uid']
+                    )
+                )
+
+        # now, delete from order node
+        if 'state' in item.attrs:
+            del item.attrs['state']
+        if 'salaried' in item.attrs:
+            del item.attrs['salaried']
+
+    if need_rebuild:
+        bookings_soup = get_bookings_soup(portal)
+        bookings_soup.rebuild()
+        logging.info("Rebuilt bookings catalog")
