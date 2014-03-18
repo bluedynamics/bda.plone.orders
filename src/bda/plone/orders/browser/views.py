@@ -10,6 +10,7 @@ from bda.plone.orders.common import DT_FORMAT
 from bda.plone.orders.common import OrderData
 from bda.plone.orders.common import OrderTransitions
 from bda.plone.orders.common import get_orders_soup
+from bda.plone.orders.common import get_bookings_soup
 from bda.plone.orders.common import get_order
 from bda.plone.orders.common import get_vendors_for
 from bda.plone.orders.common import get_vendor_uids_for
@@ -21,7 +22,6 @@ from decimal import Decimal
 from node.utils import UNSET
 from odict import odict
 from plone.app.uuid.utils import uuidToURL
-from plone.uuid.interfaces import IUUID
 from repoze.catalog.query import Any
 from repoze.catalog.query import Contains
 from repoze.catalog.query import Eq
@@ -259,6 +259,7 @@ class TableData(BrowserView):
         length, lazydata = self.query(soup)
         columns = self.columns
         colnames = [_['id'] for _ in columns]
+
         def record2list(record):
             result = list()
             for colname in colnames:
