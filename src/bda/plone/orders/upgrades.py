@@ -40,13 +40,14 @@ def fix_orders_vendor_uids(ctx=None):
     """Add vendor_uids attribute to order records.
     """
     portal = getSite()
-    soup = get_bookings_soup(portal)
+    soup = get_orders_soup(portal)
     data = soup.storage.data
     need_rebuild = False
     for item in data.values():
         if not 'vendor_uids' in item.attrs\
-                or not isinstance(item.attrs['vendor_uids'], list):
-            order_data = OrderData(order=item)
+                or not isinstance(item.attrs['vendor_uids'], list)\
+                or not item.attrs['vendor_uids']:
+            order_data = OrderData(portal, order=item)
             vendor_uids = set()
             for booking in order_data.bookings:
                 vendor_uids.add(booking.attrs['vendor_uid'])

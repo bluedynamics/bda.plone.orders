@@ -59,6 +59,10 @@ TODO
 
 - ajaxify orders table if filters get changed
 
+- skip payment for individual bookings instead of whole order, if they are in
+  state reserved.
+
+- warning-popup, if state is changed globally for all bookings in @@orders view
 
 Contributors
 ------------
