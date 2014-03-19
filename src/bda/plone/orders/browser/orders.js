@@ -125,4 +125,4 @@
         return this;
     };
 
-}(jQuery));
+})(jQuery);
