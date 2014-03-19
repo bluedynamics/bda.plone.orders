@@ -74,6 +74,7 @@ def create_global_text(context, attrs):
     elif order_data.state == ifaces.STATE_NEW\
             and notificationtext.global_order_text:
         return _indent(notificationtext.global_order_text, ind=0)
+    return ''  # don't return None
 
 
 def create_order_total(context, attrs):
