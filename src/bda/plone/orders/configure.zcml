@@ -28,7 +28,8 @@
 
   <!-- subscribers -->
   <subscriber
-    for="plone.app.workflow.interfaces.ILocalrolesModifiedEvent"
+    for="zope.interface.Interface
+         plone.app.workflow.interfaces.ILocalrolesModifiedEvent"
     handler=".subscriber.reindex_customer_role" />
 
   <!-- souper soups -->
