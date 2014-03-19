@@ -1,6 +1,27 @@
-from zope.interface import Interface
-from zope.interface import Attribute
 from bda.plone.checkout.interfaces import ICheckoutExtensionLayer
+from zope.interface import Attribute
+from zope.interface import Interface
+
+
+STATE_CANCELLED = 'cancelled'
+STATE_FINISHED = 'finished'
+STATE_MIXED = 'mixed'
+STATE_NEW = 'new'
+STATE_PROCESSING = 'processing'
+STATE_RESERVED = 'reserved'
+
+STATE_TRANSITION_RENEW = 'renew'
+STATE_TRANSITION_PROCESS = 'process'
+STATE_TRANSITION_FINISH = 'finish'
+STATE_TRANSITION_CANCEL = 'cancel'
+
+SALARIED_YES = 'yes'
+SALARIED_NO = 'no'
+SALARIED_MIXED = 'mixed'
+SALARIED_FAILED = 'failed'
+
+SALARIED_TRANSITION_SALARIED = 'mark_salaried'
+SALARIED_TRANSITION_OUTSTANDING = 'mark_outstanding'
 
 
 class IOrdersExtensionLayer(ICheckoutExtensionLayer):
@@ -42,7 +63,8 @@ class IPaymentText(Interface):
     """Interface for providing payment related order notification text.
     """
 
-    payment_text = Attribute(u"Text sent after successful checkout for payment")
+    payment_text = Attribute(
+        u"Text sent after successful checkout for payment")
 
 
 class IDynamicMailTemplateLibrary(Interface):
@@ -59,7 +81,7 @@ class IDynamicMailTemplateLibrary(Interface):
 
 
 class IDynamicMailTemplateLibraryStorage(IDynamicMailTemplateLibrary):
-    
+
     def direct_keys():
         """non acquired keys.
         """

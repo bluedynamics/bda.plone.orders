@@ -2,12 +2,14 @@ from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
 from bda.plone.cart import get_catalog_brain
 from bda.plone.orders import common
+from bda.plone.orders import interfaces as ifaces
 from bda.plone.orders import message_factory as _
 from bda.plone.orders.common import DT_FORMAT
-from bda.plone.orders.common import get_order
+from bda.plone.orders.common import OrderData
 from bda.plone.orders.common import get_bookings_soup
-from bda.plone.orders.interfaces import IItemNotificationText
+from bda.plone.orders.common import get_order
 from bda.plone.orders.interfaces import IGlobalNotificationText
+from bda.plone.orders.interfaces import IItemNotificationText
 from bda.plone.orders.mailtemplates import get_order_templates
 from bda.plone.orders.mailtemplates import get_reservation_templates
 from email.Header import Header
@@ -15,6 +17,7 @@ from email.MIMEText import MIMEText
 from email.Utils import formatdate
 from repoze.catalog.query import Any
 from zope.i18n import translate
+
 import textwrap
 
 
@@ -40,7 +43,7 @@ def create_mail_listing(context, attrs):
     for booking in bookings:
         brain = get_catalog_brain(context, booking.attrs['buyable_uid'])
         buyable = brain.getObject()
-        title = brain.Title
+        title = booking.attrs['title']
         comment = booking.attrs['buyable_comment']
         if comment:
             title = '%s (%s)' % (title, comment)
@@ -52,19 +55,24 @@ def create_mail_listing(context, attrs):
         if comment:
             lines.append(_indent('({0})'.format(comment)))
         notificationtext = IItemNotificationText(buyable)
-        if attrs['state'] == 'reserved' and notificationtext.overbook_text:
+        if booking.attrs['state'] == ifaces.STATE_RESERVED\
+                and notificationtext.overbook_text:
             lines.append(_indent(notificationtext.overbook_text))
-        elif attrs['state'] == 'new' and notificationtext.order_text:
+        elif booking.attrs['state'] == ifaces.STATE_NEW\
+                and notificationtext.order_text:
             lines.append(_indent(notificationtext.order_text))
     return '\n'.join(lines)
 
 
 def create_global_text(context, attrs):
     notificationtext = IGlobalNotificationText(context)
-    if attrs['state'] == 'reserved' \
-       and notificationtext.global_overbook_text:
+    order_data = OrderData(context, uid=attrs['uid'])
+    if order_data.state in (ifaces.STATE_RESERVED, ifaces.STATE_MIXED)\
+            and notificationtext.global_overbook_text:
+        # TODO: might need custom text for MIXED state
         return _indent(notificationtext.global_overbook_text, ind=0)
-    elif attrs['state'] == 'new' and notificationtext.global_order_text:
+    elif order_data.state == ifaces.STATE_NEW\
+            and notificationtext.global_order_text:
         return _indent(notificationtext.global_order_text, ind=0)
 
 
@@ -112,7 +120,8 @@ def create_mail_body(templates, context, attrs):
     arguments['item_listing'] = item_listing_callback(context, attrs)
     order_total_callback = templates['order_total_callback']
     arguments['order_total'] = order_total_callback(context, attrs)
-    arguments['global_text'] = templates['global_text_callback'](context, attrs)
+    arguments['global_text'] = templates['global_text_callback'](
+        context, attrs)
     body_template = templates['body']
     return body_template % arguments
 
@@ -155,8 +164,9 @@ def notify_reservation_if_payment_skipped(event):
     """
     if not common.SKIP_PAYMENT_IF_RESERVED:
         return
-    order = get_order(event.context, event.uid)
-    if order.attrs['state'] != 'reserved':
+    order_data = OrderData(event.context, uid=event.uid)
+    # TODO: state mixed might be handled seperately
+    if order_data.state not in (ifaces.STATE_RESERVED, ifaces.STATE_MIXED):
         return
     templates = dict()
     templates.update(get_reservation_templates(event.context))
@@ -164,7 +174,7 @@ def notify_reservation_if_payment_skipped(event):
     templates['order_total_callback'] = create_order_total
     templates['payment_text_callback'] = create_payment_text
     templates['global_text_callback'] = create_global_text
-    do_notify(event.context, order, templates)
+    do_notify(event.context, order_data.order, templates)
 
 
 class MailNotify(object):

@@ -5,6 +5,9 @@ Changelog
 0.4dev
 ------
 
+- Move state, salaried and tid to bookings.
+  [thet]
+
 - Order can have state ``processing``.
   [rnix]
 

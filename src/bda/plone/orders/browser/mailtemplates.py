@@ -1,14 +1,9 @@
 from Products.Five import BrowserView
-from bda.plone.ajax import AjaxMessage
-from bda.plone.ajax import AjaxOverlay
-from bda.plone.ajax import ajax_continue
-from bda.plone.ajax import ajax_form_fiddle
 from bda.plone.orders import message_factory as _
 from bda.plone.orders.interfaces import IDynamicMailTemplateLibraryStorage
 from bda.plone.orders.mailtemplates import DEFAULT_TEMPLATE_ATTRS
 from bda.plone.orders.mailtemplates import DynamicMailTemplate
 from bda.plone.orders.mailtemplates import REQUIRED_TEMPLATE_ATTRS
-from node.utils import UNSET
 from yafowil.base import ExtractionError
 from yafowil.plone.form import YAMLForm
 
@@ -20,7 +15,7 @@ TEMPLATE = DynamicMailTemplate(
 
 
 class MailtemplatesView(BrowserView):
-    
+
     def default_attrs(self):
         items = []
         for key in sorted(DEFAULT_TEMPLATE_ATTRS.keys()):
@@ -56,7 +51,7 @@ class MailtemplatesForm(YAMLForm):
         value = []
         for key in tpllib.direct_keys():
             value.append({
-                'title': key, 
+                'title': key,
                 'template': tpllib[key]
             })
         return value

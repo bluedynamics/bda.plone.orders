@@ -12,6 +12,7 @@ from bda.plone.cart import readcookie
 from bda.plone.checkout import CheckoutAdapter
 from bda.plone.checkout import CheckoutError
 from bda.plone.orders import permissions
+from bda.plone.orders import interfaces as ifaces
 from bda.plone.orders.interfaces import IVendor
 from bda.plone.payment.interfaces import IPaymentData
 from bda.plone.shipping import Shippings
@@ -303,8 +304,9 @@ class OrderCheckoutAdapter(CheckoutAdapter):
     @property
     def skip_payment(self):
         # TODO: seperate hirning session required
+        order_data = OrderData(context=self.context, order=self.order)
         return SKIP_PAYMENT_IF_RESERVED \
-            and self.order.attrs['state'] == 'reserved'
+            and order_data.state in (ifaces.STATE_RESERVED, ifaces.STATE_MIXED)
 
     @property
     def skip_payment_redirect_url(self):
@@ -381,6 +383,7 @@ class OrderCheckoutAdapter(CheckoutAdapter):
         if item_stock.available is not None:
             item_stock.available -= float(count)
         available = item_stock.available
+        state = available < 0 and ifaces.STATE_RESERVED or ifaces.STATE_NEW
         item_data = get_item_data_provider(buyable)
         vendor = acquire_vendor_or_shop_root(buyable)
         booking = OOBTNode()
@@ -399,8 +402,9 @@ class OrderCheckoutAdapter(CheckoutAdapter):
         booking.attrs['currency'] = cart_data.currency
         booking.attrs['quantity_unit'] = item_data.quantity_unit
         booking.attrs['remaining_stock_available'] = available
-        booking.attrs['state'] = available < 0 and 'reserved' or 'new'
-        booking.attrs['salaried'] = 'no'
+        booking.attrs['state'] = state
+        booking.attrs['salaried'] = ifaces.SALARIED_NO
+        booking.attrs['tid'] = 'none'
         return booking
 
 
@@ -454,7 +458,7 @@ class OrderData(object):
         for booking in self.bookings:
             val = booking.attrs['state']
             if ret and ret != val:
-                ret = 'mixed'
+                ret = ifaces.STATE_MIXED
                 break
             else:
                 ret = val
@@ -471,7 +475,7 @@ class OrderData(object):
         for booking in self.bookings:
             val = booking.attrs['salaried']
             if ret and ret != val:
-                ret = 'mixed'
+                ret = ifaces.SALARIED_MIXED
                 break
             else:
                 ret = val
@@ -481,6 +485,20 @@ class OrderData(object):
     def salaried(self, value):
         for booking in self.bookings:
             booking.attrs['salaried'] = value
+
+    @property
+    def tid(self):
+        ret = set()
+        for booking in self.bookings:
+            tid = booking.attrs.get('tid', None)
+            if tid:
+                ret.add(tid)
+        return ret
+
+    @tid.setter
+    def tid(self, value):
+        for booking in self.bookings:
+            booking.attrs['tid'] = value
 
     @property
     def net(self):
@@ -616,9 +634,8 @@ def payment_success(event):
     if event.payment.pid == 'six_payment':
         data = event.data
         order = OrderData(event.context, uid=event.order_uid)
-        order.salaried = 'yes'
-        ordernode = order.order
-        ordernode.attrs['tid'] = data['tid']
+        order.salaried = ifaces.SALARIED_YES
+        order.tid = data['tid']
 
 
 def payment_failed(event):
@@ -627,9 +644,8 @@ def payment_failed(event):
     if event.payment.pid == 'six_payment':
         data = event.data
         order = OrderData(event.context, uid=event.order_uid)
-        order.salaried = 'failed'
-        ordernode = order.order
-        ordernode.attrs['tid'] = data['tid']
+        order.salaried = ifaces.SALARIED_FAILED
+        order.tid = data['tid']
 
 
 class OrderTransitions(object):
@@ -653,41 +669,39 @@ class OrderTransitions(object):
         # XXX: currently we need to delete attribute before setting to a new
         #      value in order to persist change. fix in appropriate place.
 
-        # TODO: ueber bookings iterieren, und status setzen
-
         for booking in order_data.bookings:
-            # TODO: move to BookingTransitions
-            if transition == 'mark_salaried':
-                del booking.attrs['salaried']
-                booking.attrs['salaried'] = 'yes'
-            elif transition == 'mark_outstanding':
-                del booking.attrs['salaried']
-                booking.attrs['salaried'] = 'no'
-            elif transition == 'renew':
-                del booking.attrs['state']
-                booking.attrs['state'] = 'new'
-            elif transition == 'process':
-                del booking.attrs['state']
-                booking.attrs['state'] = 'processing'
-            elif transition == 'finish':
-                del booking.attrs['state']
-                booking.attrs['state'] = 'finished'
-            elif transition == 'cancel':
-                del booking.attrs['state']
-                booking.attrs['state'] = 'cancelled'
-            else:
-                raise ValueError(u"invalid transition: %s" % transition)
+            self.do_transition_for_booking(booking, transition)
 
-        # TODO: check, if this should be done elsewhere. BookingData, or even
-        # directly here?
-        if transition == 'renew':
+        if transition == ifaces.STATE_TRANSITION_RENEW:
             order_data.decrease_stock(order_data.bookings)
-        elif transition == 'cancel':
+        elif transition == ifaces.STATE_TRANSITION_CANCEL:
             order_data.increase_stock(order_data.bookings)
 
-        soup = get_orders_soup(self.context)
-        soup.reindex(records=[order])
-        # TODO: reindex bookings
+        orders_soup = get_orders_soup(self.context)
+        orders_soup.reindex(records=[order])
         return order
 
-# ADD BOOKING TRANSITIONS
+    def do_transition_for_booking(self, booking, transition):
+        if transition == ifaces.SALARIED_TRANSITION_SALARIED:
+            del booking.attrs['salaried']
+            booking.attrs['salaried'] = ifaces.SALARIED_YES
+        elif transition == ifaces.SALARIED_TRANSITION_OUTSTANDING:
+            del booking.attrs['salaried']
+            booking.attrs['salaried'] = ifaces.SALARIED_NO
+        elif transition == ifaces.STATE_TRANSITION_RENEW:
+            del booking.attrs['state']
+            booking.attrs['state'] = ifaces.STATE_NEW
+        elif transition == ifaces.STATE_TRANSITION_PROCESS:
+            del booking.attrs['state']
+            booking.attrs['state'] = ifaces.STATE_PROCESSING
+        elif transition == ifaces.STATE_TRANSITION_FINISH:
+            del booking.attrs['state']
+            booking.attrs['state'] = ifaces.STATE_FINISHED
+        elif transition == ifaces.STATE_TRANSITION_CANCEL:
+            del booking.attrs['state']
+            booking.attrs['state'] = ifaces.STATE_CANCELLED
+        else:
+            raise ValueError(u"invalid transition: %s" % transition)
+
+        bookings_soup = get_bookings_soup(self.context)
+        bookings_soup.reindex(records=[booking])

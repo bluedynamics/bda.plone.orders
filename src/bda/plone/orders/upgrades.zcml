@@ -21,9 +21,9 @@
   <genericsetup:upgradeStep
     source="3"
     destination="4"
-    title="Move state and salaried from orders to bookings"
+    title="Move state, salaried and tid from orders to bookings"
     description=""
     profile="bda.plone.orders:default"
-    handler=".upgrades.fix_bookings_state_salaried"/>
+    handler=".upgrades.fix_bookings_state_salaried_tid"/>
 
 </configure>

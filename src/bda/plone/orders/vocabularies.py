@@ -2,10 +2,52 @@ from bda.plone.orders.common import get_all_vendors
 from bda.plone.orders.common import get_vendors_for
 from bda.plone.orders.common import get_vendor_order_uids_for
 from bda.plone.orders.common import get_order
+from bda.plone.orders import interfaces as ifaces
 from plone.uuid.interfaces import IUUID
 from zope.component.hooks import getSite
+from bda.plone.orders import message_factory as _
 
 import plone.api
+
+
+def state_vocab():
+    vocab = {
+        ifaces.STATE_NEW: _('new', default=u'New'),
+        ifaces.STATE_PROCESSING: _('processing', default=u'Processing'),
+        ifaces.STATE_FINISHED: _('finished', default=u'Finished'),
+        ifaces.STATE_CANCELLED: _('cancelled', default=u'Cancelled'),
+        ifaces.STATE_RESERVED: _('reserved', default=u'Reserved'),
+    }
+    return vocab
+
+
+def state_transitions_vocab():
+    vocab = {
+        ifaces.STATE_TRANSITION_RENEW: _('renew', default=u'Renew'),
+        ifaces.STATE_TRANSITION_PROCESS: _('process', default=u'Process'),
+        ifaces.STATE_TRANSITION_FINISH: _('finish', default=u'Finish'),
+        ifaces.STATE_TRANSITION_CANCEL: _('cancel', default=u'Cancel'),
+    }
+    return vocab
+
+
+def salaried_vocab():
+    vocab = {
+        ifaces.SALARIED_YES: _('yes', default=u'Yes'),
+        ifaces.SALARIED_NO: _('no', default=u'No'),
+        ifaces.SALARIED_FAILED: _('failed', default=u'Failed'),
+    }
+    return vocab
+
+
+def salaried_transitions_vocab():
+    vocab = {
+        ifaces.SALARIED_TRANSITION_SALARIED: _(
+            'mark_salaried', default=u'Mark salaried'),
+        ifaces.SALARIED_TRANSITION_OUTSTANDING: _(
+            'mark_outstanding', default=u'Mark outstanding'),
+    }
+    return vocab
 
 
 def all_vendors_vocab():

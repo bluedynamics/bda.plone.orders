@@ -17,7 +17,7 @@
     <div class="personal_data">
       <h3 i18n:translate="personal_data">Personal Data:</h3>
       <strong i18n:translate="order_gender">Gender:</strong>
-      <span tal:replace="python:view.gender(order)">gender</span>
+      <span tal:replace="view/gender">gender</span>
       <br />
       <strong i18n:translate="order_name">Name:</strong>
       <span tal:replace="order/personal_data.firstname">first name</span>
@@ -51,19 +51,19 @@
     <div class="order_state">
       <h3 i18n:translate="order_state_heading">Order State:</h3>
       <strong i18n:translate="order_created">Created:</strong>
-      <span tal:replace="python:view.created(order)">created</span>
+      <span tal:replace="view/created">created</span>
       <br />
       <strong i18n:translate="order_payment">Payment:</strong>
-      <span tal:replace="python:view.payment(order)">payment</span>
+      <span tal:replace="view/payment">payment</span>
       <br />
       <strong i18n:translate="order_salaried">Salaried:</strong>
-      <span tal:replace="python:view.salaried(order)">No</span>
+      <span tal:replace="view/salaried">No</span>
       <br />
       <strong i18n:translate="transaction_id">Transaction ID:</strong>
-      <span tal:replace="python:view.tid(order)">none</span>
+      <span tal:replace="view/tid">none</span>
       <br />
       <strong i18n:translate="order_state">State:</strong>
-      <span tal:replace="python:view.state(order)">state</span>
+      <span tal:replace="view/state">state</span>
     </div>
 
     <div class="order_summary">

@@ -61,7 +61,7 @@ def fix_orders_vendor_uids(ctx=None):
         logging.info("Rebuilt orders catalog")
 
 
-def fix_bookings_state_salaried(ctx=None):
+def fix_bookings_state_salaried_tid(ctx=None):
     portal = getSite()
     soup = get_orders_soup(portal)
     data = soup.storage.data
@@ -71,25 +71,35 @@ def fix_bookings_state_salaried(ctx=None):
         order_data = OrderData(portal, order=item)
         state = item.attrs.get('state', None)
         salaried = item.attrs.get('salaried', None)
+        tid = item.attrs.get('tid', 'none')  # tid default in b.p.payment
 
         for booking in order_data.bookings:
             # add too booking node
 
-            if state and 'state' not in booking.attrs:
+            if 'state' not in booking.attrs:
                 booking.attrs['state'] = state
                 need_rebuild = True
                 logging.info(
-                    "Added state {0} to booking {2}".format(
+                    "Added state {0} to booking {1}".format(
                         state, item.attrs['uid']
                     )
                 )
 
-            if salaried and 'salaried' not in booking.attrs:
+            if 'salaried' not in booking.attrs:
                 booking.attrs['salaried'] = salaried
                 need_rebuild = True
                 logging.info(
-                    "Added salaried {0} to booking {2}".format(
+                    "Added salaried {0} to booking {1}".format(
                         salaried, item.attrs['uid']
+                    )
+                )
+
+            if 'tid' not in booking.attrs:
+                booking.attrs['tid'] = tid
+                need_rebuild = True
+                logging.info(
+                    "Added tid {0} to booking {1}".format(
+                        tid, item.attrs['uid']
                     )
                 )
 
@@ -98,6 +108,8 @@ def fix_bookings_state_salaried(ctx=None):
             del item.attrs['state']
         if 'salaried' in item.attrs:
             del item.attrs['salaried']
+        if 'tid' in item.attrs:
+            del item.attrs['tid']
 
     if need_rebuild:
         bookings_soup = get_bookings_soup(portal)

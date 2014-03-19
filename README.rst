@@ -62,6 +62,18 @@ TODO
 
 - warning-popup, if state is changed globally for all bookings in @@orders view
 
+- buyable_uid, buyable_count, buyable_comment -> should be named cartitem_*?
+
+- customer role -> gehörert in bda.plone.cart rein
+
+- eventually create common.BookingTransitions and common.BookingData
+
+- fix dependency in bda.plone.payment.cash.__init__, which depends on b.p.orders
+
+- eventually create: or bda.shop, which defines the interfaces. every other
+  package can depend on, which eases the dependency chain
+
+
 Contributors
 ------------
 

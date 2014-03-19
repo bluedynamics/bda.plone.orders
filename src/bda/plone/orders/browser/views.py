@@ -15,8 +15,8 @@ from bda.plone.orders.common import get_order
 from bda.plone.orders.common import get_vendors_for
 from bda.plone.orders.common import get_vendor_uids_for
 from bda.plone.orders.common import get_vendor_by_uid
-from bda.plone.orders.vocabularies import customers_vocab_for
-from bda.plone.orders.vocabularies import vendors_vocab_for
+from bda.plone.orders import vocabularies as vocabs
+from bda.plone.orders import interfaces as ifaces
 from bda.plone.payment import Payments
 from decimal import Decimal
 from node.utils import UNSET
@@ -104,71 +104,60 @@ class OrderDropdown(object):
                                   u"``items``.")
 
 
-state_vocab = {
-    'new': _('new', default=u'New'),
-    'processing': _('processing', default=u'Processing'),
-    'finished': _('finished', default=u'Finished'),
-    'cancelled': _('cancelled', default=u'Cancelled'),
-    'reserved': _('reserved', default=u'Reserved'),
-}
-
-
 class StateDropdown(OrderDropdown):
     name = 'state'
     css = 'dropdown change_order_state_dropdown'
     action = 'statetransition'
-    vocab = state_vocab
-    transitions = {
-        'renew': _('renew', default=u'Renew'),
-        'process': _('process', default=u'Process'),
-        'finish': _('finish', default=u'Finish'),
-        'cancel': _('cancel', default=u'Cancel'),
-    }
+    vocab = vocabs.state_vocab()
+    transitions = vocabs.state_transitions_vocab()
 
     @property
     def value(self):
-        return self.record.attrs['state']
+        return OrderData(self.context, order=self.record).state
 
     @property
     def items(self):
-        state = self.record.attrs['state']
+        state = OrderData(self.context, order=self.record).state
         transitions = list()
-        if state in ['new', 'reserved']:
-            transitions = ['process', 'finish', 'cancel']
+        if state in [ifaces.STATE_NEW, ifaces.STATE_RESERVED]:
+            transitions = [
+                ifaces.STATE_TRANSITION_PROCESS,
+                ifaces.STATE_TRANSITION_FINISH,
+                ifaces.STATE_TRANSITION_CANCEL
+            ]
+        elif state == ifaces.STATE_MIXED:
+            transitions = [
+                ifaces.STATE_TRANSITION_PROCESS,
+                ifaces.STATE_TRANSITION_FINISH,
+                ifaces.STATE_TRANSITION_CANCEL,
+                ifaces.STATE_TRANSITION_RENEW
+            ]
         else:
-            transitions = ['renew']
+            transitions = [ifaces.STATE_TRANSITION_RENEW]
         return self.create_items(transitions)
-
-
-salaried_vocab = {
-    'yes': _('yes', default=u'Yes'),
-    'no': _('no', default=u'No'),
-    'failed': _('failed', default=u'Failed'),
-}
 
 
 class SalariedDropdown(OrderDropdown):
     name = 'salaried'
     css = 'dropdown change_order_salaried_dropdown'
     action = 'salariedtransition'
-    vocab = salaried_vocab
-    transitions = {
-        'mark_salaried': _('mark_salaried', default=u'Mark salaried'),
-        'mark_outstanding': _('mark_outstanding', default=u'Mark outstanding'),
-    }
+    vocab = vocabs.salaried_vocab()
+    transitions = vocabs.salaried_transitions_vocab()
 
     @property
     def value(self):
-        return self.record.attrs.get('salaried', 'no')
+        val = OrderData(self.context, order=self.record).salaried
+        return val or ifaces.SALARIED_NO
 
     @property
     def items(self):
-        salaried = self.record.attrs.get('salaried', 'no')
-        transitions = list()
-        if salaried == 'yes':
-            transitions = ['mark_outstanding']
+        salaried = OrderData(self.context, order=self.record).salaried\
+            or ifaces.SALARIED_NO
+        transitions = []
+        if salaried == ifaces.SALARIED_YES:
+            transitions = [ifaces.SALARIED_TRANSITION_OUTSTANDING]
         else:
-            transitions = ['mark_salaried']
+            transitions = [ifaces.SALARIED_TRANSITION_SALARIED]
         return self.create_items(transitions)
 
 
@@ -321,10 +310,11 @@ class OrdersTableBase(BrowserView):
         return None
 
     def render_salaried(self, colname, record):
-        return record.attrs.get('salaried', 'no')
+        return OrderData(self.context, order=record).salaried\
+            or ifaces.SALARIED_NO
 
     def render_state(self, colname, record):
-        return record.attrs['state']
+        return OrderData(self.context, order=record).state
 
     def render_dt(self, colname, record):
         value = record.attrs.get(colname, '')
@@ -369,12 +359,12 @@ class OrdersTableBase(BrowserView):
 
 
 def vendors_form_vocab():
-    vendors = vendors_vocab_for()
+    vendors = vocabs.vendors_vocab_for()
     return [('', _('all', default='All'))] + vendors
 
 
 def customers_form_vocab():
-    customers = customers_vocab_for()
+    customers = vocabs.customers_vocab_for()
     return [('', _('all', default='All'))] + customers
 
 
@@ -482,12 +472,12 @@ class OrdersTable(OrdersTableBase):
 
     def render_salaried(self, colname, record):
         if not self.check_modify_order(record):
-            return record.attrs['salaried']
+            return OrderData(self.context, order=record).salaried
         return SalariedDropdown(self.context, self.request, record).render()
 
     def render_state(self, colname, record):
         if not self.check_modify_order(record):
-            return record.attrs['state']
+            return OrderData(self.context, order=record).state
         return StateDropdown(self.context, self.request, record).render()
 
     @property
@@ -588,16 +578,22 @@ class MyOrdersData(MyOrdersTable, TableData):
 class OrderViewBase(BrowserView):
 
     @property
+    def _order_data(self):
+        return OrderData(self.context, uid=self.uid)
+
+    def __call__(self):
+        # DB lookups here, as in __init__ the security context is not
+        # initialized
+        self.order_data = self._order_data()
+        return super(OrderViewBase, self).__call__()
+
+    @property
     def uid(self):
         return self.request.form['uid']
 
     @property
     def order(self):
         return dict(self.order_data.order.attrs)
-
-    @property
-    def order_data(self):
-        return OrderData(self.context, uid=self.uid)
 
     @property
     def net(self):
@@ -642,36 +638,43 @@ class OrderViewBase(BrowserView):
             })
         return ret
 
-    def gender(self, order):
-        gender = order['personal_data.gender']
+    @property
+    def gender(self):
+        gender = self.order['personal_data.gender']
         if gender == 'male':
             return _co('male', 'Male')
         if gender == 'female':
             return _co('female', 'Female')
         return gender
 
-    def payment(self, order):
-        name = order['payment_selection.payment']
+    @property
+    def payment(self):
+        name = self.order['payment_selection.payment']
         payment = Payments(self.context).get(name)
         if payment:
             return payment.label
         return name
 
-    def salaried(self, order):
-        salaried = order.get('salaried', 'no')
-        return salaried_vocab[salaried]
+    @property
+    def salaried(self):
+        salaried = self.order_data.salaried or ifaces.SALARIED_NO
+        return vocabs.salaried_vocab()[salaried]
 
-    def tid(self, order):
-        tid = order.get('tid', 'none')
+    @property
+    def tid(self):
+        tid = self.order_data.tid or 'none'
         if tid == 'none':
             return _('none', default=u'None')
         return tid
 
-    def state(self, order):
-        return state_vocab[order.get('state', 'new')]
+    @property
+    def state(self):
+        state = self.order_data.state or ifaces.STATE_NEW
+        return vocabs.state_vocab()[state]
 
-    def created(self, order):
-        value = order.get('created', _('unknown', default=u'Unknown'))
+    @property
+    def created(self):
+        value = self.order.get('created', _('unknown', default=u'Unknown'))
         if value:
             value = value.strftime(DT_FORMAT)
         return value
@@ -690,11 +693,11 @@ class OrderView(OrderViewBase):
             raise Unauthorized
         return super(OrderView, self).__call__()
 
-    @property
-    def order_data(self):
-        return OrderData(self.context,
-                         uid=self.uid,
-                         vendor_uids=self.vendor_uids)
+    def _order_data(self):
+        return OrderData(
+            self.context,
+            uid=self.uid,
+            vendor_uids=self.vendor_uids)
 
 
 class MyOrderView(OrderViewBase):

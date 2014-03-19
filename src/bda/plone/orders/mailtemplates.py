@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 from BTrees.OOBTree import OOBTree
-from zope.annotation import IAnnotations
-from zope.interface import implementer
-from zope.component import queryAdapter
+from bda.plone.orders import interfaces as ifaces
 from bda.plone.orders.interfaces import IDynamicMailTemplateLibrary
 from bda.plone.orders.interfaces import IDynamicMailTemplateLibraryStorage
+from zope.annotation import IAnnotations
+from zope.component import queryAdapter
+from zope.interface import implementer
 
 
 ###############################################################################
@@ -468,8 +469,8 @@ REQUIRED_TEMPLATE_ATTRS = list()
 DEFAULT_TEMPLATE_ATTRS = {
     'created': '14.2.2014 14:42',
     'ordernumber': '123456',
-    'salaried': 'no',
-    'state': 'new',
+    'salaried': ifaces.SALARIED_NO,
+    'state': ifaces.STATE_NEW,
     'personal_data.company': 'ACME LTD.',
     'personal_data.email': 'max.mustermann@example.com',
     'personal_data.gender': 'male',
@@ -509,10 +510,10 @@ class DynamicMailTemplate(object):
             )
         self.required = required
         self.defaults = defaults
-        
+
     def normalized(self, keys=[], indict={}):
         if keys and indict:
-            raise ValueError('Only one kwargs please.')    
+            raise ValueError('Only one kwargs please.')
         if keys:
             result = []
             for key in keys:

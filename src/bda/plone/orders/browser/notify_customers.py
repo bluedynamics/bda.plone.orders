@@ -4,14 +4,14 @@ from bda.plone.ajax import AjaxOverlay
 from bda.plone.ajax import ajax_continue
 from bda.plone.ajax import ajax_form_fiddle
 from bda.plone.orders import message_factory as _
-from bda.plone.orders.common import get_order
-from bda.plone.orders.mailnotify import MailNotify
-from bda.plone.orders.interfaces import IDynamicMailTemplateLibrary
-from bda.plone.orders.mailtemplates import IDynamicMailTemplateLibrary
 from bda.plone.orders.browser.mailtemplates import TEMPLATE
+from bda.plone.orders.common import get_order
+from bda.plone.orders.interfaces import IDynamicMailTemplateLibrary
+from bda.plone.orders.mailnotify import MailNotify
 from node.utils import UNSET
 from yafowil.base import ExtractionError
 from yafowil.plone.form import YAMLBaseForm
+
 import json
 
 
@@ -53,7 +53,7 @@ class NotifyCustomers(YAMLBaseForm):
         if not state:
             raise ExtractionError(msg)
         return data.extracted
-    
+
     def _sendmail(self, notifier, uid, tpl, subject):
         order = get_order(self.context, uid)
         data = {}
