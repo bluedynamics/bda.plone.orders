@@ -38,13 +38,13 @@ Create translations
 TODO
 ----
 
-- Store order state on each booking to make it possible each vendor can handle
+OK - Store order state on each booking to make it possible each vendor can handle
   state of bookings in order belonging to him
 
-- Adopt order transitions affecting only bookings belonging to vendor
+OK - Adopt order transitions affecting only bookings belonging to vendor
   triggering the change
 
-- Extend plone.app.workflow to throw a LocalrolesModifiedEvent
+OK - Extend plone.app.workflow to throw a LocalrolesModifiedEvent
 
 - Add customer_role index storing all usernames which have customer role on
   several areas of the portal
