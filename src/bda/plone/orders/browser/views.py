@@ -22,6 +22,7 @@ from decimal import Decimal
 from node.utils import UNSET
 from odict import odict
 from plone.app.uuid.utils import uuidToURL
+from plone.memoize import view
 from repoze.catalog.query import Any
 from repoze.catalog.query import Contains
 from repoze.catalog.query import Eq
@@ -578,14 +579,9 @@ class MyOrdersData(MyOrdersTable, TableData):
 class OrderViewBase(BrowserView):
 
     @property
-    def _order_data(self):
+    @view.memoize
+    def order_data(self):
         return OrderData(self.context, uid=self.uid)
-
-    def __call__(self):
-        # DB lookups here, as in __init__ the security context is not
-        # initialized
-        self.order_data = self._order_data()
-        return super(OrderViewBase, self).__call__()
 
     @property
     def uid(self):
@@ -693,7 +689,9 @@ class OrderView(OrderViewBase):
             raise Unauthorized
         return super(OrderView, self).__call__()
 
-    def _order_data(self):
+    @property
+    @view.memoize
+    def order_data(self):
         return OrderData(
             self.context,
             uid=self.uid,
