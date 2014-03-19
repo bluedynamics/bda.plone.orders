@@ -46,8 +46,6 @@ TODO
 - Adopt order transitions affecting only bookings belonging to vendor
   triggering the change
 
-- Extend plone.app.workflow to throw a LocalrolesModifiedEvent
-
 - Add customer_role index storing all usernames which have customer role on
   several areas of the portal
 

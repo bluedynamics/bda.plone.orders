@@ -21,6 +21,16 @@
   <utility name="Vendor" factory=".localroles.VendorRole" />
   <utility name="Customer" factory=".localroles.CustomerRole" />
 
+  <!-- indexing -->
+  <adapter
+    name="customer_role"
+    factory=".indexer.customer_role" />
+
+  <!-- subscribers -->
+  <subscriber
+    for="plone.app.workflow.interfaces.ILocalrolesModifiedEvent"
+    handler=".subscriber.reindex_customer_role" />
+
   <!-- souper soups -->
   <utility
     name="bda_plone_orders_bookings"
