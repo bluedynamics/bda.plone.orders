@@ -383,7 +383,8 @@ class OrderCheckoutAdapter(CheckoutAdapter):
         if item_stock.available is not None:
             item_stock.available -= float(count)
         available = item_stock.available
-        state = available < 0 and ifaces.STATE_RESERVED or ifaces.STATE_NEW
+        state = (available is None or available >= 0) and ifaces.STATE_NEW\
+            or ifaces.STATE_RESERVED
         item_data = get_item_data_provider(buyable)
         vendor = acquire_vendor_or_shop_root(buyable)
         booking = OOBTNode()
