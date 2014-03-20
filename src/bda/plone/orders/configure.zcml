@@ -42,9 +42,6 @@
     name="bda_plone_orders_orders"
     factory=".common.OrdersCatalogFactory"/>
 
-  <!-- IUUID adapter for plone root -->
-  <adapter factory=".common.plone_root_uuid" />
-
   <!-- order checkout adapter -->
   <adapter
     for="Products.CMFPlone.interfaces.IPloneSiteRoot

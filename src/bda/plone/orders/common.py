@@ -1,6 +1,5 @@
 from Acquisition import aq_parent
 from Acquisition import aq_inner
-from Products.CMFPlone.interfaces import IPloneSiteRoot
 from bda.plone.cart import extractitems
 from bda.plone.cart import get_catalog_brain
 from bda.plone.cart import get_data_provider
@@ -42,18 +41,6 @@ import uuid
 
 
 DT_FORMAT = '%d.%m.%Y %H:%M'
-
-# static uuid for the PortalRoot, as it doesn't have a uuid by default
-UUID_PLONE_ROOT = '77c4390d-1179-44ba-9d57-46d23ac292c6'
-
-
-@implementer(IUUID)
-@adapter(IPloneSiteRoot)
-def plone_root_uuid(context):
-    """Adapter, which returns the static UUID for the IPloneSiteRoot, so that
-    this uuid can be used to be indexed in our souper storage.
-    """
-    return UUID_PLONE_ROOT
 
 
 def create_ordernumber():

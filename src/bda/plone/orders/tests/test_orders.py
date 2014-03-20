@@ -1,9 +1,7 @@
-from bda.plone.orders.common import UUID_PLONE_ROOT
 from bda.plone.orders.common import acquire_vendor_or_shop_root
 from bda.plone.orders.interfaces import IVendor
 from bda.plone.orders.tests import Orders_INTEGRATION_TESTING
 from bda.plone.orders.tests import set_browserlayer
-from plone.uuid.interfaces import IUUID
 from zope.component.interfaces import ISite
 from zope.interface import alsoProvides
 
@@ -17,9 +15,6 @@ class TestOrders(unittest.TestCase):
         self.portal = self.layer['portal']
         self.request = self.layer['request']
         set_browserlayer(self.request)
-
-    def test_plone_root_uuid(self):
-        self.assertEquals(IUUID(self.portal), UUID_PLONE_ROOT)
 
 
 class DummyContext(dict):
