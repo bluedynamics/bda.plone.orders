@@ -9,6 +9,7 @@
   <include package="collective.js.jqueryui"/>
   <include package="collective.js.datatables"/>
   <include package="bda.plone.checkout"/>
+  <include package="bda.plone.discount"/>
 
   <i18n:registerTranslations directory="locales"/>
 

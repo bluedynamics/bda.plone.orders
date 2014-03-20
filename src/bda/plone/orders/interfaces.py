@@ -1,4 +1,5 @@
 from bda.plone.checkout.interfaces import ICheckoutExtensionLayer
+from bda.plone.discount.interfaces import IDiscountSettingsEnabled
 from zope.interface import Attribute
 from zope.interface import Interface
 
@@ -29,7 +30,7 @@ class IOrdersExtensionLayer(ICheckoutExtensionLayer):
     """
 
 
-class IVendor(Interface):
+class IVendor(IDiscountSettingsEnabled):
     """A Vendor. Used to create isolated areas within one shop for multiple
     vendors.
     """

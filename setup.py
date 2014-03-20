@@ -34,6 +34,7 @@ setup(
         'setuptools',
         'Plone',
         'bda.plone.checkout',
+        'bda.plone.discount',
         'collective.js.datatables',
         'collective.js.jqueryui',
         'plone.api',
