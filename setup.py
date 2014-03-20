@@ -40,8 +40,6 @@ setup(
         'plone.api',
         'plone.app.uuid',
         'plone.memoize',
-        'souper.plone',
-        'yafowil.plone',
         'yafowil.widget.array',
         'yafowil.widget.datetime',
     ],
