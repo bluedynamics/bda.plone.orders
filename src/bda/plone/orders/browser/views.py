@@ -832,9 +832,9 @@ class ExportOrdersForm(YAMLForm):
             # raise if given vendor uid not in user vendor uids
             if not vendor_uid in vendor_uids:
                 raise Unauthorized
-            query = Any('vendor_uids', [vendor_uid])
+            query = query & Any('vendor_uids', [vendor_uid])
         else:
-            query = Any('vendor_uids', vendor_uids)
+            query = query & Any('vendor_uids', vendor_uids)
         # filter by customer if given
         customer = self.customer
         if customer:
