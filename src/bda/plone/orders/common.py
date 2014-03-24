@@ -102,7 +102,7 @@ def get_vendor_by_uid(context, vendor_uid):
     """
     if not isinstance(vendor_uid, uuid.UUID):
         vendor_uid = uuid.UUID(vendor_uid)
-    vendor = get_object_by_uid(vendor_uid)
+    vendor = get_object_by_uid(context, vendor_uid)
     if vendor is None:
         vendor = plone.api.portal.get()
     return vendor
@@ -493,7 +493,9 @@ class OrderData(object):
             if not obj:
                 continue
             stock = get_item_stock(obj)
-            stock.available += float(booking.attrs['buyable_count'])
+            # if stock.available is None, no stock information used
+            if stock.available is not None:
+                stock.available += float(booking.attrs['buyable_count'])
 
     def decrease_stock(self, bookings):
         for booking in bookings:
@@ -502,7 +504,9 @@ class OrderData(object):
             if not obj:
                 continue
             stock = get_item_stock(obj)
-            stock.available -= float(booking.attrs['buyable_count'])
+            # if stock.available is None, no stock information used
+            if stock.available is not None:
+                stock.available -= float(booking.attrs['buyable_count'])
 
 
 class BuyableData(object):
@@ -608,17 +612,17 @@ class OrderTransitions(object):
     def __init__(self, context, vendor_uids=list()):
         self.context = context
 
-    def do_transition(self, uid, transition):
+    def do_transition(self, uid, vendor_uids, transition):
         """Do transition for order by UID and transition name.
 
         @param uid: uuid.UUID or string representing a UUID
+        @param vendor_uids: list of uuid.UUID objects
         @param transition: string
 
         @return: order record
         """
         if not isinstance(uid, uuid.UUID):
             uid = uuid.UUID(uid)
-        vendor_uids = self.vendor_uids
         order_data = OrderData(self.context, uid=uid, vendor_uids=vendor_uids)
         order = order_data.order
         # XXX: currently we need to delete attribute before setting to a new

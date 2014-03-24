@@ -133,6 +133,12 @@ class StateDropdown(OrderDropdown):
                 ifaces.STATE_TRANSITION_CANCEL,
                 ifaces.STATE_TRANSITION_RENEW
             ]
+        elif state == ifaces.STATE_PROCESSING:
+            transitions = [
+                ifaces.STATE_TRANSITION_FINISH,
+                ifaces.STATE_TRANSITION_CANCEL,
+                ifaces.STATE_TRANSITION_RENEW
+            ]
         else:
             transitions = [ifaces.STATE_TRANSITION_RENEW]
         return self.create_items(transitions)
@@ -169,12 +175,15 @@ class Transition(BrowserView):
         transition = self.request['transition']
         uid = self.request['uid']
         order = get_order(self.context, uid)
-        vendor = get_vendor_by_uid(order.attrs['vendor_uid'])
         user = plone.api.user.get_current()
-        if not user.checkPermission(permissions.ModifyOrders, vendor):
-            raise Unauthorized
-        record = OrderTransitions(self.context).do_transition(uid, transition)
-        return self.dropdown(self.context, self.request, record).render()
+        vendor_uids = get_vendor_uids_for()
+        for vendor_uid in vendor_uids:
+            vendor = get_vendor_by_uid(self.context, vendor_uid)
+            if not user.checkPermission(permissions.ModifyOrders, vendor):
+                raise Unauthorized
+        transitions = OrderTransitions(self.context)
+        order = transitions.do_transition(uid, vendor_uids, transition)
+        return self.dropdown(self.context, self.request, order).render()
 
 
 class StateTransition(Transition):
