@@ -464,8 +464,16 @@ class OrdersTable(OrdersTableBase):
 
     def render_order_actions(self, colname, record):
         tag = Tag(Translate(self.request))
-        view_order_target = '%s?uid=%s' % (
-            self.context.absolute_url(), str(record.attrs['uid']))
+        vendor_uid = self.request.form.get('vendor', '')
+        if vendor_uid:
+            view_order_target = '%s?uid=%s&vendor=%s' % (
+                self.context.absolute_url(),
+                str(record.attrs['uid']),
+                vendor_uid)
+        else:
+            view_order_target = '%s?uid=%s' % (
+                self.context.absolute_url(),
+                str(record.attrs['uid']))
         view_order_attrs = {
             'ajax:bind': 'click',
             'ajax:target': view_order_target,
@@ -721,6 +729,7 @@ class OrderView(OrderViewBase):
         if vendor_uid:
             self.vendor_uids = [vendor_uid]
             vendor = get_vendor_by_uid(self.context, vendor_uid)
+            user = plone.api.user.get_current()
             if not user.checkPermission(permissions.ModifyOrders, vendor):
                 raise Unauthorized
         else:
