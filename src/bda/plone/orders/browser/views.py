@@ -176,6 +176,7 @@ class Transition(BrowserView):
         uid = self.request['uid']
         order = get_order(self.context, uid)
         user = plone.api.user.get_current()
+        # XXX: get vendor uids from request
         vendor_uids = get_vendor_uids_for()
         for vendor_uid in vendor_uids:
             vendor = get_vendor_by_uid(self.context, vendor_uid)
@@ -738,8 +739,8 @@ ORDER_EXPORT_ATTRS = [
     'uid',
     'created',
     'ordernumber',
-    'salaried',
-    'state',
+    'cart_discount_net',
+    'cart_discount_vat',
     'personal_data.company',
     'personal_data.email',
     'personal_data.gender',
@@ -761,24 +762,27 @@ ORDER_EXPORT_ATTRS = [
     'order_comment.comment',
     'payment_selection.payment',
 ]
-COMPUTER_ORDER_EXPORT_ATTRS = odict()
+COMPUTED_ORDER_EXPORT_ATTRS = odict()
 BOOKING_EXPORT_ATTRS = [
     'title',
     'buyable_comment',
     'buyable_count',
     'quantity_unit',
     'net',
+    'discount_net',
     'vat',
     'currency',
+    'state',
+    'salaried',
     'exported',
 ]
-COMPUTER_BOOKING_EXPORT_ATTRS = odict()
+COMPUTED_BOOKING_EXPORT_ATTRS = odict()
 
 
 def resolve_buyable_url(context, booking):
     return uuidToURL(booking.attrs['buyable_uid'])
 
-COMPUTER_BOOKING_EXPORT_ATTRS['url'] = resolve_buyable_url
+COMPUTED_BOOKING_EXPORT_ATTRS['url'] = resolve_buyable_url
 
 
 class ExportOrdersForm(YAMLForm):
@@ -863,23 +867,25 @@ class ExportOrdersForm(YAMLForm):
         ex = csv.writer(sio, dialect='excel-colon')
         # exported column keys as first line
         ex.writerow(ORDER_EXPORT_ATTRS +
-                    COMPUTER_ORDER_EXPORT_ATTRS.keys() +
+                    COMPUTED_ORDER_EXPORT_ATTRS.keys() +
                     BOOKING_EXPORT_ATTRS +
-                    COMPUTER_BOOKING_EXPORT_ATTRS.keys())
+                    COMPUTED_BOOKING_EXPORT_ATTRS.keys())
         # query orders
         for order in orders_soup.query(query):
+            # restrict order bookings for current vendor_uids
+            order_data = OrderData(self.context,
+                                   order=order,
+                                   vendor_uids=vendor_uids)
             order_attrs = list()
             # order export attrs
             for attr_name in ORDER_EXPORT_ATTRS:
                 val = self.export_val(order, attr_name)
                 order_attrs.append(val)
             # computed order export attrs
-            for attr_name in COMPUTER_ORDER_EXPORT_ATTRS:
-                cb = COMPUTER_ORDER_EXPORT_ATTRS[attr_name]
-                val = cb(self.context, order)
+            for attr_name in COMPUTED_ORDER_EXPORT_ATTRS:
+                cb = COMPUTED_ORDER_EXPORT_ATTRS[attr_name]
+                val = cb(self.context, order_data)
                 order_attrs.append(val)
-            # only order bookings for current vendor_uids
-            order_data = OrderData(order=order, vendor_uids=vendor_uids)
             for booking in order_data.bookings:
                 booking_attrs = list()
                 # booking export attrs
@@ -887,8 +893,8 @@ class ExportOrdersForm(YAMLForm):
                     val = self.export_val(booking, attr_name)
                     booking_attrs.append(val)
                 # computed booking export attrs
-                for attr_name in COMPUTER_BOOKING_EXPORT_ATTRS:
-                    cb = COMPUTER_ORDER_EXPORT_ATTRS[attr_name]
+                for attr_name in COMPUTED_BOOKING_EXPORT_ATTRS:
+                    cb = COMPUTED_BOOKING_EXPORT_ATTRS[attr_name]
                     val = cb(self.context, booking)
                     booking_attrs.append(val)
                 ex.writerow(order_attrs + booking_attrs)
