@@ -151,6 +151,7 @@
         <th i18n:translate="booking_quantity_unit">quantity unit</th>
         <th i18n:translate="booking_currency">currency</th>
         <th i18n:translate="booking_net">net</th>
+        <th i18n:translate="booking_discount_net">discount net</th>
         <th i18n:translate="booking_vat">vat</th>
         <th i18n:translate="booking_exported">exported</th>
         <th i18n:translate="booking_comment">comment</th>
@@ -163,6 +164,7 @@
           <td tal:content="row/quantity_unit">quantity</td>
           <td tal:content="row/currency">EUR</td>
           <td tal:content="row/net">net</td>
+          <td tal:content="row/discount_net">discount net</td>
           <td>
             <span tal:replace="row/vat">20.0</span>%
           </td>

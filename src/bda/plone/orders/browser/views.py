@@ -601,13 +601,11 @@ class OrderViewBase(BrowserView):
 
     @property
     def discount_net(self):
-        # XXX
-        return ascur(self.order_data.net)
+        return ascur(self.order_data.discount_net)
 
     @property
     def discount_vat(self):
-        # XXX
-        return ascur(self.order_data.vat)
+        return ascur(self.order_data.discount_vat)
 
     @property
     def shipping(self):
@@ -629,6 +627,7 @@ class OrderViewBase(BrowserView):
 
     @property
     def listing(self):
+        # XXX: discount
         ret = list()
         for booking in self.order_data.bookings:
             ret.append({
@@ -636,6 +635,7 @@ class OrderViewBase(BrowserView):
                 'url': uuidToURL(booking.attrs['buyable_uid']),
                 'count': booking.attrs['buyable_count'],
                 'net': ascur(booking.attrs.get('net', 0.0)),
+                'discount_net': ascur(float(booking.attrs['discount_net'])),
                 'vat': booking.attrs.get('vat', 0.0),
                 'exported': booking.attrs['exported'],
                 'comment': booking.attrs['buyable_comment'],

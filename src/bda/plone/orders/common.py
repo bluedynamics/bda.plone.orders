@@ -139,23 +139,6 @@ def get_vendor_uids_for(user=None):
     return [uuid.UUID(IUUID(vendor)) for vendor in get_vendors_for(user=user)]
 
 
-# TODO: no longer used right now
-def get_vendor_order_uids(context, vendor_uid):
-    """Get all order uids for a given vendor uid.
-
-    :param vendor_uid: Vendor uid, which is used to filter the orders.
-    :type vendor_uid: string or uuid.UUID object
-    :returns: List of order UUID objects.
-    :rtype: List of uuid.UUID
-    """
-    if vendor_uid and not isinstance(vendor_uid, uuid.UUID):
-        vendor_uid = uuid.UUID(vendor_uid)
-    soup = get_bookings_soup(context)
-    res = soup.query(Eq('vendor_uid', vendor_uid))
-    order_uids = set(booking.attrs['order_uid'] for booking in res)
-    return order_uids
-
-
 # TODO: used in vocabularies, remove if possible
 def get_vendor_order_uids_for(context, user=None):
     """Get order uids all orders a given or current user has vendor
@@ -172,36 +155,6 @@ def get_vendor_order_uids_for(context, user=None):
     res = soup.query(Any('vendor_uid', vendors))
     order_uids = set(booking.attrs['order_uid'] for booking in res)
     return order_uids
-
-
-# TODO: no longer used right now
-def get_customer_order_uids(context, customer):
-    """Get all order uids for a given customer.
-
-    :param creator: Customer aka user id aka creator.
-    :type creator: string
-    :returns: List of order UUID objects.
-    :rtype: List of uuid.UUID
-    """
-    soup = get_orders_soup(context)
-    res = soup.query(Eq('creator', customer))
-    order_uids = set(order.attrs['uid'] for order in res)
-    return order_uids
-
-
-# TODO: no longer used right now
-def get_customer_order_uids_for(context, user=None):
-    """Get order uids of all orders a given or current user has made.
-
-    :param user: Optional user object representing the customer. If
-                 no user object is give, the current user is used.
-    :type user: MemberData object
-    :returns: List of order UUID objects.
-    :rtype: List of uuid.UUID
-    """
-    if user is None:
-        user = plone.api.user.get_current()
-    return get_customer_order_uids(context, user.getId())
 
 
 @implementer(ICatalogFactory)
@@ -491,37 +444,47 @@ class OrderData(object):
 
     @property
     def net(self):
-        # XXX: discount
+        # XXX: use decimal
         ret = 0.0
         for booking in self.bookings:
             count = float(booking.attrs['buyable_count'])
-            ret += booking.attrs.get('net', 0.0) * count
+            net = booking.attrs.get('net', 0.0)
+            discount_net = float(booking.attrs['discount_net'])
+            ret += (net - discount_net) * count
         return ret
 
     @property
     def vat(self):
-        # XXX: discount
+        # XXX: use decimal
         ret = 0.0
         for booking in self.bookings:
             count = float(booking.attrs['buyable_count'])
-            net = booking.attrs.get('net', 0.0) * count
-            ret += net * booking.attrs.get('vat', 0.0) / 100
+            net = booking.attrs.get('net', 0.0)
+            discount_net = float(booking.attrs['discount_net'])
+            item_net = net - discount_net
+            ret += (net * booking.attrs.get('vat', 0.0) / 100.0) * count
         return ret
 
     @property
+    def discount_net(self):
+        # XXX: use decimal
+        return float(self.order.attrs['cart_discount_net'])
+
+    @property
+    def discount_vat(self):
+        # XXX: use decimal
+        return float(self.order.attrs['cart_discount_vat'])
+
+    @property
     def shipping(self):
+        # XXX: use decimal
         return float(self.order.attrs['shipping'])
 
     @property
     def total(self):
-        # XXX: discount
-        ret = 0.0
-        for booking in self.bookings:
-            count = float(booking.attrs['buyable_count'])
-            net = booking.attrs.get('net', 0.0) * count
-            ret += net
-            ret += net * booking.attrs.get('vat', 0.0) / 100
-        return ret + self.shipping
+        # XXX: use decimal
+        total = self.net - self.discount_net + self.vat - self.discount_vat
+        return total + self.shipping
 
     def increase_stock(self, bookings):
         for booking in bookings:
@@ -660,15 +623,12 @@ class OrderTransitions(object):
         order = order_data.order
         # XXX: currently we need to delete attribute before setting to a new
         #      value in order to persist change. fix in appropriate place.
-
         for booking in order_data.bookings:
             self.do_transition_for_booking(booking, transition)
-
         if transition == ifaces.STATE_TRANSITION_RENEW:
             order_data.decrease_stock(order_data.bookings)
         elif transition == ifaces.STATE_TRANSITION_CANCEL:
             order_data.increase_stock(order_data.bookings)
-
         orders_soup = get_orders_soup(self.context)
         orders_soup.reindex(records=[order])
         return order
@@ -694,6 +654,5 @@ class OrderTransitions(object):
             booking.attrs['state'] = ifaces.STATE_CANCELLED
         else:
             raise ValueError(u"invalid transition: %s" % transition)
-
         bookings_soup = get_bookings_soup(self.context)
         bookings_soup.reindex(records=[booking])
