@@ -229,7 +229,6 @@ class BookingsCatalogFactory(object):
         catalog[u'state'] = CatalogFieldIndex(state_indexer)
         salaried_indexer = NodeAttributeIndexer('salaried')
         catalog[u'salaried'] = CatalogFieldIndex(salaried_indexer)
-
         return catalog
 
 
@@ -251,13 +250,11 @@ class OrdersCatalogFactory(object):
         created_indexer = NodeAttributeIndexer('created')
         catalog[u'created'] = CatalogFieldIndex(created_indexer)
         firstname_indexer = NodeAttributeIndexer('personal_data.firstname')
-        catalog[u'personal_data.firstname'] = CatalogFieldIndex(
-            firstname_indexer
-        )
+        catalog[u'personal_data.firstname'] = \
+            CatalogFieldIndex(firstname_indexer)
         lastname_indexer = NodeAttributeIndexer('personal_data.lastname')
-        catalog[u'personal_data.lastname'] = CatalogFieldIndex(
-            lastname_indexer
-        )
+        catalog[u'personal_data.lastname'] = \
+            CatalogFieldIndex(lastname_indexer)
         city_indexer = NodeAttributeIndexer('billing_address.city')
         catalog[u'billing_address.city'] = CatalogFieldIndex(city_indexer)
         search_attributes = ['personal_data.lastname',
@@ -336,6 +333,10 @@ class OrderCheckoutAdapter(CheckoutAdapter):
             vendor_uids.add(booking.attrs['vendor_uid'])
         order.attrs['booking_uids'] = booking_uids
         order.attrs['vendor_uids'] = list(vendor_uids)
+        cart_data = get_data_provider(self.context)
+        cart_discount = cart_data.discount(self.items)
+        order.attrs['cart_discount_net'] = cart_discount['net']
+        order.attrs['cart_discount_vat'] = cart_discount['vat']
         orders_soup = get_orders_soup(self.context)
         ordernumber = create_ordernumber()
         while self.ordernumber_exists(orders_soup, ordernumber):
@@ -387,6 +388,7 @@ class OrderCheckoutAdapter(CheckoutAdapter):
         booking.attrs['title'] = brain and brain.Title or 'unknown'
         booking.attrs['net'] = item_data.net
         booking.attrs['vat'] = item_data.vat
+        booking.attrs['discount_net'] = item_data.discount_net(count)
         booking.attrs['currency'] = cart_data.currency
         booking.attrs['quantity_unit'] = item_data.quantity_unit
         booking.attrs['remaining_stock_available'] = available
@@ -413,7 +415,6 @@ class OrderData(object):
         assert(bool(uid) != bool(order))  # ^= xor
         if uid and not isinstance(uid, uuid.UUID):
             uid = uuid.UUID(uid)
-
         vendor_uids = [uuid.UUID(str(vuid)) for vuid in vendor_uids]
         self.context = context
         self._uid = uid
@@ -490,6 +491,7 @@ class OrderData(object):
 
     @property
     def net(self):
+        # XXX: discount
         ret = 0.0
         for booking in self.bookings:
             count = float(booking.attrs['buyable_count'])
@@ -498,6 +500,7 @@ class OrderData(object):
 
     @property
     def vat(self):
+        # XXX: discount
         ret = 0.0
         for booking in self.bookings:
             count = float(booking.attrs['buyable_count'])
@@ -511,6 +514,7 @@ class OrderData(object):
 
     @property
     def total(self):
+        # XXX: discount
         ret = 0.0
         for booking in self.bookings:
             count = float(booking.attrs['buyable_count'])

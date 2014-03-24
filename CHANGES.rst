@@ -5,6 +5,9 @@ Changelog
 0.4dev
 ------
 
+- Integrate discounting information to orders and bookings.
+  [rnix]
+
 - Move state, salaried and tid to bookings.
   [thet]
 

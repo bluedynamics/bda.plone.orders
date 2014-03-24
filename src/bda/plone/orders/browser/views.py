@@ -600,6 +600,16 @@ class OrderViewBase(BrowserView):
         return ascur(self.order_data.vat)
 
     @property
+    def discount_net(self):
+        # XXX
+        return ascur(self.order_data.net)
+
+    @property
+    def discount_vat(self):
+        # XXX
+        return ascur(self.order_data.vat)
+
+    @property
     def shipping(self):
         return ascur(self.order_data.shipping)
 

@@ -2,6 +2,7 @@ from bda.plone.orders.common import acquire_vendor_or_shop_root
 from bda.plone.orders.common import get_bookings_soup
 from bda.plone.orders.common import get_orders_soup
 from bda.plone.orders.common import OrderData
+from decimal import Decimal
 from plone.app.uuid.utils import uuidToObject
 from plone.uuid.interfaces import IUUID
 from zope.component.hooks import getSite
@@ -66,16 +67,13 @@ def fix_bookings_state_salaried_tid(ctx=None):
     soup = get_orders_soup(portal)
     data = soup.storage.data
     need_rebuild = False
-
     for item in data.values():
         order_data = OrderData(portal, order=item)
         state = item.attrs.get('state', None)
         salaried = item.attrs.get('salaried', None)
         tid = item.attrs.get('tid', 'none')  # tid default in b.p.payment
-
         for booking in order_data.bookings:
             # add too booking node
-
             if 'state' not in booking.attrs:
                 booking.attrs['state'] = state
                 need_rebuild = True
@@ -84,7 +82,6 @@ def fix_bookings_state_salaried_tid(ctx=None):
                         state, item.attrs['uid']
                     )
                 )
-
             if 'salaried' not in booking.attrs:
                 booking.attrs['salaried'] = salaried
                 need_rebuild = True
@@ -93,7 +90,6 @@ def fix_bookings_state_salaried_tid(ctx=None):
                         salaried, item.attrs['uid']
                     )
                 )
-
             if 'tid' not in booking.attrs:
                 booking.attrs['tid'] = tid
                 need_rebuild = True
@@ -102,7 +98,6 @@ def fix_bookings_state_salaried_tid(ctx=None):
                         tid, item.attrs['uid']
                     )
                 )
-
         # now, delete from order node
         if 'state' in item.attrs:
             del item.attrs['state']
@@ -110,8 +105,45 @@ def fix_bookings_state_salaried_tid(ctx=None):
             del item.attrs['salaried']
         if 'tid' in item.attrs:
             del item.attrs['tid']
-
     if need_rebuild:
         bookings_soup = get_bookings_soup(portal)
+        bookings_soup.rebuild()
+        logging.info("Rebuilt bookings catalog")
+
+
+def fix_discount_attrs(ctx=None):
+    portal = getSite()
+    # discount attrs on order
+    orders_soup = get_orders_soup(portal)
+    need_rebuild = False
+    data = orders_soup.storage.data
+    for item in data.values():
+        if not 'cart_discount_net' in item.attrs:
+            need_rebuild = True
+            item.attrs['cart_discount_net'] = Decimal(0)
+            logging.info(
+                "Added cart_discount_net to order {0}".format(item.attrs['uid'])
+            )
+        if not 'cart_discount_vat' in item.attrs:
+            need_rebuild = True
+            item.attrs['cart_discount_vat'] = Decimal(0)
+            logging.info(
+                "Added cart_discount_vat to order {0}".format(item.attrs['uid'])
+            )
+    if need_rebuild:
+        orders_soup.rebuild()
+        logging.info("Rebuilt orders catalog")
+    # discount attrs on bookings
+    bookings_soup = get_bookings_soup(portal)
+    need_rebuild = False
+    data = bookings_soup.storage.data
+    for item in data.values():
+        if not 'discount_net' in item.attrs:
+            need_rebuild = True
+            item.attrs['discount_net'] = Decimal(0)
+            logging.info(
+                "Added discount_net to booking {0}".format(item.attrs['uid'])
+            )
+    if need_rebuild:
         bookings_soup.rebuild()
         logging.info("Rebuilt bookings catalog")

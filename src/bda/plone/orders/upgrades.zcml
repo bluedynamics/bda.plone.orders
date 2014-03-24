@@ -26,4 +26,12 @@
     profile="bda.plone.orders:default"
     handler=".upgrades.fix_bookings_state_salaried_tid"/>
 
+  <genericsetup:upgradeStep
+    source="4"
+    destination="5"
+    title="Add discount related attributes to orders and bookings"
+    description=""
+    profile="bda.plone.orders:default"
+    handler=".upgrades.fix_discount_attrs"/>
+
 </configure>
