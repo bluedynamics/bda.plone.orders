@@ -4,7 +4,10 @@
     i18n:domain="bda.plone.orders"
     tal:omit-tag="">
 
-  <tal:filter replace="structure view/render_filter"/>
+  <div class="filter"
+       tal:attributes="ajax:target context/absolute_url">
+    <tal:filter replace="structure view/render_filter"/>
+  </div>
 
   <table tal:define="ajaxurl view/ajaxurl;
                      columns view/columns"

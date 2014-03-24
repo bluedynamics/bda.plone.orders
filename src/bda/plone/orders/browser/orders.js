@@ -1,31 +1,72 @@
 (function ($) {
 
     $(document).ready(function () {
-        var url = $('#bdaploneorders').attr('data-ajaxurl');
-        var oTable = $('#bdaploneorders').dataTable({
-            "bProcessing": true,
-            "bServerSide": true,
-            "sAjaxSource": url,
-            "sPaginationType": "full_numbers",
-            "oLanguage": {
-                "sUrl": "@@collective.js.datatables.translation"
-            },
-            "aoColumnDefs": [{
-                'bSortable': false,
-                'aTargets': [0]
-            }],
-            "aaSorting": [[1, "desc"]],
-            "fnDrawCallback": orders.bind
-        });
         $.extend(bdajax.binders, {
+            orders_datatable_binder: orders.datatable_binder,
+            orders_filter_binder: orders.filter_binder,
             orders_dropdown_menus: orders.dropdown_binder,
             orders_notification_form_binder: orders.notification_form_binder
         });
+        orders.datatable_binder(document);
+        orders.filter_binder(document);
         orders.order_select_binder(document);
         orders.notification_binder(document);
     });
 
     var orders = {
+
+        datatable_binder: function(context) {
+            var url = $('#bdaploneorders', context).attr('data-ajaxurl');
+            var oTable = $('#bdaploneorders', context).dataTable({
+                "bProcessing": true,
+                "bServerSide": true,
+                "sAjaxSource": url,
+                "sPaginationType": "full_numbers",
+                "oLanguage": {
+                    "sUrl": "@@collective.js.datatables.translation"
+                },
+                "aoColumnDefs": [{
+                    'bSortable': false,
+                    'aTargets': [0]
+                }],
+                "aaSorting": [[1, "desc"]],
+                "fnDrawCallback": orders.bind
+            });
+        },
+
+        filter_binder: function(context) {
+            $('#input-vendor').unbind('change')
+                              .bind('change', orders.filter_orders);
+            $('#input-customer').unbind('change')
+                                .bind('change', orders.filter_orders);
+        },
+
+        filter_orders: function(event) {
+            event.preventDefault();
+            var selection = $(this);
+            var wrapper = selection.parent();
+            var vendor, customer;
+            if (selection.attr('name') == 'vendor') {
+                vendor = selection.val();
+                customer = $('#input-customer', wrapper).val();
+            } else {
+                vendor = $('#input-vendor', wrapper).val();
+                customer = selection.val();
+            }
+            var ajax_table = wrapper.parents('.ajaxtable');
+            var action = ajax_table.data('tablename');
+            var target = bdajax.parsetarget(wrapper.attr('ajax:target'));
+            target.params['vendor'] = vendor;
+            target.params['customer'] = customer;
+            bdajax.action({
+                name: action,
+                selector: '#orders_wrapper',
+                mode: 'inner',
+                url: target.url,
+                params: target.params
+            });
+        },
+
         bind: function () {
             orders.do_order_selection($('input[name="select_all_orders"]'));
             $(this).bdajax();

@@ -17,6 +17,7 @@ def state_vocab():
         ifaces.STATE_FINISHED: _('finished', default=u'Finished'),
         ifaces.STATE_CANCELLED: _('cancelled', default=u'Cancelled'),
         ifaces.STATE_RESERVED: _('reserved', default=u'Reserved'),
+        ifaces.STATE_MIXED: _('mixed', default=u'Mixed'),
     }
     return vocab
 
@@ -36,6 +37,7 @@ def salaried_vocab():
         ifaces.SALARIED_YES: _('yes', default=u'Yes'),
         ifaces.SALARIED_NO: _('no', default=u'No'),
         ifaces.SALARIED_FAILED: _('failed', default=u'Failed'),
+        ifaces.SALARIED_MIXED: _('mixed', default=u'Mixed'),
     }
     return vocab
 

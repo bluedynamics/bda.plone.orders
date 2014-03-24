@@ -74,18 +74,32 @@ class OrderDropdown(object):
         self.request = request
         self.record = record
 
+    @property
+    def order_data(self):
+        vendor_uid = self.request.form.get('vendor', '')
+        if vendor_uid:
+            vendor_uids = [vendor_uid]
+        else:
+            vendor_uids = get_vendor_uids_for()
+        return OrderData(self.context,
+                         order=self.record,
+                         vendor_uids=vendor_uids)
+
     def create_items(self, transitions):
         ret = list()
-        # lookup vendor of order, used to perform transitions
-        #vendor = get_vendor_by_uid(self.record.attrs['vendor_uid'])
-        vendor = self.context
-        url = vendor.absolute_url()
+        url = self.context.absolute_url()
         # create and return available transitions for order
         uid = str(self.record.attrs['uid'])
+        vendor = self.request.form.get('vendor', '')
         for transition in transitions:
+            if vendor:
+                target = '%s?transition=%s&uid=%s&vendor=%s' % (
+                    url, transition, uid, vendor)
+            else:
+                target = '%s?transition=%s&uid=%s' % (url, transition, uid)
             ret.append({
                 'title': self.transitions[transition],
-                'target': '%s?transition=%s&uid=%s' % (url, transition, uid)
+                'target': target,
             })
         return ret
 
@@ -114,11 +128,11 @@ class StateDropdown(OrderDropdown):
 
     @property
     def value(self):
-        return OrderData(self.context, order=self.record).state
+        return self.order_data.state
 
     @property
     def items(self):
-        state = OrderData(self.context, order=self.record).state
+        state = self.order_data.state
         transitions = list()
         if state in [ifaces.STATE_NEW, ifaces.STATE_RESERVED]:
             transitions = [
@@ -153,18 +167,21 @@ class SalariedDropdown(OrderDropdown):
 
     @property
     def value(self):
-        val = OrderData(self.context, order=self.record).salaried
-        return val or ifaces.SALARIED_NO
+        return self.order_data.salaried or ifaces.SALARIED_NO
 
     @property
     def items(self):
-        salaried = OrderData(self.context, order=self.record).salaried\
-            or ifaces.SALARIED_NO
+        salaried = self.order_data.salaried or ifaces.SALARIED_NO
         transitions = []
         if salaried == ifaces.SALARIED_YES:
             transitions = [ifaces.SALARIED_TRANSITION_OUTSTANDING]
-        else:
+        elif salaried == ifaces.SALARIED_NO:
             transitions = [ifaces.SALARIED_TRANSITION_SALARIED]
+        else:
+            transitions = [
+                ifaces.SALARIED_TRANSITION_OUTSTANDING,
+                ifaces.SALARIED_TRANSITION_SALARIED
+            ]
         return self.create_items(transitions)
 
 
@@ -176,8 +193,11 @@ class Transition(BrowserView):
         uid = self.request['uid']
         order = get_order(self.context, uid)
         user = plone.api.user.get_current()
-        # XXX: get vendor uids from request
-        vendor_uids = get_vendor_uids_for()
+        vendor_uid = self.request.form.get('vendor', '')
+        if vendor_uid:
+            vendor_uids = [vendor_uid]
+        else:
+            vendor_uids = get_vendor_uids_for()
         for vendor_uid in vendor_uids:
             vendor = get_vendor_by_uid(self.context, vendor_uid)
             if not user.checkPermission(permissions.ModifyOrders, vendor):
@@ -390,7 +410,7 @@ class OrdersTable(OrdersTableBase):
             vendor_selector = factory(
                 'label:select',
                 name='vendor',
-                value=self.request.form.get('ordersfilter.vendor', UNSET),
+                value=self.request.form.get('vendor', ''),
                 props={
                     'vocabulary': vendors,
                     'label': 'Filter for vendors'
@@ -404,7 +424,7 @@ class OrdersTable(OrdersTableBase):
             customer_selector = factory(
                 'label:select',
                 name='customer',
-                value=self.request.form.get('ordersfilter.customer', UNSET),
+                value=self.request.form.get('customer', ''),
                 props={
                     'vocabulary': customers,
                     'label': 'Filter for customers'
@@ -412,23 +432,13 @@ class OrdersTable(OrdersTableBase):
             )
         if not vendor_selector and not customer_selector:
             return
-        # create filter form
-        action = self.request.getURL()
-        form = factory(
-            'form',
-            name='ordersfilter',
-            props={'action': action},
-        )
+        # concatenate filters
+        filter = ''
         if vendor_selector:
-            form['vendor'] = vendor_selector
+            filter += vendor_selector(request=self.request)
         if customer_selector:
-            form['customer'] = customer_selector
-        form['submit'] = factory(
-            'submit',
-            name='filter',
-            props={'action': True, 'label': 'Filter'}
-        )
-        return form(request=self.request)
+            filter += customer_selector(request=self.request)
+        return filter
 
     def render_order_actions_head(self):
         tag = Tag(Translate(self.request))
@@ -474,12 +484,17 @@ class OrdersTable(OrdersTableBase):
         return select_order + view_order
 
     def check_modify_order(self, order):
+        user = plone.api.user.get_current()
+        vendor_uid = self.request.form.get('vendor', '')
+        if vendor_uid:
+            vendor_uids = [vendor_uid]
+        else:
+            vendor_uids = get_vendor_uids_for()
+        for vendor_uid in vendor_uids:
+            vendor = get_vendor_by_uid(self.context, vendor_uid)
+            if not user.checkPermission(permissions.ModifyOrders, vendor):
+                return False
         return True
-        # XXX: crap
-        #vendor = get_vendor_by_uid(order.attrs['vendor_uid'])
-        #user = plone.api.user.get_current()
-        #if user.checkPermission(permissions.ModifyOrders, vendor):
-        #    return True
 
     def render_salaried(self, colname, record):
         if not self.check_modify_order(record):
@@ -494,8 +509,8 @@ class OrdersTable(OrdersTableBase):
     @property
     def ajaxurl(self):
         params = [
-            ('vendor', self.request.form.get('ordersfilter.vendor')),
-            ('customer', self.request.form.get('ordersfilter.customer'))
+            ('vendor', self.request.form.get('vendor')),
+            ('customer', self.request.form.get('customer'))
         ]
         query = urllib.urlencode(dict([it for it in params if it[1]]))
         query = query and '?{0}'.format(query) or ''
@@ -506,9 +521,6 @@ class OrdersTable(OrdersTableBase):
         # check if authenticated user is vendor
         if not get_vendors_for():
             raise Unauthorized
-        #self.vendor_uids = get_vendor_uids_for()
-        #if not self.vendor_uids:
-        #    raise Unauthorized
         return super(OrdersTable, self).__call__()
 
 

@@ -1,10 +1,12 @@
 <div xmlns="http://www.w3.org/1999/xhtml"
      xmlns:tal="http://xml.zope.org/namespaces/tal"
      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
-     i18n:domain="bda.plone.orders">
-  
+     i18n:domain="bda.plone.orders"
+     class="ajaxtable"
+     tal:attributes="data-tablename view/__name__">
+
   <h1 class="documentFirstHeading" i18n:translate="orders">Orders</h1>
-  
+
   <tal:table replace="structure view/rendered_table" />
 
 </div>
