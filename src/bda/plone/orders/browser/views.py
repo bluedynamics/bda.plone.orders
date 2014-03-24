@@ -192,15 +192,16 @@ class Transition(BrowserView):
         transition = self.request['transition']
         uid = self.request['uid']
         order = get_order(self.context, uid)
-        user = plone.api.user.get_current()
         vendor_uid = self.request.form.get('vendor', '')
         if vendor_uid:
             vendor_uids = [vendor_uid]
+            vendor = get_vendor_by_uid(self.context, vendor_uid)
+            user = plone.api.user.get_current()
+            if not user.checkPermission(permissions.ModifyOrders, vendor):
+                raise Unauthorized
         else:
             vendor_uids = get_vendor_uids_for()
-        for vendor_uid in vendor_uids:
-            vendor = get_vendor_by_uid(self.context, vendor_uid)
-            if not user.checkPermission(permissions.ModifyOrders, vendor):
+            if not vendor_uids:
                 raise Unauthorized
         transitions = OrderTransitions(self.context)
         order = transitions.do_transition(uid, vendor_uids, transition)
@@ -484,15 +485,16 @@ class OrdersTable(OrdersTableBase):
         return select_order + view_order
 
     def check_modify_order(self, order):
-        user = plone.api.user.get_current()
         vendor_uid = self.request.form.get('vendor', '')
         if vendor_uid:
             vendor_uids = [vendor_uid]
+            vendor = get_vendor_by_uid(self.context, vendor_uid)
+            user = plone.api.user.get_current()
+            if not user.checkPermission(permissions.ModifyOrders, vendor):
+                return False
         else:
             vendor_uids = get_vendor_uids_for()
-        for vendor_uid in vendor_uids:
-            vendor = get_vendor_by_uid(self.context, vendor_uid)
-            if not user.checkPermission(permissions.ModifyOrders, vendor):
+            if not vendor_uids:
                 return False
         return True
 
@@ -715,10 +717,16 @@ class OrderViewBase(BrowserView):
 class OrderView(OrderViewBase):
 
     def __call__(self):
-        # check if authenticated user is vendor
-        self.vendor_uids = get_vendor_uids_for()
-        if not self.vendor_uids:
-            raise Unauthorized
+        vendor_uid = self.request.form.get('vendor', '')
+        if vendor_uid:
+            self.vendor_uids = [vendor_uid]
+            vendor = get_vendor_by_uid(self.context, vendor_uid)
+            if not user.checkPermission(permissions.ModifyOrders, vendor):
+                raise Unauthorized
+        else:
+            self.vendor_uids = get_vendor_uids_for()
+            if not self.vendor_uids:
+                raise Unauthorized
         return super(OrderView, self).__call__()
 
     @property
