@@ -57,7 +57,16 @@ TODO
 
 - search text in orders view needs to consider vendor and customer filter
 
-- ajaxify orders table if filters get changed
+- [OK] ajaxify orders table if filters get changed
+
+- Display Export orders link only for vendors and administrators
+
+
+TODO Future
+-----------
+
+- cart_discount_net and cart_discount_vat values calculation for vendor specific
+  orders in order view and order export.
 
 - skip payment for individual bookings instead of whole order, if they are in
   state reserved.
@@ -66,7 +75,7 @@ TODO
 
 - buyable_uid, buyable_count, buyable_comment -> should be named cartitem_*?
 
-- customer role -> gehörert in bda.plone.cart rein
+- customer role -> move to bda.plone.cart
 
 - eventually create common.BookingTransitions and common.BookingData
 
