@@ -31,7 +31,6 @@ from souper.soup import NodeAttributeIndexer
 from souper.soup import NodeTextIndexer
 from souper.soup import Record
 from souper.soup import get_soup
-from zope.component import adapter
 from zope.component.interfaces import ISite
 from zope.interface import implementer
 import datetime
@@ -462,7 +461,7 @@ class OrderData(object):
             net = booking.attrs.get('net', 0.0)
             discount_net = float(booking.attrs['discount_net'])
             item_net = net - discount_net
-            ret += (net * booking.attrs.get('vat', 0.0) / 100.0) * count
+            ret += (item_net * booking.attrs.get('vat', 0.0) / 100.0) * count
         return ret
 
     @property
