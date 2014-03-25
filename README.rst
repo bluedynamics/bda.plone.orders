@@ -62,8 +62,60 @@ TODO
 - Display Export orders link only for vendors and administrators
 
 
+
+TODO amKumma/Ticketshop Integration
+-----------------------------------
+
+- Move actions.xml @@myorders links to amKumma integration package. Add it to
+  admin portlet. Change title of admin portlet to shop portlet, don't change
+  module names to avoid ZODB persistance errors.
+
+- Verify, that a item/booking is linked with event instead of ticket.
+  OR, BETTER:
+- create Ticket view, with a link to the event.
+
+- Verify, that a ticket can be printed from Mailings and from the @@order view.
+  Eventually create a printer icon on @@order view, with special CSS.
+
+- Verify, that Title, Date, Time of events is available in Orders, Email,
+  Exports.
+
+- Verify, that anonymous checkouts are working.
+
+- TicketOccurrence publishing: verify, that tickets have same workflow state
+  than original ticket. Create some after-transition subscriber, which alters
+  the TicketOccurrence state, when original Ticket state is changed.
+  
+- Verify display of number of available tickets in BuyableViewlet.
+
+- Allow definition of maximum Tickets per order and/or item.
+
+- BuyableViewlet: change css: better seperate columns, make title/input
+  ordering more consistent. e.g: Brutto ___, then ___ Anzahl is inconsistent.
+  Change to Brutto ___, Anzahl ___.
+
+- UnCheck "include shipping costs" setting for amKumma integration and/or set 
+  FREE_SHIPPING_LIMIT to 0.
+
+
+TODO amKumma with extra budget
+------------------------------
+
+- Don't display price information on BuyableViewlet, @@orders, mailtemplates,
+  etc, when price = 0€ and/or "don't display price information" (not yet
+  implemented) checkbox is selected.
+
+- Export directly from @@orders view,
+  create @@export_for_this_item,
+  Add more filters in @@exports,
+  unify filters in @@exports and @@orders
+
+
 TODO Future
 -----------
+
+- Move IUUID adapter for IPloneSiteRoot to bda.plone.cart, which is the central
+  package for the shop.
 
 - cart_discount_net and cart_discount_vat values calculation for vendor specific
   orders in order view and order export.
