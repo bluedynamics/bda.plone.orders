@@ -51,7 +51,7 @@ TODO
 - Add customer_role index storing all usernames which have customer role on
   several areas of the portal
 
-- as is_customer utility
+- add is_customer utility
 
 - improve customers vocabulary utility to be more cpu friendly
 
