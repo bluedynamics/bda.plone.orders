@@ -48,7 +48,7 @@ TODO
 
 - [OK] Extend plone.app.workflow to throw a LocalrolesModifiedEvent
 
-- Add customer_role index storing all usernames which have customer role on
+- [OK] Add customer_role index storing all usernames which have customer role on
   several areas of the portal
 
 - add is_customer utility
