@@ -16,13 +16,13 @@ widgets:
         - vendor:
             factory: "td:#field:select"
             props:
-                label: i18n:vendor_filter
+                label: i18n:vendor_filter:Vendor
                 vocabulary: expr:context.vendor_vocabulary
             mode: expr:context.vendor_mode
         - customer:
             factory: "td:#field:select"
             props:
-                label: i18n:customer_filter
+                label: i18n:customer_filter:Customer
                 vocabulary: expr:context.customer_vocabulary
             mode: expr:context.customer_mode
     - tr:
@@ -33,8 +33,8 @@ widgets:
         - from:
             factory: "td:#field:datetime"
             props:
-                label: i18n:from_date
-                required: i18n:from_date_required
+                label: i18n:from_date:from date
+                required: i18n:from_date_required:from date is required
                 datepicker: True
                 time: True
                 timepicker: True
@@ -42,8 +42,8 @@ widgets:
         - to:
             factory: "td:#field:*from_before_to:datetime"
             props:
-                label: i18n:to_date
-                required: i18n:to_date_required
+                label: i18n:to_date:to date
+                required: i18n:to_date_required:to date is required
                 datepicker: True
                 time: True
                 timepicker: True
@@ -55,7 +55,7 @@ widgets:
 - export:
     factory: submit
     props:
-        label: i18n:export
+        label: i18n:export:export
         action: export
         handler: context.export
         next: context.csv

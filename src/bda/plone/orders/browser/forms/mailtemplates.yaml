@@ -18,12 +18,12 @@ widgets:
             factory: "#field:text"
             props:
                 label: i18n:label_mailtemplatelib_title:Title
-                required: i18n:text_required
+                required: i18n:text_required:Notification Text is required
         - template:
             factory: "#field:*validatetpl:textarea"
             props:
                 label: i18n:label_mailtemplatelib_template:Template
-                required: i18n:text_required
+                required: i18n:text_required:Notification Text is required
                 rows: 8
                 cols: 80
             custom:

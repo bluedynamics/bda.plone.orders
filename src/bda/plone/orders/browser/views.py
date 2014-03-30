@@ -414,7 +414,8 @@ class OrdersTable(OrdersTableBase):
                 value=self.request.form.get('vendor', ''),
                 props={
                     'vocabulary': vendors,
-                    'label': 'Filter for vendors'
+                    'label': _('filter_for_vendors',
+                               default=u'Filter for vendors'),
                 }
             )
         # customers of current user
@@ -428,7 +429,8 @@ class OrdersTable(OrdersTableBase):
                 value=self.request.form.get('customer', ''),
                 props={
                     'vocabulary': customers,
-                    'label': 'Filter for customers'
+                    'label': _('filter_for_customers',
+                               default=u'Filter for customers'),
                 }
             )
         if not vendor_selector and not customer_selector:

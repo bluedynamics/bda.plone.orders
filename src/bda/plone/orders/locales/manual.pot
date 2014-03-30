@@ -54,3 +54,39 @@ msgstr ""
 # send
 msgid "send"
 msgstr ""
+
+# label_mailtemplatelib_array
+msgid "label_mailtemplatelib_array"
+msgstr ""
+
+# label_mailtemplatelib_title
+msgid "label_mailtemplatelib_title"
+msgstr ""
+
+# label_mailtemplatelib_template
+msgid "label_mailtemplatelib_template"
+msgstr ""
+
+# label_mailtemplatelib_save
+msgid "label_mailtemplatelib_save"
+msgstr ""
+
+# subject
+msgid "subject"
+msgstr ""
+
+# subject_required
+msgid "subject_required"
+msgstr ""
+
+# text_placeholders
+msgid "text_placeholders"
+msgstr ""
+
+# vendor_filter
+msgid "vendor_filter"
+msgstr ""
+
+# customer_filter
+msgid "customer_filter"
+msgstr ""

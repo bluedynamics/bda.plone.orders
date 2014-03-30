@@ -9,12 +9,12 @@ widgets:
     props:
         structural: True
         tag: h3
-        text: i18n:notify_customers_heading
+        text: i18n:notify_customers_heading:Notify customers
 - subject:
     factory: "#field:text"
     props:
         label: i18n:subject:Subject
-        required: "i18n:subject_required:No mail without subject!"
+        required: i18n:subject_required:Subject is required
 - template:
     factory: "#field:select"
     value: context.template_value
@@ -36,7 +36,7 @@ widgets:
 - send:
     factory: submit
     props:
-        label: i18n:send
+        label: i18n:send:send
         action: send
         handler: context.send
         next: context.send_success
