@@ -624,8 +624,6 @@ class OrderTransitions(object):
             uid = uuid.UUID(uid)
         order_data = OrderData(self.context, uid=uid, vendor_uids=vendor_uids)
         order = order_data.order
-        # XXX: currently we need to delete attribute before setting to a new
-        #      value in order to persist change. fix in appropriate place.
         for booking in order_data.bookings:
             self.do_transition_for_booking(booking, transition)
         if transition == ifaces.STATE_TRANSITION_RENEW:
@@ -637,6 +635,8 @@ class OrderTransitions(object):
         return order
 
     def do_transition_for_booking(self, booking, transition):
+        # XXX: currently we need to delete attribute before setting to a new
+        #      value in order to persist change. fix in appropriate place.
         if transition == ifaces.SALARIED_TRANSITION_SALARIED:
             del booking.attrs['salaried']
             booking.attrs['salaried'] = ifaces.SALARIED_YES
