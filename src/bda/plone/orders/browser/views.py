@@ -551,7 +551,8 @@ class MyOrdersTable(OrdersTableBase):
             'href': '',
             'title': _('view_order', default=u'View Order'),
         }
-        view_order = tag('a', '&nbsp', **view_order_attrs)
+        view_order = tag('a', '&nbsp;', **view_order_attrs)
+        self.request.response.setHeader("Content-type", "application/json")
         return view_order
 
 
@@ -587,6 +588,7 @@ class OrdersData(OrdersTable, TableData):
                         reverse=sort['reverse'],
                         with_size=True)
         length = res.next()
+        self.request.response.setHeader("Content-type", "application/json")
         return length, res
 
 
