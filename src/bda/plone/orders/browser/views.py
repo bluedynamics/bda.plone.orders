@@ -555,6 +555,10 @@ class MyOrdersTable(OrdersTableBase):
         view_order = tag('a', '&nbsp;', **view_order_attrs)
         return view_order
 
+    def __call__(self):
+        self.request.response.setHeader('X-Theme-Disabled', 'True')
+        return super(MyOrdersTable, self).__call__()
+
 
 class OrdersData(OrdersTable, TableData):
     soup_name = 'bda_plone_orders_orders'
