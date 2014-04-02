@@ -68,7 +68,7 @@
 
   <adapter
     zcml:condition="installed plone.dexterity"
-    for="plone.dexterity.content.DexterityContent"
+    for="plone.dexterity.interfaces.IDexterityContent"
     factory=".common.PaymentData"/>
 
   <!-- mail templates storage -->

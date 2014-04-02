@@ -96,3 +96,4 @@ Contributors
 - Harald Frießnegger
 - Peter Holzer
 - Johannes Raggam
+- Ezra Holder

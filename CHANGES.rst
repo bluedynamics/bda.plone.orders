@@ -5,6 +5,12 @@ Changelog
 0.4dev
 ------
 
+- Disable Diazo Theming for orders table
+  [ezvirtual, rnix]
+
+- Bind ``PaymentData`` adapter to interface instead of content class
+  [ezvirtual]
+
 - Integrate discounting information to orders and bookings.
   [rnix]
 

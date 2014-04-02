@@ -533,6 +533,7 @@ class OrdersTable(OrdersTableBase):
         # check if authenticated user is vendor
         if not get_vendors_for():
             raise Unauthorized
+        self.request.response.setHeader('X-Theme-Disabled', 'True')
         return super(OrdersTable, self).__call__()
 
 
@@ -551,7 +552,7 @@ class MyOrdersTable(OrdersTableBase):
             'href': '',
             'title': _('view_order', default=u'View Order'),
         }
-        view_order = tag('a', '&nbsp', **view_order_attrs)
+        view_order = tag('a', '&nbsp;', **view_order_attrs)
         return view_order
 
 
