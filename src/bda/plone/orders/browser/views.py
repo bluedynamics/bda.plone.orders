@@ -533,7 +533,9 @@ class OrdersTable(OrdersTableBase):
         # check if authenticated user is vendor
         if not get_vendors_for():
             raise Unauthorized
-        self.request.response.setHeader('X-Theme-Disabled', 'True')
+        # disable diazo theming if ajax call
+        if '_' in self.request.form:
+            self.request.response.setHeader('X-Theme-Disabled', 'True')
         return super(OrdersTable, self).__call__()
 
 
@@ -556,7 +558,9 @@ class MyOrdersTable(OrdersTableBase):
         return view_order
 
     def __call__(self):
-        self.request.response.setHeader('X-Theme-Disabled', 'True')
+        # disable diazo theming if ajax call
+        if '_' in self.request.form:
+            self.request.response.setHeader('X-Theme-Disabled', 'True')
         return super(MyOrdersTable, self).__call__()
 
 
