@@ -43,7 +43,9 @@
       <span tal:replace="order/billing_address.city">city</span>
       <br />
       <strong i18n:translate="order_country">Country:</strong>
-      <span tal:replace="order/billing_address.country">country</span>
+      <span tal:replace="python:view.country(order['billing_address.country'])">
+        country
+      </span>
     </div>
   </div>
 
@@ -120,7 +122,9 @@
       <span tal:replace="order/delivery_address.city">city</span>
       <br />
       <strong i18n:translate="order_country">Country:</strong>
-      <span tal:replace="order/delivery_address.country">country</span>
+      <span tal:replace="python:view.country(order['delivery_address.country'])">
+        country
+      </span>
     </div>
 
     <div class="delivery_address"

@@ -4,6 +4,7 @@ from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from StringIO import StringIO
 from bda.plone.cart import ascur
 from bda.plone.checkout import message_factory as _co
+from bda.plone.checkout.vocabularies import get_pycountry_name
 from bda.plone.orders import message_factory as _
 from bda.plone.orders import permissions
 from bda.plone.orders.common import DT_FORMAT
@@ -711,10 +712,10 @@ class OrderViewBase(BrowserView):
 
     @property
     def tid(self):
-        tid = self.order_data.tid or 'none'
-        if tid == 'none':
+        tid = [it for it in self.order_data.tid if it != 'none']
+        if not tid:
             return _('none', default=u'None')
-        return tid
+        return ', '.join(tid)
 
     @property
     def state(self):
@@ -731,6 +732,9 @@ class OrderViewBase(BrowserView):
     def exported(self, item):
         return item['exported'] \
             and _('yes', default=u'Yes') or _('no', default=u'No')
+
+    def country(self, country_id):
+        return get_pycountry_name(country_id)
 
 
 class OrderView(OrderViewBase):
