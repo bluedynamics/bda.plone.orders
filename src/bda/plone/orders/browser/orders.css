@@ -118,6 +118,11 @@ a.notify_customers {
     margin:0.4em;
 }
 
+/* mail templates */
+#array-notify_customers-array table {
+    width:100%;
+}
+
 /* notification form */
 #form-notify_customers {
     margin:2em;
