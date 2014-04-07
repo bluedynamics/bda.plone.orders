@@ -5,6 +5,9 @@ Changelog
 0.4dev
 ------
 
+- Fix mail sending for AT based buyable items.
+  [rnix]
+
 - Disable Diazo Theming for orders table
   [ezvirtual, rnix]
 
