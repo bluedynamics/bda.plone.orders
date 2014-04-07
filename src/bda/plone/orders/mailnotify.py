@@ -26,12 +26,18 @@ def status_message(context, msg):
     putils.addPortalMessage(msg)
 
 
+def _encode(string):
+    if isinstance(string, unicode):
+        string = string.encode('utf-8')
+    return string
+
+
 def _indent(text, ind=5, width=80):
     text = textwrap.wrap(text, width - ind)
     lines = []
     for line in text:
         lines.append(u' ' * ind + safe_unicode(line))
-    return u'\n'.join(lines).encode('utf-8')
+    return _encode(u'\n'.join(lines))
 
 
 def create_mail_listing(context, attrs):
@@ -43,7 +49,7 @@ def create_mail_listing(context, attrs):
     for booking in bookings:
         brain = get_catalog_brain(context, booking.attrs['buyable_uid'])
         buyable = brain.getObject()
-        title = booking.attrs['title']
+        title = _encode(booking.attrs['title'])
         comment = booking.attrs['buyable_comment']
         if comment:
             title = '%s (%s)' % (title, comment)

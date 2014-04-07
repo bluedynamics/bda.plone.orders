@@ -61,6 +61,7 @@ TODO
 
 - Display Export orders link only for vendors and administrators
 
+- Work internally with unicode only.
 
 
 TODO Future
