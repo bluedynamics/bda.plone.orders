@@ -772,6 +772,82 @@ class MyOrderView(OrderViewBase):
         return super(MyOrderView, self).__call__()
 
 
+class MyOrderAnonymousView(OrdersViewBase):
+    """MyOrder view for anonymous users.
+    Expects the Order ID and a email to validate, if the user is allowed to
+    view the requested order.
+    """
+    order_auth_template = ViewPageTemplateFile('order_auth.pt')
+    order_template = ViewPageTemplateFile('order.pt')
+
+    def render_auth_form(self):
+        # Render the authentication form for anonymous users.
+        req = self.request
+
+        orderid_field = factory(
+            'label:text',
+            name='orderid',
+            value=self.orderid,
+            props={
+                'label': _('anon_auth_label_orderid',
+                           default=u'Order ID'),
+            }
+        )
+
+        email_field = factory(
+            'label:text',
+            name='email',
+            value=self.email,
+            props={
+                'label': _('anon_auth_label_email',
+                           default=u'Email'),
+            }
+        )
+
+        submit = factory(
+            'submit',
+            name='submit'
+        )
+
+        return '{orderid}{email}{submit}'.format(
+            orderid=orderid_field(request=req),
+            email=email_field(request=req),
+            submit=submit(request=req)
+        )
+
+    @property
+    def orderid(self):
+        return self.request.form.get('orderid', '')
+
+    @property
+    def email(self):
+        return self.request.form.get('email', '')
+
+    def __call__(self):
+        orderid = self.orderid
+        email = self.email
+        order = None
+        err = []
+        if orderid and email:
+            # ask soup for order
+            order = None
+        if not email:
+            err.append(_('anon_auth_err_email', u'Please provide the '
+                         u'emailadress you used for submitting the order.'))
+        if not orderid:
+            err.append(_('anon_auth_err_orderid',
+                         u'Please provide the order id'))
+
+        if email and orderid and not order:
+            err.append(_('anon_auth_err_order',
+                         u'No order could be found for the given credentials'))
+
+        if not order:
+            return self.order_auth_template(self)
+
+        return self.order_template(self)
+
+
 class DialectExcelWithColons(csv.excel):
     delimiter = ';'
 
