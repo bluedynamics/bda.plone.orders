@@ -20,7 +20,6 @@ from bda.plone.orders import vocabularies as vocabs
 from bda.plone.orders import interfaces as ifaces
 from bda.plone.payment import Payments
 from decimal import Decimal
-from node.utils import UNSET
 from odict import odict
 from plone.app.uuid.utils import uuidToURL
 from plone.memoize import view
@@ -44,10 +43,7 @@ import json
 import plone.api
 import urllib
 import uuid
-import yafowil.loader  # loads registry
-
-
-yafowil.loader  # pep8
+import yafowil.loader  # loads registry  # nopep8
 
 
 class Translate(object):
@@ -772,13 +768,20 @@ class MyOrderView(OrderViewBase):
         return super(MyOrderView, self).__call__()
 
 
-class MyOrderAnonymousView(OrdersViewBase):
+class MyOrderAnonymousView(OrderViewBase):
     """MyOrder view for anonymous users.
     Expects the Order ID and a email to validate, if the user is allowed to
     view the requested order.
     """
     order_auth_template = ViewPageTemplateFile('order_auth.pt')
     order_template = ViewPageTemplateFile('order.pt')
+    uid = None
+    ordernumber = ''
+    email = ''
+
+    def _form_handler(self, widget, data):
+        self.ordernumber = data['ordernumber'].extracted
+        self.email = data['email'].extracted
 
     def render_auth_form(self):
         # Render the authentication form for anonymous users.
@@ -790,13 +793,14 @@ class MyOrderAnonymousView(OrdersViewBase):
             name='order_auth_form',
             props={'action': action})
 
-        form['orderid'] = factory(
+        form['ordernumber'] = factory(
             'div:label:text',
-            value=self.orderid,
+            value=self.ordernumber,
             props={
-                'label': _('anon_auth_label_orderid',
-                           default=u'Order ID'),
-                'div.class': 'orderid'
+                'label': _('anon_auth_label_ordernumber',
+                           default=u'Ordernumber'),
+                'div.class': 'ordernumber',
+                'required': True,
             }
         )
 
@@ -804,53 +808,51 @@ class MyOrderAnonymousView(OrdersViewBase):
             'div:label:text',
             value=self.email,
             props={
-                'label': _('anon_auth_label_email',
-                           default=u'Email'),
-                'div.class': 'email'
+                'label': _('anon_auth_label_email', default=u'Email'),
+                'div.class': 'email',
+                'required': True,
             }
         )
 
         form['submit'] = factory(
             'div:submit',
             props={
-                'label': _('anon_auth_label_email',
-                           default=u'Email'),
-                'div.class': 'controls'
+                'label': _('anon_auth_label_submit', default=u'Submit'),
+                'div.class': 'submit',
+                'handler': self._form_handler,
+                'action': 'submit',
             }
         )
 
-        return '{form}'.format(form=form(request=req))
-
-    @property
-    def orderid(self):
-        return self.request.form.get('orderid', '')
-
-    @property
-    def email(self):
-        return self.request.form.get('email', '')
+        controller = Controller(form, req)
+        return controller.rendered
 
     def __call__(self):
-        orderid = self.orderid
-        email = self.email
+        req = self.request
+        ordernumber = req.form.get('order_auth_form.ordernumber', None)
+        email = req.form.get('order_auth_form.email', None)
         order = None
         err = []
-        if orderid and email:
-            # ask soup for order
-            order = None
+        if ordernumber and email:
+            orders_soup = get_orders_soup(self.context)
+            order = orders_soup.query(Eq('ordernumber', ordernumber))
+            order = order.next()
+
         if not email:
             err.append(_('anon_auth_err_email', u'Please provide the '
                          u'emailadress you used for submitting the order.'))
-        if not orderid:
-            err.append(_('anon_auth_err_orderid',
-                         u'Please provide the order id'))
+        if not ordernumber:
+            err.append(_('anon_auth_err_ordernumber',
+                         u'Please provide the ordernumber'))
 
-        if email and orderid and not order:
+        if email and ordernumber and not order:
             err.append(_('anon_auth_err_order',
                          u'No order could be found for the given credentials'))
 
         if not order:
             return self.order_auth_template(self)
 
+        self.uid = order.attrs['uid']
         return self.order_template(self)
 
 
