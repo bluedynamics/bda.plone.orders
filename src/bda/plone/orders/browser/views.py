@@ -780,6 +780,25 @@ class MyOrderAnonymousView(OrderViewBase):
     ordernumber = ''
     email = ''
 
+    @property
+    def listing(self):
+        """Custom bookings listing to expose fewer options.
+        """
+        ret = list()
+        for booking in self.order_data.bookings:
+            ret.append({
+                'title': booking.attrs['title'],
+                'url': uuidToURL(booking.attrs['buyable_uid']),
+                'count': booking.attrs['buyable_count'],
+                'net': ascur(booking.attrs.get('net', 0.0)),
+                'discount_net': ascur(float(booking.attrs['discount_net'])),
+                'vat': booking.attrs.get('vat', 0.0),
+                'comment': booking.attrs['buyable_comment'],
+                'quantity_unit': booking.attrs.get('quantity_unit'),
+                'currency': booking.attrs.get('currency'),
+            })
+        return ret
+
     def _form_handler(self, widget, data):
         self.ordernumber = data['ordernumber'].extracted
         self.email = data['email'].extracted
