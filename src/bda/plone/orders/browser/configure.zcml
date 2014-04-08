@@ -100,7 +100,7 @@
 
   <browser:page
     for="Products.CMFPlone.interfaces.IPloneSiteRoot"
-    name="ordercheck"
+    name="showorder"
     class=".views.MyOrderAnonymousView"
     permission="bda.plone.orders.ViewOrders"
     layer="..interfaces.IOrdersExtensionLayer"/>
