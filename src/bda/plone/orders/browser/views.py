@@ -783,37 +783,43 @@ class MyOrderAnonymousView(OrdersViewBase):
     def render_auth_form(self):
         # Render the authentication form for anonymous users.
         req = self.request
+        action = req.getURL()
 
-        orderid_field = factory(
-            'label:text',
-            name='orderid',
+        form = factory(
+            'form',
+            name='order_auth_form',
+            props={'action': action})
+
+        form['orderid'] = factory(
+            'div:label:text',
             value=self.orderid,
             props={
                 'label': _('anon_auth_label_orderid',
                            default=u'Order ID'),
+                'div.class': 'orderid'
             }
         )
 
-        email_field = factory(
-            'label:text',
-            name='email',
+        form['email'] = factory(
+            'div:label:text',
             value=self.email,
             props={
                 'label': _('anon_auth_label_email',
                            default=u'Email'),
+                'div.class': 'email'
             }
         )
 
-        submit = factory(
-            'submit',
-            name='submit'
+        form['submit'] = factory(
+            'div:submit',
+            props={
+                'label': _('anon_auth_label_email',
+                           default=u'Email'),
+                'div.class': 'controls'
+            }
         )
 
-        return '{orderid}{email}{submit}'.format(
-            orderid=orderid_field(request=req),
-            email=email_field(request=req),
-            submit=submit(request=req)
-        )
+        return '{form}'.format(form=form(request=req))
 
     @property
     def orderid(self):
