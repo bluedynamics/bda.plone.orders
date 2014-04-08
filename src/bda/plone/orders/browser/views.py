@@ -847,6 +847,9 @@ class MyOrderAnonymousView(OrderViewBase):
         controller = Controller(form, req)
         return controller.rendered
 
+    def render_order_template(self):
+        return self.order_template(self)
+
     def __call__(self):
         req = self.request
         ordernumber = req.form.get('order_auth_form.ordernumber', None)
@@ -856,7 +859,7 @@ class MyOrderAnonymousView(OrderViewBase):
         if ordernumber and email:
             orders_soup = get_orders_soup(self.context)
             order = orders_soup.query(Eq('ordernumber', ordernumber))
-            order = order.next()
+            order = order.next()  # generator should have only one item
             try:
                 assert(order.attrs['personal_data.email'] == email)
             except AssertionError:
@@ -880,13 +883,11 @@ class MyOrderAnonymousView(OrderViewBase):
             # first call of this form
             errs = []
 
-        if not order:
-            for err in errs:
-                IStatusMessage(self.request).addStatusMessage(err, 'error')
-            return self.order_auth_template(self)
+        for err in errs:
+            IStatusMessage(self.request).addStatusMessage(err, 'error')
 
-        self.uid = order.attrs['uid']
-        return self.order_template(self)
+        self.uid = order.attrs['uid'] if order else None
+        return self.order_auth_template(self)
 
 
 class DialectExcelWithColons(csv.excel):

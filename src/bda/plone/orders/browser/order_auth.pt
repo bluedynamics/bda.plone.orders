@@ -12,7 +12,8 @@
   <tal:main-macro metal:define-macro="main">
 
     <div id="order_wrapper">
-      <tal:authform replace="structure view/render_auth_form"/>
+      <tal:template condition="not:view/uid" replace="structure view/render_auth_form"/>
+      <tal:template condition="view/uid"     replace="structure view/render_order_template"/>
     </div>
 
   </tal:main-macro>
