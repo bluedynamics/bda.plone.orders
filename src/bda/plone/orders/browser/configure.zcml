@@ -102,7 +102,7 @@
     for="Products.CMFPlone.interfaces.IPloneSiteRoot"
     name="showorder"
     class=".views.MyOrderAnonymousView"
-    permission="bda.plone.orders.ViewOrders"
+    permission="zope2.View"
     layer="..interfaces.IOrdersExtensionLayer"/>
 
   <!-- order transitions for plone root -->
