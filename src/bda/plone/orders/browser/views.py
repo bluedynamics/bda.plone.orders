@@ -1,23 +1,24 @@
 from AccessControl import Unauthorized
 from Products.Five import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from Products.statusmessages.interfaces import IStatusMessage
 from StringIO import StringIO
 from bda.plone.cart import ascur
 from bda.plone.checkout import message_factory as _co
 from bda.plone.checkout.vocabularies import get_pycountry_name
+from bda.plone.orders import interfaces as ifaces
 from bda.plone.orders import message_factory as _
 from bda.plone.orders import permissions
+from bda.plone.orders import vocabularies as vocabs
 from bda.plone.orders.common import DT_FORMAT
 from bda.plone.orders.common import OrderData
 from bda.plone.orders.common import OrderTransitions
-from bda.plone.orders.common import get_orders_soup
 from bda.plone.orders.common import get_bookings_soup
 from bda.plone.orders.common import get_order
-from bda.plone.orders.common import get_vendors_for
-from bda.plone.orders.common import get_vendor_uids_for
+from bda.plone.orders.common import get_orders_soup
 from bda.plone.orders.common import get_vendor_by_uid
-from bda.plone.orders import vocabularies as vocabs
-from bda.plone.orders import interfaces as ifaces
+from bda.plone.orders.common import get_vendor_uids_for
+from bda.plone.orders.common import get_vendors_for
 from bda.plone.payment import Payments
 from decimal import Decimal
 from odict import odict
@@ -832,24 +833,37 @@ class MyOrderAnonymousView(OrderViewBase):
         ordernumber = req.form.get('order_auth_form.ordernumber', None)
         email = req.form.get('order_auth_form.email', None)
         order = None
-        err = []
+        errs = []
         if ordernumber and email:
             orders_soup = get_orders_soup(self.context)
             order = orders_soup.query(Eq('ordernumber', ordernumber))
             order = order.next()
+            try:
+                assert(order.attrs['personal_data.email'] == email)
+            except AssertionError:
+                # Don't raise Unauthorized, as this allows to draw conclusion
+                # on existing ordernumbers
+                order = None
 
         if not email:
-            err.append(_('anon_auth_err_email', u'Please provide the '
-                         u'emailadress you used for submitting the order.'))
+            errs.append(_('anon_auth_err_email', u'Please provide the '
+                          u'emailadress you used for submitting the order.'))
         if not ordernumber:
-            err.append(_('anon_auth_err_ordernumber',
-                         u'Please provide the ordernumber'))
+            errs.append(_('anon_auth_err_ordernumber',
+                          u'Please provide the ordernumber'))
 
         if email and ordernumber and not order:
-            err.append(_('anon_auth_err_order',
-                         u'No order could be found for the given credentials'))
+            errs.append(_(
+                'anon_auth_err_order',
+                u'No order could be found for the given credentials'))
+
+        if not ordernumber and not email:
+            # first call of this form
+            errs = []
 
         if not order:
+            for err in errs:
+                IStatusMessage(self.request).addStatusMessage(err, 'error')
             return self.order_auth_template(self)
 
         self.uid = order.attrs['uid']
