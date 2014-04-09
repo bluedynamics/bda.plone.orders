@@ -81,6 +81,9 @@ def customers_vocab_for(user=None):
     res = set(get_order(context, uid).attrs['creator'] for uid in order_uids)
     vocab = []
     for creator in res:
+        if not creator:
+            # Development edge case: creator might be None
+            continue
         customer = plone.api.user.get(userid=creator)
         if customer:
             # soft dep on bda.plone.shop

@@ -99,10 +99,10 @@
     layer="..interfaces.IOrdersExtensionLayer"/>
 
   <browser:page
-    for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+    for="zope.component.interfaces.ISite"
     name="showorder"
     class=".views.ShoworderView"
-    permission="zope2.View"
+    permission="bda.plone.orders.ViewOrder"
     layer="..interfaces.IOrdersExtensionLayer"/>
 
   <!-- order transitions for plone root -->
