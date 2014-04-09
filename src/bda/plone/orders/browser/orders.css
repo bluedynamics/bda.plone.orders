@@ -193,3 +193,18 @@ a.notify_customers {
 .order_bookings tr.odd td {
     background-color:#fbfbfb;
 }
+
+.order.wrapper form {
+    display: table;
+    border-spacing: 1em;
+}
+.order.wrapper form > div {
+    display: table-row;
+}
+.order.wrapper form label {
+    display: table-cell;
+}
+.order.wrapper form div.error,
+.order.wrapper form input {
+    display: table-cell;
+}
