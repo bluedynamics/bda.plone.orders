@@ -52,6 +52,8 @@ a possible customer might be no customer on the portal root.
 TODO
 ----
 
+- @@orders in lineage subsites should only list orders in that path.
+
 - Consider vendor UID's and booking based state in mail notification
 
 - [OK] Store order state on each booking to make it possible each vendor can handle
