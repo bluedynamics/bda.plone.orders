@@ -769,12 +769,12 @@ class MyOrderView(OrderViewBase):
         return super(MyOrderView, self).__call__()
 
 
-class MyOrderAnonymousView(OrderViewBase):
-    """MyOrder view for anonymous users.
-    Expects the Order ID and a email to validate, if the user is allowed to
-    view the requested order.
+class ShoworderView(OrderViewBase):
+    """Order view for anonymous users.
+    Expects an ordernumber and email combination to grant access to the order
+    details.
     """
-    order_auth_template = ViewPageTemplateFile('order_auth.pt')
+    order_auth_template = ViewPageTemplateFile('order_show.pt')
     order_template = ViewPageTemplateFile('order.pt')
     uid = None
     ordernumber = ''
@@ -817,7 +817,7 @@ class MyOrderAnonymousView(OrderViewBase):
             props={'action': action})
 
         form['ordernumber'] = factory(
-            'div:label:text',
+            'div:label:error:text',
             value=ordernumber,
             props={
                 'label': _('anon_auth_label_ordernumber',
@@ -828,7 +828,7 @@ class MyOrderAnonymousView(OrderViewBase):
         )
 
         form['email'] = factory(
-            'div:label:text',
+            'div:label:error:text',
             value=email,
             props={
                 'label': _('anon_auth_label_email', default=u'Email'),
@@ -866,7 +866,7 @@ class MyOrderAnonymousView(OrderViewBase):
             try:
                 assert(order.attrs['personal_data.email'] == email)
             except AssertionError:
-                # Don't raise Unauthorized, as this allows to draw conclusion
+                # Don't raise Unauthorized, as this allows to draw conclusions
                 # on existing ordernumbers
                 order = None
 

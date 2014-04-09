@@ -101,7 +101,7 @@
   <browser:page
     for="Products.CMFPlone.interfaces.IPloneSiteRoot"
     name="showorder"
-    class=".views.MyOrderAnonymousView"
+    class=".views.ShoworderView"
     permission="zope2.View"
     layer="..interfaces.IOrdersExtensionLayer"/>
 
