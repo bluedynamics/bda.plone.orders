@@ -838,7 +838,7 @@ class ShoworderView(OrderViewBase):
         )
 
         form['submit'] = factory(
-            'div:submit',
+            'div:label:submit',
             props={
                 'label': _('anon_auth_label_submit', default=u'Submit'),
                 'div.class': 'submit',

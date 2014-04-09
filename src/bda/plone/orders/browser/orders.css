@@ -208,3 +208,9 @@ a.notify_customers {
 .order.wrapper form input {
     display: table-cell;
 }
+.order.wrapper form div.submit label {
+    color: transparent;
+}
+.order.wrapper form div.submit input {
+    float: right;
+}
