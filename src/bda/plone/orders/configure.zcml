@@ -43,11 +43,10 @@
     factory=".common.OrdersCatalogFactory"/>
 
   <!-- order checkout adapter -->
-  <!-- TODO: checkout adapter for ISite? -->
-  <!--adapter
+  <adapter
     for="zope.component.interfaces.ISite
          zope.publisher.interfaces.browser.IBrowserRequest"
-    factory=".common.OrderCheckoutAdapter"/-->
+    factory=".common.OrderCheckoutAdapter"/>
 
   <adapter
     zcml:condition="installed Products.Archetypes"
