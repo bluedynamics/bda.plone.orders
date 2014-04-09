@@ -7,7 +7,7 @@
 
   <permissions>
 
-    <permission name="bda.plone.orders: View Order" acquire="True">
+    <permission name="bda.plone.orders: View Order Directly" acquire="True">
       <role name="Manager" />
       <role name="Site Administrator" />
       <role name="Authenticated" />
