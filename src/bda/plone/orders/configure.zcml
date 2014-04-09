@@ -43,10 +43,11 @@
     factory=".common.OrdersCatalogFactory"/>
 
   <!-- order checkout adapter -->
-  <adapter
-    for="Products.CMFPlone.interfaces.IPloneSiteRoot
+  <!-- TODO: checkout adapter for ISite? -->
+  <!--adapter
+    for="zope.component.interfaces.ISite
          zope.publisher.interfaces.browser.IBrowserRequest"
-    factory=".common.OrderCheckoutAdapter"/>
+    factory=".common.OrderCheckoutAdapter"/-->
 
   <adapter
     zcml:condition="installed Products.Archetypes"
@@ -73,7 +74,7 @@
 
   <!-- mail templates storage -->
   <adapter
-    for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+    for="zope.component.interfaces.ISite"
     provides=".interfaces.IDynamicMailTemplateLibraryStorage"
     factory=".mailtemplates.DynamicMailTemplateLibraryStorage"/>
 

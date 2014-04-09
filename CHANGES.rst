@@ -5,6 +5,10 @@ Changelog
 0.4dev
 ------
 
+- Change browser view and adapter regitrations from IPloneSiteRoot to
+  `zope.component.interfaces.ISite`. That's needed for Lineage compatibility.
+  [thet]
+
 - Integrate @@showorder view to access information for a specific order for
   anonymous users by giving the ordernumber and email as credentials.
   [thet]
