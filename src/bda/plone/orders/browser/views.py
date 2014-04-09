@@ -808,6 +808,9 @@ class MyOrderAnonymousView(OrderViewBase):
         req = self.request
         action = req.getURL()
 
+        ordernumber = self.ordernumber or req.form.get('ordernumber', '')
+        email = self.email or req.form.get('email', '')
+
         form = factory(
             'form',
             name='order_auth_form',
@@ -815,7 +818,7 @@ class MyOrderAnonymousView(OrderViewBase):
 
         form['ordernumber'] = factory(
             'div:label:text',
-            value=self.ordernumber,
+            value=ordernumber,
             props={
                 'label': _('anon_auth_label_ordernumber',
                            default=u'Ordernumber'),
@@ -826,7 +829,7 @@ class MyOrderAnonymousView(OrderViewBase):
 
         form['email'] = factory(
             'div:label:text',
-            value=self.email,
+            value=email,
             props={
                 'label': _('anon_auth_label_email', default=u'Email'),
                 'div.class': 'email',
