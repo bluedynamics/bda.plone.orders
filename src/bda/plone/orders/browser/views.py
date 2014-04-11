@@ -769,7 +769,7 @@ class MyOrderView(OrderViewBase):
         return super(MyOrderView, self).__call__()
 
 
-class ShoworderView(OrderViewBase):
+class DirectOrderView(OrderViewBase):
     """Order view for anonymous users.
     Expects an ordernumber and email combination to grant access to the order
     details.

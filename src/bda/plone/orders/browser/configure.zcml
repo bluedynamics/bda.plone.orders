@@ -101,7 +101,7 @@
   <browser:page
     for="zope.component.interfaces.ISite"
     name="showorder"
-    class=".views.ShoworderView"
+    class=".views.DirectOrderView"
     permission="bda.plone.orders.ViewOrderDirectly"
     layer="..interfaces.IOrdersExtensionLayer"/>
 
