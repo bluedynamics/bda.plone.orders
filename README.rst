@@ -41,12 +41,11 @@ Permissions
 In general, custom shop deployments are likely to configure the permission and
 role settings according to their use cases.
 
-The Permissions ``bda.plone.orders.ViewOrder`` and
-``bda.plone.orders.ViewOrders`` are granted to the Authenticated role rather
+The Permissions ``bda.plone.orders.ViewOrderDirectly`` and
+``bda.plone.orders.ViewOrders`` are granted to default Plone roles rather
 than Customer role, because the Customer role can be granted as a local role
-contextually, where the @@orders view should be callable on the ISite root. So
-a possible customer might be no customer on the portal root.
-
+contextually, where the @@orders and @@showorder views should be callable on
+the ISite root. So a possible customer might be no customer on the site root.
 
 
 TODO
@@ -56,24 +55,11 @@ TODO
 
 - Consider vendor UID's and booking based state in mail notification
 
-- [OK] Store order state on each booking to make it possible each vendor can handle
-  state of bookings in order belonging to him
-
-- [OK] Adopt order transitions affecting only bookings belonging to vendor
-  triggering the change
-
-- [OK] Extend plone.app.workflow to throw a LocalrolesModifiedEvent
-
-- [OK] Add customer_role index storing all usernames which have customer role on
-  several areas of the portal
-
 - add is_customer utility
 
 - improve customers vocabulary utility to be more cpu friendly
 
 - search text in orders view needs to consider vendor and customer filter
-
-- [OK] ajaxify orders table if filters get changed
 
 - Display Export orders link only for vendors and administrators
 

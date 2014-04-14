@@ -770,9 +770,9 @@ class MyOrderView(OrderViewBase):
 
 
 class DirectOrderView(OrderViewBase):
-    """Order view for anonymous users.
-    Expects an ordernumber and email combination to grant access to the order
-    details.
+    """Direct Order view.
+
+    Expect ordernumber and email to grant access to the order details.
     """
     order_auth_template = ViewPageTemplateFile('order_show.pt')
     order_template = ViewPageTemplateFile('order.pt')
@@ -807,15 +807,12 @@ class DirectOrderView(OrderViewBase):
         # Render the authentication form for anonymous users.
         req = self.request
         action = req.getURL()
-
         ordernumber = self.ordernumber or req.form.get('ordernumber', '')
         email = self.email or req.form.get('email', '')
-
         form = factory(
             'form',
             name='order_auth_form',
             props={'action': action})
-
         form['ordernumber'] = factory(
             'div:label:error:text',
             value=ordernumber,
@@ -824,9 +821,7 @@ class DirectOrderView(OrderViewBase):
                            default=u'Ordernumber'),
                 'div.class': 'ordernumber',
                 'required': True,
-            }
-        )
-
+            })
         form['email'] = factory(
             'div:label:error:text',
             value=email,
@@ -834,9 +829,7 @@ class DirectOrderView(OrderViewBase):
                 'label': _('anon_auth_label_email', default=u'Email'),
                 'div.class': 'email',
                 'required': True,
-            }
-        )
-
+            })
         form['submit'] = factory(
             'div:label:submit',
             props={
@@ -844,9 +837,7 @@ class DirectOrderView(OrderViewBase):
                 'div.class': 'submit',
                 'handler': self._form_handler,
                 'action': 'submit',
-            }
-        )
-
+            })
         controller = Controller(form, req)
         return controller.rendered
 
@@ -869,26 +860,25 @@ class DirectOrderView(OrderViewBase):
                 # Don't raise Unauthorized, as this allows to draw conclusions
                 # on existing ordernumbers
                 order = None
-
         if not email:
-            errs.append(_('anon_auth_err_email', u'Please provide the '
-                          u'emailadress you used for submitting the order.'))
+            err = _('anon_auth_err_email',
+                    default=u'Please provide the emailadress you used for '
+                            u'submitting the order.')
+            errs.append(err)
         if not ordernumber:
-            errs.append(_('anon_auth_err_ordernumber',
-                          u'Please provide the ordernumber'))
-
+            err = _('anon_auth_err_ordernumber',
+                    default=u'Please provide the ordernumber')
+            errs.append(err)
         if email and ordernumber and not order:
-            errs.append(_(
-                'anon_auth_err_order',
-                u'No order could be found for the given credentials'))
-
+            err = _('anon_auth_err_order',
+                    default=u'No order could be found for the given '
+                            u'credentials')
+            errs.append(err)
         if not ordernumber and not email:
             # first call of this form
             errs = []
-
         for err in errs:
             IStatusMessage(self.request).addStatusMessage(err, 'error')
-
         self.uid = order.attrs['uid'] if order else None
         return self.order_auth_template(self)
 

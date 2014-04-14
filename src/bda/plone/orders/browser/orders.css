@@ -193,7 +193,6 @@ a.notify_customers {
 .order_bookings tr.odd td {
     background-color:#fbfbfb;
 }
-
 .order.wrapper form {
     display: table;
     border-spacing: 1em;
