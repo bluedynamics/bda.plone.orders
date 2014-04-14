@@ -1,26 +1,26 @@
 from AccessControl import Unauthorized
 from Products.Five import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from Products.statusmessages.interfaces import IStatusMessage
 from StringIO import StringIO
 from bda.plone.cart import ascur
 from bda.plone.checkout import message_factory as _co
 from bda.plone.checkout.vocabularies import get_pycountry_name
+from bda.plone.orders import interfaces as ifaces
 from bda.plone.orders import message_factory as _
 from bda.plone.orders import permissions
+from bda.plone.orders import vocabularies as vocabs
 from bda.plone.orders.common import DT_FORMAT
 from bda.plone.orders.common import OrderData
 from bda.plone.orders.common import OrderTransitions
-from bda.plone.orders.common import get_orders_soup
 from bda.plone.orders.common import get_bookings_soup
 from bda.plone.orders.common import get_order
-from bda.plone.orders.common import get_vendors_for
-from bda.plone.orders.common import get_vendor_uids_for
+from bda.plone.orders.common import get_orders_soup
 from bda.plone.orders.common import get_vendor_by_uid
-from bda.plone.orders import vocabularies as vocabs
-from bda.plone.orders import interfaces as ifaces
+from bda.plone.orders.common import get_vendor_uids_for
+from bda.plone.orders.common import get_vendors_for
 from bda.plone.payment import Payments
 from decimal import Decimal
-from node.utils import UNSET
 from odict import odict
 from plone.app.uuid.utils import uuidToURL
 from plone.memoize import view
@@ -44,10 +44,7 @@ import json
 import plone.api
 import urllib
 import uuid
-import yafowil.loader  # loads registry
-
-
-yafowil.loader  # pep8
+import yafowil.loader  # loads registry  # nopep8
 
 
 class Translate(object):
@@ -770,6 +767,130 @@ class MyOrderView(OrderViewBase):
         if user.getId() != self.order['creator']:
             raise Unauthorized
         return super(MyOrderView, self).__call__()
+
+
+class DirectOrderView(OrderViewBase):
+    """Order view for anonymous users.
+    Expects an ordernumber and email combination to grant access to the order
+    details.
+    """
+    order_auth_template = ViewPageTemplateFile('order_show.pt')
+    order_template = ViewPageTemplateFile('order.pt')
+    uid = None
+    ordernumber = ''
+    email = ''
+
+    @property
+    def listing(self):
+        """Custom bookings listing to expose fewer options.
+        """
+        ret = list()
+        for booking in self.order_data.bookings:
+            ret.append({
+                'title': booking.attrs['title'],
+                'url': uuidToURL(booking.attrs['buyable_uid']),
+                'count': booking.attrs['buyable_count'],
+                'net': ascur(booking.attrs.get('net', 0.0)),
+                'discount_net': ascur(float(booking.attrs['discount_net'])),
+                'vat': booking.attrs.get('vat', 0.0),
+                'comment': booking.attrs['buyable_comment'],
+                'quantity_unit': booking.attrs.get('quantity_unit'),
+                'currency': booking.attrs.get('currency'),
+            })
+        return ret
+
+    def _form_handler(self, widget, data):
+        self.ordernumber = data['ordernumber'].extracted
+        self.email = data['email'].extracted
+
+    def render_auth_form(self):
+        # Render the authentication form for anonymous users.
+        req = self.request
+        action = req.getURL()
+
+        ordernumber = self.ordernumber or req.form.get('ordernumber', '')
+        email = self.email or req.form.get('email', '')
+
+        form = factory(
+            'form',
+            name='order_auth_form',
+            props={'action': action})
+
+        form['ordernumber'] = factory(
+            'div:label:error:text',
+            value=ordernumber,
+            props={
+                'label': _('anon_auth_label_ordernumber',
+                           default=u'Ordernumber'),
+                'div.class': 'ordernumber',
+                'required': True,
+            }
+        )
+
+        form['email'] = factory(
+            'div:label:error:text',
+            value=email,
+            props={
+                'label': _('anon_auth_label_email', default=u'Email'),
+                'div.class': 'email',
+                'required': True,
+            }
+        )
+
+        form['submit'] = factory(
+            'div:label:submit',
+            props={
+                'label': _('anon_auth_label_submit', default=u'Submit'),
+                'div.class': 'submit',
+                'handler': self._form_handler,
+                'action': 'submit',
+            }
+        )
+
+        controller = Controller(form, req)
+        return controller.rendered
+
+    def render_order_template(self):
+        return self.order_template(self)
+
+    def __call__(self):
+        req = self.request
+        ordernumber = req.form.get('order_auth_form.ordernumber', None)
+        email = req.form.get('order_auth_form.email', None)
+        order = None
+        errs = []
+        if ordernumber and email:
+            orders_soup = get_orders_soup(self.context)
+            order = orders_soup.query(Eq('ordernumber', ordernumber))
+            order = order.next()  # generator should have only one item
+            try:
+                assert(order.attrs['personal_data.email'] == email)
+            except AssertionError:
+                # Don't raise Unauthorized, as this allows to draw conclusions
+                # on existing ordernumbers
+                order = None
+
+        if not email:
+            errs.append(_('anon_auth_err_email', u'Please provide the '
+                          u'emailadress you used for submitting the order.'))
+        if not ordernumber:
+            errs.append(_('anon_auth_err_ordernumber',
+                          u'Please provide the ordernumber'))
+
+        if email and ordernumber and not order:
+            errs.append(_(
+                'anon_auth_err_order',
+                u'No order could be found for the given credentials'))
+
+        if not ordernumber and not email:
+            # first call of this form
+            errs = []
+
+        for err in errs:
+            IStatusMessage(self.request).addStatusMessage(err, 'error')
+
+        self.uid = order.attrs['uid'] if order else None
+        return self.order_auth_template(self)
 
 
 class DialectExcelWithColons(csv.excel):

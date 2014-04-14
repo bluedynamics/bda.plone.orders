@@ -149,7 +149,11 @@
   <div class="order_bookings">
     <h3 i18n:translate="order_bookings">Order Bookings:</h3>
     <table>
-      <tr>
+      <tal:tr repeat="row view/listing">
+      <tal:def define="even repeat/row/even;
+                       start repeat/row/start;
+                       show_exported python:'exported' in row">
+      <tr tal:condition="start">
         <th i18n:translate="booking_title">title</th>
         <th i18n:translate="booking_count">count</th>
         <th i18n:translate="booking_quantity_unit">quantity unit</th>
@@ -157,24 +161,23 @@
         <th i18n:translate="booking_net">net</th>
         <th i18n:translate="booking_discount_net">discount net</th>
         <th i18n:translate="booking_vat">vat</th>
-        <th i18n:translate="booking_exported">exported</th>
+        <th tal:condition="show_exported" i18n:translate="booking_exported">exported</th>
         <th i18n:translate="booking_comment">comment</th>
       </tr>
-      <tal:tr repeat="row view/listing">
-        <tr tal:define="even repeat/row/even"
-            tal:attributes="class python:even and 'even' or 'odd'">
-          <td><a href="row/url" target="_blank" tal:attributes="href row/url" tal:content="row/title">title</a></td>
-          <td tal:content="row/count">count</td>
-          <td tal:content="row/quantity_unit">quantity</td>
-          <td tal:content="row/currency">EUR</td>
-          <td tal:content="row/net">net</td>
-          <td tal:content="row/discount_net">discount net</td>
-          <td>
-            <span tal:replace="row/vat">20.0</span>%
-          </td>
-          <td tal:content="python:view.exported(row)">No</td>
-          <td tal:content="row/comment">comment</td>
-        </tr>
+      <tr tal:attributes="class python:even and 'even' or 'odd'">
+        <td><a href="row/url" target="_blank" tal:attributes="href row/url" tal:content="row/title">title</a></td>
+        <td tal:content="row/count">count</td>
+        <td tal:content="row/quantity_unit">quantity</td>
+        <td tal:content="row/currency">EUR</td>
+        <td tal:content="row/net">net</td>
+        <td tal:content="row/discount_net">discount net</td>
+        <td>
+          <span tal:replace="row/vat">20.0</span>%
+        </td>
+        <td tal:condition="show_exported" tal:content="python:view.exported(row)">No</td>
+        <td tal:content="row/comment">comment</td>
+      </tr>
+      </tal:def>
       </tal:tr>
     </table>
   </div>

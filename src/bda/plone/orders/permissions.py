@@ -1,5 +1,9 @@
 from Products.CMFCore.permissions import setDefaultRoles
 
+# view individual order
+ViewOrderDirectly = 'bda.plone.orders: View Order Directly'
+setDefaultRoles(ViewOrderDirectly,
+                ('Manager', 'Site Administrator', 'Customer'))
 
 # view orders
 ViewOrders = 'bda.plone.orders: View Orders'

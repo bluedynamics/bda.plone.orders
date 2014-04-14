@@ -19,7 +19,7 @@
 
   <!-- orders view -->
   <browser:page
-    for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+    for="zope.component.interfaces.ISite"
     name="orders"
     template="orders_view.pt"
     class=".views.OrdersView"
@@ -27,7 +27,7 @@
     layer="..interfaces.IOrdersExtensionLayer"/>
 
   <browser:page
-    for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+    for="zope.component.interfaces.ISite"
     name="myorders"
     template="orders_view.pt"
     class=".views.MyOrdersView"
@@ -36,7 +36,7 @@
 
   <!-- orders table -->
   <browser:page
-    for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+    for="zope.component.interfaces.ISite"
     name="orderstable"
     template="orders.pt"
     class=".views.OrdersTable"
@@ -44,7 +44,7 @@
     layer="..interfaces.IOrdersExtensionLayer"/>
 
   <browser:page
-    for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+    for="zope.component.interfaces.ISite"
     name="myorderstable"
     template="orders.pt"
     class=".views.MyOrdersTable"
@@ -53,14 +53,14 @@
 
   <!-- orders data -->
   <browser:page
-    for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+    for="zope.component.interfaces.ISite"
     name="ordersdata"
     class=".views.OrdersData"
     permission="bda.plone.orders.ViewOrders"
     layer="..interfaces.IOrdersExtensionLayer"/>
 
   <browser:page
-    for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+    for="zope.component.interfaces.ISite"
     name="myordersdata"
     class=".views.MyOrdersData"
     permission="bda.plone.orders.ViewOrders"
@@ -68,14 +68,14 @@
 
   <!-- customer notification -->
   <browser:page
-    for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+    for="zope.component.interfaces.ISite"
     name="notify_customers"
     class=".notify_customers.NotifyCustomers"
     permission="bda.plone.orders.ViewOrders"
     layer="..interfaces.IOrdersExtensionLayer"/>
 
   <browser:page
-    for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+    for="zope.component.interfaces.ISite"
     name="load_notification_template"
     class=".notify_customers.LoadTemplate"
     permission="bda.plone.orders.ViewOrders"
@@ -83,7 +83,7 @@
 
   <!-- order view -->
   <browser:page
-    for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+    for="zope.component.interfaces.ISite"
     name="order"
     template="order.pt"
     class=".views.OrderView"
@@ -91,23 +91,30 @@
     layer="..interfaces.IOrdersExtensionLayer"/>
 
   <browser:page
-    for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+    for="zope.component.interfaces.ISite"
     name="myorder"
     template="order.pt"
     class=".views.MyOrderView"
     permission="bda.plone.orders.ViewOrders"
     layer="..interfaces.IOrdersExtensionLayer"/>
 
+  <browser:page
+    for="zope.component.interfaces.ISite"
+    name="showorder"
+    class=".views.DirectOrderView"
+    permission="bda.plone.orders.ViewOrderDirectly"
+    layer="..interfaces.IOrdersExtensionLayer"/>
+
   <!-- order transitions for plone root -->
   <browser:page
-    for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+    for="zope.component.interfaces.ISite"
     name="statetransition"
     class=".views.StateTransition"
     permission="bda.plone.orders.ModifyOrders"
     layer="..interfaces.IOrdersExtensionLayer"/>
 
   <browser:page
-    for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+    for="zope.component.interfaces.ISite"
     name="salariedtransition"
     class=".views.SalariedTransition"
     permission="bda.plone.orders.ModifyOrders"
@@ -130,7 +137,7 @@
 
   <!-- export orders -->
   <browser:page
-    for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+    for="zope.component.interfaces.ISite"
     name="exportorders"
     class=".views.ExportOrdersForm"
     permission="bda.plone.orders.ViewOrders"
@@ -147,14 +154,14 @@
 
   <!-- global mail templates -->
   <browser:page
-    for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+    for="zope.component.interfaces.ISite"
     name="mailtemplatesform"
     class=".mailtemplates.MailtemplatesForm"
     permission="bda.plone.orders.ManageTemplates"
     layer="..interfaces.IOrdersExtensionLayer"/>
 
   <browser:page
-    for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+    for="zope.component.interfaces.ISite"
     name="mailtemplates"
     class=".mailtemplates.MailtemplatesView"
     template="mailtemplates_view.pt"

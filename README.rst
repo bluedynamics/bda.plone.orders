@@ -35,8 +35,24 @@ Create translations
     $ ./i18n.sh
 
 
+Permissions
+-----------
+
+In general, custom shop deployments are likely to configure the permission and
+role settings according to their use cases.
+
+The Permissions ``bda.plone.orders.ViewOrder`` and
+``bda.plone.orders.ViewOrders`` are granted to the Authenticated role rather
+than Customer role, because the Customer role can be granted as a local role
+contextually, where the @@orders view should be callable on the ISite root. So
+a possible customer might be no customer on the portal root.
+
+
+
 TODO
 ----
+
+- @@orders in lineage subsites should only list orders in that path.
 
 - Consider vendor UID's and booking based state in mail notification
 

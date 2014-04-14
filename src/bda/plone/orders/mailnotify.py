@@ -16,6 +16,7 @@ from email.Header import Header
 from email.MIMEText import MIMEText
 from email.Utils import formatdate
 from repoze.catalog.query import Any
+from zope.component.hooks import getSite
 from zope.i18n import translate
 
 import textwrap
@@ -129,6 +130,7 @@ def create_mail_body(templates, context, attrs):
     arguments['order_total'] = order_total_callback(context, attrs)
     arguments['global_text'] = templates['global_text_callback'](
         context, attrs)
+    arguments['portal_url'] = getSite().absolute_url()
     body_template = templates['body']
     return body_template % arguments
 

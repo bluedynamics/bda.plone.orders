@@ -6,6 +6,13 @@
   </roles>
 
   <permissions>
+
+    <permission name="bda.plone.orders: View Order Directly" acquire="True">
+      <role name="Manager" />
+      <role name="Site Administrator" />
+      <role name="Authenticated" />
+    </permission>
+
     <permission name="bda.plone.orders: View Orders" acquire="True">
       <role name="Manager" />
       <role name="Site Administrator" />
@@ -31,5 +38,6 @@
 
     <permission name="bda.plone.orders: Delegate Vendor Role" acquire="False">
     </permission>
+
   </permissions>
 </rolemap>

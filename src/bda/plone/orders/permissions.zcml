@@ -3,6 +3,10 @@
   i18n_domain="bda.plone.orders">
 
   <permission
+    id="bda.plone.orders.ViewOrderDirectly"
+    title="bda.plone.orders: View Order Directly" />
+
+  <permission
     id="bda.plone.orders.ViewOrders"
     title="bda.plone.orders: View Orders" />
 

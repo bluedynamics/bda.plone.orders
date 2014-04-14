@@ -22,6 +22,7 @@ Date: %(date)s
 Thank you for your order:
 
 Ordernumber: %(ordernumber)s
+Order details: %(portal_url)s/@@showorder?ordernumber=%(ordernumber)s
 
 Personal Data:
 Name: %(personal_data.firstname)s %(personal_data.lastname)s
@@ -50,6 +51,7 @@ Date: %(date)s
 Thank you for your reservation:
 
 Ordernumber: %(ordernumber)s
+Reservation details: %(portal_url)s/@@showorder?ordernumber=%(ordernumber)s
 
 Personal Data:
 Name: %(personal_data.firstname)s %(personal_data.lastname)s
@@ -99,6 +101,7 @@ Datum: %(date)s
 Besten Dank für Ihre Bestellung:
 
 Bestellnummer: %(ordernumber)s
+Details zur Bestellung: %(portal_url)s/@@showorder?ordernumber=%(ordernumber)s
 
 Persönliche Angaben:
 Name: %(personal_data.firstname)s %(personal_data.lastname)s
@@ -129,6 +132,7 @@ Datum: %(date)s
 Besten Dank für Ihre Reservierung:
 
 Bestellnummer: %(ordernumber)s
+Details zur Reservierung: %(portal_url)s/@@showorder?ordernumber=%(ordernumber)s
 
 Persönliche Angaben:
 Name: %(personal_data.firstname)s %(personal_data.lastname)s
@@ -178,6 +182,7 @@ Date: %(date)s
 Nous vous remercions pour votre commande:
 
 No. de commande: %(ordernumber)s
+%(portal_url)s/@@showorder?ordernumber=%(ordernumber)s
 
 Données personnelles:
 Nom: %(personal_data.firstname)s %(personal_data.lastname)s
@@ -208,6 +213,7 @@ Date: %(date)s
 Nous vous remercions pour votre réservation:
 
 No. de commande: %(ordernumber)s
+%(portal_url)s/@@showorder?ordernumber=%(ordernumber)s
 
 Données personnelles:
 Nom: %(personal_data.firstname)s %(personal_data.lastname)s
@@ -257,6 +263,7 @@ Data: %(date)s
 Grazie per l'ordine effettuato:
 
 Numero d'ordine: %(ordernumber)s
+%(portal_url)s/@@showorder?ordernumber=%(ordernumber)s
 
 Dati personali:
 Nome: %(personal_data.firstname)s %(personal_data.lastname)s
@@ -286,6 +293,7 @@ Data: %(date)s
 Grazie per l'prenotazione effettuato:
 
 Numero d'ordine: %(ordernumber)s
+%(portal_url)s/@@showorder?ordernumber=%(ordernumber)s
 
 Dati personali:
 Nome: %(personal_data.firstname)s %(personal_data.lastname)s
@@ -333,6 +341,7 @@ Dato: %(date)s
 Takk for din bestilling:
 
 Ordernummer: %(ordernumber)s
+%(portal_url)s/@@showorder?ordernumber=%(ordernumber)s
 
 Personlig info:
 Navn: %(personal_data.firstname)s %(personal_data.lastname)s
@@ -363,6 +372,7 @@ Dato: %(date)s
 Takk for din bestilling:
 
 Ordernummer: %(ordernumber)s
+%(portal_url)s/@@showorder?ordernumber=%(ordernumber)s
 
 Personlig info:
 Navn: %(personal_data.firstname)s %(personal_data.lastname)s

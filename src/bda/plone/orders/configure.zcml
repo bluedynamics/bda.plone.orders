@@ -44,7 +44,7 @@
 
   <!-- order checkout adapter -->
   <adapter
-    for="Products.CMFPlone.interfaces.IPloneSiteRoot
+    for="zope.component.interfaces.ISite
          zope.publisher.interfaces.browser.IBrowserRequest"
     factory=".common.OrderCheckoutAdapter"/>
 
@@ -73,7 +73,7 @@
 
   <!-- mail templates storage -->
   <adapter
-    for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+    for="zope.component.interfaces.ISite"
     provides=".interfaces.IDynamicMailTemplateLibraryStorage"
     factory=".mailtemplates.DynamicMailTemplateLibraryStorage"/>
 
