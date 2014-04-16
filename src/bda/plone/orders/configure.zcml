@@ -45,7 +45,7 @@
   <!-- order checkout adapter -->
   <adapter
     for="*
-         zope.publisher.interfaces.browser.IBrowserRequest"
+         .interfaces.IOrdersExtensionLayer"
     factory=".common.OrderCheckoutAdapter"/>
 
   <!-- payment data adapter -->
