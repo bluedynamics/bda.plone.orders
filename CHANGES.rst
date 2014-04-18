@@ -2,6 +2,13 @@
 Changelog
 =========
 
+dev
+---
+
+- Use admin_name and admin_email defined in Shop Settings for sending
+  notifications.
+  [fRiSi]
+
 0.4
 ---
 

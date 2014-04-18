@@ -20,6 +20,8 @@ from zope.component.hooks import getSite
 from zope.i18n import translate
 
 import textwrap
+from bda.plone.shop.utils import get_shop_settings
+import logging
 
 
 def status_message(context, msg):
@@ -141,17 +143,19 @@ def do_notify(context, order, templates):
     message = create_mail_body(templates, context, attrs)
     customer_address = attrs['personal_data.email']
     props = getToolByName(context, 'portal_properties')
-    shop_manager_address = props.site_properties.email_from_address
+    shop_manager_address = get_shop_settings().admin_email or \
+        props.site_properties.email_from_address
     mail_notify = MailNotify(context)
     for receiver in [customer_address, shop_manager_address]:
         try:
             mail_notify.send(subject, message, receiver)
-        except Exception:
+        except Exception, e:
             msg = translate(
                 _('email_sending_failed',
                   default=u'Failed to send Notification to ${receiver}',
                   mapping={'receiver': receiver}))
             status_message(context, msg)
+            logging.getLogger('bda.plone.orders').error("email could not be sent: %s" % str(e))
 
 
 def notify_payment_success(event):
@@ -194,11 +198,13 @@ class MailNotify(object):
         self.context = context
 
     def send(self, subject, message, receiver):
-        purl = getToolByName(self.context, 'portal_url')
-        mailfrom = purl.getPortalObject().email_from_address
-        mailfrom_name = purl.getPortalObject().email_from_name
-        if mailfrom_name:
-            mailfrom = u"%s <%s>" % (safe_unicode(mailfrom_name), mailfrom)
+        props = getToolByName(self.context, 'portal_properties')
+        shop_manager_address = get_shop_settings().admin_email or \
+            props.site_properties.email_from_address
+        shop_manager_name = get_shop_settings().admin_name or \
+            props.site_properties.email_from_name
+        if shop_manager_name:
+            mailfrom = u"%s <%s>" % (safe_unicode(shop_manager_name), shop_manager_address)
         mailhost = getToolByName(self.context, 'MailHost')
         message = MIMEText(message, _subtype='plain')
         message.set_charset('utf-8')
