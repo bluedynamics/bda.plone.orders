@@ -2,12 +2,13 @@
 Changelog
 =========
 
-dev
----
+0.5dev
+------
 
-- Use admin_name and admin_email defined in Shop Settings for sending
-  notifications.
-  [fRiSi]
+- Introduce ``INotificationSettings`` which provides ``admin_name`` and
+  ``admin_email`` attributes. Use these settings for sending notifications.
+  [fRiSi, rnix]
+
 
 0.4
 ---

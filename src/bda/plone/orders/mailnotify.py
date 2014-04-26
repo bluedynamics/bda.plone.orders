@@ -8,6 +8,7 @@ from bda.plone.orders.common import DT_FORMAT
 from bda.plone.orders.common import OrderData
 from bda.plone.orders.common import get_bookings_soup
 from bda.plone.orders.common import get_order
+from bda.plone.orders.interfaces import INotificationSettings
 from bda.plone.orders.interfaces import IGlobalNotificationText
 from bda.plone.orders.interfaces import IItemNotificationText
 from bda.plone.orders.mailtemplates import get_order_templates
@@ -19,9 +20,11 @@ from repoze.catalog.query import Any
 from zope.component.hooks import getSite
 from zope.i18n import translate
 
-import textwrap
-from bda.plone.shop.utils import get_shop_settings
 import logging
+import textwrap
+
+
+logger = logging.getLogger('bda.plone.orders')
 
 
 def status_message(context, msg):
@@ -142,9 +145,7 @@ def do_notify(context, order, templates):
     subject = templates['subject'] % attrs['ordernumber']
     message = create_mail_body(templates, context, attrs)
     customer_address = attrs['personal_data.email']
-    props = getToolByName(context, 'portal_properties')
-    shop_manager_address = get_shop_settings().admin_email or \
-        props.site_properties.email_from_address
+    shop_manager_address = INotificationSettings(context).admin_email
     mail_notify = MailNotify(context)
     for receiver in [customer_address, shop_manager_address]:
         try:
@@ -155,7 +156,7 @@ def do_notify(context, order, templates):
                   default=u'Failed to send Notification to ${receiver}',
                   mapping={'receiver': receiver}))
             status_message(context, msg)
-            logging.getLogger('bda.plone.orders').error("email could not be sent: %s" % str(e))
+            logger.error("Email could not be sent: %s" % str(e))
 
 
 def notify_payment_success(event):
@@ -198,13 +199,12 @@ class MailNotify(object):
         self.context = context
 
     def send(self, subject, message, receiver):
-        props = getToolByName(self.context, 'portal_properties')
-        shop_manager_address = get_shop_settings().admin_email or \
-            props.site_properties.email_from_address
-        shop_manager_name = get_shop_settings().admin_name or \
-            props.site_properties.email_from_name
+        settings = INotificationSettings(self.context)
+        shop_manager_address = settings.admin_email
+        shop_manager_name = settings.admin_name
         if shop_manager_name:
-            mailfrom = u"%s <%s>" % (safe_unicode(shop_manager_name), shop_manager_address)
+            mailfrom = u"%s <%s>" % (
+                safe_unicode(shop_manager_name), shop_manager_address)
         mailhost = getToolByName(self.context, 'MailHost')
         message = MIMEText(message, _subtype='plain')
         message.set_charset('utf-8')
