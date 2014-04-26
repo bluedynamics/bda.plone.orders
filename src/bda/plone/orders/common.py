@@ -239,7 +239,7 @@ class OrderCheckoutAdapter(CheckoutAdapter):
 
     @property
     def skip_payment(self):
-        # TODO: seperate hirning session required
+        # XXX: separate braining session required
         order_data = OrderData(context=self.context, order=self.order)
         return SKIP_PAYMENT_IF_RESERVED \
             and order_data.state in (ifaces.STATE_RESERVED, ifaces.STATE_MIXED)
