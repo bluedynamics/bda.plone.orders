@@ -2,6 +2,14 @@
 Changelog
 =========
 
+0.5dev
+------
+
+- Introduce ``INotificationSettings`` which provides ``admin_name`` and
+  ``admin_email`` attributes. Use these settings for sending notifications.
+  [fRiSi, rnix]
+
+
 0.4
 ---
 

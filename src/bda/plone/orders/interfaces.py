@@ -36,6 +36,15 @@ class IVendor(IDiscountSettingsEnabled):
     """
 
 
+class INotificationSettings(Interface):
+    """Interface for looking up mail notification settings.
+    """
+
+    admin_email = Attribute(u"Shop admin email address")
+
+    admin_name = Attribute(u"Shop admin name")
+
+
 class IItemNotificationText(Interface):
     """Interface for providing buyable item order notification text.
     """
