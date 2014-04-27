@@ -650,7 +650,8 @@ class OrderViewBase(BrowserView):
 
     @property
     def shipping_title(self):
-        # XXX: node.ext.zodb bug
+        # XXX: either failure in upgrade step or node.ext.zodb bug
+        #      figure out
         #order = self.order
         order = self.order_data.order.attrs
         title = translate(order['shipping_label'], context=self.request)
