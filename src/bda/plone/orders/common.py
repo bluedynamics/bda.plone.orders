@@ -269,11 +269,23 @@ class OrderCheckoutAdapter(CheckoutAdapter):
         # XXX: payment name
         #      payment type
         #      payment total
-        #      shipping name
-        #      shipping vat
         sid = data.fetch('checkout.shipping_selection.shipping').extracted
         shipping = Shippings(self.context).get(sid)
-        order.attrs['shipping'] = shipping.calculate(self.items)
+        order.attrs['shipping_method'] = sid
+        order.attrs['shipping_label'] = shipping.label
+        order.attrs['shipping_description'] = shipping.description
+        try:
+            shipping_net = shipping.net(self.items)
+            shipping_vat = shipping.vat(self.items)
+            order.attrs['shipping_net'] = shipping_net
+            order.attrs['shipping_vat'] = shipping_vat
+            order.attrs['shipping'] = shipping_net + shipping_vat
+        # B/C for bda.plone.shipping < 0.4
+        except NotImplementedError:
+            shipping_net = shipping.calculate(self.items)
+            order.attrs['shipping_net'] = shipping_net
+            order.attrs['shipping_vat'] = Decimal(0)
+            order.attrs['shipping'] = shipping_net
         uid = order.attrs['uid'] = uuid.uuid4()
         order.attrs['creator'] = creator
         order.attrs['created'] = created
@@ -473,6 +485,16 @@ class OrderData(object):
     def discount_vat(self):
         # XXX: use decimal
         return float(self.order.attrs['cart_discount_vat'])
+
+    @property
+    def shipping_net(self):
+        # XXX: use decimal
+        return float(self.order.attrs['shipping_net'])
+
+    @property
+    def shipping_vat(self):
+        # XXX: use decimal
+        return float(self.order.attrs['shipping_vat'])
 
     @property
     def shipping(self):

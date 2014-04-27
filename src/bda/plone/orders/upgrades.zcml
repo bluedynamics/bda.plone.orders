@@ -34,4 +34,12 @@
     profile="bda.plone.orders:default"
     handler=".upgrades.fix_discount_attrs"/>
 
+  <genericsetup:upgradeStep
+    source="5"
+    destination="6"
+    title="Add shipping related attributes to orders"
+    description=""
+    profile="bda.plone.orders:default"
+    handler=".upgrades.fix_shipping_attrs"/>
+
 </configure>

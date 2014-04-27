@@ -147,3 +147,35 @@ def fix_discount_attrs(ctx=None):
     if need_rebuild:
         bookings_soup.rebuild()
         logging.info("Rebuilt bookings catalog")
+
+
+def fix_shipping_attrs(ctx=None):
+    portal = getSite()
+    orders_soup = get_orders_soup(portal)
+    data = orders_soup.storage.data
+    for item in data.values():
+        if not 'shipping_method' in item.attrs:
+            item.attrs['shipping_method'] = 'unknown'
+            "Added shipping_method {0} to booking {1}".format(
+                'unknown', item.attrs['uid']
+            )
+        if not 'shipping_label' in item.attrs:
+            item.attrs['shipping_label'] = 'unknown'
+            "Added shipping_label {0} to booking {1}".format(
+                'unknown', item.attrs['uid']
+            )
+        if not 'shipping_description' in item.attrs:
+            item.attrs['shipping_description'] = 'unknown'
+            "Added shipping_description {0} to booking {1}".format(
+                'unknown', item.attrs['uid']
+            )
+        if not 'shipping_net' in item.attrs:
+            item.attrs['shipping_net'] = item.attrs['shipping']
+            "Added shipping_net {0} to booking {1}".format(
+                item.attrs['shipping'], item.attrs['uid']
+            )
+        if not 'shipping_vat' in item.attrs:
+            item.attrs['shipping_vat'] = Decimal(0)
+            "Added shipping_vat {0} to booking {1}".format(
+                Decimal(0), item.attrs['uid']
+            )

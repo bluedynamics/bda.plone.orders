@@ -96,8 +96,14 @@
       <strong i18n:translate="order_discount_vat">Discount VAT:</strong>
       <span tal:replace="view/discount_vat">0.00</span>
       <br />
-      <strong i18n:translate="order_shipping_costs">Shipping:</strong>
-      <span tal:replace="view/shipping">0.00</span>
+      <strong i18n:translate="order_shipping_title">Shipping:</strong>
+      <span tal:replace="view/shipping_title">0.00</span>
+      <br />
+      <strong i18n:translate="order_shipping_costs_net">Shipping Net:</strong>
+      <span tal:replace="view/shipping_net">0.00</span>
+      <br />
+      <strong i18n:translate="order_shipping_costs_vat">Shipping VAT:</strong>
+      <span tal:replace="view/shipping_vat">0.00</span>
       <br />
       <strong i18n:translate="order_total">Total:</strong>
       <strong tal:content="view/total">0.00</strong>

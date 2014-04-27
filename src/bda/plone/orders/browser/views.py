@@ -649,7 +649,25 @@ class OrderViewBase(BrowserView):
         return ascur(self.order_data.discount_vat)
 
     @property
+    def shipping_title(self):
+        order = self.order
+        title = translate(order['shipping_label'], context=self.request)
+        if order['shipping_description']:
+            title += ' (%s)' % translate(order['shipping_description'],
+                                         context=self.request)
+        return title
+
+    @property
+    def shipping_net(self):
+        return ascur(self.order_data.shipping_net)
+
+    @property
+    def shipping_vat(self):
+        return ascur(self.order_data.shipping_vat)
+
+    @property
     def shipping(self):
+        # B/C
         return ascur(self.order_data.shipping)
 
     @property

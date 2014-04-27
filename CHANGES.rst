@@ -5,6 +5,9 @@ Changelog
 0.5dev
 ------
 
+- Adopt shipping handling to ``bda.plone.shipping`` >= 0.4.
+  [rnix]
+
 - Introduce ``INotificationSettings`` which provides ``admin_name`` and
   ``admin_email`` attributes. Use these settings for sending notifications.
   [fRiSi, rnix]
@@ -13,11 +16,11 @@ Changelog
 0.4
 ---
 
-- Change browser view and adapter regitrations from IPloneSiteRoot to
-  `zope.component.interfaces.ISite`. That's needed for Lineage compatibility.
+- Change browser view and adapter regitrations from ``IPloneSiteRoot`` to
+  ``zope.component.interfaces.ISite``. That's needed for Lineage compatibility.
   [thet]
 
-- Integrate @@showorder view to access information for a specific order for
+- Integrate ``@@showorder`` view to access information for a specific order for
   anonymous users by giving the ordernumber and email as credentials.
   [thet]
 
