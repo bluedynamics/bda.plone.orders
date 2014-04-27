@@ -1,3 +1,4 @@
+from bda.plone.orders import message_factory as _
 from bda.plone.orders.common import acquire_vendor_or_shop_root
 from bda.plone.orders.common import get_bookings_soup
 from bda.plone.orders.common import get_orders_soup
@@ -155,27 +156,38 @@ def fix_shipping_attrs(ctx=None):
     data = orders_soup.storage.data
     for item in data.values():
         if not 'shipping_method' in item.attrs:
-            item.attrs['shipping_method'] = 'unknown'
-            "Added shipping_method {0} to booking {1}".format(
-                'unknown', item.attrs['uid']
+            item.attrs['shipping_method'] = _('unknown', default=u'Unknown')
+            logging.info(
+                "Added shipping_method {0} to booking {1}".format(
+                    'unknown', item.attrs['uid']
+                )
             )
         if not 'shipping_label' in item.attrs:
-            item.attrs['shipping_label'] = 'unknown'
-            "Added shipping_label {0} to booking {1}".format(
-                'unknown', item.attrs['uid']
+            item.attrs['shipping_label'] = _('unknown', default=u'Unknown')
+            logging.info(
+                "Added shipping_label {0} to booking {1}".format(
+                    'unknown', item.attrs['uid']
+                )
             )
         if not 'shipping_description' in item.attrs:
-            item.attrs['shipping_description'] = 'unknown'
-            "Added shipping_description {0} to booking {1}".format(
-                'unknown', item.attrs['uid']
+            item.attrs['shipping_description'] = \
+                _('unknown', default=u'Unknown')
+            logging.info(
+                "Added shipping_description {0} to booking {1}".format(
+                    'unknown', item.attrs['uid']
+                )
             )
         if not 'shipping_net' in item.attrs:
             item.attrs['shipping_net'] = item.attrs['shipping']
-            "Added shipping_net {0} to booking {1}".format(
-                item.attrs['shipping'], item.attrs['uid']
+            logging.info(
+                "Added shipping_net {0} to booking {1}".format(
+                    item.attrs['shipping'], item.attrs['uid']
+                )
             )
         if not 'shipping_vat' in item.attrs:
             item.attrs['shipping_vat'] = Decimal(0)
-            "Added shipping_vat {0} to booking {1}".format(
-                Decimal(0), item.attrs['uid']
+            logging.info(
+                "Added shipping_vat {0} to booking {1}".format(
+                    Decimal(0), item.attrs['uid']
+                )
             )

@@ -650,7 +650,9 @@ class OrderViewBase(BrowserView):
 
     @property
     def shipping_title(self):
-        order = self.order
+        # XXX: node.ext.zodb bug
+        #order = self.order
+        order = self.order_data.order.attrs
         title = translate(order['shipping_label'], context=self.request)
         if order['shipping_description']:
             title += ' (%s)' % translate(order['shipping_description'],
