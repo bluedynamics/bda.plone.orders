@@ -4,13 +4,14 @@ from bda.plone.cart import get_catalog_brain
 from bda.plone.orders import common
 from bda.plone.orders import interfaces as ifaces
 from bda.plone.orders import message_factory as _
+from bda.plone.orders import safe_encode
 from bda.plone.orders.common import DT_FORMAT
 from bda.plone.orders.common import OrderData
 from bda.plone.orders.common import get_bookings_soup
 from bda.plone.orders.common import get_order
-from bda.plone.orders.interfaces import INotificationSettings
 from bda.plone.orders.interfaces import IGlobalNotificationText
 from bda.plone.orders.interfaces import IItemNotificationText
+from bda.plone.orders.interfaces import INotificationSettings
 from bda.plone.orders.mailtemplates import get_order_templates
 from bda.plone.orders.mailtemplates import get_reservation_templates
 from email.Header import Header
@@ -32,18 +33,12 @@ def status_message(context, msg):
     putils.addPortalMessage(msg)
 
 
-def _encode(string):
-    if isinstance(string, unicode):
-        string = string.encode('utf-8')
-    return string
-
-
 def _indent(text, ind=5, width=80):
     text = textwrap.wrap(text, width - ind)
     lines = []
     for line in text:
         lines.append(u' ' * ind + safe_unicode(line))
-    return _encode(u'\n'.join(lines))
+    return safe_encode(u'\n'.join(lines))
 
 
 def create_mail_listing(context, attrs):
@@ -55,7 +50,7 @@ def create_mail_listing(context, attrs):
     for booking in bookings:
         brain = get_catalog_brain(context, booking.attrs['buyable_uid'])
         buyable = brain.getObject()
-        title = _encode(booking.attrs['title'])
+        title = safe_encode(booking.attrs['title'])
         comment = booking.attrs['buyable_comment']
         if comment:
             title = '%s (%s)' % (title, comment)

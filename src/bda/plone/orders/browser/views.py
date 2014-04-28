@@ -10,6 +10,7 @@ from bda.plone.checkout.vocabularies import get_pycountry_name
 from bda.plone.orders import interfaces as ifaces
 from bda.plone.orders import message_factory as _
 from bda.plone.orders import permissions
+from bda.plone.orders import safe_encode
 from bda.plone.orders import vocabularies as vocabs
 from bda.plone.orders.common import DT_FORMAT
 from bda.plone.orders.common import OrderData
@@ -972,6 +973,19 @@ def resolve_buyable_url(context, booking):
 COMPUTED_BOOKING_EXPORT_ATTRS['url'] = resolve_buyable_url
 
 
+def cleanup_for_csv(value):
+    """Cleanup a value for CSV export.
+    """
+    if isinstance(value, datetime.datetime):
+        value = value.strftime(DT_FORMAT)
+    if value == '-':
+        value = ''
+    if isinstance(value, float) or \
+       isinstance(value, Decimal):
+        value = str(value).replace('.', ',')
+    return safe_encode(value)
+
+
 class ExportOrdersForm(YAMLForm):
     browser_template = ViewPageTemplateFile('export.pt')
     form_template = 'bda.plone.orders.browser:forms/orders_export.yaml'
@@ -1016,15 +1030,11 @@ class ExportOrdersForm(YAMLForm):
         self.to_date = data.fetch('exportorders.to').extracted
 
     def export_val(self, record, attr_name):
+        """Get attribute from record and cleanup.
+        Since the record object is available, you can return aggregated values.
+        """
         val = record.attrs.get(attr_name)
-        if isinstance(val, datetime.datetime):
-            val = val.strftime(DT_FORMAT)
-        if val == '-':
-            val = ''
-        if isinstance(val, float) or \
-           isinstance(val, Decimal):
-            val = str(val).replace('.', ',')
-        return val
+        return cleanup_for_csv(val)
 
     def csv(self, request):
         # get orders soup
@@ -1072,6 +1082,7 @@ class ExportOrdersForm(YAMLForm):
             for attr_name in COMPUTED_ORDER_EXPORT_ATTRS:
                 cb = COMPUTED_ORDER_EXPORT_ATTRS[attr_name]
                 val = cb(self.context, order_data)
+                val = cleanup_for_csv(val)
                 order_attrs.append(val)
             for booking in order_data.bookings:
                 booking_attrs = list()
@@ -1083,6 +1094,7 @@ class ExportOrdersForm(YAMLForm):
                 for attr_name in COMPUTED_BOOKING_EXPORT_ATTRS:
                     cb = COMPUTED_BOOKING_EXPORT_ATTRS[attr_name]
                     val = cb(self.context, booking)
+                    val = cleanup_for_csv(val)
                     booking_attrs.append(val)
                 ex.writerow(order_attrs + booking_attrs)
                 booking.attrs['exported'] = True
@@ -1106,7 +1118,7 @@ class ExportOrdersContextual(BrowserView):
             raise Unauthorized
 
         filename = '{}_{}.csv'.format(
-            self.context.title,
+            safe_encode(self.context.title),
             datetime.datetime.now().strftime('%Y-%m-%d_%H-%M'))
         resp = self.request.response
         resp.setHeader('content-type', 'text/csv; charset=utf-8')
@@ -1115,15 +1127,11 @@ class ExportOrdersContextual(BrowserView):
         return self.get_csv()
 
     def export_val(self, record, attr_name):
+        """Get attribute from record and cleanup.
+        Since the record object is available, you can return aggregated values.
+        """
         val = record.attrs.get(attr_name)
-        if isinstance(val, datetime.datetime):
-            val = val.strftime(DT_FORMAT)
-        if val == '-':
-            val = ''
-        if isinstance(val, float) or \
-           isinstance(val, Decimal):
-            val = str(val).replace('.', ',')
-        return val
+        return cleanup_for_csv(val)
 
     def get_csv(self):
         context = self.context
@@ -1164,6 +1172,7 @@ class ExportOrdersContextual(BrowserView):
             for attr_name in COMPUTED_BOOKING_EXPORT_ATTRS:
                 cb = COMPUTED_BOOKING_EXPORT_ATTRS[attr_name]
                 val = cb(context, booking)
+                val = cleanup_for_csv(val)
                 booking_attrs.append(val)
 
             # create order_attrs, if it doesn't exist
@@ -1182,6 +1191,7 @@ class ExportOrdersContextual(BrowserView):
                 for attr_name in COMPUTED_ORDER_EXPORT_ATTRS:
                     cb = COMPUTED_ORDER_EXPORT_ATTRS[attr_name]
                     val = cb(self.context, order_data)
+                    val = cleanup_for_csv(val)
                     order_attrs.append(val)
                 all_orders[order_uid] = order_attrs
 
