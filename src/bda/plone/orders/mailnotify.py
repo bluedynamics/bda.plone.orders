@@ -50,6 +50,7 @@ def create_mail_listing(context, order_data):
         comment = booking.attrs['buyable_comment']
         if comment:
             title = '%s (%s)' % (title, comment)
+        # XXX: price and discount
         line = '{count: 4f} {title}'.format(
             count=booking.attrs['buyable_count'],
             title=title

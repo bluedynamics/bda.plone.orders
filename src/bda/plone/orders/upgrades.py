@@ -3,6 +3,7 @@ from bda.plone.orders.common import acquire_vendor_or_shop_root
 from bda.plone.orders.common import get_bookings_soup
 from bda.plone.orders.common import get_orders_soup
 from bda.plone.orders.common import OrderData
+from bda.plone.payment import Payments
 from decimal import Decimal
 from plone.app.uuid.utils import uuidToObject
 from plone.uuid.interfaces import IUUID
@@ -195,20 +196,27 @@ def fix_shipping_attrs(ctx=None):
 
 def fix_payment_attrs(ctx=None):
     portal = getSite()
+    payments = Payments(portal)
     orders_soup = get_orders_soup(portal)
     data = orders_soup.storage.data
     for item in data.values():
         if not 'payment_method' in item.attrs:
-            item.attrs['payment_method'] = 'unknown'
-            logging.info(
-                "Added payment_method {0} to booking {1}".format(
-                    'unknown', item.attrs['uid']
-                )
+            continue
+        payment_method = item.attrs['payment_selection.payment']
+        payment = payments.get(payment_method)
+        if payment:
+            payment_label = payment.label
+        else:
+            payment_label = _('unknown', default=u'Unknown')
+        item.attrs['payment_method'] = payment_method
+        logging.info(
+            "Added payment_method {0} to booking {1}".format(
+                payment_method, item.attrs['uid']
             )
-        if not 'payment_label' in item.attrs:
-            item.attrs['payment_label'] = _('unknown', default=u'Unknown')
-            logging.info(
-                "Added payment_label {0} to booking {1}".format(
-                    'unknown', item.attrs['uid']
-                )
+        )
+        item.attrs['payment_label'] = payment_label
+        logging.info(
+            "Added payment_label {0} to booking {1}".format(
+                payment_label, item.attrs['uid']
             )
+        )

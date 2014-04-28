@@ -21,7 +21,6 @@ from bda.plone.orders.common import get_orders_soup
 from bda.plone.orders.common import get_vendor_by_uid
 from bda.plone.orders.common import get_vendor_uids_for
 from bda.plone.orders.common import get_vendors_for
-from bda.plone.payment import Payments
 from bda.plone.shop.interfaces import IBuyable  # XXX: dependency inversion
 from decimal import Decimal
 from odict import odict
@@ -729,11 +728,7 @@ class OrderViewBase(BrowserView):
 
     @property
     def payment(self):
-        name = self.order['payment_selection.payment']
-        payment = Payments(self.context).get(name)
-        if payment:
-            return payment.label
-        return name
+        return self.order['payment_label']
 
     @property
     def salaried(self):

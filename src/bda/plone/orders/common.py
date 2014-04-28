@@ -274,7 +274,7 @@ class OrderCheckoutAdapter(CheckoutAdapter):
         created = datetime.datetime.now()
         order.attrs['created'] = created
         # payment related information
-        # XXX: payment total ?
+        # XXX: handle no payment
         pid = data.fetch('checkout.payment_selection.payment').extracted
         payment = Payments(self.context).get(pid)
         order.attrs['payment_method'] = pid
@@ -283,6 +283,7 @@ class OrderCheckoutAdapter(CheckoutAdapter):
         else:
             order.attrs['payment_label'] = _('unknown', default=u'Unknown')
         # shipping related information
+        # XXX: handle no shipping
         sid = data.fetch('checkout.shipping_selection.shipping').extracted
         shipping = Shippings(self.context).get(sid)
         order.attrs['shipping_method'] = sid
