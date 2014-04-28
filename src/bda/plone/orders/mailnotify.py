@@ -71,15 +71,9 @@ def create_mail_listing(context, order_data):
 
 
 def create_order_total(context, order_data):
-    """Calculate order total price for notification mail.
-
-    XXX: use CartItemCalculator? Problem - lives in bda.plone.shop
-    XXX: also consider discount here once implemented
     """
-    # XXX: use Order Data
-    
-    return "%.2f" % 999.0
-    
+    """
+    # XXX: refactor to order summary
     #ret = 0.0
     #for booking in order_data.bookings:
     #    count = float(booking.attrs['buyable_count'])
@@ -87,6 +81,7 @@ def create_order_total(context, order_data):
     #    ret += net
     #    ret += net * booking.attrs.get('vat', 0.0) / 100
     #return "%.2f" % (ret + float(attrs['shipping']))
+    return "%.2f" % 999.0
 
 
 def create_global_text(context, order_data):
