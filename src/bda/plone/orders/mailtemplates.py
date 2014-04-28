@@ -42,8 +42,6 @@ Comment:
 Ordered items:
 %(item_listing)s
 
-%(global_item_text)s
-
 %(global_text)s
 
 %(payment_text)s
@@ -76,8 +74,6 @@ Ordered items:
 %(item_listing)s
 
 Total: %(order_total)s
-
-%(global_item_text)s
 
 %(global_text)s
 
@@ -131,8 +127,6 @@ Bestellte Artikel:
 
 Total: %(order_total)s
 
-%(global_item_text)s
-
 %(global_text)s
 
 %(payment_text)s
@@ -165,8 +159,6 @@ Bestellte Artikel:
 %(item_listing)s
 
 Total: %(order_total)s
-
-%(global_item_text)s
 
 %(global_text)s
 
@@ -220,8 +212,6 @@ Produit commandé:
 
 Total: %(order_total)s
 
-%(global_item_text)s
-
 %(global_text)s
 
 %(payment_text)s
@@ -254,8 +244,6 @@ Produit commandé:
 %(item_listing)s
 
 Total: %(order_total)s
-
-%(global_item_text)s
 
 %(global_text)s
 
@@ -308,8 +296,6 @@ Articolo ordinato:
 
 Totale: %(order_total)s
 
-%(global_item_text)s
-
 %(global_text)s
 
 %(payment_text)s
@@ -341,8 +327,6 @@ Articolo ordinato:
 %(item_listing)s
 
 Totale: %(order_total)s
-
-%(global_item_text)s
 
 %(global_text)s
 
@@ -395,8 +379,6 @@ Bestilte produkter:
 
 Total: %(order_total)s
 
-%(global_item_text)s
-
 %(global_text)s
 
 %(payment_text)s
@@ -429,8 +411,6 @@ Bestilte produkter:
 %(item_listing)s
 
 Totale: %(order_total)s
-
-%(global_item_text)s
 
 %(global_text)s
 
