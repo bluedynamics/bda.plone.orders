@@ -46,7 +46,7 @@ class INotificationSettings(Interface):
 
 
 class IItemNotificationText(Interface):
-    """Interface for providing buyable item order notification text.
+    """Interface for providing notification text for items in order.
     """
 
     order_text = Attribute(u"Text sent after successful checkout for item")

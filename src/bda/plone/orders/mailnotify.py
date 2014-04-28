@@ -76,7 +76,7 @@ def create_mail_listing(context, attrs):
     return '\n'.join(lines)
 
 
-def create_global_text(context, attrs):
+def create_global_item_text(context, attrs):
     notificationtext = IGlobalNotificationText(context)
     order_data = OrderData(context, uid=attrs['uid'])
     if order_data.state in (ifaces.STATE_RESERVED, ifaces.STATE_MIXED)\
@@ -88,6 +88,18 @@ def create_global_text(context, attrs):
         return _indent(notificationtext.global_order_text, ind=0)
     return ''  # don't return None
 
+
+def create_global_text(context, attrs):
+    notificationtext = IGlobalNotificationText(getSite())
+    order_data = OrderData(context, uid=attrs['uid'])
+    if order_data.state in (ifaces.STATE_RESERVED, ifaces.STATE_MIXED)\
+            and notificationtext.global_overbook_text:
+        # TODO: might need custom text for MIXED state
+        return _indent(notificationtext.global_overbook_text, ind=0)
+    elif order_data.state == ifaces.STATE_NEW\
+            and notificationtext.global_order_text:
+        return _indent(notificationtext.global_order_text, ind=0)
+    return ''  # don't return None
 
 def create_order_total(context, attrs):
     """Calculate order total price for notification mail.
@@ -107,7 +119,7 @@ def create_order_total(context, attrs):
 
 
 def create_payment_text(context, attrs):
-    pass
+    return 'Payment Text'  # don't return None
 
 
 def create_mail_body(templates, context, attrs):
@@ -123,6 +135,7 @@ def create_mail_body(templates, context, attrs):
         Order-data. This are node attributes, which are in fact dict-like
     """
     arguments = dict(attrs.items())
+    arguments['portal_url'] = getSite().absolute_url()
     arguments['date'] = attrs['created'].strftime(DT_FORMAT)
     if attrs['delivery_address.alternative_delivery']:
         delivery_address_template = templates['delivery_address']
@@ -133,9 +146,12 @@ def create_mail_body(templates, context, attrs):
     arguments['item_listing'] = item_listing_callback(context, attrs)
     order_total_callback = templates['order_total_callback']
     arguments['order_total'] = order_total_callback(context, attrs)
+    arguments['global_item_text'] = templates['global_item_text_callback'](
+        context, attrs)
     arguments['global_text'] = templates['global_text_callback'](
         context, attrs)
-    arguments['portal_url'] = getSite().absolute_url()
+    arguments['payment_text'] = templates['payment_text_callback'](
+        context, attrs)
     body_template = templates['body']
     return body_template % arguments
 
@@ -167,8 +183,9 @@ def notify_payment_success(event):
     templates.update(get_order_templates(event.context))
     templates['item_listing_callback'] = create_mail_listing
     templates['order_total_callback'] = create_order_total
-    templates['payment_text_callback'] = create_payment_text
+    templates['global_item_text_callback'] = create_global_item_text
     templates['global_text_callback'] = create_global_text
+    templates['payment_text_callback'] = create_payment_text
     do_notify(event.context, order, templates)
 
 
@@ -186,8 +203,9 @@ def notify_reservation_if_payment_skipped(event):
     templates.update(get_reservation_templates(event.context))
     templates['item_listing_callback'] = create_mail_listing
     templates['order_total_callback'] = create_order_total
-    templates['payment_text_callback'] = create_payment_text
+    templates['global_item_text_callback'] = create_global_item_text
     templates['global_text_callback'] = create_global_text
+    templates['payment_text_callback'] = create_payment_text
     do_notify(event.context, order_data.order, templates)
 
 

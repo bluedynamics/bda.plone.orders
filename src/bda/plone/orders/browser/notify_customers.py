@@ -5,14 +5,25 @@ from bda.plone.ajax import ajax_continue
 from bda.plone.ajax import ajax_form_fiddle
 from bda.plone.orders import message_factory as _
 from bda.plone.orders.browser.mailtemplates import TEMPLATE
-from bda.plone.orders.common import get_order
+from bda.plone.orders.common import OrderData
 from bda.plone.orders.interfaces import IDynamicMailTemplateLibrary
 from bda.plone.orders.mailnotify import MailNotify
+from bda.plone.orders.vocabularies import salaried_vocab
+from bda.plone.orders.vocabularies import state_vocab
 from node.utils import UNSET
 from yafowil.base import ExtractionError
 from yafowil.plone.form import YAMLBaseForm
+from zope.i18n import translate
 
 import json
+
+
+def mail_gender_vocab():
+    return {
+        '-': _('person', default=u'Person'),
+        'male': _('mister', default=u'Mister'),
+        'female': _('misses', default=u'Misses'),
+    }
 
 
 class NotifyCustomers(YAMLBaseForm):
@@ -55,9 +66,27 @@ class NotifyCustomers(YAMLBaseForm):
         return data.extracted
 
     def _sendmail(self, notifier, uid, tpl, subject):
-        order = get_order(self.context, uid)
+        order_data = OrderData(self.context, uid=uid)
+        order = order_data.order
         data = {}
         for key in TEMPLATE.defaults:
+            # XXX: refactor and use configurable callbacks
+            # special case gender
+            if key == 'personal_data.gender':
+                data[key] = translate(mail_gender_vocab()[order.attrs[key]],
+                                      context=self.request)
+                continue
+            # special case salaried
+            if key == 'salaried':
+                data[key] = translate(salaried_vocab()[order_data.salaried],
+                                      context=self.request)
+                continue
+            # special case state
+            if key == 'state':
+                data[key] = translate(state_vocab()[order_data.state],
+                                      context=self.request)
+                continue
+            # read attrs from order
             if key in order.attrs:
                 data[key] = order.attrs[key]
         body = TEMPLATE(tpl, data).encode('utf-8')

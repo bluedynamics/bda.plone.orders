@@ -21,7 +21,7 @@ from bda.plone.orders.common import get_vendor_by_uid
 from bda.plone.orders.common import get_vendor_uids_for
 from bda.plone.orders.common import get_vendors_for
 from bda.plone.payment import Payments
-from bda.plone.shop.interfaces import IBuyable  # dependency indirection !
+from bda.plone.shop.interfaces import IBuyable  # XXX: dependency inversion
 from decimal import Decimal
 from odict import odict
 from plone.app.uuid.utils import uuidToURL

@@ -42,7 +42,11 @@ Comment:
 Ordered items:
 %(item_listing)s
 
+%(global_item_text)s
+
 %(global_text)s
+
+%(payment_text)s
 """
 
 RESERVATION_BODY_EN = """
@@ -73,7 +77,11 @@ Ordered items:
 
 Total: %(order_total)s
 
+%(global_item_text)s
+
 %(global_text)s
+
+%(payment_text)s
 """
 
 DELIVERY_ADDRESS_EN = """
@@ -123,7 +131,11 @@ Bestellte Artikel:
 
 Total: %(order_total)s
 
+%(global_item_text)s
+
 %(global_text)s
+
+%(payment_text)s
 """
 
 RESERVATION_BODY_DE = """
@@ -154,7 +166,11 @@ Bestellte Artikel:
 
 Total: %(order_total)s
 
+%(global_item_text)s
+
 %(global_text)s
+
+%(payment_text)s
 """
 
 DELIVERY_ADDRESS_DE = """
@@ -204,7 +220,11 @@ Produit commandé:
 
 Total: %(order_total)s
 
+%(global_item_text)s
+
 %(global_text)s
+
+%(payment_text)s
 """
 
 RESERVATION_BODY_FR = """
@@ -235,7 +255,11 @@ Produit commandé:
 
 Total: %(order_total)s
 
+%(global_item_text)s
+
 %(global_text)s
+
+%(payment_text)s
 """
 
 DELIVERY_ADDRESS_FR = """
@@ -284,7 +308,11 @@ Articolo ordinato:
 
 Totale: %(order_total)s
 
+%(global_item_text)s
+
 %(global_text)s
+
+%(payment_text)s
 """
 
 RESERVATION_BODY_IT = """
@@ -314,7 +342,11 @@ Articolo ordinato:
 
 Totale: %(order_total)s
 
+%(global_item_text)s
+
 %(global_text)s
+
+%(payment_text)s
 """
 
 DELIVERY_ADDRESS_IT = """
@@ -363,7 +395,11 @@ Bestilte produkter:
 
 Total: %(order_total)s
 
+%(global_item_text)s
+
 %(global_text)s
+
+%(payment_text)s
 """
 
 RESERVATION_BODY_NO = """
@@ -394,7 +430,11 @@ Bestilte produkter:
 
 Totale: %(order_total)s
 
+%(global_item_text)s
+
 %(global_text)s
+
+%(payment_text)s
 """
 
 DELIVERY_ADDRESS_NO = """
@@ -544,7 +584,6 @@ class DynamicMailTemplate(object):
         template
             a unicode string meant to be rendered using python string format
             method
-
         """
         assert isinstance(template, unicode), 'template must be unicode'
         try:
@@ -556,7 +595,8 @@ class DynamicMailTemplate(object):
         return True, ''
 
     def __call__(self, template, data):
-        """render template with data"""
+        """render template with data
+        """
         assert isinstance(template, unicode), 'template must be unicode'
         for key in self.required:
             if key not in data:
@@ -565,6 +605,7 @@ class DynamicMailTemplate(object):
 
 
 DYNAMIC_MAIL_LIBRARY_KEY = "bda.plone.order.dynamic_mail_lib"
+
 
 @implementer(IDynamicMailTemplateLibrary)
 class DynamicMailTemplateLibraryAquierer(object):
@@ -640,4 +681,3 @@ class DynamicMailTemplateLibraryStorage(DynamicMailTemplateLibraryAquierer):
 
     def __delitem__(self, name):
         del self._storage[name]
-
