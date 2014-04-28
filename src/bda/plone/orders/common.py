@@ -15,7 +15,7 @@ from bda.plone.orders import interfaces as ifaces
 from bda.plone.orders.interfaces import IVendor
 from bda.plone.payment.interfaces import IPaymentData
 from bda.plone.shipping import Shippings
-from bda.plone.shop.interfaces import IBuyable
+from bda.plone.shop.interfaces import IBuyable # dependency inversion
 from decimal import Decimal
 from node.ext.zodb import OOBTNode
 from node.utils import instance_property

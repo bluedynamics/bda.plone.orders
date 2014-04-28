@@ -340,11 +340,15 @@ class OrdersTableBase(BrowserView):
         return None
 
     def render_salaried(self, colname, record):
-        return OrderData(self.context, order=record).salaried\
+        salaried = OrderData(self.context, order=record).salaried\
             or ifaces.SALARIED_NO
+        return translate(vocabs.salaried_vocab()[salaried],
+                         context=self.request)
 
     def render_state(self, colname, record):
-        return OrderData(self.context, order=record).state
+        state = OrderData(self.context, order=record).state
+        return translate(vocabs.state_vocab()[state],
+                         context=self.request)
 
     def render_dt(self, colname, record):
         value = record.attrs.get(colname, '')
@@ -508,12 +512,16 @@ class OrdersTable(OrdersTableBase):
 
     def render_salaried(self, colname, record):
         if not self.check_modify_order(record):
-            return OrderData(self.context, order=record).salaried
+            salaried = OrderData(self.context, order=record).salaried
+            return translate(vocabs.salaried_vocab()[salaried],
+                             context=self.request)
         return SalariedDropdown(self.context, self.request, record).render()
 
     def render_state(self, colname, record):
         if not self.check_modify_order(record):
-            return OrderData(self.context, order=record).state
+            state = OrderData(self.context, order=record).state
+            return translate(vocabs.state_vocab()[state],
+                             context=self.request)
         return StateDropdown(self.context, self.request, record).render()
 
     @property
