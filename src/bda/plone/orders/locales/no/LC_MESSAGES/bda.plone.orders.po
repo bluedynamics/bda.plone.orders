@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: bda.plone.orders\n"
-"POT-Creation-Date: 2014-04-27 18:30+0000\n"
+"POT-Creation-Date: 2014-04-28 14:26+0000\n"
 "PO-Revision-Date: 2013-08-05 15:25+0100\n"
 "Last-Translator: Espen Moe-Nilssen <espen@medialog.no>\n"
 "Language-Team: <espen@medialog.no>\n"
@@ -17,42 +17,42 @@ msgstr ""
 "X-Generator: Poedit 1.5.5\n"
 
 #. Default: "Actions"
-#: ./browser/views.py:364
+#: ./browser/views.py:371
 msgid "actions"
 msgstr "Handlinger"
 
 #. Default: "All"
-#: ./browser/views.py:393
+#: ./browser/views.py:400
 msgid "all"
 msgstr ""
 
-#. Default: "Please provide the emailadress you used for submitting the order."
-#: ./browser/views.py:885
+#. Default: "Please provide the email adress you used for submitting the order."
+#: ./browser/views.py:896
 msgid "anon_auth_err_email"
 msgstr ""
 
 #. Default: "No order could be found for the given credentials"
-#: ./browser/views.py:894
+#: ./browser/views.py:905
 msgid "anon_auth_err_order"
 msgstr ""
 
 #. Default: "Please provide the ordernumber"
-#: ./browser/views.py:890
+#: ./browser/views.py:901
 msgid "anon_auth_err_ordernumber"
 msgstr ""
 
 #. Default: "Email"
-#: ./browser/views.py:850
+#: ./browser/views.py:861
 msgid "anon_auth_label_email"
 msgstr ""
 
 #. Default: "Ordernumber"
-#: ./browser/views.py:841
+#: ./browser/views.py:852
 msgid "anon_auth_label_ordernumber"
 msgstr ""
 
 #. Default: "Submit"
-#: ./browser/views.py:857
+#: ./browser/views.py:868
 msgid "anon_auth_label_submit"
 msgstr ""
 
@@ -117,7 +117,7 @@ msgid "cancelled"
 msgstr "Avbrutt"
 
 #. Default: "City"
-#: ./browser/views.py:379
+#: ./browser/views.py:386
 msgid "city"
 msgstr "Postadresse"
 
@@ -131,12 +131,12 @@ msgid "customer_filter"
 msgstr ""
 
 #. Default: "Mail to customers sent"
-#: ./browser/notify_customers.py:82
+#: ./browser/notify_customers.py:111
 msgid "customers_notified_success"
 msgstr ""
 
 #. Default: "Date"
-#: ./browser/views.py:369
+#: ./browser/views.py:376
 msgid "date"
 msgstr "Dato:"
 
@@ -146,7 +146,7 @@ msgid "delivery_address"
 msgstr "Leveringsadresse:"
 
 #. Default: "Failed to send Notification to ${receiver}"
-#: ./mailnotify.py:155
+#: ./mailnotify.py:171
 msgid "email_sending_failed"
 msgstr "Epost ti  ${receiver} kunne ikke sendes."
 
@@ -170,12 +170,12 @@ msgid "failed"
 msgstr "Mislyktes"
 
 #. Default: "Filter for customers"
-#: ./browser/views.py:430
+#: ./browser/views.py:437
 msgid "filter_for_customers"
 msgstr ""
 
 #. Default: "Filter for vendors"
-#: ./browser/views.py:415
+#: ./browser/views.py:422
 msgid "filter_for_vendors"
 msgstr ""
 
@@ -190,7 +190,7 @@ msgid "finished"
 msgstr "Fullført"
 
 #. Default: "First Name"
-#: ./browser/views.py:376
+#: ./browser/views.py:383
 msgid "firstname"
 msgstr "Fornavn"
 
@@ -199,7 +199,7 @@ msgid "from_date"
 msgstr "Fra"
 
 #. Default: "From-date after to-date"
-#: ./browser/views.py:997
+#: ./browser/views.py:1008
 msgid "from_date_before_to_date"
 msgstr "Fra dato til dato"
 
@@ -259,7 +259,7 @@ msgid "label_mailtemplatelib_title"
 msgstr ""
 
 #. Default: "Last Name"
-#: ./browser/views.py:373
+#: ./browser/views.py:380
 msgid "lastname"
 msgstr "Etternavn"
 
@@ -278,6 +278,21 @@ msgstr "Marker som ubetalt"
 msgid "mark_salaried"
 msgstr "Merk som betalt"
 
+#. Default: "Misses"
+#: ./browser/notify_customers.py:25
+msgid "misses"
+msgstr ""
+
+#. Default: "Mister"
+#: ./browser/notify_customers.py:24
+msgid "mister"
+msgstr ""
+
+#. Default: "Mister/Misses"
+#: ./browser/notify_customers.py:23
+msgid "mister_misses"
+msgstr ""
+
 #. Default: "Mixed"
 #: ./vocabularies.py:20
 msgid "mixed"
@@ -289,23 +304,23 @@ msgid "new"
 msgstr "Ny"
 
 #. Default: "No"
-#: ./browser/views.py:752
+#: ./browser/views.py:763
 #: ./vocabularies.py:38
 msgid "no"
 msgstr "Nei"
 
 #. Default: "No template selected"
-#: ./browser/notify_customers.py:39
+#: ./browser/notify_customers.py:50
 msgid "no_template_selected"
 msgstr ""
 
 #. Default: "None"
-#: ./browser/views.py:735
+#: ./browser/views.py:746
 msgid "none"
 msgstr "Ingen:"
 
 #. Default: "Notify customers of selected orders"
-#: ./browser/views.py:459
+#: ./browser/views.py:466
 msgid "notify_customers"
 msgstr ""
 
@@ -509,12 +524,12 @@ msgid "reserved"
 msgstr "Reservert"
 
 #. Default: "Salaried"
-#: ./browser/views.py:382
+#: ./browser/views.py:389
 msgid "salaried"
 msgstr "Betalt"
 
 #. Default: "Select all visible orders"
-#: ./browser/views.py:450
+#: ./browser/views.py:457
 msgid "select_all_orders"
 msgstr ""
 
@@ -523,7 +538,7 @@ msgid "send"
 msgstr ""
 
 #. Default: "State"
-#: ./browser/views.py:386
+#: ./browser/views.py:393
 msgid "state"
 msgstr "Status"
 
@@ -585,7 +600,7 @@ msgid "transaction_id"
 msgstr "Transaksjons ID:"
 
 #. Default: "Unknown"
-#: ./browser/views.py:745
+#: ./browser/views.py:756
 #: ./upgrades.py:159
 msgid "unknown"
 msgstr "Ukjent"
@@ -595,12 +610,12 @@ msgid "vendor_filter"
 msgstr ""
 
 #. Default: "View Order"
-#: ./browser/views.py:483
+#: ./browser/views.py:490
 msgid "view_order"
 msgstr "Sjekk bestillinger"
 
 #. Default: "Yes"
-#: ./browser/views.py:752
+#: ./browser/views.py:763
 #: ./vocabularies.py:37
 msgid "yes"
 msgstr "Ja"

@@ -20,7 +20,7 @@ import json
 
 def mail_gender_vocab():
     return {
-        '-': _('person', default=u'Person'),
+        '-': _('mister_misses', default=u'Mister/Misses'),
         'male': _('mister', default=u'Mister'),
         'female': _('misses', default=u'Misses'),
     }

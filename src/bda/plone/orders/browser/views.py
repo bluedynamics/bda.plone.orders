@@ -894,7 +894,7 @@ class DirectOrderView(OrderViewBase):
                 order = None
         if not email:
             err = _('anon_auth_err_email',
-                    default=u'Please provide the emailadress you used for '
+                    default=u'Please provide the email adress you used for '
                             u'submitting the order.')
             errs.append(err)
         if not ordernumber:
