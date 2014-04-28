@@ -574,7 +574,7 @@ class OrdersData(OrdersTable, TableData):
         if vendor_uid:
             vendor_uid = uuid.UUID(vendor_uid)
             # raise if given vendor uid not in user vendor uids
-            if not vendor_uid in vendor_uids:
+            if vendor_uid not in vendor_uids:
                 raise Unauthorized
             query = Any('vendor_uids', [vendor_uid])
         else:
@@ -652,7 +652,7 @@ class OrderViewBase(BrowserView):
     def shipping_title(self):
         # XXX: either failure in upgrade step or node.ext.zodb bug
         #      figure out
-        #order = self.order
+        # order = self.order
         order = self.order_data.order.attrs
         title = translate(order['shipping_label'], context=self.request)
         if order['shipping_description']:
@@ -1029,7 +1029,7 @@ class ExportOrdersForm(YAMLForm):
         if vendor_uid:
             vendor_uid = uuid.UUID(vendor_uid)
             # raise if given vendor uid not in user vendor uids
-            if not vendor_uid in vendor_uids:
+            if vendor_uid not in vendor_uids:
                 raise Unauthorized
             query = query & Any('vendor_uids', [vendor_uid])
         else:
