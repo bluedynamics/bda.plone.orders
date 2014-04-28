@@ -542,7 +542,7 @@ class BuyableData(object):
         context = self.context
         bookings_soup = get_bookings_soup(context)
         order_bookings = dict()
-        for booking in bookings_soup.query(Eq('buyable_uid', context.UID())):
+        for booking in bookings_soup.query(Eq('buyable_uid', IUUID(context))):
             bookings = order_bookings.setdefault(
                 booking.attrs['order_uid'], list())
             bookings.append(booking)

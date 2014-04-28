@@ -1,4 +1,5 @@
 from AccessControl import Unauthorized
+from Products.CMFPlone.utils import getToolByName
 from Products.Five import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from Products.statusmessages.interfaces import IStatusMessage
@@ -20,10 +21,12 @@ from bda.plone.orders.common import get_vendor_by_uid
 from bda.plone.orders.common import get_vendor_uids_for
 from bda.plone.orders.common import get_vendors_for
 from bda.plone.payment import Payments
+from bda.plone.shop.interfaces import IBuyable  # dependency indirection !
 from decimal import Decimal
 from odict import odict
 from plone.app.uuid.utils import uuidToURL
 from plone.memoize import view
+from plone.uuid.interfaces import IUUID
 from repoze.catalog.query import Any
 from repoze.catalog.query import Contains
 from repoze.catalog.query import Eq
@@ -582,7 +585,7 @@ class OrdersData(OrdersTable, TableData):
         if vendor_uid:
             vendor_uid = uuid.UUID(vendor_uid)
             # raise if given vendor uid not in user vendor uids
-            if not vendor_uid in vendor_uids:
+            if vendor_uid not in vendor_uids:
                 raise Unauthorized
             query = Any('vendor_uids', [vendor_uid])
         else:
@@ -660,7 +663,7 @@ class OrderViewBase(BrowserView):
     def shipping_title(self):
         # XXX: either failure in upgrade step or node.ext.zodb bug
         #      figure out
-        #order = self.order
+        # order = self.order
         order = self.order_data.order.attrs
         title = translate(order['shipping_label'], context=self.request)
         if order['shipping_description']:
@@ -1037,7 +1040,7 @@ class ExportOrdersForm(YAMLForm):
         if vendor_uid:
             vendor_uid = uuid.UUID(vendor_uid)
             # raise if given vendor uid not in user vendor uids
-            if not vendor_uid in vendor_uids:
+            if vendor_uid not in vendor_uids:
                 raise Unauthorized
             query = query & Any('vendor_uids', [vendor_uid])
         else:
@@ -1092,6 +1095,105 @@ class ExportOrdersForm(YAMLForm):
         self.request.response.setHeader('Content-Disposition',
                                         'attachment; filename=%s' % filename)
         return sio.getvalue().decode('utf8')
+
+
+class ExportOrdersContextual(BrowserView):
+
+    def __call__(self):
+        user = plone.api.user.get_current()
+        # check if authenticated user is vendor
+        if not user.checkPermission(permissions.ModifyOrders, self.context):
+            raise Unauthorized
+
+        filename = '{}_{}.csv'.format(
+            self.context.title,
+            datetime.datetime.now().strftime('%Y-%m-%d_%H-%M'))
+        resp = self.request.response
+        resp.setHeader('content-type', 'text/csv; charset=utf-8')
+        resp.setHeader(
+            'content-disposition', 'attachment;filename={}'.format(filename))
+        return self.get_csv()
+
+    def export_val(self, record, attr_name):
+        val = record.attrs.get(attr_name)
+        if isinstance(val, datetime.datetime):
+            val = val.strftime(DT_FORMAT)
+        if val == '-':
+            val = ''
+        if isinstance(val, float) or \
+           isinstance(val, Decimal):
+            val = str(val).replace('.', ',')
+        return val
+
+    def get_csv(self):
+        context = self.context
+
+        # prepare csv writer
+        sio = StringIO()
+        ex = csv.writer(sio, dialect='excel-colon')
+        # exported column keys as first line
+        ex.writerow(ORDER_EXPORT_ATTRS +
+                    COMPUTED_ORDER_EXPORT_ATTRS.keys() +
+                    BOOKING_EXPORT_ATTRS +
+                    COMPUTED_BOOKING_EXPORT_ATTRS.keys())
+
+        bookings_soup = get_bookings_soup(context)
+
+        # First, filter by allowed vendor areas
+        vendor_uids = get_vendor_uids_for()
+        query_b = Any('vendor_uid', vendor_uids)
+
+        # Second, query for the buyable
+        query_cat = {}
+        query_cat['object_provides'] = IBuyable.__identifier__
+        query_cat['path'] = '/'.join(context.getPhysicalPath())
+        cat = getToolByName(context, 'portal_catalog')
+        res = cat(**query_cat)
+        buyable_uids = [IUUID(it.getObject()) for it in res]
+
+        query_b = query_b & Any('buyable_uid', buyable_uids)
+
+        all_orders = {}
+        for booking in bookings_soup.query(query_b):
+            booking_attrs = list()
+            # booking export attrs
+            for attr_name in BOOKING_EXPORT_ATTRS:
+                val = self.export_val(booking, attr_name)
+                booking_attrs.append(val)
+            # computed booking export attrs
+            for attr_name in COMPUTED_BOOKING_EXPORT_ATTRS:
+                cb = COMPUTED_BOOKING_EXPORT_ATTRS[attr_name]
+                val = cb(context, booking)
+                booking_attrs.append(val)
+
+            # create order_attrs, if it doesn't exist
+            order_uid = booking.attrs.get('order_uid')
+            if order_uid not in all_orders:
+                order = get_order(context, order_uid)
+                order_data = OrderData(context,
+                                       order=order,
+                                       vendor_uids=vendor_uids)
+                order_attrs = list()
+                # order export attrs
+                for attr_name in ORDER_EXPORT_ATTRS:
+                    val = self.export_val(order, attr_name)
+                    order_attrs.append(val)
+                # computed order export attrs
+                for attr_name in COMPUTED_ORDER_EXPORT_ATTRS:
+                    cb = COMPUTED_ORDER_EXPORT_ATTRS[attr_name]
+                    val = cb(self.context, order_data)
+                    order_attrs.append(val)
+                all_orders[order_uid] = order_attrs
+
+            ex.writerow(all_orders[order_uid] + booking_attrs)
+
+            # TODO: also set for contextual exports? i'd say no.
+            # booking.attrs['exported'] = True
+            # bookings_soup.reindex(booking)
+
+        ret = sio.getvalue().decode('utf8')
+        sio.close()
+        return ret
 
 
 class ReservationDone(BrowserView):
