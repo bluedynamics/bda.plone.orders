@@ -73,8 +73,9 @@ class IPaymentText(Interface):
     """Interface for providing payment related order notification text.
     """
 
-    payment_text = Attribute(
-        u"Text sent after successful checkout for payment")
+    def payment_text(payment):
+        """Text sent after successful checkout for payment
+        """
 
 
 class IDynamicMailTemplateLibrary(Interface):

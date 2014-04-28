@@ -42,4 +42,12 @@
     profile="bda.plone.orders:default"
     handler=".upgrades.fix_shipping_attrs"/>
 
+  <genericsetup:upgradeStep
+    source="5"
+    destination="6"
+    title="Add payment related attributes to orders"
+    description=""
+    profile="bda.plone.orders:default"
+    handler=".upgrades.fix_payment_attrs"/>
+
 </configure>

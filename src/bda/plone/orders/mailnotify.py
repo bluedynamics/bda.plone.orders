@@ -10,6 +10,7 @@ from bda.plone.orders.common import OrderData
 from bda.plone.orders.interfaces import IGlobalNotificationText
 from bda.plone.orders.interfaces import IItemNotificationText
 from bda.plone.orders.interfaces import INotificationSettings
+from bda.plone.orders.interfaces import IPaymentText
 from bda.plone.orders.mailtemplates import get_order_templates
 from bda.plone.orders.mailtemplates import get_reservation_templates
 from email.Header import Header
@@ -103,11 +104,12 @@ def create_global_text(context, order_data):
             text = notificationtext.global_order_text
             if text:
                 notifications.add(safe_encode(text))
-    return '\n'.join(notifications)
+    return '\n\n'.join(notifications)
 
 
 def create_payment_text(context, order_data):
-    return 'Payment Text'  # don't return None
+    payment = order_data.order.attrs['payment_method']
+    return safe_encode(IPaymentText(getSite()).payment_text(payment))
 
 
 def create_mail_body(templates, context, order_data):

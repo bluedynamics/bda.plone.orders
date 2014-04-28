@@ -5,6 +5,13 @@ Changelog
 0.5dev
 ------
 
+- Improve mail notification.
+  [rnix]
+
+- Change ``IPaymentText.payment_text`` from property to function and accept
+  payment method id as argument.
+  [rnix]
+
 - Add ``@@exportorders_contextual`` view to export all orders of a context and
   below.
   [thet]

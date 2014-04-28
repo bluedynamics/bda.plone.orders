@@ -13,6 +13,7 @@ from bda.plone.checkout import CheckoutError
 from bda.plone.orders import permissions
 from bda.plone.orders import interfaces as ifaces
 from bda.plone.orders.interfaces import IVendor
+from bda.plone.payment import Payments
 from bda.plone.payment.interfaces import IPaymentData
 from bda.plone.shipping import Shippings
 from bda.plone.shop.interfaces import IBuyable # XXX: dependency inversion
@@ -260,15 +261,28 @@ class OrderCheckoutAdapter(CheckoutAdapter):
 
     def save(self, providers, widget, data):
         super(OrderCheckoutAdapter, self).save(providers, widget, data)
+        order = self.order
+        # order UUID
+        uid = order.attrs['uid'] = uuid.uuid4()
+        # order creator
         creator = None
         member = plone.api.user.get_current()
         if member:
             creator = member.getId()
+        order.attrs['creator'] = creator
+        # order creation date
         created = datetime.datetime.now()
-        order = self.order
-        # XXX: payment name
-        #      payment type
-        #      payment total
+        order.attrs['created'] = created
+        # payment related information
+        # XXX: payment total ?
+        pid = data.fetch('checkout.payment_selection.payment').extracted
+        payment = Payments(self.context).get(pid)
+        order.attrs['payment_method'] = pid
+        if payment:
+            order.attrs['payment_label'] = payment.label
+        else:
+            order.attrs['payment_label'] = _('unknown', default=u'Unknown')
+        # shipping related information
         sid = data.fetch('checkout.shipping_selection.shipping').extracted
         shipping = Shippings(self.context).get(sid)
         order.attrs['shipping_method'] = sid
@@ -286,10 +300,9 @@ class OrderCheckoutAdapter(CheckoutAdapter):
             order.attrs['shipping_net'] = shipping_net
             order.attrs['shipping_vat'] = Decimal(0)
             order.attrs['shipping'] = shipping_net
-        uid = order.attrs['uid'] = uuid.uuid4()
-        order.attrs['creator'] = creator
-        order.attrs['created'] = created
+        # create order bookings
         bookings = self.create_bookings(order)
+        # lookup booking uids and vendor uids
         booking_uids = list()
         vendor_uids = set()
         for booking in bookings:
@@ -297,19 +310,24 @@ class OrderCheckoutAdapter(CheckoutAdapter):
             vendor_uids.add(booking.attrs['vendor_uid'])
         order.attrs['booking_uids'] = booking_uids
         order.attrs['vendor_uids'] = list(vendor_uids)
+        # cart discount related information
         cart_data = get_data_provider(self.context)
         cart_discount = cart_data.discount(self.items)
         order.attrs['cart_discount_net'] = cart_discount['net']
         order.attrs['cart_discount_vat'] = cart_discount['vat']
+        # create ordernumber
         orders_soup = get_orders_soup(self.context)
         ordernumber = create_ordernumber()
         while self.ordernumber_exists(orders_soup, ordernumber):
             ordernumber = create_ordernumber()
         order.attrs['ordernumber'] = ordernumber
+        # add order
         orders_soup.add(order)
+        # add bookings
         bookings_soup = get_bookings_soup(self.context)
         for booking in bookings:
             bookings_soup.add(booking)
+        # return uid of added order
         return uid
 
     def create_bookings(self, order):

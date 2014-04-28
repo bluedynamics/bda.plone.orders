@@ -156,7 +156,7 @@ def fix_shipping_attrs(ctx=None):
     data = orders_soup.storage.data
     for item in data.values():
         if not 'shipping_method' in item.attrs:
-            item.attrs['shipping_method'] = _('unknown', default=u'Unknown')
+            item.attrs['shipping_method'] = 'unknown'
             logging.info(
                 "Added shipping_method {0} to booking {1}".format(
                     'unknown', item.attrs['uid']
@@ -189,5 +189,26 @@ def fix_shipping_attrs(ctx=None):
             logging.info(
                 "Added shipping_vat {0} to booking {1}".format(
                     Decimal(0), item.attrs['uid']
+                )
+            )
+
+
+def fix_payment_attrs(ctx=None):
+    portal = getSite()
+    orders_soup = get_orders_soup(portal)
+    data = orders_soup.storage.data
+    for item in data.values():
+        if not 'payment_method' in item.attrs:
+            item.attrs['payment_method'] = 'unknown'
+            logging.info(
+                "Added payment_method {0} to booking {1}".format(
+                    'unknown', item.attrs['uid']
+                )
+            )
+        if not 'payment_label' in item.attrs:
+            item.attrs['payment_label'] = _('unknown', default=u'Unknown')
+            logging.info(
+                "Added payment_label {0} to booking {1}".format(
+                    'unknown', item.attrs['uid']
                 )
             )
