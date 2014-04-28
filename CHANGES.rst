@@ -5,6 +5,10 @@ Changelog
 0.5dev
 ------
 
+- Add ``@@exportorders_contextual`` view to export all orders of a context and
+  below.
+  [thet]
+
 - Adopt shipping handling to ``bda.plone.shipping`` >= 0.4.
   [rnix]
 
