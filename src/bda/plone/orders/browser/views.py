@@ -1106,7 +1106,9 @@ class ExportOrdersForm(YAMLForm):
         self.request.response.setHeader('Content-Type', 'text/csv')
         self.request.response.setHeader('Content-Disposition',
                                         'attachment; filename=%s' % filename)
-        return sio.getvalue().decode('utf8')
+        ret = sio.getvalue()
+        sio.close()
+        return ret
 
 
 class ExportOrdersContextual(BrowserView):
@@ -1201,7 +1203,7 @@ class ExportOrdersContextual(BrowserView):
             # booking.attrs['exported'] = True
             # bookings_soup.reindex(booking)
 
-        ret = sio.getvalue().decode('utf8')
+        ret = sio.getvalue()
         sio.close()
         return ret
 
