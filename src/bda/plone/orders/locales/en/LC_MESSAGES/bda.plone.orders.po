@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: bda.plone.orders\n"
-"POT-Creation-Date: 2014-04-28 14:26+0000\n"
+"POT-Creation-Date: 2014-04-29 11:04+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: Peter Holzer <hpeter@agitator.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -25,32 +25,32 @@ msgid "all"
 msgstr "All"
 
 #. Default: "Please provide the email adress you used for submitting the order."
-#: ./browser/views.py:896
+#: ./browser/views.py:897
 msgid "anon_auth_err_email"
 msgstr "Please provide the email adress you used for submitting the order."
 
 #. Default: "No order could be found for the given credentials"
-#: ./browser/views.py:905
+#: ./browser/views.py:906
 msgid "anon_auth_err_order"
 msgstr "No order could be found for the given credentials"
 
 #. Default: "Please provide the ordernumber"
-#: ./browser/views.py:901
+#: ./browser/views.py:902
 msgid "anon_auth_err_ordernumber"
 msgstr "Please provide the ordernumber"
 
 #. Default: "Email"
-#: ./browser/views.py:861
+#: ./browser/views.py:862
 msgid "anon_auth_label_email"
 msgstr "Email"
 
 #. Default: "Ordernumber"
-#: ./browser/views.py:852
+#: ./browser/views.py:853
 msgid "anon_auth_label_ordernumber"
 msgstr "Ordernumber"
 
 #. Default: "Submit"
-#: ./browser/views.py:868
+#: ./browser/views.py:869
 msgid "anon_auth_label_submit"
 msgstr "Submit"
 
@@ -144,7 +144,7 @@ msgid "delivery_address"
 msgstr "Delivery Address:"
 
 #. Default: "Failed to send Notification to ${receiver}"
-#: ./mailnotify.py:171
+#: ./mailnotify.py:273
 msgid "email_sending_failed"
 msgstr "Failed to send Notification to ${receiver}"
 
@@ -197,7 +197,7 @@ msgid "from_date"
 msgstr "from date"
 
 #. Default: "From-date after to-date"
-#: ./browser/views.py:1008
+#: ./browser/views.py:1022
 msgid "from_date_before_to_date"
 msgstr "From-date after to-date"
 
@@ -302,7 +302,7 @@ msgid "new"
 msgstr "New"
 
 #. Default: "No"
-#: ./browser/views.py:763
+#: ./browser/views.py:764
 #: ./vocabularies.py:38
 msgid "no"
 msgstr "No"
@@ -313,7 +313,7 @@ msgid "no_template_selected"
 msgstr "No template selected"
 
 #. Default: "None"
-#: ./browser/views.py:746
+#: ./browser/views.py:747
 msgid "none"
 msgstr "None"
 
@@ -455,6 +455,61 @@ msgstr "Street:"
 #: ./browser/order.pt:73
 msgid "order_summary"
 msgstr "Order Summary:"
+
+#. Default: "Net: ${value} ${currency}"
+#: ./mailnotify.py:94
+msgid "order_summary_cart_net"
+msgstr "Net: ${value} ${currency}"
+
+#. Default: "Total: ${value} ${currency}"
+#: ./mailnotify.py:189
+msgid "order_summary_cart_total"
+msgstr "Total: ${value} ${currency}"
+
+#. Default: "VAT: ${value} ${currency}"
+#: ./mailnotify.py:104
+msgid "order_summary_cart_vat"
+msgstr "VAT: ${value} ${currency}"
+
+#. Default: "Discount Net: ${value} ${currency}"
+#: ./mailnotify.py:116
+msgid "order_summary_discount_net"
+msgstr "Discount Net: ${value} ${currency}"
+
+#. Default: "Discount Total: ${value} ${currency}"
+#: ./mailnotify.py:136
+msgid "order_summary_discount_total"
+msgstr "Discount Total: ${value} ${currency}"
+
+#. Default: "Discount VAT: ${value} ${currency}"
+#: ./mailnotify.py:126
+msgid "order_summary_discount_vat"
+msgstr "Discount VAT: ${value} ${currency}"
+
+#. Default: "Summary:"
+#: ./mailnotify.py:197
+msgid "order_summary_label"
+msgstr "Summary:"
+
+#. Default: "Shipping: ${label}"
+#: ./mailnotify.py:149
+msgid "order_summary_shipping_label"
+msgstr "Shipping: ${label}"
+
+#. Default: "Shipping Net: ${value} ${currency}"
+#: ./mailnotify.py:160
+msgid "order_summary_shipping_net"
+msgstr "Shipping Net: ${value} ${currency}"
+
+#. Default: "Shipping Total: ${value} ${currency}"
+#: ./mailnotify.py:180
+msgid "order_summary_shipping_total"
+msgstr "Shipping Total: ${value} ${currency}"
+
+#. Default: "Shipping VAT: ${value} ${currency}"
+#: ./mailnotify.py:170
+msgid "order_summary_shipping_vat"
+msgstr "Shipping VAT: ${value} ${currency}"
 
 #. Default: "Total:"
 #: ./browser/order.pt:108
@@ -598,8 +653,9 @@ msgid "transaction_id"
 msgstr "Transaction ID:"
 
 #. Default: "Unknown"
-#: ./browser/views.py:756
-#: ./upgrades.py:159
+#: ./browser/views.py:757
+#: ./common.py:284
+#: ./upgrades.py:167
 msgid "unknown"
 msgstr "Unknown"
 
@@ -613,7 +669,7 @@ msgid "view_order"
 msgstr "View Order"
 
 #. Default: "Yes"
-#: ./browser/views.py:763
+#: ./browser/views.py:764
 #: ./vocabularies.py:37
 msgid "yes"
 msgstr "Yes"
