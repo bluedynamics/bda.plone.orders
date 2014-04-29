@@ -425,6 +425,18 @@ class OrderData(object):
         return soup.query(query)
 
     @property
+    def currency(self):
+        ret = None
+        for booking in self.bookings:
+            val = booking.attrs['currency']
+            if ret and ret != val:
+                msg = 'Order contains bookings with inconsistent ' +\
+                      'currencies {0} != {1}'.format(ret, val)
+                raise ValueError(msg)
+            ret = val
+        return ret
+
+    @property
     def state(self):
         ret = None
         for booking in self.bookings:
@@ -592,7 +604,7 @@ class PaymentData(object):
 
     @property
     def currency(self):
-        return get_data_provider(self.context).currency
+        return self.order_data.currency
 
     @property
     def description(self):

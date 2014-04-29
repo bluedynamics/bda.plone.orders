@@ -728,7 +728,12 @@ class OrderViewBase(BrowserView):
 
     @property
     def payment(self):
-        return self.order['payment_label']
+        # XXX: either failure in upgrade step or node.ext.zodb bug
+        #      figure out
+        # order = self.order
+        order = self.order_data.order.attrs
+        title = translate(order['payment_label'], context=self.request)
+        return title
 
     @property
     def salaried(self):

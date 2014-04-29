@@ -42,9 +42,7 @@ Comment:
 Ordered items:
 %(item_listing)s
 
-%(global_text)s
-
-%(payment_text)s
+%(order_summery)s%(global_text)s%(payment_text)s
 """
 
 RESERVATION_BODY_EN = """
@@ -73,11 +71,7 @@ Comment:
 Ordered items:
 %(item_listing)s
 
-Total: %(order_total)s
-
-%(global_text)s
-
-%(payment_text)s
+%(order_summery)s%(global_text)s%(payment_text)s
 """
 
 DELIVERY_ADDRESS_EN = """
@@ -125,11 +119,7 @@ Kommentar:
 Bestellte Artikel:
 %(item_listing)s
 
-Total: %(order_total)s
-
-%(global_text)s
-
-%(payment_text)s
+%(order_summery)s%(global_text)s%(payment_text)s
 """
 
 RESERVATION_BODY_DE = """
@@ -158,11 +148,7 @@ Kommentar:
 Bestellte Artikel:
 %(item_listing)s
 
-Total: %(order_total)s
-
-%(global_text)s
-
-%(payment_text)s
+%(order_summery)s%(global_text)s%(payment_text)s
 """
 
 DELIVERY_ADDRESS_DE = """
@@ -210,11 +196,7 @@ Commentaires:
 Produit commandé:
 %(item_listing)s
 
-Total: %(order_total)s
-
-%(global_text)s
-
-%(payment_text)s
+%(order_summery)s%(global_text)s%(payment_text)s
 """
 
 RESERVATION_BODY_FR = """
@@ -243,11 +225,7 @@ Commentaires:
 Produit commandé:
 %(item_listing)s
 
-Total: %(order_total)s
-
-%(global_text)s
-
-%(payment_text)s
+%(order_summery)s%(global_text)s%(payment_text)s
 """
 
 DELIVERY_ADDRESS_FR = """
@@ -294,11 +272,7 @@ Commento:
 Articolo ordinato:
 %(item_listing)s
 
-Totale: %(order_total)s
-
-%(global_text)s
-
-%(payment_text)s
+%(order_summery)s%(global_text)s%(payment_text)s
 """
 
 RESERVATION_BODY_IT = """
@@ -326,11 +300,7 @@ Commento:
 Articolo ordinato:
 %(item_listing)s
 
-Totale: %(order_total)s
-
-%(global_text)s
-
-%(payment_text)s
+%(order_summery)s%(global_text)s%(payment_text)s
 """
 
 DELIVERY_ADDRESS_IT = """
@@ -377,11 +347,7 @@ Kommentar:
 Bestilte produkter:
 %(item_listing)s
 
-Total: %(order_total)s
-
-%(global_text)s
-
-%(payment_text)s
+%(order_summery)s%(global_text)s%(payment_text)s
 """
 
 RESERVATION_BODY_NO = """
@@ -410,11 +376,7 @@ Kommentar:
 Bestilte produkter:
 %(item_listing)s
 
-Totale: %(order_total)s
-
-%(global_text)s
-
-%(payment_text)s
+%(order_summery)s%(global_text)s%(payment_text)s
 """
 
 DELIVERY_ADDRESS_NO = """

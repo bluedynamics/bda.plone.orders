@@ -5,7 +5,29 @@ Changelog
 0.5dev
 ------
 
-- Improve mail notification.
+- Use ``OrderData.currency`` instead of ``ICartDataProvider.currency`` in
+  ``bda.plone.orders.common.PaymentData.currency``.
+  [rnix]
+
+- General mail notification cleanup.
+  [rnix]
+
+- Rename ``bda.plone.orders.mailnotify.create_order_total`` to
+  ``bda.plone.orders.mailnotify.create_order_summery``.
+  [rnix]
+
+- Rename ``order_total`` to ``order_summary`` in order notification mail
+  templates. **Note** - Update your template customizations
+  [rnix]
+
+- Add ``currency`` property to ``OrderData`` object.
+  [rnix]
+
+- Store ``payment_method`` and ``payment_label`` on order and provide upgrade
+  step.
+  [rnix]
+
+- Implement summary listing for notification mails.
   [rnix]
 
 - Change ``IPaymentText.payment_text`` from property to function and accept

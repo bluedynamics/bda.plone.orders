@@ -1,5 +1,6 @@
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
+from bda.plone.cart import ascur
 from bda.plone.cart import get_catalog_brain
 from bda.plone.orders import common
 from bda.plone.orders import interfaces as ifaces
@@ -17,6 +18,7 @@ from email.Header import Header
 from email.MIMEText import MIMEText
 from email.Utils import formatdate
 from zope.component.hooks import getSite
+from zope.globalrequest import getRequest
 from zope.i18n import translate
 
 import logging
@@ -45,8 +47,11 @@ def create_mail_listing(context, order_data):
     lines = []
     for booking in order_data.bookings:
         brain = get_catalog_brain(context, booking.attrs['buyable_uid'])
+        # fetch buyable
         buyable = brain.getObject()
+        # fetch buyable title
         title = safe_encode(booking.attrs['title'])
+        # fetch buyable comment
         comment = booking.attrs['buyable_comment']
         if comment:
             title = '%s (%s)' % (title, comment)
@@ -62,26 +67,136 @@ def create_mail_listing(context, order_data):
         if booking.attrs['state'] == ifaces.STATE_RESERVED:
             text = notificationtext.overbook_text
             if text:
-                lines.append(_indent(safe_encode(text)))
+                lines.append(_indent(text))
         elif booking.attrs['state'] == ifaces.STATE_NEW:
             text = notificationtext.order_text
             if text:
-                lines.append(_indent(safe_encode(text)))
-    return '\n'.join(lines)
+                lines.append(_indent(text))
+    return '\n'.join([safe_encode(line) for line in lines])
 
 
-def create_order_total(context, order_data):
+def create_order_summery(context, order_data):
+    """Create summary for notification mail.
     """
-    """
-    # XXX: refactor to order summary
-    #ret = 0.0
-    #for booking in order_data.bookings:
-    #    count = float(booking.attrs['buyable_count'])
-    #    net = booking.attrs.get('net', 0.0) * count
-    #    ret += net
-    #    ret += net * booking.attrs.get('vat', 0.0) / 100
-    #return "%.2f" % (ret + float(attrs['shipping']))
-    return "%.2f" % 999.0
+    attrs = order_data.order.attrs
+    cart_total = order_data.total
+    # no costs at all
+    if not cart_total:
+        return ''
+    lines = []
+    request = getRequest()
+    # currency
+    currency = order_data.currency
+    # cart net and vat
+    cart_net = order_data.net
+    if cart_net:
+        # cart net
+        order_summary_cart_net = _(
+            'order_summary_cart_net',
+            default=u'Net: ${value} ${currency}',
+            mapping={
+                'value': ascur(cart_net),
+                'currency': currency,
+            })
+        lines.append(translate(order_summary_cart_net, context=request))
+        # cart vat
+        cart_vat = order_data.vat
+        order_summary_cart_vat = _(
+            'order_summary_cart_vat',
+            default=u'VAT: ${value} ${currency}',
+            mapping={
+                'value': ascur(cart_vat),
+                'currency': currency,
+            })
+        lines.append(translate(order_summary_cart_vat, context=request))
+    # cart discount
+    discount_net = order_data.discount_net
+    if discount_net:
+        # discount net
+        order_summary_discount_net = _(
+            'order_summary_discount_net',
+            default=u'Discount Net: ${value} ${currency}',
+            mapping={
+                'value': ascur(discount_net),
+                'currency': currency,
+            })
+        lines.append(translate(order_summary_discount_net, context=request))
+        # discount vat
+        discount_vat = order_data.discount_vat
+        order_summary_discount_vat = _(
+            'order_summary_discount_vat',
+            default=u'Discount VAT: ${value} ${currency}',
+            mapping={
+                'value': ascur(discount_vat),
+                'currency': currency,
+            })
+        lines.append(translate(order_summary_discount_vat, context=request))
+        # discount total
+        discount_total = discount_net + discount_vat
+        order_summary_discount_total = _(
+            'order_summary_discount_total',
+            default=u'Discount Total: ${value} ${currency}',
+            mapping={
+                'value': ascur(discount_total),
+                'currency': currency,
+            })
+        lines.append(translate(order_summary_discount_total, context=request))
+    # shipping costs
+    shipping_net = order_data.shipping_net
+    if shipping_net:
+        # shiping label
+        shipping_label = attrs['shipping_label']
+        order_summary_shipping_label = _(
+            'order_summary_shipping_label',
+            default=u'Shipping: ${label}',
+            mapping={
+                'label': translate(shipping_label, context=request),
+            })
+        lines.append(translate(order_summary_shipping_label, context=request))
+        # shiping description
+        shipping_description = attrs['shipping_description']
+        lines.append(translate(shipping_description, context=request))
+        # shiping net
+        order_summary_shipping_net = _(
+            'order_summary_shipping_net',
+            default=u'Shipping Net: ${value} ${currency}',
+            mapping={
+                'value': ascur(shipping_net),
+                'currency': currency,
+            })
+        lines.append(translate(order_summary_shipping_net, context=request))
+        # shiping vat
+        shipping_vat = order_data.shipping_vat
+        order_summary_shipping_vat = _(
+            'order_summary_shipping_vat',
+            default=u'Shipping VAT: ${value} ${currency}',
+            mapping={
+                'value': ascur(shipping_vat),
+                'currency': currency,
+            })
+        lines.append(translate(order_summary_shipping_vat, context=request))
+        # shiping total
+        shipping_total = shipping_net + shipping_vat
+        order_summary_shipping_total = _(
+            'order_summary_shipping_total',
+            default=u'Shipping Total: ${value} ${currency}',
+            mapping={
+                'value': ascur(shipping_total),
+                'currency': currency,
+            })
+        lines.append(translate(order_summary_shipping_total, context=request))
+    # cart total
+    order_summary_cart_total = _(
+        'order_summary_cart_total',
+        default=u'Total: ${value} ${currency}',
+        mapping={
+            'value': ascur(cart_total),
+            'currency': currency,
+        })
+    lines.append(translate(order_summary_cart_total, context=request))
+    summary_title = translate(_('order_summary_label', default=u'Summary:'))
+    summary_text = '\n'.join([safe_encode(line) for line in lines])
+    return '\n' + safe_encode(summary_title) + summary_text + '\n'
 
 
 def create_global_text(context, order_data):
@@ -95,17 +210,19 @@ def create_global_text(context, order_data):
             # XXX: might need custom text for MIXED state
             text = notificationtext.global_overbook_text
             if text:
-                notifications.add(safe_encode(text))
+                notifications.add(text)
         elif order_state == ifaces.STATE_NEW:
             text = notificationtext.global_order_text
             if text:
-                notifications.add(safe_encode(text))
-    return '\n\n'.join(notifications)
+                notifications.add(text)
+    global_text = '\n\n'.join([safe_encode(line) for line in notifications])
+    return '\n\n' + global_text + '\n'
 
 
 def create_payment_text(context, order_data):
     payment = order_data.order.attrs['payment_method']
-    return safe_encode(IPaymentText(getSite()).payment_text(payment))
+    payment_text = safe_encode(IPaymentText(getSite()).payment_text(payment))
+    return '\n\n' + payment_text + '\n'
 
 
 def create_mail_body(templates, context, order_data):
@@ -131,8 +248,8 @@ def create_mail_body(templates, context, order_data):
         arguments['delivery_address'] = ''
     item_listing_callback = templates['item_listing_callback']
     arguments['item_listing'] = item_listing_callback(context, order_data)
-    order_total_callback = templates['order_total_callback']
-    arguments['order_total'] = order_total_callback(context, order_data)
+    order_summery_callback = templates['order_summery_callback']
+    arguments['order_summery'] = order_summery_callback(context, order_data)
     global_text_callback = templates['global_text_callback']
     arguments['global_text'] = global_text_callback(context, order_data)
     payment_text_callback = templates['payment_text_callback']
@@ -166,7 +283,7 @@ def notify_payment_success(event):
     templates = dict()
     templates.update(get_order_templates(event.context))
     templates['item_listing_callback'] = create_mail_listing
-    templates['order_total_callback'] = create_order_total
+    templates['order_summery_callback'] = create_order_summery
     templates['global_text_callback'] = create_global_text
     templates['payment_text_callback'] = create_payment_text
     order_data = OrderData(event.context, uid=event.order_uid)
@@ -186,7 +303,7 @@ def notify_reservation_if_payment_skipped(event):
     templates = dict()
     templates.update(get_reservation_templates(event.context))
     templates['item_listing_callback'] = create_mail_listing
-    templates['order_total_callback'] = create_order_total
+    templates['order_summery_callback'] = create_order_summery
     templates['global_text_callback'] = create_global_text
     templates['payment_text_callback'] = create_payment_text
     do_notify(event.context, order_data, templates)
