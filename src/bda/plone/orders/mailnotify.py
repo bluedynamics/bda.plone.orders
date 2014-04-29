@@ -194,8 +194,9 @@ def create_order_summery(context, order_data):
             'currency': currency,
         })
     lines.append(translate(order_summary_cart_total, context=request))
-    summary_title = translate(_('order_summary_label', default=u'Summary:'))
-    summary_text = '\n'.join([safe_encode(line) for line in lines])
+    summary_title = translate(
+        _('order_summary_label', default=u'Summary:'), context=request)
+    summary_text = '\n' + '\n'.join([safe_encode(line) for line in lines])
     return '\n' + safe_encode(summary_title) + summary_text + '\n'
 
 
