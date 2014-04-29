@@ -1208,6 +1208,17 @@ class ExportOrdersContextual(BrowserView):
         return ret
 
 
+class OrderDone(BrowserView):
+
+    def id(self):
+        uid = self.request.get('uid', None)
+        try:
+            order = get_order(self.context, uid)
+        except ValueError:
+            return None
+        return order.attrs.get('ordernumber')
+
+
 class ReservationDone(BrowserView):
 
     def id(self):

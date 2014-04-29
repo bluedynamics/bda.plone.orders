@@ -5,6 +5,9 @@ Changelog
 0.5dev
 ------
 
+- Add ``@@order_done`` view.
+  [rnix]
+
 - Use ``OrderData.currency`` instead of ``ICartDataProvider.currency`` in
   ``bda.plone.orders.common.PaymentData.currency``.
   [rnix]

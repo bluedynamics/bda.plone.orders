@@ -142,11 +142,21 @@
     class=".views.ExportOrdersForm"
     permission="bda.plone.orders.ViewOrders"
     layer="..interfaces.IOrdersExtensionLayer"/>
+
   <browser:page
     for="*"
     name="exportorders_contextual"
     class=".views.ExportOrdersContextual"
     permission="bda.plone.orders.ViewOrders"
+    layer="..interfaces.IOrdersExtensionLayer"/>
+
+  <!-- order done view -->
+  <browser:page
+    for="*"
+    name="order_done"
+    template="order_done.pt"
+    class=".views.OrderDone"
+    permission="zope2.View"
     layer="..interfaces.IOrdersExtensionLayer"/>
 
   <!-- reservation done view -->

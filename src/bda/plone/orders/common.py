@@ -12,6 +12,7 @@ from bda.plone.checkout import CheckoutAdapter
 from bda.plone.checkout import CheckoutError
 from bda.plone.orders import permissions
 from bda.plone.orders import interfaces as ifaces
+from bda.plone.orders import message_factory as _
 from bda.plone.orders.interfaces import IVendor
 from bda.plone.payment import Payments
 from bda.plone.payment.interfaces import IPaymentData
@@ -239,16 +240,33 @@ class OrderCheckoutAdapter(CheckoutAdapter):
         return self.order.attrs
 
     @property
+    def shipping_selection_exists(self):
+        # XXX: improve
+        return 'checkout.shipping_selection.shipping' in self.request.form
+
+    @property
+    def payment_selection_exists(self):
+        # XXX: improve
+        return 'checkout.payment_selection.payment' in self.request.form
+
+    @property
     def skip_payment(self):
+        if not self.payment_selection_exists:
+            return True
         # XXX: separate braining session required
+        # XXX: we need a include_to_payment_if_reseved flag on items
         order_data = OrderData(context=self.context, order=self.order)
         return SKIP_PAYMENT_IF_RESERVED \
             and order_data.state in (ifaces.STATE_RESERVED, ifaces.STATE_MIXED)
 
     @property
     def skip_payment_redirect_url(self):
-        return '%s/@@reservation_done?uid=%s' % (self.context.absolute_url(),
-                                                 self.order.attrs['uid'])
+        if not self.payment_selection_exists:
+            url = '%s/@@order_done?uid=%s'
+            return url % (self.context.absolute_url(),
+                          self.order.attrs['uid'])
+        url = '%s/@@reservation_done?uid=%s'
+        return url % (self.context.absolute_url(), self.order.attrs['uid'])
 
     @property
     def items(self):
@@ -274,33 +292,47 @@ class OrderCheckoutAdapter(CheckoutAdapter):
         created = datetime.datetime.now()
         order.attrs['created'] = created
         # payment related information
-        # XXX: handle no payment
-        pid = data.fetch('checkout.payment_selection.payment').extracted
-        payment = Payments(self.context).get(pid)
-        order.attrs['payment_method'] = pid
-        if payment:
-            order.attrs['payment_label'] = payment.label
+        if self.payment_selection_exists:
+            pid = data.fetch('checkout.payment_selection.payment').extracted
+            payment = Payments(self.context).get(pid)
+            order.attrs['payment_method'] = pid
+            if payment:
+                order.attrs['payment_label'] = payment.label
+            else:
+                order.attrs['payment_label'] = _('unknown', default=u'Unknown')
+        # no payment
         else:
-            order.attrs['payment_label'] = _('unknown', default=u'Unknown')
+            order.attrs['payment_method'] = 'no_payment'
+            order.attrs['payment_label'] = _('no_payment',
+                                             default=u'No Payment')
         # shipping related information
-        # XXX: handle no shipping
-        sid = data.fetch('checkout.shipping_selection.shipping').extracted
-        shipping = Shippings(self.context).get(sid)
-        order.attrs['shipping_method'] = sid
-        order.attrs['shipping_label'] = shipping.label
-        order.attrs['shipping_description'] = shipping.description
-        try:
-            shipping_net = shipping.net(self.items)
-            shipping_vat = shipping.vat(self.items)
-            order.attrs['shipping_net'] = shipping_net
-            order.attrs['shipping_vat'] = shipping_vat
-            order.attrs['shipping'] = shipping_net + shipping_vat
-        # B/C for bda.plone.shipping < 0.4
-        except NotImplementedError:
-            shipping_net = shipping.calculate(self.items)
-            order.attrs['shipping_net'] = shipping_net
+        if self.shipping_selection_exists:
+            sid = data.fetch('checkout.shipping_selection.shipping').extracted
+            shipping = Shippings(self.context).get(sid)
+            order.attrs['shipping_method'] = sid
+            order.attrs['shipping_label'] = shipping.label
+            order.attrs['shipping_description'] = shipping.description
+            try:
+                shipping_net = shipping.net(self.items)
+                shipping_vat = shipping.vat(self.items)
+                order.attrs['shipping_net'] = shipping_net
+                order.attrs['shipping_vat'] = shipping_vat
+                order.attrs['shipping'] = shipping_net + shipping_vat
+            # B/C for bda.plone.shipping < 0.4
+            except NotImplementedError:
+                shipping_net = shipping.calculate(self.items)
+                order.attrs['shipping_net'] = shipping_net
+                order.attrs['shipping_vat'] = Decimal(0)
+                order.attrs['shipping'] = shipping_net
+        # no shipping
+        else:
+            order.attrs['shipping_method'] = 'no_shipping'
+            order.attrs['shipping_label'] = _('no_shipping',
+                                              default=u'No Shipping')
+            order.attrs['shipping_description'] = ''
+            order.attrs['shipping_net'] = Decimal(0)
             order.attrs['shipping_vat'] = Decimal(0)
-            order.attrs['shipping'] = shipping_net
+            order.attrs['shipping'] = Decimal(0)
         # create order bookings
         bookings = self.create_bookings(order)
         # lookup booking uids and vendor uids
