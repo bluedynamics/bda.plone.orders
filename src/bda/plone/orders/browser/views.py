@@ -1215,8 +1215,7 @@ class OrderDone(BrowserView):
 
     @property
     def order_data(self):
-        uid = self.request.get('uid', None)
-        order_data = OrderData(self.context, uid=uid)
+        return OrderData(self.context, uid=self.request.get('uid'))
 
     @property
     def heading(self):

@@ -28,7 +28,7 @@
     <p tal:content="view/text">Text goes here</p>
 
     <a href=""
-       class="order_button"
+       class="payment_button"
        tal:attributes="href context/absolute_url"
        i18n:translate="order_done_continue">continue</a>
 
