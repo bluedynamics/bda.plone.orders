@@ -5,6 +5,11 @@ Changelog
 0.5dev
 ------
 
+- Remove ``bda.plone.orders.common.SKIP_PAYMENT_IF_RESERVED``. Equivalent
+  exists now in ``bda.plone.shop`` controlpanel settings (**Attention** -
+  default value changed to False there).
+  [rnix]
+
 - Always check for reservations in orders to select used mail templates no
   matter if mail gets send after checkout or after payment.
   [rnix]

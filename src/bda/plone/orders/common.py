@@ -220,15 +220,6 @@ class OrdersCatalogFactory(object):
         return catalog
 
 
-# Flag whether to skip payment if items in cart are reserved. This behavior is
-# desired i.e. for ticket shops, where a reserved ticket means that tickets are
-# sold out, and only a reversal of an already sold ticket makes it possible to
-# deliver it to a customer with a reservation; while in a product shop a
-# reservation just usually means that an item is currently out of stock, and
-# it just gets delivered later, so this flag can be set to ``False``.
-SKIP_PAYMENT_IF_RESERVED = True
-
-
 class OrderCheckoutAdapter(CheckoutAdapter):
 
     @instance_property
