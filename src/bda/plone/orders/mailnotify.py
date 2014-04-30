@@ -2,7 +2,7 @@ from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
 from bda.plone.cart import ascur
 from bda.plone.cart import get_catalog_brain
-from bda.plone.orders import common
+from bda.plone.checkout.interfaces import ICheckoutSettings
 from bda.plone.orders import interfaces as ifaces
 from bda.plone.orders import message_factory as _
 from bda.plone.orders import safe_encode
@@ -278,11 +278,20 @@ def do_notify(context, order_data, templates):
             logger.error("Email could not be sent: %s" % str(e))
 
 
-def notify_payment_success(event):
-    """Send notification mail after payment succeed.
+def notify_order_success(event):
+    """Send notification mail after order succeed.
     """
+    print 'notify_order_success'
+    order_data = OrderData(event.context, uid=event.uid)
     templates = dict()
-    templates.update(get_order_templates(event.context))
+    state = order_data.state
+    if state == ifaces.STATE_RESERVED:
+        templates.update(get_reservation_templates(event.context))
+    elif state == ifaces.STATE_MIXED:
+        # XXX: mixed templates
+        templates.update(get_reservation_templates(event.context))
+    else:
+        templates.update(get_order_templates(event.context))
     templates['item_listing_callback'] = create_mail_listing
     templates['order_summery_callback'] = create_order_summery
     templates['global_text_callback'] = create_global_text
@@ -291,23 +300,21 @@ def notify_payment_success(event):
     do_notify(event.context, order_data, templates)
 
 
-def notify_reservation_if_payment_skipped(event):
-    """Send notification mail after checkout done if reservation and payment
-    skipped.
+def notify_checkout_success(event):
+    """Send notification mail after checkout succeed.
     """
-    if not common.SKIP_PAYMENT_IF_RESERVED:
-        return
-    order_data = OrderData(event.context, uid=event.uid)
-    # TODO: state mixed might be handled separately
-    if order_data.state not in (ifaces.STATE_RESERVED, ifaces.STATE_MIXED):
-        return
-    templates = dict()
-    templates.update(get_reservation_templates(event.context))
-    templates['item_listing_callback'] = create_mail_listing
-    templates['order_summery_callback'] = create_order_summery
-    templates['global_text_callback'] = create_global_text
-    templates['payment_text_callback'] = create_payment_text
-    do_notify(event.context, order_data, templates)
+    print 'notify_checkout_success'
+    # if skip payment, do notification
+    checkout_settings = ICheckoutSettings(event.context)
+    if checkout_settings.skip_payment(event.uid):
+        notify_order_success(event)
+
+
+def notify_payment_success(event):
+    """Send notification mail after payment succeed.
+    """
+    print 'notify_payment_success'
+    notify_order_success(event)
 
 
 class MailNotify(object):

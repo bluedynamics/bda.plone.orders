@@ -5,14 +5,26 @@ Changelog
 0.5dev
 ------
 
-- Add ``@@order_done`` view.
+- Always check for reservations in orders to select used mail templates no
+  matter if mail gets send after checkout or after payment.
+  [rnix]
+
+- Rename ``bda.plone.orders.mailnotify.notify_reservation_if_payment_skipped``
+  to ``bda.plone.orders.mailnotify.notify_checkout_success`` and use
+  ``bda.plone.checkout.interfaces.ICheckoutSettings`` to check whether
+  notification mail should be sent after checkout has been done.
+  [rnix]
+
+- Adopt ``bda.plone.checkout`` interfaces changes in
+  ``bda.plone.orders.common.ICheckoutAdapter``.
+  [rnix]
+
+- Rename ``@@reservation_done`` view to ``@@order_done`` and handle displayed
+  heading and text by order state.
   [rnix]
 
 - Use ``OrderData.currency`` instead of ``ICartDataProvider.currency`` in
   ``bda.plone.orders.common.PaymentData.currency``.
-  [rnix]
-
-- General mail notification cleanup.
   [rnix]
 
 - Rename ``bda.plone.orders.mailnotify.create_order_total`` to

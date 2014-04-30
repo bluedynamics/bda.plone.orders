@@ -240,37 +240,16 @@ class OrderCheckoutAdapter(CheckoutAdapter):
         return self.order.attrs
 
     @property
+    def items(self):
+        return extractitems(readcookie(self.request))
+
+    @property
     def shipping_selection_exists(self):
-        # XXX: improve
         return 'checkout.shipping_selection.shipping' in self.request.form
 
     @property
     def payment_selection_exists(self):
-        # XXX: improve
         return 'checkout.payment_selection.payment' in self.request.form
-
-    @property
-    def skip_payment(self):
-        if not self.payment_selection_exists:
-            return True
-        # XXX: separate braining session required
-        # XXX: we need a include_to_payment_if_reseved flag on items
-        order_data = OrderData(context=self.context, order=self.order)
-        return SKIP_PAYMENT_IF_RESERVED \
-            and order_data.state in (ifaces.STATE_RESERVED, ifaces.STATE_MIXED)
-
-    @property
-    def skip_payment_redirect_url(self):
-        if not self.payment_selection_exists:
-            url = '%s/@@order_done?uid=%s'
-            return url % (self.context.absolute_url(),
-                          self.order.attrs['uid'])
-        url = '%s/@@reservation_done?uid=%s'
-        return url % (self.context.absolute_url(), self.order.attrs['uid'])
-
-    @property
-    def items(self):
-        return extractitems(readcookie(self.request))
 
     def ordernumber_exists(self, soup, ordernumber):
         for order in soup.query(Eq('ordernumber', ordernumber)):

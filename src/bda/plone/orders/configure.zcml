@@ -77,6 +77,6 @@
 
   <subscriber
     for="bda.plone.checkout.interfaces.ICheckoutDone"
-    handler=".mailnotify.notify_reservation_if_payment_skipped"/>
+    handler=".mailnotify.notify_checkout_success"/>
 
 </configure>

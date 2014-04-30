@@ -1209,22 +1209,38 @@ class ExportOrdersContextual(BrowserView):
 
 
 class OrderDone(BrowserView):
+    # XXX: provide different headings and texts for states reservation and
+    #      mixed
+    reservation_states = (ifaces.STATE_RESERVED, ifaces.STATE_MIXED)
 
-    def id(self):
+    @property
+    def order_data(self):
         uid = self.request.get('uid', None)
+        order_data = OrderData(self.context, uid=uid)
+
+    @property
+    def heading(self):
         try:
-            order = get_order(self.context, uid)
+            if self.order_data.state in self.reservation_states:
+                return _('reservation_done', default=u'Reservation Done')
+            return _('order_done', default=u'Order Done')
         except ValueError:
-            return None
-        return order.attrs.get('ordernumber')
+            return _('unknown_order', default=u'Unknown Order')
 
-
-class ReservationDone(BrowserView):
-
+    @property
     def id(self):
-        uid = self.request.get('uid', None)
         try:
-            order = get_order(self.context, uid)
+            return self.order_data.order.attrs['ordernumber']
         except ValueError:
-            return None
-        return order.attrs.get('ordernumber')
+            return _('unknown', default=u'Unknown')
+
+    @property
+    def text(self):
+        try:
+            if self.order_data.state in self.reservation_states:
+                return _('reservation_text',
+                         default=u'Thanks for your Reservation.')
+            return _('order_text', default=u'Thanks for your Order.')
+        except ValueError:
+            return _('unknown_order_text',
+                     default=u'Sorry, this order does not exist.')

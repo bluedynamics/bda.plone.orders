@@ -159,15 +159,6 @@
     permission="zope2.View"
     layer="..interfaces.IOrdersExtensionLayer"/>
 
-  <!-- reservation done view -->
-  <browser:page
-    for="*"
-    name="reservation_done"
-    template="reservation_done.pt"
-    class=".views.ReservationDone"
-    permission="zope2.View"
-    layer="..interfaces.IOrdersExtensionLayer"/>
-
   <!-- global mail templates -->
   <browser:page
     for="zope.component.interfaces.ISite"
