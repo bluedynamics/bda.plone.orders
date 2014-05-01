@@ -50,4 +50,12 @@
     profile="bda.plone.orders:default"
     handler=".upgrades.fix_payment_attrs"/>
 
+  <genericsetup:upgradeStep
+    source="5"
+    destination="6"
+    title="Add shippable flag to bookings"
+    description=""
+    profile="bda.plone.orders:default"
+    handler=".upgrades.fix_bookings_shippable"/>
+
 </configure>

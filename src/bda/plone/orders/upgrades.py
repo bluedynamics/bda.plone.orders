@@ -1,9 +1,11 @@
+from bda.plone.cart import get_object_by_uid
 from bda.plone.orders import message_factory as _
 from bda.plone.orders.common import acquire_vendor_or_shop_root
 from bda.plone.orders.common import get_bookings_soup
 from bda.plone.orders.common import get_orders_soup
 from bda.plone.orders.common import OrderData
 from bda.plone.payment import Payments
+from bda.plone.shipping.interfaces import IShippingItem
 from decimal import Decimal
 from plone.app.uuid.utils import uuidToObject
 from plone.uuid.interfaces import IUUID
@@ -220,3 +222,27 @@ def fix_payment_attrs(ctx=None):
                 payment_label, item.attrs['uid']
             )
         )
+
+
+def fix_bookings_shippable(ctx=None):
+    portal = getSite()
+    soup = get_bookings_soup(portal)
+    data = soup.storage.data
+    need_rebuild = False
+    for booking in data.values():
+        if 'shippable' not in booking.attrs:
+            obj = get_object_by_uid(portal, booking.attrs['buyable_uid'])
+            shippable = True
+            if obj:
+                shippable = IShippingItem(obj).shippable
+            booking.attrs['shippable'] = shippable
+            need_rebuild = True
+            logging.info(
+                "Added shippable {0} to booking {1}".format(
+                    shippable, booking.attrs['uid']
+                )
+            )
+    if need_rebuild:
+        bookings_soup = get_bookings_soup(portal)
+        bookings_soup.rebuild()
+        logging.info("Rebuilt bookings catalog")

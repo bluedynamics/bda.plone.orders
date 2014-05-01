@@ -17,6 +17,7 @@ from bda.plone.orders.interfaces import IVendor
 from bda.plone.payment import Payments
 from bda.plone.payment.interfaces import IPaymentData
 from bda.plone.shipping import Shippings
+from bda.plone.shipping.interfaces import IShippingItem
 from bda.plone.shop.interfaces import IBuyable # XXX: dependency inversion
 from decimal import Decimal
 from node.ext.zodb import OOBTNode
@@ -374,6 +375,7 @@ class OrderCheckoutAdapter(CheckoutAdapter):
         booking.attrs['state'] = state
         booking.attrs['salaried'] = ifaces.SALARIED_NO
         booking.attrs['tid'] = 'none'
+        booking.attrs['shippable'] = IShippingItem(buyable).shippable
         return booking
 
 

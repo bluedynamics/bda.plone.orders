@@ -5,6 +5,9 @@ Changelog
 0.5dev
 ------
 
+- Add ``shippable`` flag to order bookings and implement upgrade step.
+  [rnix]
+
 - Remove ``bda.plone.orders.common.SKIP_PAYMENT_IF_RESERVED``. Equivalent
   exists now in ``bda.plone.shop`` controlpanel settings (**Attention** -
   default value changed to False there).
