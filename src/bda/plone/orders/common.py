@@ -234,14 +234,6 @@ class OrderCheckoutAdapter(CheckoutAdapter):
     def items(self):
         return extractitems(readcookie(self.request))
 
-    @property
-    def shipping_selection_exists(self):
-        return 'checkout.shipping_selection.shipping' in self.request.form
-
-    @property
-    def payment_selection_exists(self):
-        return 'checkout.payment_selection.payment' in self.request.form
-
     def ordernumber_exists(self, soup, ordernumber):
         for order in soup.query(Eq('ordernumber', ordernumber)):
             return bool(order)
@@ -262,8 +254,10 @@ class OrderCheckoutAdapter(CheckoutAdapter):
         created = datetime.datetime.now()
         order.attrs['created'] = created
         # payment related information
-        if self.payment_selection_exists:
-            pid = data.fetch('checkout.payment_selection.payment').extracted
+        # XXX: check against order total == 0 instead of request parameter
+        payment_param = 'checkout.payment_selection.payment'
+        if payment_param in self.request.form:
+            pid = data.fetch(payment_param).extracted
             payment = Payments(self.context).get(pid)
             order.attrs['payment_method'] = pid
             if payment:
@@ -276,8 +270,11 @@ class OrderCheckoutAdapter(CheckoutAdapter):
             order.attrs['payment_label'] = _('no_payment',
                                              default=u'No Payment')
         # shipping related information
-        if self.shipping_selection_exists:
-            sid = data.fetch('checkout.shipping_selection.shipping').extracted
+        # XXX: check against all items shippable (false for downloads i.e)
+        #      instead of request parameter
+        shipping_param = 'checkout.shipping_selection.shipping'
+        if shipping_param in self.request.form:
+            sid = data.fetch(shipping_param).extracted
             shipping = Shippings(self.context).get(sid)
             order.attrs['shipping_method'] = sid
             order.attrs['shipping_label'] = shipping.label
