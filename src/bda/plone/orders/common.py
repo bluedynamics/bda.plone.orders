@@ -253,10 +253,10 @@ class OrderCheckoutAdapter(CheckoutAdapter):
         # order creation date
         created = datetime.datetime.now()
         order.attrs['created'] = created
+        cart_data = get_data_provider(self.context, self.request)
         # payment related information
-        # XXX: check against order total == 0 instead of request parameter
-        payment_param = 'checkout.payment_selection.payment'
-        if payment_param in self.request.form:
+        if cart_data.total > Decimal(0):
+            payment_param = 'checkout.payment_selection.payment'
             pid = data.fetch(payment_param).extracted
             payment = Payments(self.context).get(pid)
             order.attrs['payment_method'] = pid
@@ -270,10 +270,8 @@ class OrderCheckoutAdapter(CheckoutAdapter):
             order.attrs['payment_label'] = _('no_payment',
                                              default=u'No Payment')
         # shipping related information
-        # XXX: check against all items shippable (false for downloads i.e)
-        #      instead of request parameter
-        shipping_param = 'checkout.shipping_selection.shipping'
-        if shipping_param in self.request.form:
+        if cart_data.include_shipping_costs:
+            shipping_param = 'checkout.shipping_selection.shipping'
             sid = data.fetch(shipping_param).extracted
             shipping = Shippings(self.context).get(sid)
             order.attrs['shipping_method'] = sid
@@ -311,7 +309,6 @@ class OrderCheckoutAdapter(CheckoutAdapter):
         order.attrs['booking_uids'] = booking_uids
         order.attrs['vendor_uids'] = list(vendor_uids)
         # cart discount related information
-        cart_data = get_data_provider(self.context)
         cart_discount = cart_data.discount(self.items)
         order.attrs['cart_discount_net'] = cart_discount['net']
         order.attrs['cart_discount_vat'] = cart_discount['vat']
