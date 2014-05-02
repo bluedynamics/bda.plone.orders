@@ -160,13 +160,17 @@ def fix_discount_attrs(ctx=None):
     need_rebuild = False
     data = orders_soup.storage.data
     for item in data.values():
-        if not 'cart_discount_net' in item.attrs:
+        try:
+            item.attrs['cart_discount_net']
+        except KeyError:
             need_rebuild = True
             item.attrs['cart_discount_net'] = Decimal(0)
             logging.info(
                 "Added cart_discount_net to order {0}".format(item.attrs['uid'])
             )
-        if not 'cart_discount_vat' in item.attrs:
+        try:
+            item.attrs['cart_discount_vat']
+        except KeyError:
             need_rebuild = True
             item.attrs['cart_discount_vat'] = Decimal(0)
             logging.info(
@@ -180,7 +184,9 @@ def fix_discount_attrs(ctx=None):
     need_rebuild = False
     data = bookings_soup.storage.data
     for item in data.values():
-        if not 'discount_net' in item.attrs:
+        try:
+            item.attrs['discount_net']
+        except KeyError:
             need_rebuild = True
             item.attrs['discount_net'] = Decimal(0)
             logging.info(
@@ -196,21 +202,27 @@ def fix_shipping_attrs(ctx=None):
     orders_soup = get_orders_soup(portal)
     data = orders_soup.storage.data
     for item in data.values():
-        if not 'shipping_method' in item.attrs:
+        try:
+            item.attrs['shipping_method']
+        except KeyError:
             item.attrs['shipping_method'] = 'unknown'
             logging.info(
                 "Added shipping_method {0} to booking {1}".format(
                     'unknown', item.attrs['uid']
                 )
             )
-        if not 'shipping_label' in item.attrs:
+        try:
+            item.attrs['shipping_label']
+        except KeyError:
             item.attrs['shipping_label'] = _('unknown', default=u'Unknown')
             logging.info(
                 "Added shipping_label {0} to booking {1}".format(
                     'unknown', item.attrs['uid']
                 )
             )
-        if not 'shipping_description' in item.attrs:
+        try:
+            item.attrs['shipping_description']
+        except KeyError:
             item.attrs['shipping_description'] = \
                 _('unknown', default=u'Unknown')
             logging.info(
@@ -218,14 +230,18 @@ def fix_shipping_attrs(ctx=None):
                     'unknown', item.attrs['uid']
                 )
             )
-        if not 'shipping_net' in item.attrs:
+        try:
+            item.attrs['shipping_net']
+        except KeyError:
             item.attrs['shipping_net'] = item.attrs['shipping']
             logging.info(
                 "Added shipping_net {0} to booking {1}".format(
                     item.attrs['shipping'], item.attrs['uid']
                 )
             )
-        if not 'shipping_vat' in item.attrs:
+        try:
+            item.attrs['shipping_vat']
+        except KeyError:
             item.attrs['shipping_vat'] = Decimal(0)
             logging.info(
                 "Added shipping_vat {0} to booking {1}".format(
@@ -240,26 +256,29 @@ def fix_payment_attrs(ctx=None):
     orders_soup = get_orders_soup(portal)
     data = orders_soup.storage.data
     for item in data.values():
-        if not 'payment_method' in item.attrs:
+        try:
+            item.attrs['payment_method']
+            item.attrs['payment_label']
             continue
-        payment_method = item.attrs['payment_selection.payment']
-        payment = payments.get(payment_method)
-        if payment:
-            payment_label = payment.label
-        else:
-            payment_label = _('unknown', default=u'Unknown')
-        item.attrs['payment_method'] = payment_method
-        logging.info(
-            "Added payment_method {0} to booking {1}".format(
-                payment_method, item.attrs['uid']
+        except KeyError:
+            payment_method = item.attrs['payment_selection.payment']
+            payment = payments.get(payment_method)
+            if payment:
+                payment_label = payment.label
+            else:
+                payment_label = _('unknown', default=u'Unknown')
+            item.attrs['payment_method'] = payment_method
+            logging.info(
+                "Added payment_method {0} to booking {1}".format(
+                    payment_method, item.attrs['uid']
+                )
             )
-        )
-        item.attrs['payment_label'] = payment_label
-        logging.info(
-            "Added payment_label {0} to booking {1}".format(
-                payment_label, item.attrs['uid']
+            item.attrs['payment_label'] = payment_label
+            logging.info(
+                "Added payment_label {0} to booking {1}".format(
+                    payment_label, item.attrs['uid']
+                )
             )
-        )
 
 
 def fix_bookings_shippable(ctx=None):
@@ -268,7 +287,9 @@ def fix_bookings_shippable(ctx=None):
     data = soup.storage.data
     need_rebuild = False
     for booking in data.values():
-        if 'shippable' not in booking.attrs:
+        try:
+            booking.attrs['shippable']
+        except KeyError:
             obj = get_object_by_uid(portal, booking.attrs['buyable_uid'])
             shippable = True
             if obj:
