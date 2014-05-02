@@ -76,6 +76,9 @@ def acquire_vendor_or_shop_root(context):
     :returns: The vendor, a shop item is belonging to.
     :rtype: Content object
     """
+    if not context:
+        message = u"No context given to acquire vendor or shop root from"
+        raise ValueError(message)
     while not IVendor.providedBy(context) and not ISite.providedBy(context):
         context = aq_parent(aq_inner(context))
     return context

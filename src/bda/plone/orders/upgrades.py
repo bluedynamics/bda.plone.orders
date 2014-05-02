@@ -25,17 +25,27 @@ def fix_bookings_vendor_uid(ctx=None):
     data = soup.storage.data
     need_rebuild = False
     for item in data.values():
-        if not 'vendor_uid' in item.attrs\
-                or not isinstance(item.attrs['vendor_uid'], uuid.UUID):
-            buyable_uid = item.attrs['buyable_uid']
-            obj = uuidToObject(buyable_uid)
+        update = False
+        try:
+            item.attrs['vendor_uid']
+            if not isinstance(item.attrs['vendor_uid'], uuid.UUID):
+                update = True
+        except KeyError:
+            update = True
+        if not update:
+            continue
+        buyable_uid = item.attrs['buyable_uid']
+        obj = uuidToObject(buyable_uid)
+        if not obj:
+            shop = acquire_vendor_or_shop_root(portal)
+        else:
             shop = acquire_vendor_or_shop_root(obj)
-            vendor_uid = uuid.UUID(IUUID(shop))
-            item.attrs['vendor_uid'] = vendor_uid
-            need_rebuild = True
-            logging.info(
-                "Added vendor_uid to booking {0}".format(item.attrs['uid'])
-            )
+        vendor_uid = uuid.UUID(IUUID(shop))
+        item.attrs['vendor_uid'] = vendor_uid
+        need_rebuild = True
+        logging.info(
+            "Added vendor_uid to booking {0}".format(item.attrs['uid'])
+        )
     if need_rebuild:
         soup.rebuild()
         logging.info("Rebuilt bookings catalog")
@@ -49,18 +59,25 @@ def fix_orders_vendor_uids(ctx=None):
     data = soup.storage.data
     need_rebuild = False
     for item in data.values():
-        if not 'vendor_uids' in item.attrs\
-                or not isinstance(item.attrs['vendor_uids'], list)\
-                or not item.attrs['vendor_uids']:
-            order_data = OrderData(portal, order=item)
-            vendor_uids = set()
-            for booking in order_data.bookings:
-                vendor_uids.add(booking.attrs['vendor_uid'])
-            item.attrs['vendor_uids'] = list(vendor_uids)
-            need_rebuild = True
-            logging.info(
-                "Added vendor_uids to order {0}".format(item.attrs['uid'])
-            )
+        update = False
+        try:
+            item.attrs['vendor_uids']
+            if not isinstance(item.attrs['vendor_uids'], list)\
+                    or not item.attrs['vendor_uids']:
+                update = True
+        except KeyError:
+            update = True
+        if not update:
+            continue
+        order_data = OrderData(portal, order=item)
+        vendor_uids = set()
+        for booking in order_data.bookings:
+            vendor_uids.add(booking.attrs['vendor_uid'])
+        item.attrs['vendor_uids'] = list(vendor_uids)
+        need_rebuild = True
+        logging.info(
+            "Added vendor_uids to order {0}".format(item.attrs['uid'])
+        )
     if need_rebuild:
         soup.rebuild()
         logging.info("Rebuilt orders catalog")
@@ -73,12 +90,29 @@ def fix_bookings_state_salaried_tid(ctx=None):
     need_rebuild = False
     for item in data.values():
         order_data = OrderData(portal, order=item)
-        state = item.attrs.get('state', None)
-        salaried = item.attrs.get('salaried', None)
-        tid = item.attrs.get('tid', 'none')  # tid default in b.p.payment
+        try:
+            state = item.attrs['state']
+            state_exists = True
+        except KeyError:
+            state = None
+            state_exists = False
+        try:
+            salaried = item.attrs['salaried']
+            salaried_exists = True
+        except KeyError:
+            salaried = None
+            salaried_exists = False
+        try:
+            tid = item.attrs['tid']
+            tid_exists = True
+        except KeyError:
+            tid = 'none'  # tid default in b.p.payment
+            tid_exists = False
         for booking in order_data.bookings:
             # add too booking node
-            if 'state' not in booking.attrs:
+            try:
+                booking.attrs['state']
+            except KeyError:
                 booking.attrs['state'] = state
                 need_rebuild = True
                 logging.info(
@@ -86,7 +120,9 @@ def fix_bookings_state_salaried_tid(ctx=None):
                         state, item.attrs['uid']
                     )
                 )
-            if 'salaried' not in booking.attrs:
+            try:
+                booking.attrs['salaried']
+            except KeyError:
                 booking.attrs['salaried'] = salaried
                 need_rebuild = True
                 logging.info(
@@ -94,7 +130,9 @@ def fix_bookings_state_salaried_tid(ctx=None):
                         salaried, item.attrs['uid']
                     )
                 )
-            if 'tid' not in booking.attrs:
+            try:
+                booking.attrs['tid']
+            except KeyError:
                 booking.attrs['tid'] = tid
                 need_rebuild = True
                 logging.info(
@@ -103,11 +141,11 @@ def fix_bookings_state_salaried_tid(ctx=None):
                     )
                 )
         # now, delete from order node
-        if 'state' in item.attrs:
+        if state_exists:
             del item.attrs['state']
-        if 'salaried' in item.attrs:
+        if salaried_exists:
             del item.attrs['salaried']
-        if 'tid' in item.attrs:
+        if tid_exists:
             del item.attrs['tid']
     if need_rebuild:
         bookings_soup = get_bookings_soup(portal)
