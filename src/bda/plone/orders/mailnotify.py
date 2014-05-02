@@ -18,7 +18,8 @@ from bda.plone.orders.mailtemplates import get_reservation_templates
 from bda.plone.payment.interfaces import IPaymentEvent
 from email.Header import Header
 from email.MIMEText import MIMEText
-from email.Utils import formatdate
+from email.utils import formatdate
+from email.utils import formataddr
 from zope.component.hooks import getSite
 from zope.globalrequest import getRequest
 from zope.i18n import translate
@@ -338,14 +339,14 @@ class MailNotify(object):
         shop_manager_address = settings.admin_email
         shop_manager_name = settings.admin_name
         if shop_manager_name:
-            mailfrom = u"%s <%s>" % (
-                safe_unicode(shop_manager_name), shop_manager_address)
+            from_name = str(Header(safe_unicode(shop_manager_name), 'utf-8'))
+            mailfrom = formataddr((from_name, shop_manager_address))
         mailhost = getToolByName(self.context, 'MailHost')
         message = MIMEText(message, _subtype='plain')
         message.set_charset('utf-8')
         message['Subject'] = Header(subject, 'utf-8')
-        message['From_'] = Header(mailfrom, 'utf-8')
-        message['From'] = Header(mailfrom, 'utf-8')
+        message['From_'] = mailfrom
+        message['From'] = mailfrom
         message['To'] = Header(receiver, 'utf-8')
         message.add_header('Date', formatdate(localtime=True))
         mailhost.send(messageText=message, mto=receiver)
