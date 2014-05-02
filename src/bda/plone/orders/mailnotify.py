@@ -338,7 +338,7 @@ class MailNotify(object):
         shop_manager_address = settings.admin_email
         shop_manager_name = settings.admin_name
         if shop_manager_name:
-            mailfrom = u"%s <%s>" % (
+            mailfrom = u'"%s" <%s>' % (
                 safe_unicode(shop_manager_name), shop_manager_address)
         mailhost = getToolByName(self.context, 'MailHost')
         message = MIMEText(message, _subtype='plain')
