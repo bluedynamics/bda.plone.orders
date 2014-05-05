@@ -20,6 +20,9 @@ class TestOrders(unittest.TestCase):
 class DummyContext(dict):
     __parent__ = None
 
+    def __nonzero__(self):
+        return True
+
     def __setitem__(self, key, val):
         assert(isinstance(val, DummyContext))
         val.__parent__ = self
