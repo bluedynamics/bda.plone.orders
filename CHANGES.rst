@@ -5,6 +5,9 @@ Changelog
 0.5dev
 ------
 
+- Translate ``customers_notified_success`` ajax message directly in view class.
+  [rnix]
+
 - Add ``shippable`` flag to order bookings and implement upgrade step.
   [rnix]
 

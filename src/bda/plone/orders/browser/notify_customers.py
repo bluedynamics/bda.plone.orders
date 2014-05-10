@@ -108,8 +108,9 @@ class NotifyCustomers(YAMLBaseForm):
         return {'tplurl': url}
 
     def send_success(self, request):
-        message = _('customers_notified_success',
-                    default=u'Mail to customers sent')
+        message = translate(_('customers_notified_success',
+                              default=u'Mail to customers sent'),
+                            context=self.request)
         continuation = [
             AjaxOverlay(close=True),
             AjaxMessage(message, 'info', None)
