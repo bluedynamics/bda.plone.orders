@@ -58,4 +58,12 @@
     profile="bda.plone.orders:default"
     handler=".upgrades.fix_bookings_shippable"/>
 
+  <genericsetup:upgradeStep
+    source="5"
+    destination="6"
+    title="Add item_number and gtin to bookings"
+    description=""
+    profile="bda.plone.orders:default"
+    handler=".upgrades.fix_bookings_trading"/>
+
 </configure>

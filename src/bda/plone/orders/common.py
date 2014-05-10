@@ -358,6 +358,7 @@ class OrderCheckoutAdapter(CheckoutAdapter):
             or ifaces.STATE_RESERVED
         item_data = get_item_data_provider(buyable)
         vendor = acquire_vendor_or_shop_root(buyable)
+        trading_info = ifaces.ITrading(buyable)
         booking = OOBTNode()
         booking.attrs['uid'] = uuid.uuid4()
         booking.attrs['buyable_uid'] = uid
@@ -379,6 +380,8 @@ class OrderCheckoutAdapter(CheckoutAdapter):
         booking.attrs['salaried'] = ifaces.SALARIED_NO
         booking.attrs['tid'] = 'none'
         booking.attrs['shippable'] = IShippingItem(buyable).shippable
+        booking.attrs['item_number'] = trading_info.item_number
+        booking.attrs['gtin'] = trading_info.gtin
         return booking
 
 

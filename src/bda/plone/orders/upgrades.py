@@ -4,6 +4,7 @@ from bda.plone.orders.common import acquire_vendor_or_shop_root
 from bda.plone.orders.common import get_bookings_soup
 from bda.plone.orders.common import get_orders_soup
 from bda.plone.orders.common import OrderData
+from bda.plone.orders.interfaces import ITrading
 from bda.plone.payment import Payments
 from bda.plone.shipping.interfaces import IShippingItem
 from decimal import Decimal
@@ -299,6 +300,42 @@ def fix_bookings_shippable(ctx=None):
             logging.info(
                 "Added shippable {0} to booking {1}".format(
                     shippable, booking.attrs['uid']
+                )
+            )
+    if need_rebuild:
+        bookings_soup = get_bookings_soup(portal)
+        bookings_soup.rebuild()
+        logging.info("Rebuilt bookings catalog")
+
+
+def fix_bookings_trading(ctx=None):
+    portal = getSite()
+    soup = get_bookings_soup(portal)
+    data = soup.storage.data
+    need_rebuild = False
+    for booking in data.values():
+        try:
+            booking.attrs['item_number']
+        except KeyError:
+            obj = get_object_by_uid(portal, booking.attrs['buyable_uid'])
+            if obj:
+                trading = ITrading(obj)
+                item_number = trading.item_number
+                gtin = trading.gtin
+            else:
+                item_number = ''
+                gtin = ''
+            need_rebuild = True
+            booking.attrs['item_number'] = item_number
+            logging.info(
+                "Added item_number {0} to booking {1}".format(
+                    item_number, booking.attrs['uid']
+                )
+            )
+            booking.attrs['gtin'] = gtin
+            logging.info(
+                "Added gtin {0} to booking {1}".format(
+                    gtin, booking.attrs['uid']
                 )
             )
     if need_rebuild:

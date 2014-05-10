@@ -36,6 +36,15 @@ class IVendor(IDiscountSettingsEnabled):
     """
 
 
+class ITrading(Interface):
+    """Interface for looking up trading related information.
+    """
+
+    item_number = Attribute(u"Item Number")
+
+    gtin = Attribute(u"Global Trade Item Number")
+
+
 class INotificationSettings(Interface):
     """Interface for looking up mail notification settings.
     """

@@ -5,6 +5,10 @@ Changelog
 0.5dev
 ------
 
+- Add ``bda.plone.orders.interfaces.ITrading`` and consider contract when
+  creating order bookings.
+  [rnix]
+
 - Translate ``customers_notified_success`` ajax message directly in view class.
   [rnix]
 
