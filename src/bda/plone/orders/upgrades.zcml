@@ -66,4 +66,12 @@
     profile="bda.plone.orders:default"
     handler=".upgrades.fix_bookings_trading"/>
 
+  <genericsetup:upgradeStep
+    source="6"
+    destination="7"
+    title="Reset all soup records attributes storage"
+    description=""
+    profile="bda.plone.orders:default"
+    handler=".upgrades.reset_records"/>
+
 </configure>

@@ -4,12 +4,12 @@
   <!-- resources -->
   <browser:resource
     name="bda.plone.orders.js"
-    file="orders.js"
+    file="resources/orders.js"
     layer="..interfaces.IOrdersExtensionLayer"/>
 
   <browser:resource
     name="bda.plone.orders.css"
-    file="orders.css"
+    file="resources/orders.css"
     layer="..interfaces.IOrdersExtensionLayer"/>
 
   <browser:resourceDirectory

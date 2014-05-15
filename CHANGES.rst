@@ -5,6 +5,20 @@ Changelog
 0.5dev
 ------
 
+- Add upgrade step to reset all soup records attributes storage.
+  [rnix]
+
+- Include ``jquery-barcode`` from http://barcode-coder.com - not delivered to
+  the client or used yet.
+  [rnix]
+
+- Include ``qrcode.js`` from http://davidshimjs.github.io/qrcodejs/ and render
+  QR Code for order uuid in order view.
+  [rnix]
+
+- Move Javascript and CSS to resources folder.
+  [rnix]
+
 - Add ``bda.plone.orders.interfaces.ITrading`` and consider contract when
   creating order bookings.
   [rnix]

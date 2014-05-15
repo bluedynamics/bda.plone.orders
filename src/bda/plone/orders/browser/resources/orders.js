@@ -5,15 +5,34 @@
             orders_datatable_binder: orders.datatable_binder,
             orders_filter_binder: orders.filter_binder,
             orders_dropdown_menus: orders.dropdown_binder,
-            orders_notification_form_binder: orders.notification_form_binder
+            orders_notification_form_binder: orders.notification_form_binder,
+            orders_qr_code_binder: orders.qr_code_binder
         });
         orders.datatable_binder(document);
         orders.filter_binder(document);
         orders.order_select_binder(document);
         orders.notification_binder(document);
+        orders.qr_code_binder(document);
     });
 
     var orders = {
+
+        qr_code_binder: function(context) {
+            $('.qr_code', context).each(function() {
+                var elem = $(this);
+                var text = elem.data('text');
+                var width = elem.data('width');
+                var height = elem.data('height');
+                var qrcode = new QRCode(elem.get(0), {
+                    text: text,
+                    width: width,
+                    height: height,
+                    colorDark : "#000000",
+                    colorLight : "#ffffff",
+                    correctLevel : QRCode.CorrectLevel.H
+                });
+            });
+        },
 
         datatable_binder: function(context) {
             var url = $('#bdaploneorders', context).attr('data-ajaxurl');

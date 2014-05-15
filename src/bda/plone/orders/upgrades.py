@@ -11,6 +11,7 @@ from decimal import Decimal
 from plone.app.uuid.utils import uuidToObject
 from plone.uuid.interfaces import IUUID
 from zope.component.hooks import getSite
+from node.ext.zodb.utils import reset_odict
 
 import logging
 import uuid
@@ -342,3 +343,26 @@ def fix_bookings_trading(ctx=None):
         bookings_soup = get_bookings_soup(portal)
         bookings_soup.rebuild()
         logging.info("Rebuilt bookings catalog")
+
+
+def reset_records(ctx=None):
+    ignore_key = lambda x: x.startswith('____')
+    portal = getSite()
+    soup = get_orders_soup(portal)
+    data = soup.storage.data
+    for order in data.values():
+        reset_odict(order.attrs.storage, ignore_key=ignore_key)
+        logging.info(
+                "Reset attributes storage on order {0}".format(
+                    order.attrs['uid'],
+                )
+            )
+    soup = get_bookings_soup(portal)
+    data = soup.storage.data
+    for booking in data.values():
+        reset_odict(booking.attrs.storage, ignore_key=ignore_key)
+        logging.info(
+                "Reset attributes storage on booking {0}".format(
+                    booking.attrs['uid']
+                )
+            )

@@ -7,6 +7,11 @@
 
   <h1 i18n:translate="order_details">Order Details</h1>
 
+  <div class="qr_code"
+       tal:attributes="data-text string:${order/uid};
+                       data-width string:100;
+                       data-height string:100"></div>
+
   <strong i18n:translate="order_uid">Order UID:</strong>
   <span tal:replace="order/uid">UID</span>
   <br />

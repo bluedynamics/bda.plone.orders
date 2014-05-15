@@ -157,6 +157,11 @@ a.notify_customers {
 .order_details {
     padding:1.2em;
 }
+.order_details .qr_code {
+    position:absolute;
+    right:1em;
+    top:1em;
+}
 .order_details_row {
     display:table-row;
 }
