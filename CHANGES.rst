@@ -5,6 +5,9 @@ Changelog
 0.5dev
 ------
 
+- Fix ``PaymentData.description`` unicode error.
+  [rnix]
+
 - Add upgrade step to reset all soup records attributes storage.
   [rnix]
 

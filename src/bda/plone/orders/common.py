@@ -13,6 +13,7 @@ from bda.plone.checkout import CheckoutError
 from bda.plone.orders import permissions
 from bda.plone.orders import interfaces as ifaces
 from bda.plone.orders import message_factory as _
+from bda.plone.orders import safe_encode
 from bda.plone.orders.interfaces import IVendor
 from bda.plone.payment import Payments
 from bda.plone.payment.interfaces import IPaymentData
@@ -621,7 +622,7 @@ class PaymentData(object):
             attrs['personal_data.firstname'],
             attrs['personal_data.lastname'],
             attrs['billing_address.city'],
-            amount])
+            safe_encode(amount)])
         return description
 
     @property
