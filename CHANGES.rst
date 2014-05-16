@@ -2,8 +2,8 @@
 Changelog
 =========
 
-0.5dev
-------
+0.5
+---
 
 - Add ``bda.plone.orders.ExportOrders`` permission and bind export related
   views to it.
