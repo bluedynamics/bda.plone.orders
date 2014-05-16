@@ -140,14 +140,14 @@
     for="zope.component.interfaces.ISite"
     name="exportorders"
     class=".views.ExportOrdersForm"
-    permission="bda.plone.orders.ViewOrders"
+    permission="bda.plone.orders.ExportOrders"
     layer="..interfaces.IOrdersExtensionLayer"/>
 
   <browser:page
     for="*"
     name="exportorders_contextual"
     class=".views.ExportOrdersContextual"
-    permission="bda.plone.orders.ViewOrders"
+    permission="bda.plone.orders.ExportOrders"
     layer="..interfaces.IOrdersExtensionLayer"/>
 
   <!-- order done view -->

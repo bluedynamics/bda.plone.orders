@@ -25,6 +25,12 @@
       <role name="Vendor" />
     </permission>
 
+    <permission name="bda.plone.orders: Export Orders" acquire="True">
+      <role name="Manager" />
+      <role name="Site Administrator" />
+      <role name="Vendor" />
+    </permission>
+
     <permission name="bda.plone.orders: Manage Templates" acquire="True">
       <role name="Manager" />
       <role name="Site Administrator" />

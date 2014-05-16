@@ -15,6 +15,10 @@
     title="bda.plone.orders: Modify Orders" />
 
   <permission
+    id="bda.plone.orders.ExportOrders"
+    title="bda.plone.orders: Export Orders" />
+
+  <permission
     id="bda.plone.orders.ManageTemplates"
     title="bda.plone.orders: Manage Templates" />
 

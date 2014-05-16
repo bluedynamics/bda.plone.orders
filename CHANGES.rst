@@ -5,6 +5,10 @@ Changelog
 0.5dev
 ------
 
+- Add ``bda.plone.orders.ExportOrders`` permission and bind export related
+  views to it.
+  [rnix]
+
 - Fix ``PaymentData.description`` unicode error.
   [rnix]
 

@@ -15,6 +15,11 @@ ModifyOrders = 'bda.plone.orders: Modify Orders'
 setDefaultRoles(ModifyOrders,
                 ('Manager', 'Site Administrator', 'Vendor'))
 
+# export orders
+ExportOrders = 'bda.plone.orders: Export Orders'
+setDefaultRoles(ExportOrders,
+                ('Manager', 'Site Administrator', 'Vendor'))
+
 # manage templates
 ManageTemplates = 'bda.plone.orders: Manage Templates'
 setDefaultRoles(ManageTemplates,
