@@ -125,6 +125,55 @@ callable on ``ISite`` root. So a possible customer might be no customer on the
 site root.
 
 
+Permission ``bda.plone.orders.ViewOrderDirectly``
+-------------------------------------------------
+
+TODO: document
+
+
+Permission ``bda.plone.orders.ViewOwnOrders``
+---------------------------------------------
+
+TODO: document
+
+
+Permission ``bda.plone.orders.ViewOrders``
+------------------------------------------
+
+TODO: document
+
+
+Permission ``bda.plone.orders.ModifyOrders``
+--------------------------------------------
+
+TODO: document
+
+
+Permission ``bda.plone.orders.ExportOrders``
+--------------------------------------------
+
+TODO: document
+
+
+Permission ``bda.plone.orders.ManageTemplates``
+-----------------------------------------------
+
+TODO: document
+
+
+Permission ``bda.plone.orders.DelegateCustomerRole``
+----------------------------------------------------
+
+TODO: document
+
+
+Permission ``bda.plone.orders.DelegateVendorRole``
+--------------------------------------------------
+
+TODO: document
+
+
+
 Create translations
 ===================
 
