@@ -7,6 +7,10 @@
     title="bda.plone.orders: View Order Directly" />
 
   <permission
+    id="bda.plone.orders.ViewOwnOrders"
+    title="bda.plone.orders: View Own Orders" />
+
+  <permission
     id="bda.plone.orders.ViewOrders"
     title="bda.plone.orders: View Orders" />
 

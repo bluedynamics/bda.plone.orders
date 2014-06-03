@@ -10,13 +10,19 @@
     <permission name="bda.plone.orders: View Order Directly" acquire="True">
       <role name="Manager" />
       <role name="Site Administrator" />
-      <role name="Authenticated" />
+      <role name="Authenticated" /><!-- should be Authenticated, not Customer. see README.rst -->
+    </permission>
+
+    <permission name="bda.plone.orders: View Own Orders" acquire="True">
+      <role name="Manager" />
+      <role name="Site Administrator" />
+      <role name="Authenticated" /><!-- should be Authenticated, not Customer. see README.rst -->
     </permission>
 
     <permission name="bda.plone.orders: View Orders" acquire="True">
       <role name="Manager" />
       <role name="Site Administrator" />
-      <role name="Authenticated" />
+      <role name="Authenticated" /><!-- should be Authenticated, not Customer. see README.rst -->
     </permission>
 
     <permission name="bda.plone.orders: Modify Orders" acquire="True">

@@ -729,7 +729,7 @@ class OrderViewBase(BrowserView):
     def payment(self):
         # XXX: node.ext.zodb or souper bug with double linked list. figure out
         order = self.order_data.order.attrs
-        #order = self.order
+        # order = self.order
         title = translate(order['payment_label'], context=self.request)
         return title
 

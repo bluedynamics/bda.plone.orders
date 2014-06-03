@@ -5,8 +5,9 @@ Changelog
 0.6.dev0
 --------
 
-- No changes yet
-  [rnix]
+- Introduce ``ViewOwnOrders`` (``bda.plone.orders: View Own Orders``) to
+  protect ``@@myorders`` and descendant views with a dedicated permission.
+  [thet]
 
 
 0.5
