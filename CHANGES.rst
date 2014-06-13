@@ -2,8 +2,8 @@
 Changelog
 =========
 
-0.6.dev0
---------
+0.6
+---
 
 - Introduce ``ViewOwnOrders`` (``bda.plone.orders: View Own Orders``) to
   protect ``@@myorders`` and descendant views with a dedicated permission.
