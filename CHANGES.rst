@@ -5,7 +5,10 @@ Changelog
 0.7.dev0
 --------
 
-- no changes yet.
+- Instead of ``plone.app.uuid.utils.uuidToObject`` use
+  ``bda.plone.cart.get_object_by_uid``, which does the same but can handle
+  ``uuid.UUID`` and string objects.
+  [thet]
 
 
 0.6

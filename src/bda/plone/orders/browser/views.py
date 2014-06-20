@@ -5,6 +5,7 @@ from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from Products.statusmessages.interfaces import IStatusMessage
 from StringIO import StringIO
 from bda.plone.cart import ascur
+from bda.plone.cart import get_object_by_uid
 from bda.plone.checkout import message_factory as _co
 from bda.plone.checkout.vocabularies import get_pycountry_name
 from bda.plone.orders import interfaces as ifaces
@@ -24,7 +25,6 @@ from bda.plone.orders.common import get_vendors_for
 from bda.plone.shop.interfaces import IBuyable  # XXX: dependency inversion
 from decimal import Decimal
 from odict import odict
-from plone.app.uuid.utils import uuidToURL
 from plone.memoize import view
 from plone.uuid.interfaces import IUUID
 from repoze.catalog.query import Any
@@ -663,7 +663,7 @@ class OrderViewBase(BrowserView):
     def shipping_title(self):
         # XXX: node.ext.zodb or souper bug with double linked list. figure out
         order = self.order_data.order.attrs
-        #order = self.order
+        # order = self.order
         title = translate(order['shipping_label'], context=self.request)
         if order['shipping_description']:
             title += ' (%s)' % translate(order['shipping_description'],
@@ -702,9 +702,10 @@ class OrderViewBase(BrowserView):
         # XXX: discount
         ret = list()
         for booking in self.order_data.bookings:
+            obj = get_object_by_uid(self.context, booking.attrs['buyable_uid'])
             ret.append({
                 'title': booking.attrs['title'],
-                'url': uuidToURL(booking.attrs['buyable_uid']),
+                'url': obj.absolute_url(),
                 'count': booking.attrs['buyable_count'],
                 'net': ascur(booking.attrs.get('net', 0.0)),
                 'discount_net': ascur(float(booking.attrs['discount_net'])),
@@ -817,9 +818,10 @@ class DirectOrderView(OrderViewBase):
         """
         ret = list()
         for booking in self.order_data.bookings:
+            obj = get_object_by_uid(self.context, booking.attrs['buyable_uid'])
             ret.append({
                 'title': booking.attrs['title'],
-                'url': uuidToURL(booking.attrs['buyable_uid']),
+                'url': obj.absolute_url(),
                 'count': booking.attrs['buyable_count'],
                 'net': ascur(booking.attrs.get('net', 0.0)),
                 'discount_net': ascur(float(booking.attrs['discount_net'])),
@@ -966,7 +968,8 @@ COMPUTED_BOOKING_EXPORT_ATTRS = odict()
 
 
 def resolve_buyable_url(context, booking):
-    return uuidToURL(booking.attrs['buyable_uid'])
+    obj = get_object_by_uid(context, booking.attrs['buyable_uid'])
+    return obj.absolute_url()
 
 COMPUTED_BOOKING_EXPORT_ATTRS['url'] = resolve_buyable_url
 

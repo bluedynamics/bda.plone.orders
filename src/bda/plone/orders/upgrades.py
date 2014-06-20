@@ -8,7 +8,6 @@ from bda.plone.orders.interfaces import ITrading
 from bda.plone.payment import Payments
 from bda.plone.shipping.interfaces import IShippingItem
 from decimal import Decimal
-from plone.app.uuid.utils import uuidToObject
 from plone.uuid.interfaces import IUUID
 from zope.component.hooks import getSite
 from node.ext.zodb.utils import reset_odict
@@ -37,7 +36,7 @@ def fix_bookings_vendor_uid(ctx=None):
         if not update:
             continue
         buyable_uid = item.attrs['buyable_uid']
-        obj = uuidToObject(buyable_uid)
+        obj = get_object_by_uid(portal, buyable_uid)
         if not obj:
             shop = acquire_vendor_or_shop_root(portal)
         else:

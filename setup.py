@@ -38,7 +38,6 @@ setup(
         'collective.js.datatables',
         'collective.js.jqueryui',
         'plone.api',
-        'plone.app.uuid',
         'plone.memoize',
         'yafowil.widget.array',
         'yafowil.widget.datetime',
