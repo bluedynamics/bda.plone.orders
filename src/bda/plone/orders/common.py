@@ -19,7 +19,7 @@ from bda.plone.payment import Payments
 from bda.plone.payment.interfaces import IPaymentData
 from bda.plone.shipping import Shippings
 from bda.plone.shipping.interfaces import IShippingItem
-from bda.plone.shop.interfaces import IBuyable # XXX: dependency inversion
+from bda.plone.shop.interfaces import IBuyable  # XXX: dependency inversion
 from decimal import Decimal
 from node.ext.zodb import OOBTNode
 from node.utils import instance_property
@@ -65,7 +65,7 @@ def get_order(context, uid):
     if not isinstance(uid, uuid.UUID):
         uid = uuid.UUID(uid)
     soup = get_orders_soup(context)
-    return [_ for _ in soup.query(Eq('uid', uid))][0]
+    return [it for it in soup.query(Eq('uid', uid))][0]
 
 
 def acquire_vendor_or_shop_root(context):
