@@ -355,8 +355,8 @@ class OrderCheckoutAdapter(CheckoutAdapter):
         if item_stock.available is not None:
             item_stock.available -= float(count)
         available = item_stock.available
-        state = (available is None or available >= 0) and ifaces.STATE_NEW\
-            or ifaces.STATE_RESERVED
+        state = ifaces.STATE_NEW if available is None or available >= 0.0\
+            else ifaces.STATE_RESERVED
         item_data = get_item_data_provider(buyable)
         vendor = acquire_vendor_or_shop_root(buyable)
         trading_info = ifaces.ITrading(buyable)
