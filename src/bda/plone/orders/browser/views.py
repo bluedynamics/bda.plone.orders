@@ -1064,7 +1064,7 @@ class ExportOrdersForm(YAMLForm):
             query = query & Eq('creator', customer)
         # prepare csv writer
         sio = StringIO()
-        ex = csv.writer(sio, dialect='excel-colon')
+        ex = csv.writer(sio, dialect='excel-colon', quoting=csv.QUOTE_MINIMAL)
         # exported column keys as first line
         ex.writerow(ORDER_EXPORT_ATTRS +
                     COMPUTED_ORDER_EXPORT_ATTRS.keys() +
@@ -1143,7 +1143,7 @@ class ExportOrdersContextual(BrowserView):
 
         # prepare csv writer
         sio = StringIO()
-        ex = csv.writer(sio, dialect='excel-colon')
+        ex = csv.writer(sio, dialect='excel-colon', quoting=csv.QUOTE_MINIMAL)
         # exported column keys as first line
         ex.writerow(ORDER_EXPORT_ATTRS +
                     COMPUTED_ORDER_EXPORT_ATTRS.keys() +

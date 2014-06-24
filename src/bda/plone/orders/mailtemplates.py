@@ -514,6 +514,8 @@ class DynamicMailTemplate(object):
         if indict:
             result = {}
             for key, value in indict.items():
+                if isinstance(value, str):
+                    value = value.decode('utf-8')
                 result[key.replace('.', '_')] = value
             return result
         raise ValueError('Only one kwargs please.')

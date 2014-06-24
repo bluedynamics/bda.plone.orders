@@ -5,6 +5,12 @@ Changelog
 0.7.dev0
 --------
 
+- Use ``csv.QUOTE_MINIMAL`` for CSV writers.
+  [rnix]
+
+- Decode strings to unicode in ``DynamicMailTemplate.normalized``.
+  [rnix]
+
 - Aquire until ``IPloneSiteRoot`` instead of ``ISite`` in
   ``acquire_vendor_or_shop_root``. ``lineage.subsite`` also works with
   ``ISite`` interface, but we really want to use plone root as fallback vendor
