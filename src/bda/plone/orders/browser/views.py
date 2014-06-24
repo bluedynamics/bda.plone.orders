@@ -967,7 +967,7 @@ BOOKING_EXPORT_ATTRS = [
 COMPUTED_BOOKING_EXPORT_ATTRS = odict()
 
 
-def resolve_buyable_url(context, booking):
+def buyable_url(context, booking):
     obj = get_object_by_uid(context, booking.attrs['buyable_uid'])
     if obj:
         return obj.absolute_url()
@@ -980,7 +980,7 @@ def buyable_uid(context, booking):
         return IUUID(obj)
     return None
 
-COMPUTED_BOOKING_EXPORT_ATTRS['url'] = resolve_buyable_url
+COMPUTED_BOOKING_EXPORT_ATTRS['url'] = buyable_url
 COMPUTED_BOOKING_EXPORT_ATTRS['buyable_uid'] = buyable_uid
 
 
