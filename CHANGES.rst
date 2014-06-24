@@ -5,6 +5,9 @@ Changelog
 0.7.dev0
 --------
 
+- Add ``buyable_uid`` export attribute to CSV exports.
+  [thet]
+
 - Use ``csv.QUOTE_MINIMAL`` for CSV writers.
   [rnix]
 
