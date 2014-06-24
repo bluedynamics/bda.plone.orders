@@ -24,6 +24,7 @@ from decimal import Decimal
 from node.ext.zodb import OOBTNode
 from node.utils import instance_property
 from plone.uuid.interfaces import IUUID
+from Products.CMFPlone.interfaces import IPloneSiteRoot
 from repoze.catalog.catalog import Catalog
 from repoze.catalog.indexes.field import CatalogFieldIndex
 from repoze.catalog.indexes.keyword import CatalogKeywordIndex
@@ -80,7 +81,8 @@ def acquire_vendor_or_shop_root(context):
     if not context:
         message = u"No context given to acquire vendor or shop root from"
         raise ValueError(message)
-    while not IVendor.providedBy(context) and not ISite.providedBy(context):
+    while not IVendor.providedBy(context) \
+            and not IPloneSiteRoot.providedBy(context):
         context = aq_parent(aq_inner(context))
     return context
 

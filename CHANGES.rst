@@ -5,6 +5,12 @@ Changelog
 0.7.dev0
 --------
 
+- Aquire until ``IPloneSiteRoot`` instead of ``ISite`` in
+  ``acquire_vendor_or_shop_root``. ``lineage.subsite`` also works with
+  ``ISite`` interface, but we really want to use plone root as fallback vendor
+  if no object providing ``IVendor`` found in acquisition chain.
+  [rnix]
+
 - Instead of ``plone.app.uuid.utils.uuidToObject`` use
   ``bda.plone.cart.get_object_by_uid``, which does the same but can handle
   ``uuid.UUID`` and string objects.

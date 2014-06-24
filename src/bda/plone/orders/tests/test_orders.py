@@ -2,7 +2,7 @@ from bda.plone.orders.common import acquire_vendor_or_shop_root
 from bda.plone.orders.interfaces import IVendor
 from bda.plone.orders.tests import Orders_INTEGRATION_TESTING
 from bda.plone.orders.tests import set_browserlayer
-from zope.component.interfaces import ISite
+from Products.CMFPlone.interfaces import IPloneSiteRoot
 from zope.interface import alsoProvides
 
 import unittest2 as unittest
@@ -37,7 +37,7 @@ class TestOrdersUnit(unittest.TestCase):
         root['sub1']['subsub1'] = DummyContext()
         root['sub2'] = DummyContext()
 
-        alsoProvides(root, ISite)
+        alsoProvides(root, IPloneSiteRoot)
         alsoProvides(root['sub1'], IVendor)
         self.root = root
 
