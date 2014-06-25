@@ -954,7 +954,6 @@ ORDER_EXPORT_ATTRS = [
 COMPUTED_ORDER_EXPORT_ATTRS = odict()
 BOOKING_EXPORT_ATTRS = [
     'title',
-    'buyable_uid',
     'buyable_comment',
     'buyable_count',
     'quantity_unit',
