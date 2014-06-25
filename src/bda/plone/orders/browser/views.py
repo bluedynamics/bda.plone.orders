@@ -5,6 +5,7 @@ from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from Products.statusmessages.interfaces import IStatusMessage
 from StringIO import StringIO
 from bda.plone.cart import ascur
+from bda.plone.cart import get_item_stock
 from bda.plone.cart import get_object_by_uid
 from bda.plone.checkout import message_factory as _co
 from bda.plone.checkout.vocabularies import get_pycountry_name
@@ -967,6 +968,18 @@ BOOKING_EXPORT_ATTRS = [
 COMPUTED_BOOKING_EXPORT_ATTRS = odict()
 
 
+def buyable_available(context, booking):
+    obj = get_object_by_uid(context, booking.attrs['buyable_uid'])
+    item_stock = get_item_stock(obj)
+    return item_stock.available
+
+
+def buyable_overbook(context, booking):
+    obj = get_object_by_uid(context, booking.attrs['buyable_uid'])
+    item_stock = get_item_stock(obj)
+    return item_stock.overbook
+
+
 def buyable_url(context, booking):
     obj = get_object_by_uid(context, booking.attrs['buyable_uid'])
     if obj:
@@ -980,7 +993,10 @@ def buyable_uid(context, booking):
         return IUUID(obj)
     return None
 
-COMPUTED_BOOKING_EXPORT_ATTRS['url'] = buyable_url
+
+COMPUTED_BOOKING_EXPORT_ATTRS['buyable_available'] = buyable_available
+COMPUTED_BOOKING_EXPORT_ATTRS['buyable_overbook'] = buyable_overbook
+COMPUTED_BOOKING_EXPORT_ATTRS['buyable_url'] = buyable_url
 COMPUTED_BOOKING_EXPORT_ATTRS['buyable_uid'] = buyable_uid
 
 

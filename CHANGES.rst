@@ -5,7 +5,8 @@ Changelog
 0.7.dev0
 --------
 
-- Add ``buyable_uid`` export attribute to CSV exports.
+- Add ``buyable_uid``, ``buyable_available`` and ``buyable_overbook`` export
+  attributes to CSV exports.
   [thet]
 
 - Use ``csv.QUOTE_MINIMAL`` for CSV writers.
