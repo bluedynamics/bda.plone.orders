@@ -970,14 +970,18 @@ COMPUTED_BOOKING_EXPORT_ATTRS = odict()
 
 def buyable_available(context, booking):
     obj = get_object_by_uid(context, booking.attrs['buyable_uid'])
-    item_stock = get_item_stock(obj)
-    return item_stock.available
+    if obj:
+        item_stock = get_item_stock(obj)
+        return item_stock.available
+    return None
 
 
 def buyable_overbook(context, booking):
     obj = get_object_by_uid(context, booking.attrs['buyable_uid'])
-    item_stock = get_item_stock(obj)
-    return item_stock.overbook
+    if obj:
+        item_stock = get_item_stock(obj)
+        return item_stock.overbook
+    return None
 
 
 def buyable_url(context, booking):
