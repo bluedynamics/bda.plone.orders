@@ -954,6 +954,7 @@ ORDER_EXPORT_ATTRS = [
 COMPUTED_ORDER_EXPORT_ATTRS = odict()
 BOOKING_EXPORT_ATTRS = [
     'title',
+    'buyable_uid',
     'buyable_comment',
     'buyable_count',
     'quantity_unit',
@@ -991,17 +992,9 @@ def buyable_url(context, booking):
     return None
 
 
-def buyable_uid(context, booking):
-    obj = get_object_by_uid(context, booking.attrs['buyable_uid'])
-    if obj:
-        return IUUID(obj)
-    return None
-
-
 COMPUTED_BOOKING_EXPORT_ATTRS['buyable_available'] = buyable_available
 COMPUTED_BOOKING_EXPORT_ATTRS['buyable_overbook'] = buyable_overbook
 COMPUTED_BOOKING_EXPORT_ATTRS['buyable_url'] = buyable_url
-COMPUTED_BOOKING_EXPORT_ATTRS['buyable_uid'] = buyable_uid
 
 
 def cleanup_for_csv(value):
