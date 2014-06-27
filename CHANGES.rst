@@ -2,8 +2,8 @@
 Changelog
 =========
 
-0.7.dev0
---------
+0.7
+---
 
 - Add ``buyable_available`` and ``buyable_overbook`` export attributes to CSV
   exports.
