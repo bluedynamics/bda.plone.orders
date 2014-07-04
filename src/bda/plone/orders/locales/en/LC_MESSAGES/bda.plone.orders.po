@@ -104,6 +104,12 @@ msgstr "title"
 msgid "booking_vat"
 msgstr "vat"
 
+msgid "booking_state"
+msgstr "state"
+
+msgid "booking_salaried"
+msgstr "salaried"
+
 #. Default: "Cancel"
 #: ./vocabularies.py:30
 msgid "cancel"
