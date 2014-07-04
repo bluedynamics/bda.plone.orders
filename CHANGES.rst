@@ -5,7 +5,9 @@ Changelog
 0.8.dev0
 --------
 
-- no changes yet.
+- In ``@@order`` view, show state and salaried columns per booking, for the
+  order notification email, indicate per booking, when it is reserved.
+  [thet]
 
 
 0.7

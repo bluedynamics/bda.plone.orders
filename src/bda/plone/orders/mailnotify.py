@@ -7,6 +7,7 @@ from bda.plone.checkout.interfaces import ICheckoutEvent
 from bda.plone.orders import interfaces as ifaces
 from bda.plone.orders import message_factory as _
 from bda.plone.orders import safe_encode
+from bda.plone.orders import vocabularies as vocabs
 from bda.plone.orders.common import DT_FORMAT
 from bda.plone.orders.common import OrderData
 from bda.plone.orders.interfaces import IGlobalNotificationText
@@ -59,19 +60,24 @@ def create_mail_listing(context, order_data):
         if comment:
             title = '%s (%s)' % (title, comment)
         # XXX: price and discount
-        line = '{count: 4f} {title}'.format(
+        state = booking.attrs.get('state')
+        state_text = ''
+        if state == ifaces.STATE_RESERVED:
+            state_text = ' ({})'.format(vocabs.state_vocab()[state])
+        line = '{count: 4f} {title}{state}'.format(
             count=booking.attrs['buyable_count'],
-            title=title
+            title=title,
+            state=state_text,
         )
         lines.append(line)
         if comment:
             lines.append(_indent('({0})'.format(comment)))
         notificationtext = IItemNotificationText(buyable)
-        if booking.attrs['state'] == ifaces.STATE_RESERVED:
+        if state == ifaces.STATE_RESERVED:
             text = notificationtext.overbook_text
             if text:
                 lines.append(_indent(text))
-        elif booking.attrs['state'] == ifaces.STATE_NEW:
+        elif state == ifaces.STATE_NEW:
             text = notificationtext.order_text
             if text:
                 lines.append(_indent(text))

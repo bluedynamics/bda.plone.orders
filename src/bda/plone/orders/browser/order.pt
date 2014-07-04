@@ -176,6 +176,8 @@
             <th i18n:translate="booking_vat">vat</th>
             <th tal:condition="show_exported" i18n:translate="booking_exported">exported</th>
             <th i18n:translate="booking_comment">comment</th>
+            <th i18n:translate="booking_state">state</th>
+            <th i18n:translate="booking_salaried">salaried</th>
           </tr>
 
           <tr tal:attributes="class python:even and 'even' or 'odd'">
@@ -190,6 +192,8 @@
             </td>
             <td tal:condition="show_exported" tal:content="python:view.exported(row)">No</td>
             <td tal:content="row/comment">comment</td>
+            <td tal:content="row/state">state</td>
+            <td tal:content="row/salaried">salaried</td>
           </tr>
 
         </tal:def>
