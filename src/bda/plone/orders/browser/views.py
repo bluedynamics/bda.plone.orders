@@ -824,6 +824,8 @@ class DirectOrderView(OrderViewBase):
         ret = list()
         for booking in self.order_data.bookings:
             obj = get_object_by_uid(self.context, booking.attrs['buyable_uid'])
+            state = vocabs.state_vocab()[booking.attrs.get('state')]
+            salaried = vocabs.salaried_vocab()[booking.attrs.get('salaried')]
             ret.append({
                 'title': booking.attrs['title'],
                 'url': obj.absolute_url(),
@@ -834,6 +836,8 @@ class DirectOrderView(OrderViewBase):
                 'comment': booking.attrs['buyable_comment'],
                 'quantity_unit': booking.attrs.get('quantity_unit'),
                 'currency': booking.attrs.get('currency'),
+                'state': state,
+                'salaried': salaried,
             })
         return ret
 
