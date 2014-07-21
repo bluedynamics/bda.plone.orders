@@ -39,9 +39,13 @@ from souper.soup import get_soup
 from zope.component.interfaces import ISite
 from zope.interface import implementer
 import datetime
+import logging
 import plone.api
 import time
 import uuid
+
+
+logger = logging.getLogger('bda.plone.checkout')
 
 
 DT_FORMAT = '%d.%m.%Y %H:%M'
@@ -351,8 +355,10 @@ class OrderCheckoutAdapter(CheckoutAdapter):
             return
         buyable = brain.getObject()
         item_state = get_item_state(buyable, self.request)
-        if not item_state.validate_count(item_state.aggregated_count):
-            raise CheckoutError(u'Item no longer available')
+        if not item_state.validate_count(count):
+            msg = u'Item no longer available {0}'.format(buyable.id)
+            logger.warning(msg)
+            raise CheckoutError(msg)
         item_stock = get_item_stock(buyable)
         if item_stock.available is not None:
             item_stock.available -= float(count)

@@ -5,7 +5,9 @@ Changelog
 0.9.dev0
 --------
 
-- no changes yet.
+- Fix item count validation in
+  ``bda.plone.orders.common.OrderCheckoutAdapter.create_booking``.
+  [rnix]
 
 
 0.8
