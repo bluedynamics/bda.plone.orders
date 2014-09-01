@@ -282,13 +282,13 @@ def do_notify(context, order_data, templates):
     for receiver in [customer_address, shop_manager_address]:
         try:
             mail_notify.send(subject, message, receiver)
-        except Exception, e:
+        except Exception:
             msg = translate(
                 _('email_sending_failed',
-                  default=u'Failed to send Notification to ${receiver}',
+                  default=u'Failed to send notification to ${receiver}',
                   mapping={'receiver': receiver}))
             status_message(context, msg)
-            logger.error("Email could not be sent: %s" % str(e))
+            logger.exception("Email could not be sent.")
 
 
 def get_order_uid(event):
@@ -343,10 +343,14 @@ class MailNotify(object):
     def send(self, subject, message, receiver):
         settings = INotificationSettings(self.context)
         shop_manager_address = settings.admin_email
+        if not shop_manager_address:
+            raise ValueError('Shop manager address is missing in settings.')
         shop_manager_name = settings.admin_name
         if shop_manager_name:
             from_name = str(Header(safe_unicode(shop_manager_name), 'utf-8'))
             mailfrom = formataddr((from_name, shop_manager_address))
+        else:
+            mailfrom = shop_manager_address
         mailhost = getToolByName(self.context, 'MailHost')
         message = MIMEText(message, _subtype='plain')
         message.set_charset('utf-8')
