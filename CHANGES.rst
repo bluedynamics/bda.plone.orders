@@ -5,6 +5,10 @@ Changelog
 0.9.dev0
 --------
 
+- Dont depend on implemented interfaces ITrading and IShippingItem.
+  see https://github.com/bluedynamics/bda.plone.shop/issues/31
+  [jensens]
+
 - Fix item count validation in
   ``bda.plone.orders.common.OrderCheckoutAdapter.create_booking``.
   [rnix]

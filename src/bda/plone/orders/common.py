@@ -1,5 +1,6 @@
-from Acquisition import aq_parent
 from Acquisition import aq_inner
+from Acquisition import aq_parent
+from Products.CMFPlone.interfaces import IPloneSiteRoot
 from bda.plone.cart import extractitems
 from bda.plone.cart import get_catalog_brain
 from bda.plone.cart import get_data_provider
@@ -10,9 +11,9 @@ from bda.plone.cart import get_object_by_uid
 from bda.plone.cart import readcookie
 from bda.plone.checkout import CheckoutAdapter
 from bda.plone.checkout import CheckoutError
-from bda.plone.orders import permissions
 from bda.plone.orders import interfaces as ifaces
 from bda.plone.orders import message_factory as _
+from bda.plone.orders import permissions
 from bda.plone.orders import safe_encode
 from bda.plone.orders.interfaces import IVendor
 from bda.plone.payment import Payments
@@ -24,7 +25,6 @@ from decimal import Decimal
 from node.ext.zodb import OOBTNode
 from node.utils import instance_property
 from plone.uuid.interfaces import IUUID
-from Products.CMFPlone.interfaces import IPloneSiteRoot
 from repoze.catalog.catalog import Catalog
 from repoze.catalog.indexes.field import CatalogFieldIndex
 from repoze.catalog.indexes.keyword import CatalogKeywordIndex
@@ -36,7 +36,7 @@ from souper.soup import NodeAttributeIndexer
 from souper.soup import NodeTextIndexer
 from souper.soup import Record
 from souper.soup import get_soup
-from zope.component.interfaces import ISite
+from zope.component import queryAdapter
 from zope.interface import implementer
 import datetime
 import logging
@@ -367,7 +367,7 @@ class OrderCheckoutAdapter(CheckoutAdapter):
             else ifaces.STATE_RESERVED
         item_data = get_item_data_provider(buyable)
         vendor = acquire_vendor_or_shop_root(buyable)
-        trading_info = ifaces.ITrading(buyable)
+
         booking = OOBTNode()
         booking.attrs['uid'] = uuid.uuid4()
         booking.attrs['buyable_uid'] = uid
@@ -388,9 +388,18 @@ class OrderCheckoutAdapter(CheckoutAdapter):
         booking.attrs['state'] = state
         booking.attrs['salaried'] = ifaces.SALARIED_NO
         booking.attrs['tid'] = 'none'
-        booking.attrs['shippable'] = IShippingItem(buyable).shippable
-        booking.attrs['item_number'] = trading_info.item_number
-        booking.attrs['gtin'] = trading_info.gtin
+        shipping_info = queryAdapter(buyable, IShippingItem)
+        if shipping_info:
+            booking.attrs['shippable'] = shipping_info.shippable
+        else:
+            booking.attrs['shippable'] = False
+        trading_info = queryAdapter(ifaces.ITrading, buyable)
+        if trading_info:
+            booking.attrs['item_number'] = trading_info.item_number
+            booking.attrs['gtin'] = trading_info.gtin
+        else:
+            booking.attrs['item_number'] = None
+            booking.attrs['gtin'] = None
         return booking
 
 
