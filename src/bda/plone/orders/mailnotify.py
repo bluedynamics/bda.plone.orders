@@ -1,5 +1,3 @@
-from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.utils import safe_unicode
 from bda.plone.cart import ascur
 from bda.plone.cart import get_catalog_brain
 from bda.plone.checkout.interfaces import ICheckoutSettings
@@ -17,10 +15,8 @@ from bda.plone.orders.interfaces import IPaymentText
 from bda.plone.orders.mailtemplates import get_order_templates
 from bda.plone.orders.mailtemplates import get_reservation_templates
 from bda.plone.payment.interfaces import IPaymentEvent
-from email.Header import Header
-from email.MIMEText import MIMEText
-from email.utils import formatdate
 from email.utils import formataddr
+from plone import api
 from zope.component.hooks import getSite
 from zope.globalrequest import getRequest
 from zope.i18n import translate
@@ -28,21 +24,64 @@ from zope.i18n import translate
 import logging
 import textwrap
 
-
 logger = logging.getLogger('bda.plone.orders')
 
+NOTIFICATIONS = {
+    'checkout_success': [],
+    'payment_success': [],
+}
 
-def status_message(context, msg):
-    putils = getToolByName(context, 'plone_utils')
-    putils.addPortalMessage(msg)
+
+def dispatch_notify_checkout_success(event):
+    for func in NOTIFICATIONS['checkout_success']:
+        func(event)
+
+
+def dispatch_notify_payment_success(event):
+    for func in NOTIFICATIONS['payment_success']:
+        func(event)
+
+
+class MailNotify(object):
+    """Mail notifyer.
+    """
+
+    def __init__(self, context):
+        self.context = context
+        self.settings = INotificationSettings(self.context)
+
+    def send(self, subject, message, receiver):
+        shop_manager_address = self.settings.admin_email
+        if not shop_manager_address:
+            raise ValueError('Shop manager address is missing in settings.')
+        shop_manager_name = self.settings.admin_name
+        if shop_manager_name:
+            from_name = safe_encode(shop_manager_name)
+            mailfrom = formataddr((from_name, shop_manager_address))
+        else:
+            mailfrom = shop_manager_address
+
+        api.portal.send_email(
+            recipient=receiver,
+            sender=mailfrom,
+            subject=subject,
+            body=message,
+        )
+        # mailhost = getToolByName(self.context, 'MailHost')
+        # message = MIMEText(message, _subtype='plain')
+        # message.set_charset('utf-8')
+        # message['Subject'] = Header(subject, 'utf-8')
+        # message['From_'] = mailfrom
+        # message['From'] = mailfrom
+        # message['To'] = Header(receiver, 'utf-8')
+        # message.add_header('Date', formatdate(localtime=True))
+        # mailhost.send(messageText=message, mto=receiver)
 
 
 def _indent(text, ind=5, width=80):
-    text = textwrap.wrap(text, width - ind)
-    lines = []
-    for line in text:
-        lines.append(u' ' * ind + safe_unicode(line))
-    return safe_encode(u'\n'.join(lines))
+    """helper indents text"""
+    wrapped = textwrap.fill(text, width, initial_indent=ind*u' ')
+    return safe_encode(wrapped)
 
 
 def create_mail_listing(context, order_data):
@@ -287,7 +326,7 @@ def do_notify(context, order_data, templates):
                 _('email_sending_failed',
                   default=u'Failed to send notification to ${receiver}',
                   mapping={'receiver': receiver}))
-            status_message(context, msg)
+            api.portal.show_message(message=msg, request=context.REQUEST)
             logger.exception("Email could not be sent.")
 
 
@@ -326,37 +365,12 @@ def notify_checkout_success(event):
     if checkout_settings.skip_payment(get_order_uid(event)):
         notify_order_success(event)
 
+NOTIFICATIONS['checkout_success'].append(notify_checkout_success)
+
 
 def notify_payment_success(event):
     """Send notification mail after payment succeed.
     """
     notify_order_success(event)
 
-
-class MailNotify(object):
-    """Mail notifyer.
-    """
-
-    def __init__(self, context):
-        self.context = context
-
-    def send(self, subject, message, receiver):
-        settings = INotificationSettings(self.context)
-        shop_manager_address = settings.admin_email
-        if not shop_manager_address:
-            raise ValueError('Shop manager address is missing in settings.')
-        shop_manager_name = settings.admin_name
-        if shop_manager_name:
-            from_name = str(Header(safe_unicode(shop_manager_name), 'utf-8'))
-            mailfrom = formataddr((from_name, shop_manager_address))
-        else:
-            mailfrom = shop_manager_address
-        mailhost = getToolByName(self.context, 'MailHost')
-        message = MIMEText(message, _subtype='plain')
-        message.set_charset('utf-8')
-        message['Subject'] = Header(subject, 'utf-8')
-        message['From_'] = mailfrom
-        message['From'] = mailfrom
-        message['To'] = Header(receiver, 'utf-8')
-        message.add_header('Date', formatdate(localtime=True))
-        mailhost.send(messageText=message, mto=receiver)
+NOTIFICATIONS['payment_success'].append(notify_payment_success)

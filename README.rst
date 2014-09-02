@@ -34,7 +34,7 @@ Please follow the instructions in `Customizing the shop` in the
 .. _`bda.plone.shop`: https://github.com/bluedynamics/bda.plone.shop
 
  After that you can start customizing the order process::
- 
+
     def patchShop():
         patchMailTemplates()
         patchOrderExport()
@@ -44,31 +44,44 @@ Mail notifications
 ------------------
 
 Copy the messages you need to customize from
-``bda.plone.orders.mailtemplates`` and change the
-text to your needs.::
+``bda.plone.orders.mailtemplates`` and change the text to your needs.
+There are two dictionaries containing all the strings, ``ORDER_TEMPLATES``
+and ``RESERVATION_TEMPLATES``. Its a nested dict. On the first level is the
+langugae code, the second level is ``subject``, ``body`` and
+``delivery_address``. Change them i.e. like this:
 
-    ORDER_BODY_EN = """
+::
+
+    from bda.plone.orders.mailtemplates import ORDER_TEMPLATES
+    from bda.plone.orders.mailtemplates import RESERVATION_TEMPLATES
+
+    ORDER_TEMPLATES['en']['body'] = """
     This is my heavily customized confirmation mail."""
 
-    RESERVATION_BODY_EN = """
-    This is the heavily customized text sent to users
-    having one or more items in the order that ran out of stock and have
-    been reserved"""
+    RESERVATION_TEMPLATES['de']['body'] = "Ihre Reservierung ist da!"
 
-    from bda.plone.orders import mailtemplates as original_templates
-
-    def patchMailTemplates():
-        original_templates.ORDER_BODY_EN = ORDER_BODY_EN
-        original_templates.ORDER_TEMPLATES['en']['body'] = ORDER_BODY_EN
-
-        original_templates.RESERVATION_BODY_EN = RESERVATION_BODY_EN
-        original_templates.RESERVATION_TEMPLATES['en']['body'] = \
-            RESERVATION_BODY_EN
-
-When updating ``bda.plone.shop`` to a new version, make sure to keep them
+When updating ``bda.plone.order`` to a new version, make sure to keep them
 in sync with the original templates and check if all stock variables
 (such as ``global_text`` or the ``@@showorder`` link which have been
 added in version 0.4 are present.)
+
+Alternativly you add/replace the notification methods and implement your
+own very custom. To do provide your own two functions similar to
+``bda.plone.orders.mailnotify.notify_checkout_success`` and
+``bda.plone.orders.mailnotify.notify_payment_success``. Then
+
+::
+
+    from bda.plone.orders.mailnotify import NOTIFICATIONS
+
+    # register as additional action
+    NOTIFICATIONS['checkout_success'].append(my_notify_checkout_success)
+    NOTIFICATIONS['payment_success'].append(my_notify_payment_success)
+
+    # OR
+    # register as replacement:
+    NOTIFICATIONS['checkout_success'] = [my_notify_checkout_success]
+    NOTIFICATIONS['payment_success'] = [my_notify_payment_success]
 
 
 Order Export

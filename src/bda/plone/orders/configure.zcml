@@ -62,7 +62,7 @@
     provides=".interfaces.IDynamicMailTemplateLibraryStorage"
     factory=".mailtemplates.DynamicMailTemplateLibraryStorage"/>
 
-  <!-- event subscribers -->
+  <!-- event subscribers payment-->
   <subscriber
     for="bda.plone.payment.interfaces.IPaymentFailedEvent"
     handler=".common.payment_failed"/>
@@ -71,12 +71,13 @@
     for="bda.plone.payment.interfaces.IPaymentSuccessEvent"
     handler=".common.payment_success"/>
 
+  <!-- event subscribers mailnotify-->
   <subscriber
     for="bda.plone.payment.interfaces.IPaymentSuccessEvent"
-    handler=".mailnotify.notify_payment_success"/>
+    handler=".mailnotify.dispatch_notify_payment_success"/>
 
   <subscriber
     for="bda.plone.checkout.interfaces.ICheckoutDone"
-    handler=".mailnotify.notify_checkout_success"/>
+    handler=".mailnotify.dispatch_notify_checkout_success"/>
 
 </configure>
