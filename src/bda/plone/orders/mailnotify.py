@@ -67,15 +67,6 @@ class MailNotify(object):
             subject=subject,
             body=message,
         )
-        # mailhost = getToolByName(self.context, 'MailHost')
-        # message = MIMEText(message, _subtype='plain')
-        # message.set_charset('utf-8')
-        # message['Subject'] = Header(subject, 'utf-8')
-        # message['From_'] = mailfrom
-        # message['From'] = mailfrom
-        # message['To'] = Header(receiver, 'utf-8')
-        # message.add_header('Date', formatdate(localtime=True))
-        # mailhost.send(messageText=message, mto=receiver)
 
 
 def _indent(text, ind=5, width=80):
