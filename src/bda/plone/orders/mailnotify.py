@@ -302,23 +302,30 @@ def create_mail_body(templates, context, order_data):
     return body_template % arguments
 
 
-def do_notify(context, order_data, templates):
+def do_notify(context, order_data, templates, receiver):
     attrs = order_data.order.attrs
     subject = templates['subject'] % attrs['ordernumber']
     message = create_mail_body(templates, context, order_data)
-    customer_address = attrs['personal_data.email']
-    shop_manager_address = INotificationSettings(context).admin_email
     mail_notify = MailNotify(context)
-    for receiver in [customer_address, shop_manager_address]:
-        try:
-            mail_notify.send(subject, message, receiver)
-        except Exception:
-            msg = translate(
-                _('email_sending_failed',
-                  default=u'Failed to send notification to ${receiver}',
-                  mapping={'receiver': receiver}))
-            api.portal.show_message(message=msg, request=context.REQUEST)
-            logger.exception("Email could not be sent.")
+    try:
+        mail_notify.send(subject, message, receiver)
+    except Exception:
+        msg = translate(
+            _('email_sending_failed',
+              default=u'Failed to send notification to ${receiver}',
+              mapping={'receiver': receiver}))
+        api.portal.show_message(message=msg, request=context.REQUEST)
+        logger.exception("Email could not be sent.")
+
+
+def do_notify_customer(context, order_data, templates):
+    customer_address = order_data.order.attrs['personal_data.email']
+    do_notify(context, order_data, templates, customer_address)
+
+
+def do_notify_shopmanager(context, order_data, templates):
+    shop_manager_address = INotificationSettings(context).admin_email
+    do_notify(context, order_data, templates, shop_manager_address)
 
 
 def get_order_uid(event):
@@ -328,9 +335,13 @@ def get_order_uid(event):
         return event.order_uid
 
 
-def notify_order_success(event):
+def notify_order_success(event, who=None):
     """Send notification mail after order succeed.
     """
+    if who is None:
+        raise ValueError(
+            'kw "who" mus be one out of ("customer", "shopmanager")'
+        )
     order_data = OrderData(event.context, uid=get_order_uid(event))
     templates = dict()
     state = order_data.state
@@ -345,23 +356,43 @@ def notify_order_success(event):
     templates['order_summery_callback'] = create_order_summery
     templates['global_text_callback'] = create_global_text
     templates['payment_text_callback'] = create_payment_text
-    do_notify(event.context, order_data, templates)
+    if who == "customer":
+        do_notify_customer(event.context, order_data, templates)
+    else:
+        do_notify_shopmanager(event.context, order_data, templates)
 
 
-def notify_checkout_success(event):
+def notify_checkout_success_customer(event):
     """Send notification mail after checkout succeed.
     """
     # if skip payment, do notification
     checkout_settings = ICheckoutSettings(event.context)
     if checkout_settings.skip_payment(get_order_uid(event)):
-        notify_order_success(event)
-
-NOTIFICATIONS['checkout_success'].append(notify_checkout_success)
+        notify_order_success(event, who="customer")
 
 
-def notify_payment_success(event):
+def notify_checkout_success_shopmanager(event):
+    """Send notification mail after checkout succeed.
+    """
+    # if skip payment, do notification
+    checkout_settings = ICheckoutSettings(event.context)
+    if checkout_settings.skip_payment(get_order_uid(event)):
+        notify_order_success(event, who="shopmanager")
+
+NOTIFICATIONS['checkout_success'].append(notify_checkout_success_customer)
+NOTIFICATIONS['checkout_success'].append(notify_checkout_success_shopmanager)
+
+
+def notify_payment_success_customer(event):
     """Send notification mail after payment succeed.
     """
-    notify_order_success(event)
+    notify_order_success(event, who="customer")
 
-NOTIFICATIONS['payment_success'].append(notify_payment_success)
+
+def notify_payment_success_shopmanager(event):
+    """Send notification mail after payment succeed.
+    """
+    notify_order_success(event, who="shopmanager")
+
+NOTIFICATIONS['payment_success'].append(notify_payment_success_customer)
+NOTIFICATIONS['payment_success'].append(notify_payment_success_shopmanager)

@@ -596,7 +596,7 @@ class DynamicMailTemplateLibraryStorage(DynamicMailTemplateLibraryAquierer):
     @property
     def _storage(self):
         annotations = IAnnotations(self.context)
-        if DYNAMIC_MAIL_LIBRARY_KEY not in  annotations:
+        if DYNAMIC_MAIL_LIBRARY_KEY not in annotations:
             annotations[DYNAMIC_MAIL_LIBRARY_KEY] = OOBTree()
         return annotations[DYNAMIC_MAIL_LIBRARY_KEY]
 
