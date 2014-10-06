@@ -768,7 +768,11 @@ class OrderViewBase(BrowserView):
             and _('yes', default=u'Yes') or _('no', default=u'No')
 
     def country(self, country_id):
-        return get_pycountry_name(country_id)
+        # return value if no id not available i.e. if no dropdown in use
+        try:
+            return get_pycountry_name(country_id)
+        except:
+            return country_id
 
 
 class OrderView(OrderViewBase):
