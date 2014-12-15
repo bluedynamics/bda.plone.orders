@@ -431,7 +431,7 @@ msgstr "Numero d'ordine"
 #. Default: "Your Order number: ${number}"
 #: ./browser/order_done.pt:25
 msgid "order_order_id"
-msgstr ""
+msgstr "Il tuo numero d'ordine"
 
 #. Default: "Payment:"
 #: ./browser/order.pt:59
