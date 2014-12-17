@@ -3,7 +3,7 @@ from setuptools import find_packages
 from setuptools import setup
 
 
-version = '0.9.dev2.sfama'
+version = '0.9.dev3'
 shortdesc = "Orders persistence and backoffice UI for bda.plone.shop"
 longdesc = open(os.path.join(os.path.dirname(__file__), 'README.rst')).read()
 longdesc += open(os.path.join(os.path.dirname(__file__), 'CHANGES.rst')).read()
