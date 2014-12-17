@@ -13,6 +13,8 @@ Changelog
   ``bda.plone.orders.common.OrderCheckoutAdapter.create_booking``.
   [rnix]
 
+- added item price to item listing in order mail
+  [agitator]
 
 0.8
 ---

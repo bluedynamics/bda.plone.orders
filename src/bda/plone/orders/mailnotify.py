@@ -89,15 +89,22 @@ def create_mail_listing(context, order_data):
         comment = booking.attrs['buyable_comment']
         if comment:
             title = '%s (%s)' % (title, comment)
-        # XXX: price and discount
+        # fetch currency
+        currency = booking.attrs['currency']
+        # fetch net
+        net = booking.attrs['net']
+        # build price
+        price = '%s %0.2f' % (currency, net)
+        # XXX: discount
         state = booking.attrs.get('state')
         state_text = ''
         if state == ifaces.STATE_RESERVED:
             state_text = ' ({})'.format(vocabs.state_vocab()[state])
-        line = '{count: 4f} {title}{state}'.format(
+        line = '{count: 4f} {title}{state} {price}'.format(
             count=booking.attrs['buyable_count'],
             title=title,
             state=state_text,
+            price=price,
         )
         lines.append(line)
         if comment:
