@@ -1,10 +1,8 @@
+from bda.plone.orders.tests import Orders_INTEGRATION_TESTING
 from interlude import interact
 from plone.testing import layered
 from plone.testing.zca import UNIT_TESTING
-from bda.plone.orders.tests import Orders_INTEGRATION_TESTING
-
 import doctest
-import os
 import pprint
 import unittest
 
@@ -15,6 +13,7 @@ TESTFILES = [
     ('dynamicmailtemplate.rst', UNIT_TESTING),
     ('dynamicmaillibrary.rst', Orders_INTEGRATION_TESTING)
 ]
+
 
 def test_suite():
     return unittest.TestSuite([

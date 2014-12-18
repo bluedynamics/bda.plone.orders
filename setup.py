@@ -35,6 +35,7 @@ setup(
         'Plone',
         'bda.plone.checkout',
         'bda.plone.discount',
+        'bda.plone.shop',
         'collective.js.datatables',
         'collective.js.jqueryui',
         'plone.api',
@@ -44,6 +45,7 @@ setup(
     ],
     extras_require={
         'test': [
+            'interlude',
             'plone.app.testing',
         ]
     },
