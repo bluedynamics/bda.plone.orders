@@ -16,8 +16,8 @@
 
 <metal:main fill-slot="main">
   <tal:main-macro metal:define-macro="main">
-  
-    <h1 class="documentFirstHeading" 
+
+    <h1 class="documentFirstHeading"
         i18n:translate="heading_mailtemplatelib_main">
       Mailtemplates for Order Notifications
     </h1>
@@ -25,9 +25,9 @@
     <h2 i18n:translate="heading_mailtemplatelib_using">Using placeholder:</h2>
 
     <p i18n:translate="heading_mailtemplatelib_example">
-        In templates named placeholders can be used. A placeholder is inserted 
+        In templates named placeholders can be used. A placeholder is inserted
         by inserting the name of the placeholder in curly braces, like so:
-        <pre i18n:name="example">Hello Mr. {personal_data_lastname}, ...</pre>   
+        <pre i18n:name="example">Hello Mr. {personal_data_lastname}, ...</pre>
     </p>
 
     <h2 i18n:translate="heading_mailtemplatelib_library">Edit</h2>
@@ -35,7 +35,7 @@
       <tal:view content="structure context/@@mailtemplatesform" />
     </div>
 
-    <h2 tal:condition="view/rendered" 
+    <h2 tal:condition="view/rendered"
         i18n:translate="heading_mailtemplatelib_preview">Preview</h2>
     <tal:loop tal:repeat="item view/rendered">
 

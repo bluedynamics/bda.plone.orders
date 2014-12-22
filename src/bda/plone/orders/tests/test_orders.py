@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from bda.plone.orders.common import acquire_vendor_or_shop_root
 from bda.plone.orders.interfaces import IVendor
 from bda.plone.orders.tests import Orders_INTEGRATION_TESTING
@@ -42,8 +43,8 @@ class TestOrdersUnit(unittest.TestCase):
 
     def test_acquire_vendor_or_shop_root(self):
         root = self.root
-        self.assertEquals(
+        self.assertEqual(
             acquire_vendor_or_shop_root(root['sub1']['subsub1']),
             root['sub1']
         )
-        self.assertEquals(acquire_vendor_or_shop_root(root['sub2']), root)
+        self.assertEqual(acquire_vendor_or_shop_root(root['sub2']), root)

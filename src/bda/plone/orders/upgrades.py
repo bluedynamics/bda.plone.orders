@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from bda.plone.cart import get_object_by_uid
 from bda.plone.orders import message_factory as _
 from bda.plone.orders.common import acquire_vendor_or_shop_root
@@ -8,9 +9,9 @@ from bda.plone.orders.interfaces import ITrading
 from bda.plone.payment import Payments
 from bda.plone.shipping.interfaces import IShippingItem
 from decimal import Decimal
+from node.ext.zodb.utils import reset_odict
 from plone.uuid.interfaces import IUUID
 from zope.component.hooks import getSite
-from node.ext.zodb.utils import reset_odict
 
 import logging
 import uuid
@@ -167,7 +168,9 @@ def fix_discount_attrs(ctx=None):
             need_rebuild = True
             item.attrs['cart_discount_net'] = Decimal(0)
             logging.info(
-                "Added cart_discount_net to order {0}".format(item.attrs['uid'])
+                "Added cart_discount_net to order {0}".format(
+                    item.attrs['uid']
+                )
             )
         try:
             item.attrs['cart_discount_vat']
@@ -175,7 +178,9 @@ def fix_discount_attrs(ctx=None):
             need_rebuild = True
             item.attrs['cart_discount_vat'] = Decimal(0)
             logging.info(
-                "Added cart_discount_vat to order {0}".format(item.attrs['uid'])
+                "Added cart_discount_vat to order {0}".format(
+                    item.attrs['uid']
+                )
             )
     if need_rebuild:
         orders_soup.rebuild()
@@ -352,16 +357,14 @@ def reset_records(ctx=None):
     for order in data.values():
         reset_odict(order.attrs.storage, ignore_key=ignore_key)
         logging.info(
-                "Reset attributes storage on order {0}".format(
-                    order.attrs['uid'],
-                )
-            )
+            "Reset attributes storage on order {0}".format(order.attrs['uid'],)
+        )
     soup = get_bookings_soup(portal)
     data = soup.storage.data
     for booking in data.values():
         reset_odict(booking.attrs.storage, ignore_key=ignore_key)
         logging.info(
-                "Reset attributes storage on booking {0}".format(
-                    booking.attrs['uid']
-                )
+            "Reset attributes storage on booking {0}".format(
+                booking.attrs['uid']
             )
+        )

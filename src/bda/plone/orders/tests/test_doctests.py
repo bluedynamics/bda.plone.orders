@@ -1,9 +1,10 @@
+# -*- coding: utf-8 -*-
 from bda.plone.orders.tests import Orders_INTEGRATION_TESTING
 from interlude import interact
 from plone.testing import layered
 from plone.testing.zca import UNIT_TESTING
 import doctest
-import pprint
+import pprint  # noqa
 import unittest
 
 
@@ -23,7 +24,7 @@ def test_suite():
                 optionflags=optionflags,
                 globs={
                     'interact': interact,
-                    'pprint': pprint.pprint,
+                    'pprint': pprint.pprint,  # noqa
                 },
             ), layer=layer
         )

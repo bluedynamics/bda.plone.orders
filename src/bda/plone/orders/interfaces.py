@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from bda.plone.checkout.interfaces import ICheckoutExtensionLayer
 from bda.plone.discount.interfaces import IDiscountSettingsEnabled
 from zope.interface import Attribute

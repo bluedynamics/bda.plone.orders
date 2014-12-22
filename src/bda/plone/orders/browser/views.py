@@ -1,9 +1,5 @@
+# -*- coding: utf-8 -*-
 from AccessControl import Unauthorized
-from Products.CMFPlone.utils import getToolByName
-from Products.Five import BrowserView
-from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from Products.statusmessages.interfaces import IStatusMessage
-from StringIO import StringIO
 from bda.plone.cart import ascur
 from bda.plone.cart import get_item_stock
 from bda.plone.cart import get_object_by_uid
@@ -15,26 +11,31 @@ from bda.plone.orders import permissions
 from bda.plone.orders import safe_encode
 from bda.plone.orders import vocabularies as vocabs
 from bda.plone.orders.common import DT_FORMAT
-from bda.plone.orders.common import OrderData
-from bda.plone.orders.common import OrderTransitions
 from bda.plone.orders.common import get_bookings_soup
 from bda.plone.orders.common import get_order
 from bda.plone.orders.common import get_orders_soup
 from bda.plone.orders.common import get_vendor_by_uid
 from bda.plone.orders.common import get_vendor_uids_for
 from bda.plone.orders.common import get_vendors_for
+from bda.plone.orders.common import OrderData
+from bda.plone.orders.common import OrderTransitions
 from bda.plone.shop.interfaces import IBuyable  # XXX: dependency inversion
 from decimal import Decimal
 from odict import odict
 from plone.memoize import view
 from plone.uuid.interfaces import IUUID
+from Products.CMFPlone.utils import getToolByName
+from Products.Five import BrowserView
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from Products.statusmessages.interfaces import IStatusMessage
 from repoze.catalog.query import Any
 from repoze.catalog.query import Contains
 from repoze.catalog.query import Eq
 from repoze.catalog.query import Ge
 from repoze.catalog.query import Le
-from souper.soup import LazyRecord
 from souper.soup import get_soup
+from souper.soup import LazyRecord
+from StringIO import StringIO
 from yafowil.base import ExtractionError
 from yafowil.base import factory
 from yafowil.controller import Controller
@@ -42,6 +43,7 @@ from yafowil.plone.form import YAMLForm
 from yafowil.utils import Tag
 from zope.i18n import translate
 from zope.i18nmessageid import Message
+
 import csv
 import datetime
 import json
