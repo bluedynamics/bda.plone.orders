@@ -5,6 +5,10 @@ Changelog
 0.9.dev0
 --------
 
+- Major cleanup - code-analysis integrated, travis ci and moved IBuyable here to
+  avoid circular dependency.
+  [bennyboy]
+
 - Dont depend on implemented interfaces ITrading and IShippingItem.
   see https://github.com/bluedynamics/bda.plone.shop/issues/31
   [jensens]
