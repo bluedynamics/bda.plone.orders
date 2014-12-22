@@ -33,6 +33,7 @@ setup(
     install_requires=[
         'setuptools',
         'Plone',
+        'bda.plone.cart',
         'bda.plone.checkout',
         'bda.plone.discount',
         'bda.plone.shop',

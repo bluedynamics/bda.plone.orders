@@ -19,7 +19,7 @@ from bda.plone.orders.common import get_vendor_uids_for
 from bda.plone.orders.common import get_vendors_for
 from bda.plone.orders.common import OrderData
 from bda.plone.orders.common import OrderTransitions
-from bda.plone.shop.interfaces import IBuyable  # XXX: dependency inversion
+from bda.plone.orders.interfaces import IBuyable
 from decimal import Decimal
 from odict import odict
 from plone.memoize import view

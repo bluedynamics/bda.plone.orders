@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from bda.plone.checkout.interfaces import ICheckoutExtensionLayer
 from bda.plone.discount.interfaces import IDiscountSettingsEnabled
+from bda.plone.cart.interfaces import ICartItem
 from zope.interface import Attribute
 from zope.interface import Interface
 
@@ -24,6 +25,13 @@ SALARIED_FAILED = 'failed'
 
 SALARIED_TRANSITION_SALARIED = 'mark_salaried'
 SALARIED_TRANSITION_OUTSTANDING = 'mark_outstanding'
+
+
+class IBuyable(ICartItem, IDiscountSettingsEnabled):
+    """Marker for buyable item.
+
+    Item is buyable.
+    """
 
 
 class IOrdersExtensionLayer(ICheckoutExtensionLayer):

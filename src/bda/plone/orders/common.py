@@ -16,11 +16,11 @@ from bda.plone.orders import message_factory as _
 from bda.plone.orders import permissions
 from bda.plone.orders import safe_encode
 from bda.plone.orders.interfaces import IVendor
+from bda.plone.orders.interfaces import IBuyable
 from bda.plone.payment import Payments
 from bda.plone.payment.interfaces import IPaymentData
 from bda.plone.shipping import Shippings
 from bda.plone.shipping.interfaces import IShippingItem
-from bda.plone.shop.interfaces import IBuyable  # XXX: dependency inversion
 from decimal import Decimal
 from node.ext.zodb import OOBTNode
 from node.utils import instance_property
