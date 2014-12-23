@@ -1,5 +1,7 @@
-from zope.interface import Interface
+# -*- coding: utf-8 -*-
 from plone.indexer import indexer
+from zope.interface import Interface
+
 import plone.api
 
 

@@ -1,8 +1,9 @@
-from zope.interface import implementer
-from plone.app.workflow.interfaces import ISharingPageRole
-from bda.plone.orders import permissions
+# -*- coding: utf-8 -*-
 from bda.plone.orders import message_factory as _
+from bda.plone.orders import permissions
 from bda.plone.orders.interfaces import IVendor
+from plone.app.workflow.interfaces import ISharingPageRole
+from zope.interface import implementer
 
 
 @implementer(ISharingPageRole)

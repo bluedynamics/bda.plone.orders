@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-from BTrees.OOBTree import OOBTree
 from bda.plone.orders import interfaces as ifaces
 from bda.plone.orders.interfaces import IDynamicMailTemplateLibrary
 from bda.plone.orders.interfaces import IDynamicMailTemplateLibraryStorage
+from BTrees.OOBTree import OOBTree
 from zope.annotation import IAnnotations
 from zope.component import queryAdapter
 from zope.interface import implementer
@@ -149,7 +149,7 @@ Bestellte Artikel:
 %(item_listing)s
 
 %(order_summery)s%(global_text)s%(payment_text)s
-"""
+"""  # noqa
 
 DELIVERY_ADDRESS_DE = """
 Lieferadresse:

@@ -1,11 +1,12 @@
-from bda.plone.orders.common import get_all_vendors
-from bda.plone.orders.common import get_vendors_for
-from bda.plone.orders.common import get_vendor_order_uids_for
-from bda.plone.orders.common import get_order
+# -*- coding: utf-8 -*-
 from bda.plone.orders import interfaces as ifaces
+from bda.plone.orders import message_factory as _
+from bda.plone.orders.common import get_all_vendors
+from bda.plone.orders.common import get_order
+from bda.plone.orders.common import get_vendor_order_uids_for
+from bda.plone.orders.common import get_vendors_for
 from plone.uuid.interfaces import IUUID
 from zope.component.hooks import getSite
-from bda.plone.orders import message_factory as _
 
 import plone.api
 

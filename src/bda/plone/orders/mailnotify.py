@@ -1,7 +1,8 @@
+# -*- coding: utf-8 -*-
 from bda.plone.cart import ascur
 from bda.plone.cart import get_catalog_brain
-from bda.plone.checkout.interfaces import ICheckoutSettings
 from bda.plone.checkout.interfaces import ICheckoutEvent
+from bda.plone.checkout.interfaces import ICheckoutSettings
 from bda.plone.orders import interfaces as ifaces
 from bda.plone.orders import message_factory as _
 from bda.plone.orders import safe_encode
@@ -112,13 +113,13 @@ def create_mail_listing(context, order_data):
         notificationtext = IItemNotificationText(buyable)
         if state == ifaces.STATE_RESERVED:
             text = notificationtext.overbook_text
-            if text:
-                lines.append(_indent(text))
         elif state == ifaces.STATE_NEW:
             text = notificationtext.order_text
-            if text:
-                lines.append(_indent(text))
-    return '\n'.join([safe_encode(line) for line in lines])
+        else:
+            text = None
+        if text:
+            lines.append(_indent(text))
+    return '\n'.join([safe_encode(l) for l in lines])
 
 
 def create_order_summery(context, order_data):
