@@ -288,10 +288,15 @@ def create_mail_body(templates, context, order_data):
     order_data
         Order-data instance.
     """
+    lang = context.restrictedTraverse('@@plone_portal_state').language()
     attrs = order_data.order.attrs
     arguments = dict(attrs.items())
     arguments['portal_url'] = getSite().absolute_url()
     arguments['date'] = attrs['created'].strftime(DT_FORMAT)
+    salutation = translate(attrs['personal_data.gender'],
+                           domain='bda.plone.checkout',
+                           target_language=lang)
+    arguments['salutation'] = safe_encode(salutation)
     if attrs['delivery_address.alternative_delivery']:
         delivery_address_template = templates['delivery_address']
         arguments['delivery_address'] = delivery_address_template % arguments

@@ -16,6 +16,9 @@ Changelog
 - added item price to item listing in order mail
   [agitator]
 
+- added translated salutation to available mail template attributes
+  [agitator]
+
 0.8
 ---
 
