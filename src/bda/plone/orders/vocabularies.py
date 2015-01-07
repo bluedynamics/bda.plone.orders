@@ -53,6 +53,18 @@ def salaried_transitions_vocab():
     return vocab
 
 
+def groups_vocab():
+    """
+    used for grouping the bookings table
+    """
+    vocab = {
+        'email': _('email', default=u'Email'),
+        'buyable': _('buyable', default=u'Buyable'),
+    }
+
+    return vocab
+
+
 def all_vendors_vocab():
     """Vocabulary for all vendor areas by uuid.
     """

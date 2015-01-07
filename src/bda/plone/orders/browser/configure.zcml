@@ -51,6 +51,23 @@
     permission="bda.plone.orders.ViewOwnOrders"
     layer="..interfaces.IOrdersExtensionLayer"/>
 
+   <!-- bookings view -->
+  <browser:page
+    for="zope.component.interfaces.ISite"
+    name="bookings"
+    template="bookings.pt"
+    class=".bookings.BookingsView"
+    permission="bda.plone.orders.ViewOrders"
+    layer="..interfaces.IOrdersExtensionLayer"/>
+
+ <!-- bookings data -->
+  <browser:page
+    for="zope.component.interfaces.ISite"
+    name="bookingsdata"
+    class=".bookings.BookingsData"
+    permission="bda.plone.orders.ViewOrders"
+    layer="..interfaces.IOrdersExtensionLayer"/>
+
   <!-- orders data -->
   <browser:page
     for="zope.component.interfaces.ISite"
