@@ -3,12 +3,14 @@
     $(document).ready(function () {
         $.extend(bdajax.binders, {
             orders_datatable_binder: orders.datatable_binder,
+            orders_bookings_datatable_binder: orders.bookings_datatable_binder,
             orders_filter_binder: orders.filter_binder,
             orders_dropdown_menus: orders.dropdown_binder,
             orders_notification_form_binder: orders.notification_form_binder,
             orders_qr_code_binder: orders.qr_code_binder
         });
         orders.datatable_binder(document);
+        orders.bookings_datatable_binder(document);
         orders.filter_binder(document);
         orders.order_select_binder(document);
         orders.notification_binder(document);
@@ -52,6 +54,7 @@
                 "fnDrawCallback": orders.bind
             });
         },
+
 
         filter_binder: function(context) {
             $('#input-vendor').unbind('change')
@@ -151,6 +154,28 @@
                 });
             });
         },
+
+        bookings_datatable_binder: function(context) {
+            var url = $('#bdaplonebookings', context).attr('data-ajaxurl');
+            var oTable = $('#bdaplonebookings', context).dataTable({
+                "bProcessing": true,
+                "bServerSide": true,
+                "sAjaxSource": url,
+                "sPaginationType": "full_numbers",
+                "oLanguage": {
+                    "sUrl": "@@collective.js.datatables.translation"
+                },
+                "aoColumnDefs": [{
+                    'bSortable': false,
+                    'aTargets': [0]
+                }],
+                "aaSorting": [[1, "desc"]],
+                "fnDrawCallback": orders.bind
+            });
+        },
+
+
+
 
         dropdown_binder: function (context) {
             var sel = '.change_order_salaried_dropdown';

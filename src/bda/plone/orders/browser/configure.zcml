@@ -56,15 +56,16 @@
     for="zope.component.interfaces.ISite"
     name="bookings"
     template="bookings.pt"
-    class=".bookings.BookingsView"
+    class=".bookings.BookingsTable"
     permission="bda.plone.orders.ViewOrders"
     layer="..interfaces.IOrdersExtensionLayer"/>
 
- <!-- bookings data -->
+ <!-- bookings json -->
   <browser:page
     for="zope.component.interfaces.ISite"
     name="bookingsdata"
-    class=".bookings.BookingsData"
+    class=".bookings.BookingsTable"
+    attribute="jsondata"
     permission="bda.plone.orders.ViewOrders"
     layer="..interfaces.IOrdersExtensionLayer"/>
 

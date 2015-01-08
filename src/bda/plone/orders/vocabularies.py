@@ -61,7 +61,6 @@ def groups_vocab():
         'email': _('email', default=u'Email'),
         'buyable': _('buyable', default=u'Buyable'),
     }
-
     return vocab
 
 
