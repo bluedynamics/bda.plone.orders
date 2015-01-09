@@ -176,6 +176,8 @@ class BookingsCatalogFactory(object):
 
     def __call__(self, context=None):
         catalog = Catalog()
+        email_indexer = NodeAttributeIndexer('email')
+        catalog[u'email'] = CatalogFieldIndex(email_indexer)
         uid_indexer = NodeAttributeIndexer('uid')
         catalog[u'uid'] = CatalogFieldIndex(uid_indexer)
         buyable_uid_indexer = NodeAttributeIndexer('buyable_uid')
@@ -371,6 +373,7 @@ class OrderCheckoutAdapter(CheckoutAdapter):
         vendor = acquire_vendor_or_shop_root(buyable)
 
         booking = OOBTNode()
+        booking.attrs['email'] = order.attrs['personal_data.email']
         booking.attrs['uid'] = uuid.uuid4()
         booking.attrs['buyable_uid'] = uid
         booking.attrs['buyable_count'] = count

@@ -155,6 +155,25 @@
             });
         },
 
+
+        wawa: function () {
+//            todo da weitabaun
+            var api = $.dataTable.api();
+            var rows = $.dataTable.rows( {page:'current'} ).nodes();
+            var last=null;
+
+            api.column(0, {page:'current'} ).data().each( function ( group, i ) {
+                if ( last !== group ) {
+                    $(rows).eq( i ).before(
+                        '<tr class="group"><td colspan="5">'+group+'</td></tr>'
+                    );
+                    last = group;
+                }
+            } );
+            $(this).bdajax();
+
+        },
+
         bookings_datatable_binder: function(context) {
             var url = $('#bdaplonebookings', context).attr('data-ajaxurl');
             var oTable = $('#bdaplonebookings', context).dataTable({
@@ -170,11 +189,11 @@
                     'aTargets': [0]
                 }],
                 "aaSorting": [[1, "desc"]],
-                "fnDrawCallback": orders.bind
+                "fnDrawCallback": orders.wawa
+//                todo was amcht des genau ? anscheinend select all orders
+//                "fnDrawCallback": orders.bind
             });
         },
-
-
 
 
         dropdown_binder: function (context) {

@@ -30,6 +30,7 @@ from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from Products.statusmessages.interfaces import IStatusMessage
 from repoze.catalog.query import Any
 from repoze.catalog.query import Contains
+from repoze.catalog.query import DoesNotContain
 from repoze.catalog.query import Eq
 from repoze.catalog.query import Ge
 from repoze.catalog.query import Le
@@ -86,8 +87,6 @@ class BookingsTable(BrowserView):
 
     def render_count(self, colname, record):
         value = record.attrs.get(colname, '')
-         import ipdb; ipdb.set_trace()
-        #wenn unit quantity dannw eglassen
         unit = record.attrs.get('quantity_unit', '')
         if value:
             value = str(value) + ' ' + unit
@@ -97,8 +96,18 @@ class BookingsTable(BrowserView):
         value = record.attrs.get(colname, '')
         currency = record.attrs.get('currency', '')
         if value:
-            value = currency + ' ' + str(value)
+            value = currency + ' {0:.2f}'.format(value)
         return value
+
+    def render_sum(self, colname, record):
+        currency = record.attrs.get('currency', '')
+        net = record.attrs.get('net', '')
+        count = record.attrs.get('buyable_count', '')
+        count = float(count)
+        sum = net * count
+        value = currency + ' {0:.2f}'.format(sum)
+        return value
+
     @property
     def ajaxurl(self):
         site = plone.api.portal.get()
@@ -107,24 +116,30 @@ class BookingsTable(BrowserView):
     @property
     def columns(self):
         # note sind auf der fertigen order drauf aber niucht alle
-# self.order.attrs.keys()
-# ['personal_data.heading', 'personal_data.gender', 'personal_data.firstname',
-#  'personal_data.lastname', 'personal_data.email', 'personal_data.phone',
-#  'personal_data.company', 'billing_address.heading', 'billing_address.street',
-#  'billing_address.zip', 'billing_address.city', 'billing_address.country',
-#  'delivery_address.heading', 'delivery_address.alternative_delivery',
-#  'delivery_address.firstname', 'delivery_address.lastname', 'delivery_address.company',
-#  'delivery_address.street', 'delivery_address.zip', 'delivery_address.city',
-#  'delivery_address.country', 'shipping_selection.heading', 'shipping_selection.shipping',
-#  'payment_selection.heading', 'payment_selection.payment', 'order_comment.heading', 'order_comment.comment']
+        # self.order.attrs.keys()
+        # ['personal_data.heading', 'personal_data.gender', 'personal_data.firstname',
+        #  'personal_data.lastname', 'personal_data.email', 'personal_data.phone',
+        #  'personal_data.company', 'billing_address.heading', 'billing_address.street',
+        #  'billing_address.zip', 'billing_address.city', 'billing_address.country',
+        #  'delivery_address.heading', 'delivery_address.alternative_delivery',
+        #  'delivery_address.firstname', 'delivery_address.lastname', 'delivery_address.company',
+        #  'delivery_address.street', 'delivery_address.zip', 'delivery_address.city',
+        #  'delivery_address.country', 'shipping_selection.heading', 'shipping_selection.shipping',
+        #  'payment_selection.heading', 'payment_selection.payment', 'order_comment.heading', 'order_comment.comment']
 
         return [
-            {
-                'id': 'personal_data.email',
+            # {
+            #     'id': 'personal_data.email',
+            #     'label': _('email', default=u'Email'),
+            #     'origin': 'o',
+            # },
+            { # todo trotz index iwia nit sortable und soup rebuild added se a nit
+              # bei ana nein order stehts dann aber brav drauf? info: in commonpy order email anschaun
+                'id': 'email',
                 'label': _('email', default=u'Email'),
-                'origin': 'o',
+                'origin': 'b',
             },
-            {
+            { #needed for clustering, later wont be displayed in table
                 'id': 'buyable_uid',
                 'label': _('buyable_uid', default=u'Buyable Uid'),
                 'origin': 'b',
@@ -134,13 +149,13 @@ class BookingsTable(BrowserView):
                 'label': _('ordernumber', default=u'Ordernumber'),
                 'origin': 'o',
             },
-            # {
-            #     'id': 'created',
-            #     'label': _('booking_date', default=u'Bookingdate'),
-            #     'renderer': self.render_dt,
-            #     'origin': 'b',
-            # },
-            {   # todo booking title richtig?
+            {
+                'id': 'created',
+                'label': _('booking_date', default=u'Bookingdate'),
+                'renderer': self.render_dt,
+                'origin': 'b',
+            },
+            {
                 'id': 'title',
                 'label': _('Item', default=u'Item'),
                 'origin': 'b',
@@ -182,12 +197,22 @@ class BookingsTable(BrowserView):
                 'renderer': self.render_count,
                 'origin': 'b',
             },
-            # {   # todo: net * count  info in dez?
-            #     'id': 'sum',
-            #     'label': _('sum', default=u'Sum'),
-            #     'origin': 'b',
-            # }
+            {
+                'id': 'sum',
+                'label': _('sum', default=u'Sum'),
+                'renderer': self.render_sum,
+                'origin': 'b',
+            }
         ]
+
+    def _get_ordervalue(self, colname, record):
+        """
+        helper method to get the values which are saved on the order and not
+        on the booking itself.
+        """
+        order = get_order(self.context, record.attrs.get('order_uid'))
+        value = order.attrs.get(colname, '')
+        return value
 
     def jsondata(self):
         soup = get_bookings_soup(self.context)
@@ -201,24 +226,19 @@ class BookingsTable(BrowserView):
             result = list()
             for colname in colnames:
                 coldef = self.column_def(colname)
-                #todo spata wida einbaun
                 renderer = coldef.get('renderer')
 
-                # else:
-                #     value = record.attrs.get(colname, '')
-
-                #import ipdb; ipdb.set_trace()
                 if coldef['origin'] == 'o':
-                    value = 'xxx'
+                    value = self._get_ordervalue(colname, record)
                 else:
                     if renderer:
                         value = renderer(colname, record)
                     else:
                         value = record.attrs.get(colname, '')
 
-
                 result.append(value)
             return result
+
         for lazyrecord in self.slice(lazydata):
             aaData.append(record2list(lazyrecord()))
         data = {
@@ -269,8 +289,8 @@ class BookingsTable(BrowserView):
 
     def query(self, soup):
         # todo buildme =)
-        # return "wa"
-        query = Eq('creator', 'testi1')
+        now = datetime.datetime.now()
+        query = Le('created', now)
         sort = self.sort()
         res = soup.lazy(query,
                         sort_index=sort['index'],
