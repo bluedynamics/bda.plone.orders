@@ -112,6 +112,66 @@ a.notify_customers {
     margin-right: 1em;
 }
 
+
+
+/* start rules for new bookingstable */
+/* bookings filter */
+#bookings_wrapper .filter {
+    padding:0.3em;
+}
+#bookings_wrapper .filter label {
+    margin-right:0.5em;
+    padding-top:3px;
+    display:inline-block;
+}
+#bookings_wrapper .filter select {
+    margin-right:0.5em;
+}
+
+/* bookings */
+#bdaplonebookings_wrapper {
+    margin-top:1em;
+    margin-bottom:2.2em;
+}
+#bdaplonebookings_length {
+    margin-bottom:0.8em;
+}
+#bdaplonebookings_length select,
+#bdaplonebookings_filter input {
+    font-size:90%;
+}
+#bdaplonebookings {
+    margin-bottom:1em;
+    border:#ddd 1px solid;
+}
+#bdaplonebookings thead {
+    background-color:#fafafa;
+}
+#bdaplonebookings th {
+    border-right:#ddd 1px solid;
+    border-bottom:#ddd 1px solid;
+}
+#bdaplonebookings th.datarow-actions {
+    width:120px;
+}
+#bdaplonebookings tr.group,
+#bdaplonebookings tr.group:hover {
+    background-color: #ddd !important;
+}
+#bdaplonebookings td {
+    padding:1px 3px 1px 10px;
+    border-right:#ddd 1px solid;
+}
+#bdaplonebookings a.contenttype-document {
+    border:none !important;
+}
+#bdaplonebookings_paginate a:hover {
+    color:#fff !important;
+}
+/* end rules for new bookingstable */
+
+
+
 /* export form */
 #field-exportorders-from,
 #field-exportorders-to {

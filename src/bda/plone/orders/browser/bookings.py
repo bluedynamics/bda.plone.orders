@@ -252,10 +252,12 @@ class BookingsTable(BrowserView):
 
 
 # helpers
+#     todo + sort on created ?
     def sort(self):
         columns = self.columns
         sortparams = dict()
         sortcols_idx = int(self.request.form.get('iSortCol_0'))
+        import ipdb; ipdb.set_trace()
         sortparams['index'] = columns[sortcols_idx]['id']
         sortparams['reverse'] = self.request.form.get('sSortDir_0') == 'desc'
         return sortparams
