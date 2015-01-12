@@ -158,9 +158,9 @@
 
         wawa: function () {
 //            todo da weitabaun
-            var api = $.dataTable.api();
-            var rows = $.dataTable.rows( {page:'current'} ).nodes();
-            var last=null;
+//            var api = $.dataTable.api();
+//            var rows = $.dataTable.rows( {page:'current'} ).nodes();
+//            var last=null;
 
             api.column(0, {page:'current'} ).data().each( function ( group, i ) {
                 if ( last !== group ) {
@@ -176,7 +176,7 @@
 
         bookings_datatable_binder: function(context) {
             var url = $('#bdaplonebookings', context).attr('data-ajaxurl');
-            var oTable = $('#bdaplonebookings', context).dataTable({
+            var oTable = $('#bdaplonebookings', context).DataTable({
                 "bProcessing": true,
                 "bServerSide": true,
                 "sAjaxSource": url,
@@ -189,7 +189,11 @@
                     'aTargets': [0]
                 }],
                 "aaSorting": [[1, "desc"]],
-                "fnDrawCallback": orders.wawa
+                "fnDrawCallback": function ( settings ) {
+                      var api = this.api();
+                      var rows = api.rows( {page:'current'} ).nodes();
+                 }
+//                "fnDrawCallback": orders.wawa
 //                todo was amcht des genau ? anscheinend select all orders
 //                "fnDrawCallback": orders.bind
             });
