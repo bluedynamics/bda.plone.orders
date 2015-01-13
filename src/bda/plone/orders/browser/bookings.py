@@ -49,6 +49,7 @@ import csv
 import datetime
 import json
 import plone.api
+from odict import odict
 import urllib
 import uuid
 import yafowil.loader  # loads registry  # nopep8
@@ -107,6 +108,13 @@ class BookingsTable(BrowserView):
         sum = net * count
         value = currency + ' {0:.2f}'.format(sum)
         return value
+
+    def render_bookings_quantity(self, colname, record):
+        order = get_order(self.context, record.attrs.get('order_uid'))
+        value = order.attrs.get('booking_uids', '')
+       # import ipdb; ipdb.set_trace()
+        return len(value)
+
 
     @property
     def ajaxurl(self):
@@ -185,7 +193,7 @@ class BookingsTable(BrowserView):
             #     'id':'attendee',
             #     'label': _('attendee', default=u'Attendee'),
             # },
-            {  # todo is net ok oder net+vat?
+            {  # todo umbaun af net+vat?
                 'id': 'net',
                 'label': _('price_per_unit', default=u'Price per unit'),
                 'renderer': self.render_net,
@@ -202,7 +210,15 @@ class BookingsTable(BrowserView):
                 'label': _('sum', default=u'Sum'),
                 'renderer': self.render_sum,
                 'origin': 'b',
+            },
+            {   # todo no mit count multipliziern
+                'id': 'booking_uids',
+                'label': _('bookings_quantity', default=u'Bookings quantity'),
+                'renderer': self.render_bookings_quantity,
+                'origin': 'o',
             }
+
+
         ]
 
     def _get_ordervalue(self, colname, record):
@@ -217,19 +233,42 @@ class BookingsTable(BrowserView):
     def jsondata(self):
         soup = get_bookings_soup(self.context)
         aaData = list()
-        length, lazydata = self.query(soup)
+        lazydata = self.query(soup)
         columns = self.columns
         colnames = [_['id'] for _ in columns]
         # todo json response header einbaun, da no table einbaun einzelne hidden column. siehe js und html im bsp
 
         def record2list(record):
+            # da no umbaun in res kyes und im 2. schritt di values
+            # zwischen de 2 dann no berechnung via alle tickets bstellt pro mial und gesamtpreis
+
+            # res = odict(
+            #     [('test1@lol.at', [
+            #         <souper.soup.LazyRecord object at 0x7f23f9aba690>,
+            #         <souper.soup.LazyRecord object at 0x7f23f9aba610>,
+            #         <souper.soup.LazyRecord object at 0x7f23f9aba650>]
+            #     ),
+            #     ('test2@lol.at', [
+            #         <souper.soup.LazyRecord object at 0x7f23f9aba750>,
+            #         <souper.soup.LazyRecord object at 0x7f23f9aba790>]
+            #     ),
+            #     ('test3@lol.at', [
+            #         <souper.soup.LazyRecord object at 0x7f23f9aba7d0>,
+            #         <souper.soup.LazyRecord object at 0x7f23f9aba890>,
+            #         <souper.soup.LazyRecord object at 0x7f23f9aba810>])
+            #     ])
+
             result = list()
             for colname in colnames:
                 coldef = self.column_def(colname)
                 renderer = coldef.get('renderer')
 
                 if coldef['origin'] == 'o':
-                    value = self._get_ordervalue(colname, record)
+                    # value = self._get_ordervalue(colname, record)
+                    if renderer:
+                        value = renderer(colname, record)
+                    else:
+                        value = self._get_ordervalue(colname, record)
                 else:
                     if renderer:
                         value = renderer(colname, record)
@@ -239,40 +278,16 @@ class BookingsTable(BrowserView):
                 result.append(value)
             return result
 
-        for lazyrecord in self.slice(lazydata):
-            aaData.append(record2list(lazyrecord()))
+        # for lazyrecord in self.slice(lazydata):
+        #     aaData.append(record2list(lazyrecord()))
         data = {
             "sEcho": int(self.request.form['sEcho']),
             "iTotalRecords": soup.storage.length.value,
-            "iTotalDisplayRecords": length,
             "aaData": aaData,
         }
         return json.dumps(data)
 
-
-
-# helpers
-#     todo + sort on created ?
-    def sort(self):
-        columns = self.columns
-        sortparams = dict()
-        sortcols_idx = int(self.request.form.get('iSortCol_0'))
-        import ipdb; ipdb.set_trace()
-        sortparams['index'] = columns[sortcols_idx]['id']
-        sortparams['reverse'] = self.request.form.get('sSortDir_0') == 'desc'
-        return sortparams
-
-    def all(self, soup):
-        data = soup.storage.data
-        sort = self.sort()
-        sort_index = soup.catalog[sort['index']]
-        iids = sort_index.sort(data.keys(), reverse=sort['reverse'])
-
-        def lazyrecords():
-            for iid in iids:
-                yield LazyRecord(iid, soup)
-        return soup.storage.length.value, lazyrecords()
-
+ # helpers
     def slice(self, fullresult):
         start = int(self.request.form['iDisplayStart'])
         length = int(self.request.form['iDisplayLength'])
@@ -290,13 +305,29 @@ class BookingsTable(BrowserView):
                 return column
 
     def query(self, soup):
-        # todo buildme =)
+        # todo dann noch auf ibuyable umbaun, und query no mit path und date einschränkung =)
+        # frage alle bookings im querycontext( spater no mit zeiteinschränkung echter context etc)
+        # suche alle emailadress/buyable die zuobrigen resultset gültig sind
+        # bilde menge von sorted uniqe email/buyable
         now = datetime.datetime.now()
-        query = Le('created', now)
-        sort = self.sort()
-        res = soup.lazy(query,
-                        sort_index=sort['index'],
-                        reverse=sort['reverse'],
-                        with_size=True)
-        length = res.next()
-        return length, res
+        email = soup.catalog['email']
+        booking_uids = soup.catalog['uid']
+        bookings = [_ for _ in booking_uids._rev_index.keys()]
+        bookings_set = set(bookings)
+        unique_emails = []
+
+        #for each booking which matches the query append the email address once
+        for address, address_ids in email._fwd_index.items():
+            if bookings_set.intersection(address_ids):
+                unique_emails.append(address)
+
+        res = odict()
+
+        # for each unique mail address get the matching bookings
+        for mail in self.slice(unique_emails):
+            res[mail] = []
+            for a_id in email._fwd_index[mail]:
+                if a_id in bookings:
+                    res[mail].append(LazyRecord(a_id, soup))
+
+        return res
