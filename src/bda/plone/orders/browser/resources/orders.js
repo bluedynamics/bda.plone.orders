@@ -195,6 +195,7 @@
         bookings_datatable_binder: function(context) {
             var url = $('#bdaplonebookings', context).attr('data-ajaxurl');
             var oTable = $('#bdaplonebookings', context).DataTable({
+                "bSort" : false,
                 "bProcessing": true,
                 "bServerSide": true,
                 "sAjaxSource": url,
@@ -204,7 +205,7 @@
                 },
                 "aoColumnDefs": [{
                     'visible': false,
-                    'targets': [0, 1]
+                    'targets': [0, 1, 13, 14]
                 }],
                 "aaSorting": [[1, "desc"]],
                 "fnDrawCallback": function ( settings ) {
@@ -215,16 +216,14 @@
                     api.column(0, {page:'current'} ).data().each( function ( group, i ) {
                         if ( last !== group ) {
                             $(rows).eq( i ).before(
-                                '<tr class="group"><td colspan="10">'+group+'</td></tr>'
+                                '<tr class="group"><td colspan="11">'+group+'</td></tr>'
                             );
-
                             last = group;
                         }
                     } );
+
                  }
 
-//                todo was amcht des genau ? anscheinend select all orders
-//                "fnDrawCallback": orders.bind
             });
         },
 

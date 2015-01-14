@@ -158,6 +158,11 @@ a.notify_customers {
 #bdaplonebookings tr.group:hover {
     background-color: #ddd !important;
 }
+
+#bdaplonebookings tr.group span {
+   margin-left: 7em;
+}
+
 #bdaplonebookings td {
     padding:1px 3px 1px 10px;
     border-right:#ddd 1px solid;

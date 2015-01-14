@@ -1,59 +1,20 @@
 # -*- coding: utf-8 -*-
-from AccessControl import Unauthorized
-from bda.plone.cart import ascur
-from bda.plone.cart import get_item_stock
-from bda.plone.cart import get_object_by_uid
-from bda.plone.checkout import message_factory as _co
-from bda.plone.checkout.vocabularies import get_pycountry_name
-from bda.plone.orders import interfaces as ifaces
 from bda.plone.orders import message_factory as _
-from bda.plone.orders import permissions
-from bda.plone.orders import safe_encode
 from bda.plone.orders import vocabularies as vocabs
 from bda.plone.orders.common import DT_FORMAT
 from bda.plone.orders.common import get_bookings_soup
 from bda.plone.orders.common import get_order
-from bda.plone.orders.common import get_orders_soup
-from bda.plone.orders.common import get_vendor_by_uid
-from bda.plone.orders.common import get_vendor_uids_for
-from bda.plone.orders.common import get_vendors_for
-from bda.plone.orders.common import OrderData
-from bda.plone.orders.common import OrderTransitions
-from bda.plone.orders.interfaces import IBuyable
-from decimal import Decimal
-from odict import odict
-from plone.memoize import view
-from plone.uuid.interfaces import IUUID
-from Products.CMFPlone.utils import getToolByName
 from Products.Five import BrowserView
-from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from Products.statusmessages.interfaces import IStatusMessage
-from repoze.catalog.query import Any
-from repoze.catalog.query import Contains
-from repoze.catalog.query import DoesNotContain
-from repoze.catalog.query import Eq
-from repoze.catalog.query import Ge
-from repoze.catalog.query import Le
-from souper.soup import get_soup
-from souper.soup import LazyRecord
-from StringIO import StringIO
-from yafowil.base import ExtractionError
 from yafowil.base import factory
-from yafowil.controller import Controller
-from yafowil.plone.form import YAMLForm
-from yafowil.utils import Tag
 from zope.i18n import translate
-from zope.i18nmessageid import Message
+from decimal import Decimal
 
-import csv
-import datetime
 import json
 import plone.api
 from odict import odict
 import urllib
 import uuid
 import yafowil.loader  # loads registry  # nopep8
-
 
 from bda.plone.orders.browser.views import Translate
 from bda.plone.orders.browser.views import vendors_form_vocab
@@ -84,36 +45,66 @@ class BookingsTable(BrowserView):
         value = record.attrs.get(colname, '')
         if value:
             value = value.strftime(DT_FORMAT)
+            return value
+
+    def render_email(self, colname, record):
+        email = record.attrs.get(colname, '')
+        bookings_quantity = self.render_bookings_quantity(colname, record)
+        bookings_total_sum = self.render_bookings_total_sum(colname, record)
+        value = \
+            '<tr class="group">' \
+            '<td colspan="11">' + email + \
+            '<span>' +\
+            translate(
+                _("bookings_quantity", default=u"Bookings quantity"),
+                self.request
+            ) \
+            + ': ' + str(bookings_quantity) + '</span>' \
+            '<span>' +\
+            translate(
+                _("bookings_total_sum", default=u"Bookings total sum"),
+                self.request
+            ) \
+            + ': ' + str(bookings_total_sum) + '</td></tr>'
+
         return value
 
     def render_count(self, colname, record):
         value = record.attrs.get(colname, '')
         unit = record.attrs.get('quantity_unit', '')
         if value:
+            value = Decimal(value)
             value = str(value) + ' ' + unit
-        return value
+            return value
 
-    def render_net(self, colname, record):
-        value = record.attrs.get(colname, '')
+    def render_price_per_unit(self, colname, record):
         currency = record.attrs.get('currency', '')
-        if value:
-            value = currency + ' {0:.2f}'.format(value)
-        return value
+        price = self._get_price(record)
+        if currency and price:
+            value = currency + ' {0:.2f}'.format(price)
+            return value
 
     def render_sum(self, colname, record):
         currency = record.attrs.get('currency', '')
-        net = record.attrs.get('net', '')
         count = record.attrs.get('buyable_count', '')
-        count = float(count)
-        sum = net * count
-        value = currency + ' {0:.2f}'.format(sum)
-        return value
+        price = self._get_price(record)
+        if currency and price and count:
+            count = Decimal(count)
+            sum = price * count
+            value = currency + ' {0:.2f}'.format(sum)
+            return value
 
     def render_bookings_quantity(self, colname, record):
-        order = get_order(self.context, record.attrs.get('order_uid'))
-        value = order.attrs.get('booking_uids', '')
-       # import ipdb; ipdb.set_trace()
-        return len(value)
+        value = record._v_bookings_quantity
+        if value:
+            return str(value)
+
+    def render_bookings_total_sum(self, colname, record):
+        currency = record.attrs.get('currency', '')
+        value = record._v_bookings_total_sum
+        if currency and value:
+            value = currency + ' {0:.2f}'.format(value)
+            return value
 
 
     @property
@@ -123,31 +114,14 @@ class BookingsTable(BrowserView):
 
     @property
     def columns(self):
-        # note sind auf der fertigen order drauf aber niucht alle
-        # self.order.attrs.keys()
-        # ['personal_data.heading', 'personal_data.gender', 'personal_data.firstname',
-        #  'personal_data.lastname', 'personal_data.email', 'personal_data.phone',
-        #  'personal_data.company', 'billing_address.heading', 'billing_address.street',
-        #  'billing_address.zip', 'billing_address.city', 'billing_address.country',
-        #  'delivery_address.heading', 'delivery_address.alternative_delivery',
-        #  'delivery_address.firstname', 'delivery_address.lastname', 'delivery_address.company',
-        #  'delivery_address.street', 'delivery_address.zip', 'delivery_address.city',
-        #  'delivery_address.country', 'shipping_selection.heading', 'shipping_selection.shipping',
-        #  'payment_selection.heading', 'payment_selection.payment', 'order_comment.heading', 'order_comment.comment']
-
         return [
-            # {
-            #     'id': 'personal_data.email',
-            #     'label': _('email', default=u'Email'),
-            #     'origin': 'o',
-            # },
-            { # todo trotz index iwia nit sortable und soup rebuild added se a nit
-              # bei ana nein order stehts dann aber brav drauf? info: in commonpy order email anschaun
+            { # todo upgrade step für alte records ds email updated + soup reindex
                 'id': 'email',
                 'label': _('email', default=u'Email'),
+                'renderer': self.render_email,
                 'origin': 'b',
             },
-            { #needed for clustering, later wont be displayed in table
+            { # needed for clustering, later wont be displayed in table
                 'id': 'buyable_uid',
                 'label': _('buyable_uid', default=u'Buyable Uid'),
                 'origin': 'b',
@@ -188,15 +162,20 @@ class BookingsTable(BrowserView):
                 'label': _('city', default=u'City'),
                 'origin': 'o',
             },
+            {
+                'id': 'personal_data.phone',
+                'label': _('phone', default=u'Phone'),
+                'origin': 'o',
+            },
             # {
             #     #todo spater im event?
             #     'id':'attendee',
             #     'label': _('attendee', default=u'Attendee'),
             # },
-            {  # todo umbaun af net+vat?
-                'id': 'net',
+            {
+                'id': 'price_per_unit',
                 'label': _('price_per_unit', default=u'Price per unit'),
-                'renderer': self.render_net,
+                'renderer': self.render_price_per_unit,
                 'origin': 'b',
             },
             {
@@ -211,60 +190,35 @@ class BookingsTable(BrowserView):
                 'renderer': self.render_sum,
                 'origin': 'b',
             },
-            {   # todo no mit count multipliziern
-                'id': 'booking_uids',
+            {
+                'id': 'booking_quantity',
                 'label': _('bookings_quantity', default=u'Bookings quantity'),
                 'renderer': self.render_bookings_quantity,
-                'origin': 'o',
+                'origin': 'b',
+            },
+            {
+                'id': 'bookings_total_sum',
+                'label': _('bookings_total_sum', default=u'Bookings total sum'),
+                'renderer': self.render_bookings_total_sum,
+                'origin': 'b',
             }
-
-
         ]
-
-    def _get_ordervalue(self, colname, record):
-        """
-        helper method to get the values which are saved on the order and not
-        on the booking itself.
-        """
-        order = get_order(self.context, record.attrs.get('order_uid'))
-        value = order.attrs.get(colname, '')
-        return value
 
     def jsondata(self):
         soup = get_bookings_soup(self.context)
         aaData = list()
-        lazydata = self.query(soup)
+        size, result = self.query(soup)
         columns = self.columns
         colnames = [_['id'] for _ in columns]
         # todo json response header einbaun, da no table einbaun einzelne hidden column. siehe js und html im bsp
 
-        def record2list(record):
-            # da no umbaun in res kyes und im 2. schritt di values
-            # zwischen de 2 dann no berechnung via alle tickets bstellt pro mial und gesamtpreis
-
-            # res = odict(
-            #     [('test1@lol.at', [
-            #         <souper.soup.LazyRecord object at 0x7f23f9aba690>,
-            #         <souper.soup.LazyRecord object at 0x7f23f9aba610>,
-            #         <souper.soup.LazyRecord object at 0x7f23f9aba650>]
-            #     ),
-            #     ('test2@lol.at', [
-            #         <souper.soup.LazyRecord object at 0x7f23f9aba750>,
-            #         <souper.soup.LazyRecord object at 0x7f23f9aba790>]
-            #     ),
-            #     ('test3@lol.at', [
-            #         <souper.soup.LazyRecord object at 0x7f23f9aba7d0>,
-            #         <souper.soup.LazyRecord object at 0x7f23f9aba890>,
-            #         <souper.soup.LazyRecord object at 0x7f23f9aba810>])
-            #     ])
-
+        def record2list(record, bookings_quantity=None):
             result = list()
             for colname in colnames:
                 coldef = self.column_def(colname)
                 renderer = coldef.get('renderer')
 
                 if coldef['origin'] == 'o':
-                    # value = self._get_ordervalue(colname, record)
                     if renderer:
                         value = renderer(colname, record)
                     else:
@@ -278,16 +232,60 @@ class BookingsTable(BrowserView):
                 result.append(value)
             return result
 
-        # for lazyrecord in self.slice(lazydata):
-        #     aaData.append(record2list(lazyrecord()))
+        for key in result:
+            bookings_quantity = 0
+            bookings_total_sum = 0
+            for record in result[key]:
+                bookings_quantity += record.attrs.get('buyable_count')
+                bookings_total_sum += self._get_sum(record)
+            for record in result[key]:
+                record._v_bookings_quantity = bookings_quantity
+                record._v_bookings_total_sum = bookings_total_sum
+                aaData.append(record2list(record))
+
         data = {
             "sEcho": int(self.request.form['sEcho']),
-            "iTotalRecords": soup.storage.length.value,
+            "iTotalRecords": size,
             "aaData": aaData,
         }
         return json.dumps(data)
 
  # helpers
+    def _get_price(self, record):
+        """
+        returns net + vat price
+        """
+        net = record.attrs.get('net', '')
+        vat_percent = record.attrs.get('vat', '')
+        if net and vat_percent:
+            net = Decimal(net)
+            vat_percent = Decimal(vat_percent)
+            vat = (100 + vat_percent) / 100
+            vat = Decimal(vat)
+            price = net * vat
+            return price
+
+    def _get_sum(self, record):
+        """
+        returns net + vat * count
+        """
+        count = record.attrs.get('buyable_count', '')
+        price = self._get_price(record)
+        if price and count:
+            count = Decimal(count)
+            sum = price * count
+            sum = Decimal(sum)
+            return sum
+
+    def _get_ordervalue(self, colname, record):
+        """
+        helper method to get the values which are saved on the order and not
+        on the booking itself.
+        """
+        order = get_order(self.context, record.attrs.get('order_uid'))
+        value = order.attrs.get(colname, '')
+        return value
+
     def slice(self, fullresult):
         start = int(self.request.form['iDisplayStart'])
         length = int(self.request.form['iDisplayLength'])
@@ -305,29 +303,28 @@ class BookingsTable(BrowserView):
                 return column
 
     def query(self, soup):
-        # todo dann noch auf ibuyable umbaun, und query no mit path und date einschränkung =)
-        # frage alle bookings im querycontext( spater no mit zeiteinschränkung echter context etc)
-        # suche alle emailadress/buyable die zuobrigen resultset gültig sind
-        # bilde menge von sorted uniqe email/buyable
-        now = datetime.datetime.now()
-        email = soup.catalog['email']
+        # todo dann noch zusätzlich ? auf ibuyable umbaun, und query no mit path und date einschränkung =)
+
+        #now = datetime.datetime.now()
+        group_index = soup.catalog['email']
         booking_uids = soup.catalog['uid']
         bookings = [_ for _ in booking_uids._rev_index.keys()]
         bookings_set = set(bookings)
-        unique_emails = []
+        unique_group_ids = []
 
-        #for each booking which matches the query append the email address once
-        for address, address_ids in email._fwd_index.items():
-            if bookings_set.intersection(address_ids):
-                unique_emails.append(address)
+        #for each booking which matches the query append the qroup id once
+        for group_id, group_booking_ids in group_index._fwd_index.items():
+            if bookings_set.intersection(group_booking_ids):
+                unique_group_ids.append(group_id)
 
         res = odict()
+        size = len(unique_group_ids)
 
-        # for each unique mail address get the matching bookings
-        for mail in self.slice(unique_emails):
-            res[mail] = []
-            for a_id in email._fwd_index[mail]:
-                if a_id in bookings:
-                    res[mail].append(LazyRecord(a_id, soup))
+        # for each unique group id  get the matching group booking ids
+        for group_id in self.slice(unique_group_ids):
+            res[group_id] = []
+            for group_booking_id in group_index._fwd_index[group_id]:
+                if group_booking_id in bookings:
+                    res[group_id].append(soup.get(group_booking_id))
 
-        return res
+        return size, res
