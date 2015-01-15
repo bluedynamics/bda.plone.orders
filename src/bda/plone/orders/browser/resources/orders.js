@@ -5,7 +5,7 @@
             orders_datatable_binder: orders.datatable_binder,
             orders_filter_binder: orders.filter_binder,
             orders_bookings_datatable_binder: orders.bookings_datatable_binder,
-            orders_bookings_filter_binder: orders.bookings_filter_binder,
+//            orders_bookings_filter_binder: orders.bookings_filter_binder,
             orders_dropdown_menus: orders.dropdown_binder,
             orders_notification_form_binder: orders.notification_form_binder,
             orders_qr_code_binder: orders.qr_code_binder
@@ -13,7 +13,7 @@
         orders.datatable_binder(document);
         orders.filter_binder(document);
         orders.bookings_datatable_binder(document);
-        orders.bookings_filter_binder(document);
+//        orders.bookings_filter_binder(document);
         orders.order_select_binder(document);
         orders.notification_binder(document);
         orders.qr_code_binder(document);
@@ -166,49 +166,86 @@
 
 
 
-
-        bookings_filter_binder: function(context) {
-            $('#input-group').unbind('change')
-                             .bind('change', orders.filter_bookings);
-        },
-
-//        #todo ajax params dann no einbaun + query verdrahten siehe views 535
-        filter_bookings: function(event) {
-            event.preventDefault();
-            var selection = $(this);
-            var wrapper = selection.parent();
-            var group = selection.val();
-            var ajax_table = wrapper.parents('.ajaxtable');
-            var action = ajax_table.data('tablename');
-            var target = bdajax.parsetarget(wrapper.attr('ajax:target'));
-            target.params['group'] = group;
-            bdajax.action({
-                name: action,
-                selector: '#bookings_wrapper',
-                mode: 'inner',
-                url: target.url,
-                params: target.params
-            });
-        },
+//
+//        bookings_filter_binder: function(context) {
+//            $('#input-group').unbind('change')
+//                             .bind('change', orders.filter_bookings);
+//        },
+//
+////        #todo ajax params dann no einbaun + query verdrahten siehe views 535
+//        filter_bookings: function(event) {
+//            event.preventDefault();
+//            var selection = $(this);
+//            var wrapper = selection.parent();
+//            var group = selection.val();
+//            var ajax_table = wrapper.parents('.ajaxtable');
+//            var action = ajax_table.data('tablename');
+//            var target = bdajax.parsetarget(wrapper.attr('ajax:target'));
+//            target.params['group'] = group;
+//            bdajax.action({
+//                name: action,
+//                selector: '#bookings_wrapper',
+//                mode: 'inner',
+//                url: target.url,
+//                params: target.params
+//            });
+//        },
 
 
         bookings_datatable_binder: function(context) {
             var url = $('#bdaplonebookings', context).attr('data-ajaxurl');
-            var oTable = $('#bdaplonebookings', context).DataTable({
-                "bSort" : false,
-                "bProcessing": true,
-                "bServerSide": true,
-                "sAjaxSource": url,
-                "sPaginationType": "full_numbers",
-                "oLanguage": {
-                    "sUrl": "@@collective.js.datatables.translation"
+            var oTable;
+            oTable = $('#bdaplonebookings', context).DataTable({
+                "sort" : false,
+                "dom": 'l<"groupfilter">frtip',
+                "processing": true,
+                "serverSide": true,
+                "ajax": {
+                    "url": url,
+                    "data": function (d) {
+                         return $.extend( {}, d, {
+                            "group_by": "lala"
+                          } );
+                    }
                 },
-                "aoColumnDefs": [{
+                "paginationType": "full_numbers",
+                "lengthMenu": [[3, 5, 10, 20], [3, 5, 10, 20]],
+                "displayLength": 3,
+                "language": {
+                    "url": "@@collective.js.datatables.translation"
+                },
+                "columnDefs": [{
                     'visible': false,
                     'targets': [0, 1, 13, 14]
                 }],
-                "aaSorting": [[1, "desc"]],
-                "fnDrawCallback": function ( settings ) {
+                "sorting": [[1, "desc"]],
+
+                "initComplete": function () {
+                    $(".filter").detach().appendTo('.groupfilter');
+
+                    $('#input-group').change( function() {
+                        oTable.search($(this).val()).draw();
+//                        var column = oTable.column(1);
+//                        column.visible( ! column.visible() );
+
+//                        oTable.rows('.group_buyable').each(function() {
+//                            $(this).css('visibility', 'hidden');
+//                        })
+//                        oTable.rows('.group_buyable').css('visibility', 'hidden');
+//                        oTable.rows().remove().draw()
+
+                    if ($('#input-group').val() == 'email') {
+//                        oTable.rows().remove().draw();
+                        alert("waa");
+                    }
+
+
+                    });
+
+
+                },
+
+                "drawCallback": function ( settings ) {
                     var api = this.api();
                     var rows = api.rows( {page:'current'} ).nodes();
                     var last=null;
@@ -216,23 +253,24 @@
                     api.column(0, {page:'current'} ).data().each( function ( group, i ) {
                         if ( last !== group ) {
                             $(rows).eq( i ).before(
-                                '<tr class="group"><td colspan="11">'+group+'</td></tr>'
+                                '<tr class="group_email"><td colspan="11">'+group+'</td></tr>'
                             );
                             last = group;
                         }
                     } );
-
+                    api.column(1, {page:'current'} ).data().each( function ( group, i ) {
+                        if ( last !== group ) {
+                            $(rows).eq( i ).before(
+                                '<tr class="group_buyable"><td colspan="11">'+group+'</td></tr>'
+                            );
+                            last = group;
+                        }
+                    } );
                  }
 
             });
+
         },
-
-
-
-
-
-
-
 
 
 

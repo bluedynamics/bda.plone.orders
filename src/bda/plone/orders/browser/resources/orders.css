@@ -116,13 +116,11 @@ a.notify_customers {
 
 /* start rules for new bookingstable */
 /* bookings filter */
-#bookings_wrapper .filter {
-    padding:0.3em;
-}
+
 #bookings_wrapper .filter label {
     margin-right:0.5em;
-    padding-top:3px;
     display:inline-block;
+    margin-left: 10em;
 }
 #bookings_wrapper .filter select {
     margin-right:0.5em;
@@ -154,12 +152,15 @@ a.notify_customers {
 #bdaplonebookings th.datarow-actions {
     width:120px;
 }
-#bdaplonebookings tr.group,
-#bdaplonebookings tr.group:hover {
+#bdaplonebookings tr.group_email,
+#bdaplonebookings tr.group_email:hover,
+#bdaplonebookings tr.group_buyable,
+#bdaplonebookings tr.group_buyable:hover {
     background-color: #ddd !important;
 }
 
-#bdaplonebookings tr.group span {
+#bdaplonebookings tr.group_email  span,
+#bdaplonebookings tr.group_buyable span {
    margin-left: 7em;
 }
 

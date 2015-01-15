@@ -8,6 +8,7 @@ from Products.Five import BrowserView
 from yafowil.base import factory
 from zope.i18n import translate
 from decimal import Decimal
+from zExceptions import InternalError
 
 import json
 import plone.api
@@ -47,12 +48,13 @@ class BookingsTable(BrowserView):
             value = value.strftime(DT_FORMAT)
             return value
 
+
     def render_email(self, colname, record):
         email = record.attrs.get(colname, '')
         bookings_quantity = self.render_bookings_quantity(colname, record)
         bookings_total_sum = self.render_bookings_total_sum(colname, record)
         value = \
-            '<tr class="group">' \
+            '<tr class="group_email">' \
             '<td colspan="11">' + email + \
             '<span>' +\
             translate(
@@ -68,6 +70,31 @@ class BookingsTable(BrowserView):
             + ': ' + str(bookings_total_sum) + '</td></tr>'
 
         return value
+
+    def render_buyable_uid(self, colname, record):
+        buyable_uid = record.attrs.get(colname, '')
+        bookings_quantity = self.render_bookings_quantity(colname, record)
+        bookings_total_sum = self.render_bookings_total_sum(colname, record)
+        value = \
+            '<tr class="group_buyable">' \
+            '<td colspan="11">' + buyable_uid + \
+            '<span>' +\
+            translate(
+                _("bookings_quantity", default=u"Bookings quantity"),
+                self.request
+            ) \
+            + ': ' + str(bookings_quantity) + '</span>' \
+            '<span>' +\
+            translate(
+                _("bookings_total_sum", default=u"Bookings total sum"),
+                self.request
+            ) \
+            + ': ' + str(bookings_total_sum) + '</td></tr>'
+
+        return value
+
+
+
 
     def render_count(self, colname, record):
         value = record.attrs.get(colname, '')
@@ -124,6 +151,7 @@ class BookingsTable(BrowserView):
             { # needed for clustering, later wont be displayed in table
                 'id': 'buyable_uid',
                 'label': _('buyable_uid', default=u'Buyable Uid'),
+                'renderer': self.render_buyable_uid,
                 'origin': 'b',
             },
             {
@@ -208,6 +236,7 @@ class BookingsTable(BrowserView):
         soup = get_bookings_soup(self.context)
         aaData = list()
         size, result = self.query(soup)
+
         columns = self.columns
         colnames = [_['id'] for _ in columns]
         # todo json response header einbaun, da no table einbaun einzelne hidden column. siehe js und html im bsp
@@ -244,9 +273,10 @@ class BookingsTable(BrowserView):
                 aaData.append(record2list(record))
 
         data = {
-            "sEcho": int(self.request.form['sEcho']),
-            "iTotalRecords": size,
-            "aaData": aaData,
+            "draw": int(self.request.form['draw']),
+            "recordsTotal": size,
+            "recordsFiltered": size,
+            "data": aaData,
         }
         return json.dumps(data)
 
@@ -287,8 +317,8 @@ class BookingsTable(BrowserView):
         return value
 
     def slice(self, fullresult):
-        start = int(self.request.form['iDisplayStart'])
-        length = int(self.request.form['iDisplayLength'])
+        start = int(self.request.form['start'])
+        length = int(self.request.form['length'])
         count = 0
         for lr in fullresult:
             if count >= start and count < (start + length):
@@ -304,9 +334,12 @@ class BookingsTable(BrowserView):
 
     def query(self, soup):
         # todo dann noch zusätzlich ? auf ibuyable umbaun, und query no mit path und date einschränkung =)
-
+        req_group_id = self.request.get('group_id', 'email')
         #now = datetime.datetime.now()
-        group_index = soup.catalog['email']
+        if req_group_id not in vocabs.groups_vocab():
+            raise InternalError('Group not allowed!')
+
+        group_index = soup.catalog[req_group_id]
         booking_uids = soup.catalog['uid']
         bookings = [_ for _ in booking_uids._rev_index.keys()]
         bookings_set = set(bookings)
