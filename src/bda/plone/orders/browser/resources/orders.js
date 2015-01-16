@@ -158,14 +158,6 @@
         },
 
 
-
-
-
-
-
-
-
-
 //
 //        bookings_filter_binder: function(context) {
 //            $('#input-group').unbind('change')
@@ -191,22 +183,22 @@
 //            });
 //        },
 
-
         bookings_datatable_binder: function(context) {
             var url = $('#bdaplonebookings', context).attr('data-ajaxurl');
             var oTable;
             oTable = $('#bdaplonebookings', context).DataTable({
                 "sort" : false,
-                "dom": 'l<"groupfilter">frtip',
+                "dom": 'l<"customfilter">frtip',
                 "processing": true,
                 "serverSide": true,
                 "ajax": {
-                    "url": url,
-                    "data": function (d) {
-                         return $.extend( {}, d, {
-                            "group_by": "lala"
-                          } );
-                    }
+                    "url": url
+//                    no longer needed ? hm evtl di ganzen data da draufschreibn geht aba on update leida nit -.-
+//                    "data": function (d) {
+//                         return $.extend( {}, d, {
+//                            "group_by": $('#input-group').val()
+//                          } );
+//                    }
                 },
                 "paginationType": "full_numbers",
                 "lengthMenu": [[3, 5, 10, 20], [3, 5, 10, 20]],
@@ -218,30 +210,26 @@
                     'visible': false,
                     'targets': [0, 1, 13, 14]
                 }],
+
                 "sorting": [[1, "desc"]],
 
                 "initComplete": function () {
-                    $(".filter").detach().appendTo('.groupfilter');
-
+                    $(".group_filter").detach().appendTo('.customfilter');
+                    $(".date_from_filter").detach().appendTo('.customfilter');
+                    $(".date_to_filter").detach().appendTo('.customfilter');
+//                    todo da no alle searchvalues in global search reinpacken und dann in query zerlegen und checken??
+//                    var searchterm = "";
                     $('#input-group').change( function() {
+//                        searchterm += $(this).val()
                         oTable.search($(this).val()).draw();
-//                        var column = oTable.column(1);
-//                        column.visible( ! column.visible() );
-
-//                        oTable.rows('.group_buyable').each(function() {
-//                            $(this).css('visibility', 'hidden');
-//                        })
-//                        oTable.rows('.group_buyable').css('visibility', 'hidden');
-//                        oTable.rows().remove().draw()
-
-                    if ($('#input-group').val() == 'email') {
-//                        oTable.rows().remove().draw();
-                        alert("waa");
-                    }
-
-
                     });
-
+//                  todo da muss i serverside dann query baun und nit auf table.colum.search - richtig??
+                    $('#input-from_date').on( 'keyup click', function() {
+                        oTable.search($(this).val()).draw();
+                    });
+                    $('#input-to_date').on( 'keyup click', function() {
+                        oTable.search($(this).val()).draw();
+                    });
 
                 },
 
@@ -249,30 +237,34 @@
                     var api = this.api();
                     var rows = api.rows( {page:'current'} ).nodes();
                     var last=null;
-
-                    api.column(0, {page:'current'} ).data().each( function ( group, i ) {
-                        if ( last !== group ) {
-                            $(rows).eq( i ).before(
-                                '<tr class="group_email"><td colspan="11">'+group+'</td></tr>'
-                            );
-                            last = group;
-                        }
-                    } );
-                    api.column(1, {page:'current'} ).data().each( function ( group, i ) {
-                        if ( last !== group ) {
-                            $(rows).eq( i ).before(
-                                '<tr class="group_buyable"><td colspan="11">'+group+'</td></tr>'
-                            );
-                            last = group;
-                        }
-                    } );
+//                  todo wegn i18n -> val() is immer email ?? dito für unten
+//                  only show email info if group by email
+                    if ($('#input-group').val() == 'email') {
+                        api.column(0, {page:'current'} ).data().each( function ( group, i ) {
+                            if ( last !== group ) {
+                                $(rows).eq( i ).before(
+                                    '<tr class="group_email"><td colspan="11">'+group+'</td></tr>'
+                                );
+                                last = group;
+                            }
+                        } );
+                    }
+//                  only show email info if group by buyable
+                    if ($('#input-group').val() == 'buyable') {
+                        api.column(1, {page: 'current'}).data().each(function (group, i) {
+                            if (last !== group) {
+                                $(rows).eq(i).before(
+                                        '<tr class="group_buyable"><td colspan="11">' + group + '</td></tr>'
+                                );
+                                last = group;
+                            }
+                        });
+                    }
                  }
 
             });
 
         },
-
-
 
         dropdown_binder: function (context) {
             var sel = '.change_order_salaried_dropdown';

@@ -27,9 +27,19 @@
         Bookings
     </h1>
 
-    <div class="filter"
+    <div class="group_filter"
          tal:attributes="ajax:target context/absolute_url">
-        <tal:filter replace="structure view/render_filter"/>
+        <tal:filter replace="structure view/render_group_filter"/>
+    </div>
+
+    <div class="date_from_filter"
+         tal:attributes="ajax:target context/absolute_url">
+        <tal:filter replace="structure view/render_date_from_filter"/>
+    </div>
+
+    <div class="date_to_filter"
+         tal:attributes="ajax:target context/absolute_url">
+        <tal:filter replace="structure view/render_date_to_filter"/>
     </div>
 
     <table tal:define="ajaxurl view/ajaxurl;

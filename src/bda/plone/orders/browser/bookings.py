@@ -9,7 +9,7 @@ from yafowil.base import factory
 from zope.i18n import translate
 from decimal import Decimal
 from zExceptions import InternalError
-
+from bda.intellidatetime import convert
 import json
 import plone.api
 from odict import odict
@@ -17,16 +17,12 @@ import urllib
 import uuid
 import yafowil.loader  # loads registry  # nopep8
 
-from bda.plone.orders.browser.views import Translate
-from bda.plone.orders.browser.views import vendors_form_vocab
-from bda.plone.orders.browser.views import customers_form_vocab
-
 
 class BookingsTable(BrowserView):
     table_id = 'bdaplonebookings'
     data_view_name = '@@bookingsdata'
 
-    def render_filter(self):
+    def render_group_filter(self):
         #group orders
         groups = vocabs.groups_vocab()
         group_selector = factory(
@@ -42,12 +38,37 @@ class BookingsTable(BrowserView):
         filter = group_selector(request=self.request)
         return filter
 
+    def render_date_from_filter(self):
+        from_date = factory(
+            'label:text',
+            name='from_date',
+            value=self.request.form.get('from_date', ''),
+            props={
+                'label': _('from_date',
+                           default=u'Filter from date'),
+            }
+        )
+        filter = from_date(request=self.request)
+        return filter
+
+    def render_date_to_filter(self):
+        to_date = factory(
+            'label:text',
+            name='to_date',
+            value=self.request.form.get('to_date', ''),
+            props={
+                'label': _('to_date',
+                           default=u'to date'),
+            }
+        )
+        filter = to_date(request=self.request)
+        return filter
+
     def render_dt(self, colname, record):
         value = record.attrs.get(colname, '')
         if value:
             value = value.strftime(DT_FORMAT)
             return value
-
 
     def render_email(self, colname, record):
         email = record.attrs.get(colname, '')
@@ -93,9 +114,6 @@ class BookingsTable(BrowserView):
 
         return value
 
-
-
-
     def render_count(self, colname, record):
         value = record.attrs.get(colname, '')
         unit = record.attrs.get('quantity_unit', '')
@@ -132,7 +150,6 @@ class BookingsTable(BrowserView):
         if currency and value:
             value = currency + ' {0:.2f}'.format(value)
             return value
-
 
     @property
     def ajaxurl(self):
@@ -333,11 +350,19 @@ class BookingsTable(BrowserView):
                 return column
 
     def query(self, soup):
-        # todo dann noch zusätzlich ? auf ibuyable umbaun, und query no mit path und date einschränkung =)
-        req_group_id = self.request.get('group_id', 'email')
         #now = datetime.datetime.now()
+        # todo dann noch zusätzlich ? auf ibuyable umbaun, und query no mit path und date einschränkung =)
+        req_group_id = self.request.get('search[value]', 'email')
+        #if no req group is set
+        if len(req_group_id) == 0:
+            req_group_id = 'email'
+
         if req_group_id not in vocabs.groups_vocab():
             raise InternalError('Group not allowed!')
+        # not pretty but, otherwise there a problems with vocab + soup attrs
+        # that need many places to refactor to make it work
+        if req_group_id == 'buyable':
+            req_group_id = 'buyable_uid'
 
         group_index = soup.catalog[req_group_id]
         booking_uids = soup.catalog['uid']

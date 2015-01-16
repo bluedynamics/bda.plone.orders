@@ -142,6 +142,17 @@ a.notify_customers {
     margin-bottom:1em;
     border:#ddd 1px solid;
 }
+
+div.group_filter {
+    margin-left: 3em;
+}
+div.group_filter,
+div.date_from_filter,
+div.date_to_filter {
+    float: left;
+    margin-right: 3em;
+}
+
 #bdaplonebookings thead {
     background-color:#fafafa;
 }
