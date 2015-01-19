@@ -198,7 +198,6 @@ class BookingsCatalogFactory(object):
         catalog[u'state'] = CatalogFieldIndex(state_indexer)
         salaried_indexer = NodeAttributeIndexer('salaried')
         catalog[u'salaried'] = CatalogFieldIndex(salaried_indexer)
-# todo is ok das da und im order dazugetan??
         search_attributes = ['email',
                              'title']
         text_indexer = NodeTextIndexer(search_attributes)
@@ -233,9 +232,7 @@ class OrdersCatalogFactory(object):
         catalog[u'billing_address.city'] = CatalogFieldIndex(city_indexer)
         search_attributes = ['personal_data.lastname',
                              'personal_data.firstname',
-                             'personal_data.phone',
                              'billing_address.city',
-                             'billing_address.street',
                              'ordernumber']
         text_indexer = NodeTextIndexer(search_attributes)
         catalog[u'text'] = CatalogTextIndex(text_indexer)

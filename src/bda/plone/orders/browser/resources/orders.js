@@ -158,31 +158,6 @@
         },
 
 
-//
-//        bookings_filter_binder: function(context) {
-//            $('#input-group').unbind('change')
-//                             .bind('change', orders.filter_bookings);
-//        },
-//
-////        #todo ajax params dann no einbaun + query verdrahten siehe views 535
-//        filter_bookings: function(event) {
-//            event.preventDefault();
-//            var selection = $(this);
-//            var wrapper = selection.parent();
-//            var group = selection.val();
-//            var ajax_table = wrapper.parents('.ajaxtable');
-//            var action = ajax_table.data('tablename');
-//            var target = bdajax.parsetarget(wrapper.attr('ajax:target'));
-//            target.params['group'] = group;
-//            bdajax.action({
-//                name: action,
-//                selector: '#bookings_wrapper',
-//                mode: 'inner',
-//                url: target.url,
-//                params: target.params
-//            });
-//        },
-
         bookings_datatable_binder: function(context) {
             var url = $('#bdaplonebookings', context).attr('data-ajaxurl');
             var oTable;
@@ -192,13 +167,14 @@
                 "processing": true,
                 "serverSide": true,
                 "ajax": {
-                    "url": url
-//                    no longer needed ? hm evtl di ganzen data da draufschreibn geht aba on update leida nit -.-
-//                    "data": function (d) {
-//                         return $.extend( {}, d, {
-//                            "group_by": $('#input-group').val()
-//                          } );
-//                    }
+                    "url": url,
+                    "data": function (d) {
+                         return $.extend( {}, d, {
+                            "group_by": $('#input-group').val(),
+                            "from_date": $('#input-from_date').val(),
+                            "to_date": $('#input-to_date').val()
+                          } );
+                    }
                 },
                 "paginationType": "full_numbers",
                 "lengthMenu": [[3, 5, 10, 20], [3, 5, 10, 20]],
@@ -217,18 +193,14 @@
                     $(".group_filter").detach().appendTo('.customfilter');
                     $(".date_from_filter").detach().appendTo('.customfilter');
                     $(".date_to_filter").detach().appendTo('.customfilter');
-//                    todo da no alle searchvalues in global search reinpacken und dann in query zerlegen und checken??
-//                    var searchterm = "";
                     $('#input-group').change( function() {
-//                        searchterm += $(this).val()
-                        oTable.search($(this).val()).draw();
+                        oTable.search($('#bdaplonebookings_filter input').val()).draw();
                     });
-//                  todo da muss i serverside dann query baun und nit auf table.colum.search - richtig??
                     $('#input-from_date').on( 'keyup click', function() {
-                        oTable.search($(this).val()).draw();
+                        oTable.search($('#bdaplonebookings_filter input').val()).draw();
                     });
                     $('#input-to_date').on( 'keyup click', function() {
-                        oTable.search($(this).val()).draw();
+                        oTable.search($('#bdaplonebookings_filter input').val()).draw();
                     });
 
                 },
@@ -237,7 +209,6 @@
                     var api = this.api();
                     var rows = api.rows( {page:'current'} ).nodes();
                     var last=null;
-//                  todo wegn i18n -> val() is immer email ?? dito für unten
 //                  only show email info if group by email
                     if ($('#input-group').val() == 'email') {
                         api.column(0, {page:'current'} ).data().each( function ( group, i ) {
@@ -248,6 +219,7 @@
                                 last = group;
                             }
                         } );
+                        api.column(4).visible(show=true);
                     }
 //                  only show email info if group by buyable
                     if ($('#input-group').val() == 'buyable') {
@@ -259,6 +231,7 @@
                                 last = group;
                             }
                         });
+                        api.column(4).visible(show=false);
                     }
                  }
 

@@ -1,20 +1,26 @@
 # -*- coding: utf-8 -*-
+from bda.intellidatetime import convert
+from bda.intellidatetime import DateTimeConversionError
 from bda.plone.orders import message_factory as _
 from bda.plone.orders import vocabularies as vocabs
 from bda.plone.orders.common import DT_FORMAT
 from bda.plone.orders.common import get_bookings_soup
 from bda.plone.orders.common import get_order
-from Products.Five import BrowserView
-from yafowil.base import factory
-from zope.i18n import translate
 from decimal import Decimal
+from Products.Five import BrowserView
+from repoze.catalog.query import Contains
+from repoze.catalog.query import Ge
+from repoze.catalog.query import InRange
+from repoze.catalog.query import Le
+from yafowil.base import factory
 from zExceptions import InternalError
-from bda.intellidatetime import convert
+from zope.i18n import translate
+
+from odict import odict
+import datetime
 import json
 import plone.api
-from odict import odict
-import urllib
-import uuid
+
 import yafowil.loader  # loads registry  # nopep8
 
 
@@ -93,12 +99,13 @@ class BookingsTable(BrowserView):
         return value
 
     def render_buyable_uid(self, colname, record):
-        buyable_uid = record.attrs.get(colname, '')
+        #buyable_uid = record.attrs.get(colname, '')
+        title = record.attrs.get('title', '')
         bookings_quantity = self.render_bookings_quantity(colname, record)
         bookings_total_sum = self.render_bookings_total_sum(colname, record)
         value = \
             '<tr class="group_buyable">' \
-            '<td colspan="11">' + buyable_uid + \
+            '<td colspan="11">' + title + \
             '<span>' +\
             translate(
                 _("bookings_quantity", default=u"Bookings quantity"),
@@ -256,7 +263,8 @@ class BookingsTable(BrowserView):
 
         columns = self.columns
         colnames = [_['id'] for _ in columns]
-        # todo json response header einbaun, da no table einbaun einzelne hidden column. siehe js und html im bsp
+        # todo json response header einbaun ?
+        # header('Content-Type: application/json');
 
         def record2list(record, bookings_quantity=None):
             result = list()
@@ -349,10 +357,48 @@ class BookingsTable(BrowserView):
             if column['id'] == colname:
                 return column
 
+    def _datetime_checker(self, from_date, to_date):
+        # get portal language for datetime locale formating
+        # used for quering
+        portal = plone.api.portal.get()
+        locale = portal.language
+        if len(from_date) > 0:
+            try:
+                from_date = convert(from_date, locale=locale)
+            except DateTimeConversionError:
+                return None
+        if len(to_date) > 0:
+            try:
+                to_date = convert(to_date, locale=locale)
+            except DateTimeConversionError:
+                return None
+            if isinstance(to_date, datetime.datetime) \
+                    and to_date.hour == 0 and to_date.minute == 0:
+                to_date = to_date.replace(hour=23, minute=59, second=59)
+
+        if isinstance(from_date, str) and isinstance(to_date, str):
+            return None
+        if isinstance(from_date, datetime.datetime) \
+                and isinstance(to_date, str):
+            return Ge('created', from_date)
+        if isinstance(from_date, str) \
+                and isinstance(to_date, datetime.datetime):
+            return Le('created', to_date)
+        if isinstance(from_date, datetime.datetime) \
+                and isinstance(to_date, datetime.datetime):
+            return InRange('created', from_date, to_date)
+
+    def _text_checker(self, text):
+        # used for quering
+        if len(text) < 1:
+            return None
+        return Contains('text', text + '*')
+
+
     def query(self, soup):
-        #now = datetime.datetime.now()
-        # todo dann noch zusätzlich ? auf ibuyable umbaun, und query no mit path und date einschränkung =)
-        req_group_id = self.request.get('search[value]', 'email')
+        # todo  path einschränkung =)
+        # now = datetime.datetime.now()
+        req_group_id = self.request.get('group_by', 'email')
         #if no req group is set
         if len(req_group_id) == 0:
             req_group_id = 'email'
@@ -365,8 +411,28 @@ class BookingsTable(BrowserView):
             req_group_id = 'buyable_uid'
 
         group_index = soup.catalog[req_group_id]
+
+        #todo da query mit date from to und dann mit search
+
         booking_uids = soup.catalog['uid']
-        bookings = [_ for _ in booking_uids._rev_index.keys()]
+        req_from_date = self.request.get('from_date', '')
+        req_to_date = self.request.get('to_date', '')
+        req_text = self.request.get('search[value]', '')
+
+        date_query = self._datetime_checker(req_from_date, req_to_date)
+        text_query = self._text_checker(req_text)
+
+        if date_query and not text_query:
+            dummysize, bookings = soup.catalog.query(date_query)
+        elif text_query and not date_query:
+            dummysize, bookings = soup.catalog.query(text_query)
+        elif date_query and text_query:
+            # import ipdb; ipdb.set_trace()
+            query = date_query & text_query
+            dummysize, bookings = soup.catalog.query(query)
+        else:
+            bookings = [_ for _ in booking_uids._rev_index.keys()]
+
         bookings_set = set(bookings)
         unique_group_ids = []
 
