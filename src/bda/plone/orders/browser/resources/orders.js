@@ -5,7 +5,6 @@
             orders_datatable_binder: orders.datatable_binder,
             orders_filter_binder: orders.filter_binder,
             orders_bookings_datatable_binder: orders.bookings_datatable_binder,
-//            orders_bookings_filter_binder: orders.bookings_filter_binder,
             orders_dropdown_menus: orders.dropdown_binder,
             orders_notification_form_binder: orders.notification_form_binder,
             orders_qr_code_binder: orders.qr_code_binder
@@ -13,7 +12,6 @@
         orders.datatable_binder(document);
         orders.filter_binder(document);
         orders.bookings_datatable_binder(document);
-//        orders.bookings_filter_binder(document);
         orders.order_select_binder(document);
         orders.notification_binder(document);
         orders.qr_code_binder(document);
@@ -157,71 +155,76 @@
             });
         },
 
-
-        bookings_datatable_binder: function(context) {
+        bookings_datatable_binder: function (context) {
             var url = $('#bdaplonebookings', context).attr('data-ajaxurl');
             var oTable;
             oTable = $('#bdaplonebookings', context).DataTable({
-                "sort" : false,
+                "sort": false,
                 "dom": 'l<"customfilter">frtip',
                 "processing": true,
                 "serverSide": true,
                 "ajax": {
                     "url": url,
                     "data": function (d) {
-                         return $.extend( {}, d, {
+                        return $.extend({}, d, {
                             "group_by": $('#input-group').val(),
                             "from_date": $('#input-from_date').val(),
                             "to_date": $('#input-to_date').val()
-                          } );
+                        });
                     }
                 },
                 "paginationType": "full_numbers",
-                "lengthMenu": [[3, 5, 10, 20], [3, 5, 10, 20]],
+                "lengthMenu": [
+                    [3, 5, 10, 20],
+                    [3, 5, 10, 20]
+                ],
                 "displayLength": 3,
                 "language": {
                     "url": "@@collective.js.datatables.translation"
                 },
-                "columnDefs": [{
-                    'visible': false,
-                    'targets': [0, 1, 13, 14]
-                }],
+                "columnDefs": [
+                    {
+                        'visible': false,
+                        'targets': [0, 1, 13, 14]
+                    }
+                ],
 
-                "sorting": [[1, "desc"]],
+                "sorting": [
+                    [1, "desc"]
+                ],
 
                 "initComplete": function () {
                     $(".group_filter").detach().appendTo('.customfilter');
                     $(".date_from_filter").detach().appendTo('.customfilter');
                     $(".date_to_filter").detach().appendTo('.customfilter');
-                    $('#input-group').change( function() {
+                    $('#input-group').change(function () {
                         oTable.search($('#bdaplonebookings_filter input').val()).draw();
                     });
-                    $('#input-from_date').on( 'keyup click', function() {
+                    $('#input-from_date').on('keyup click', function () {
                         oTable.search($('#bdaplonebookings_filter input').val()).draw();
                     });
-                    $('#input-to_date').on( 'keyup click', function() {
+                    $('#input-to_date').on('keyup click', function () {
                         oTable.search($('#bdaplonebookings_filter input').val()).draw();
                     });
-
                 },
 
-                "drawCallback": function ( settings ) {
+                "drawCallback": function (settings) {
                     var api = this.api();
-                    var rows = api.rows( {page:'current'} ).nodes();
-                    var last=null;
-//                  only show email info if group by email
+                    var rows = api.rows({page: 'current'}).nodes();
+                    var last = null;
+//                  only show email info if grouped by email
                     if ($('#input-group').val() == 'email') {
-                        api.column(0, {page:'current'} ).data().each( function ( group, i ) {
-                            if ( last !== group ) {
-                                $(rows).eq( i ).before(
-                                    '<tr class="group_email"><td colspan="11">'+group+'</td></tr>'
+                        api.column(0, {page: 'current'}).data().each(function (group, i) {
+                            if (last !== group) {
+                                $(rows).eq(i).before(
+                                        '<tr class="group_email"><td colspan="11">' + group + '</td></tr>'
                                 );
                                 last = group;
                             }
-                        } );
-                        api.column(4).visible(show=true);
+                        });
+                        api.column(4).visible(show = true);
                     }
-//                  only show email info if group by buyable
+//                  only show email info if grouped by buyable
                     if ($('#input-group').val() == 'buyable') {
                         api.column(1, {page: 'current'}).data().each(function (group, i) {
                             if (last !== group) {
@@ -231,12 +234,10 @@
                                 last = group;
                             }
                         });
-                        api.column(4).visible(show=false);
+                        api.column(4).visible(show = false);
                     }
-                 }
-
+                }
             });
-
         },
 
         dropdown_binder: function (context) {

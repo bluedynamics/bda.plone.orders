@@ -53,7 +53,7 @@
 
    <!-- bookings view -->
   <browser:page
-    for="zope.component.interfaces.ISite"
+    for="*"
     name="bookings"
     template="bookings.pt"
     class=".bookings.BookingsTable"
@@ -62,7 +62,7 @@
 
  <!-- bookings json -->
   <browser:page
-    for="zope.component.interfaces.ISite"
+    for="*"
     name="bookingsdata"
     class=".bookings.BookingsTable"
     attribute="jsondata"

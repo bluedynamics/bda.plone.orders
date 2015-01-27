@@ -6,7 +6,9 @@ from bda.plone.orders import vocabularies as vocabs
 from bda.plone.orders.common import DT_FORMAT
 from bda.plone.orders.common import get_bookings_soup
 from bda.plone.orders.common import get_order
+from bda.plone.orders.interfaces import IBuyable
 from decimal import Decimal
+from odict import odict
 from Products.Five import BrowserView
 from repoze.catalog.query import Contains
 from repoze.catalog.query import Ge
@@ -16,7 +18,7 @@ from yafowil.base import factory
 from zExceptions import InternalError
 from zope.i18n import translate
 
-from odict import odict
+
 import datetime
 import json
 import plone.api
@@ -82,7 +84,7 @@ class BookingsTable(BrowserView):
         bookings_total_sum = self.render_bookings_total_sum(colname, record)
         value = \
             '<tr class="group_email">' \
-            '<td colspan="11">' + email + \
+            '<td colspan="11">' + '<p>' + email + '</p>' +\
             '<span>' +\
             translate(
                 _("bookings_quantity", default=u"Bookings quantity"),
@@ -99,13 +101,13 @@ class BookingsTable(BrowserView):
         return value
 
     def render_buyable_uid(self, colname, record):
-        #buyable_uid = record.attrs.get(colname, '')
+        # this actually gets the title of a buyable_uid
         title = record.attrs.get('title', '')
         bookings_quantity = self.render_bookings_quantity(colname, record)
         bookings_total_sum = self.render_bookings_total_sum(colname, record)
         value = \
             '<tr class="group_buyable">' \
-            '<td colspan="11">' + title + \
+            '<td colspan="11">' + '<p>' + title + '</p>' +\
             '<span>' +\
             translate(
                 _("bookings_quantity", default=u"Bookings quantity"),
@@ -160,19 +162,18 @@ class BookingsTable(BrowserView):
 
     @property
     def ajaxurl(self):
-        site = plone.api.portal.get()
-        return '%s/%s' % (site.absolute_url(), self.data_view_name)
+        return '%s/%s' % (self.context.absolute_url(), self.data_view_name)
 
     @property
     def columns(self):
         return [
-            { # todo upgrade step für alte records ds email updated + soup reindex
+            {
                 'id': 'email',
                 'label': _('email', default=u'Email'),
                 'renderer': self.render_email,
                 'origin': 'b',
             },
-            { # needed for clustering, later wont be displayed in table
+            {
                 'id': 'buyable_uid',
                 'label': _('buyable_uid', default=u'Buyable Uid'),
                 'renderer': self.render_buyable_uid,
@@ -219,11 +220,6 @@ class BookingsTable(BrowserView):
                 'label': _('phone', default=u'Phone'),
                 'origin': 'o',
             },
-            # {
-            #     #todo spater im event?
-            #     'id':'attendee',
-            #     'label': _('attendee', default=u'Attendee'),
-            # },
             {
                 'id': 'price_per_unit',
                 'label': _('price_per_unit', default=u'Price per unit'),
@@ -305,7 +301,7 @@ class BookingsTable(BrowserView):
         }
         return json.dumps(data)
 
- # helpers
+ # helper methods
     def _get_price(self, record):
         """
         returns net + vat price
@@ -394,10 +390,15 @@ class BookingsTable(BrowserView):
             return None
         return Contains('text', text + '*')
 
+    def _get_buyables_in_context(self):
+        catalog = plone.api.portal.get_tool("portal_catalog")
+        path = '/'.join(self.context.getPhysicalPath())
+        brains = catalog(path=path, object_provides=IBuyable.__identifier__)
+        for brain in brains:
+            yield brain.UID
 
     def query(self, soup):
-        # todo  path einschränkung =)
-        # now = datetime.datetime.now()
+        self._get_buyables_in_context()
         req_group_id = self.request.get('group_by', 'email')
         #if no req group is set
         if len(req_group_id) == 0:
@@ -412,8 +413,6 @@ class BookingsTable(BrowserView):
 
         group_index = soup.catalog[req_group_id]
 
-        #todo da query mit date from to und dann mit search
-
         booking_uids = soup.catalog['uid']
         req_from_date = self.request.get('from_date', '')
         req_to_date = self.request.get('to_date', '')
@@ -423,20 +422,29 @@ class BookingsTable(BrowserView):
         text_query = self._text_checker(req_text)
 
         if date_query and not text_query:
-            dummysize, bookings = soup.catalog.query(date_query)
+            dummysize, bookings_set = soup.catalog.query(date_query)
         elif text_query and not date_query:
-            dummysize, bookings = soup.catalog.query(text_query)
+            dummysize, bookings_set = soup.catalog.query(text_query)
         elif date_query and text_query:
-            # import ipdb; ipdb.set_trace()
             query = date_query & text_query
-            dummysize, bookings = soup.catalog.query(query)
+            dummysize, bookings_set = soup.catalog.query(query)
         else:
-            bookings = [_ for _ in booking_uids._rev_index.keys()]
+            bookings_set = booking_uids._rev_index.keys()
+        bookings_set = set(bookings_set)
 
-        bookings_set = set(bookings)
+        buyable_index = soup.catalog['buyable_uid']
+        buyables_set = set()
+        # get all buyables for the current context/path
+        for buyable_uid in self._get_buyables_in_context():
+            try:
+                buyables_set.update(buyable_index._fwd_index[buyable_uid])
+            except KeyError:
+                continue
+        # filter bookings_set to only match the current context/path
+        bookings_set = bookings_set.intersection(buyables_set)
+
         unique_group_ids = []
-
-        #for each booking which matches the query append the qroup id once
+        # for each booking which matches the query append the qroup id once
         for group_id, group_booking_ids in group_index._fwd_index.items():
             if bookings_set.intersection(group_booking_ids):
                 unique_group_ids.append(group_id)
@@ -448,7 +456,7 @@ class BookingsTable(BrowserView):
         for group_id in self.slice(unique_group_ids):
             res[group_id] = []
             for group_booking_id in group_index._fwd_index[group_id]:
-                if group_booking_id in bookings:
+                if group_booking_id in bookings_set:
                     res[group_id].append(soup.get(group_booking_id))
 
         return size, res

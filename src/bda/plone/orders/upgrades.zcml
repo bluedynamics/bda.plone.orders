@@ -74,4 +74,12 @@
     profile="bda.plone.orders:default"
     handler=".upgrades.reset_records"/>
 
+  <genericsetup:upgradeStep
+    source="7"
+    destination="8"
+    title="Add email to bookings"
+    description=""
+    profile="bda.plone.orders:default"
+    handler=".upgrades.fix_bookings_email"/>
+
 </configure>

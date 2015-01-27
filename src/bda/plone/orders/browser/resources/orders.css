@@ -112,57 +112,63 @@ a.notify_customers {
     margin-right: 1em;
 }
 
-
-
-/* start rules for new bookingstable */
+/* start rules for bookingstable */
 /* bookings filter */
 
 #bookings_wrapper .filter label {
-    margin-right:0.5em;
-    display:inline-block;
+    margin-right: 0.5em;
+    display: inline-block;
     margin-left: 10em;
 }
+
 #bookings_wrapper .filter select {
-    margin-right:0.5em;
+    margin-right: 0.5em;
 }
 
 /* bookings */
 #bdaplonebookings_wrapper {
-    margin-top:1em;
-    margin-bottom:2.2em;
-}
-#bdaplonebookings_length {
-    margin-bottom:0.8em;
-}
-#bdaplonebookings_length select,
-#bdaplonebookings_filter input {
-    font-size:90%;
-}
-#bdaplonebookings {
-    margin-bottom:1em;
-    border:#ddd 1px solid;
+    margin-top: 1em;
+    margin-bottom: 2.2em;
 }
 
-div.group_filter {
+#bdaplonebookings_length {
+    margin-bottom: 0.8em;
+}
+
+#bdaplonebookings_length select,
+#bdaplonebookings_filter input {
+    font-size: 90%;
+}
+
+#bdaplonebookings {
+    margin-bottom: 1em;
+    border: #ddd 1px solid;
+}
+
+#bdaplonebookings_wrapper div.group_filter {
     margin-left: 3em;
 }
-div.group_filter,
-div.date_from_filter,
-div.date_to_filter {
+
+#bdaplonebookings_wrapper div.group_filter,
+#bdaplonebookings_wrapper div.date_from_filter,
+#bdaplonebookings_wrapper div.date_to_filter {
     float: left;
     margin-right: 3em;
 }
 
 #bdaplonebookings thead {
-    background-color:#fafafa;
+    background-color: #fafafa;
 }
+
 #bdaplonebookings th {
-    border-right:#ddd 1px solid;
-    border-bottom:#ddd 1px solid;
+    border-right: #ddd 1px solid;
+    border-bottom: #ddd 1px solid;
 }
+
 #bdaplonebookings th.datarow-actions {
-    width:120px;
+    width: 120px;
 }
+
 #bdaplonebookings tr.group_email,
 #bdaplonebookings tr.group_email:hover,
 #bdaplonebookings tr.group_buyable,
@@ -170,21 +176,35 @@ div.date_to_filter {
     background-color: #ddd !important;
 }
 
-#bdaplonebookings tr.group_email  span,
+#bdaplonebookings tr.group_email td p ,
+#bdaplonebookings tr.group_buyable td p{
+    margin-bottom: 0;
+    float: left;
+    min-width: 18em;
+    width: 18em;
+}
+
+#bdaplonebookings tr.group_email span,
 #bdaplonebookings tr.group_buyable span {
-   margin-left: 7em;
+    min-width: 18em;
+    width: 18em;
+    float: left;
+    margin-left: 7em;
 }
 
 #bdaplonebookings td {
-    padding:1px 3px 1px 10px;
-    border-right:#ddd 1px solid;
+    padding: 1px 3px 1px 10px;
+    border-right: #ddd 1px solid;
 }
+
 #bdaplonebookings a.contenttype-document {
-    border:none !important;
+    border: none !important;
 }
+
 #bdaplonebookings_paginate a:hover {
-    color:#fff !important;
+    color: #fff !important;
 }
+
 /* end rules for new bookingstable */
 
 
