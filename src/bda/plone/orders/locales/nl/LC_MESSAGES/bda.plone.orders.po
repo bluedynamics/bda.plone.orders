@@ -1,0 +1,709 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: bda.plone.orders\n"
+"POT-Creation-Date: 2015-01-28 14:42+0000\n"
+"PO-Revision-Date: 2015-01-28 15:13+0100\n"
+"Last-Translator: INTK <info@intk.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"Language-Code: nl\n"
+"Language-Name: Nederlands\n"
+"Preferred-Encodings: utf-8 latin1\n"
+"Domain: bda.plone.orders\n"
+"X-Is-Fallback-For: nl-be nl-nl\n"
+"Language-Team: \n"
+"X-Generator: Poedit 1.7.4\n"
+
+#. Default: "Actions"
+#: browser/views.py:371
+msgid "actions"
+msgstr "Acties"
+
+#. Default: "All"
+#: browser/views.py:400
+msgid "all"
+msgstr "Alle"
+
+#. Default: "Please provide the email adress you used for submitting the order."
+#: browser/views.py:895
+msgid "anon_auth_err_email"
+msgstr "Geef het e-mailadres op dat u tevens heeft gebruikt voor de bestelling."
+
+#. Default: "No order could be found for the given credentials"
+#: browser/views.py:904
+msgid "anon_auth_err_order"
+msgstr "Geen bestelling gevonden voor de opgegeven criteria."
+
+#. Default: "Please provide the ordernumber"
+#: browser/views.py:900
+msgid "anon_auth_err_ordernumber"
+msgstr "Geef het bestelnummer op."
+
+#. Default: "Email"
+#: browser/views.py:860
+msgid "anon_auth_label_email"
+msgstr "E-mail"
+
+#. Default: "Ordernumber"
+#: browser/views.py:851
+msgid "anon_auth_label_ordernumber"
+msgstr "Bestelnummer"
+
+#. Default: "Submit"
+#: browser/views.py:867
+msgid "anon_auth_label_submit"
+msgstr "Sturen"
+
+#. Default: "Billing Address:"
+#: browser/order.pt:38
+msgid "billing_address"
+msgstr "Factuuradres"
+
+#. Default: "comment"
+#: browser/order.pt:173
+msgid "booking_comment"
+msgstr "Commentaar"
+
+#. Default: "count"
+#: browser/order.pt:166
+msgid "booking_count"
+msgstr "Aantal"
+
+#. Default: "currency"
+#: browser/order.pt:168
+msgid "booking_currency"
+msgstr "Valuta"
+
+#. Default: "discount net"
+#: browser/order.pt:170
+msgid "booking_discount_net"
+msgstr "Netto korting"
+
+#. Default: "exported"
+#: browser/order.pt:172
+msgid "booking_exported"
+msgstr "Geëxporteerd"
+
+#. Default: "net"
+#: browser/order.pt:169
+msgid "booking_net"
+msgstr "Netto"
+
+#. Default: "quantity unit"
+#: browser/order.pt:167
+msgid "booking_quantity_unit"
+msgstr "Eenheid"
+
+#. Default: "title"
+#: browser/order.pt:165
+msgid "booking_title"
+msgstr "Titel"
+
+#. Default: "vat"
+#: browser/order.pt:171
+msgid "booking_vat"
+msgstr "BTW"
+
+msgid "booking_state"
+msgstr "Status"
+
+msgid "booking_salaried"
+msgstr "Betaald"
+
+#. Default: "Cancel"
+#: vocabularies.py:30
+msgid "cancel"
+msgstr "Cancel"
+
+#. Default: "Cancelled"
+#: vocabularies.py:18
+msgid "cancelled"
+msgstr "Gecanceld"
+
+#. Default: "City"
+#: browser/views.py:386
+msgid "city"
+msgstr "Stad"
+
+#. Default: "Currency:"
+#: browser/order.pt:74
+msgid "currency"
+msgstr "Valuta"
+
+# customer_filter
+msgid "customer_filter"
+msgstr "Klant filter"
+
+#. Default: "Mail to customers sent"
+#: browser/notify_customers.py:111
+msgid "customers_notified_success"
+msgstr "E-mail naar klanten"
+
+#. Default: "Date"
+#: browser/views.py:376
+msgid "date"
+msgstr "Datum"
+
+#. Default: "Delivery Address:"
+#: browser/order.pt:116
+msgid "delivery_address"
+msgstr "Bezorgadres"
+
+#. Default: "Failed to send Notification to ${receiver}"
+#: mailnotify.py:281
+msgid "email_sending_failed"
+msgstr "Bericht naar ${receiver} is niet verzonden."
+
+# export
+msgid "export"
+msgstr "Export"
+
+#. Default: "Export Orders"
+#: browser/export.pt:20
+msgid "export_orders"
+msgstr "Bestellingen exporteren"
+
+#. Default: "Export recent orders as CSV (excel optimized)"
+#: browser/export.pt:25
+msgid "export_recent_orders"
+msgstr "Export recente bestellingen als CSV bestand (excel geoptimaliseerd)"
+
+#. Default: "Failed"
+#: vocabularies.py:39
+msgid "failed"
+msgstr "Mislukt"
+
+#. Default: "Filter for customers"
+#: browser/views.py:437
+msgid "filter_for_customers"
+msgstr "Filter voor klanten"
+
+#. Default: "Filter for vendors"
+#: browser/views.py:422
+msgid "filter_for_vendors"
+msgstr "Filter voor verkopers"
+
+#. Default: "Finish"
+#: vocabularies.py:29
+msgid "finish"
+msgstr "Afronding"
+
+#. Default: "Finished"
+#: vocabularies.py:17
+msgid "finished"
+msgstr "Afgerond"
+
+#. Default: "First Name"
+#: browser/views.py:383
+msgid "firstname"
+msgstr "Voornaam"
+
+# from_date
+msgid "from_date"
+msgstr "Van-datum"
+
+#. Default: "From-date after to-date"
+#: browser/views.py:1020
+msgid "from_date_before_to_date"
+msgstr "Van-datum naar tot-datum"
+
+# from_date_required
+msgid "from_date_required"
+msgstr "Van-datum is vereist"
+
+#. Default: "Available placeholders:"
+#: browser/mailtemplates_view.pt:46
+msgid "heading_mailtemplatelib_available"
+msgstr "Beschikbare placeholders"
+
+#. Default: "In templates named placeholders can be used. A placeholder is inserted by inserting the name of the placeholder in curly braces, like so: ${example}"
+#: browser/mailtemplates_view.pt:30
+msgid "heading_mailtemplatelib_example"
+msgstr "In sjablonen kunnen namen van placeholders gebruikt worden. Een placeholder is ingevoerd door de naam van de placeholder in gekrulde haakjes in te voeren, bijvoorbeeld: ${example}"
+
+#. Default: "Edit"
+#: browser/mailtemplates_view.pt:33
+msgid "heading_mailtemplatelib_library"
+msgstr "Aanpassen"
+
+#. Default: "Mailtemplates for Order Notifications"
+#: browser/mailtemplates_view.pt:20
+msgid "heading_mailtemplatelib_main"
+msgstr "Sjablonen voor e-mails met bestellingsberichten"
+
+#. Default: "Preview"
+#: browser/mailtemplates_view.pt:38
+msgid "heading_mailtemplatelib_preview"
+msgstr "Voorbeeld"
+
+#. Default: "Using placeholder:"
+#: browser/mailtemplates_view.pt:25
+msgid "heading_mailtemplatelib_using"
+msgstr "Gebruik placeholder"
+
+#. Default: "Found inconsistent Currencies on order related bookings. This should not happen at all!"
+#: browser/order.pt:80
+msgid "inconsistent_currencies"
+msgstr "Inconsistente valuta gevonden in bestellingen. Dit mag niet gebeuren!"
+
+# label_mailtemplatelib_array
+msgid "label_mailtemplatelib_array"
+msgstr "Sjablonen bibliotheek"
+
+# label_mailtemplatelib_save
+msgid "label_mailtemplatelib_save"
+msgstr "Opslaan"
+
+# label_mailtemplatelib_template
+msgid "label_mailtemplatelib_template"
+msgstr "Sjabloon"
+
+# label_mailtemplatelib_title
+msgid "label_mailtemplatelib_title"
+msgstr "Titel"
+
+#. Default: "Last Name"
+#: browser/views.py:380
+msgid "lastname"
+msgstr "Achternaam"
+
+#. Default: "Loading Data, please wait..."
+#: browser/table.pt:31
+msgid "loading_please_wait"
+msgstr "Data aan het laden, even geduld..."
+
+#. Default: "Mark outstanding"
+#: vocabularies.py:49
+msgid "mark_outstanding"
+msgstr "Markeer onbetaald"
+
+#. Default: "Mark salaried"
+#: vocabularies.py:47
+msgid "mark_salaried"
+msgstr "Markeer betaald"
+
+#. Default: "Misses"
+#: browser/notify_customers.py:25
+msgid "misses"
+msgstr "Mevrouw"
+
+#. Default: "Mister"
+#: browser/notify_customers.py:24
+msgid "mister"
+msgstr "Meneer"
+
+#. Default: "Mister/Misses"
+#: browser/notify_customers.py:23
+msgid "mister_misses"
+msgstr "Meneer/Mevrouw"
+
+#. Default: "Mixed"
+#: vocabularies.py:20
+msgid "mixed"
+msgstr "Gemixt"
+
+#. Default: "New"
+#: vocabularies.py:15
+msgid "new"
+msgstr "Nieuw"
+
+#. Default: "No"
+#: browser/views.py:762 vocabularies.py:38
+msgid "no"
+msgstr "Nee"
+
+#. Default: "No Payment"
+#: common.py:274
+msgid "no_payment"
+msgstr "Geen betaalmethode"
+
+#. Default: "No Shipping"
+#: common.py:299
+msgid "no_shipping"
+msgstr "Geen verzending"
+
+#. Default: "No template selected"
+#: browser/notify_customers.py:50
+msgid "no_template_selected"
+msgstr "Geen sjabloon geselecteerd"
+
+#. Default: "None"
+#: browser/views.py:745
+msgid "none"
+msgstr "Geen"
+
+#. Default: "Notify customers of selected orders"
+#: browser/views.py:466
+msgid "notify_customers"
+msgstr "Bericht klanten van geselecteerde bestellingen"
+
+# notify_customers_heading
+msgid "notify_customers_heading"
+msgstr "Bericht klanten"
+
+#. Default: "Order Bookings:"
+#: browser/order.pt:157
+msgid "order_bookings"
+msgstr "Bestellingen"
+
+#. Default: "Order Comment:"
+#: browser/order.pt:146
+msgid "order_comment"
+msgstr "Bestel commentaar"
+
+#. Default: "Company:"
+#: browser/order.pt:30
+msgid "order_company"
+msgstr "Bedrijf:"
+
+#. Default: "Country:"
+#: browser/order.pt:46
+msgid "order_country"
+msgstr "Land:"
+
+#. Default: "Created:"
+#: browser/order.pt:56
+msgid "order_created"
+msgstr "Gemaakt:"
+
+#. Default: "Order Details"
+#: browser/order.pt:8
+msgid "order_details"
+msgstr "Details bestelling"
+
+#. Default: "Discount Net:"
+#: browser/order.pt:93
+msgid "order_discount_net"
+msgstr "Korting netto:"
+
+#. Default: "Discount VAT:"
+#: browser/order.pt:96
+msgid "order_discount_vat"
+msgstr "Korting BTW:"
+
+#. Default: "Order Done"
+#: browser/views.py:1223
+msgid "order_done"
+msgstr "Bestelling afgerond"
+
+#. Default: "continue"
+#: browser/order_done.pt:30
+msgid "order_done_continue"
+msgstr "Verder"
+
+#. Default: "Email:"
+#: browser/order.pt:27
+msgid "order_email"
+msgstr "E-mail:"
+
+#. Default: "Gender:"
+#: browser/order.pt:20
+msgid "order_gender"
+msgstr "Geslacht:"
+
+#. Default: "Name:"
+#: browser/order.pt:23
+msgid "order_name"
+msgstr "Naam:"
+
+#. Default: "Net:"
+#: browser/order.pt:87
+msgid "order_net"
+msgstr "Netto:"
+
+#. Default: "No Comment"
+#: browser/order.pt:149
+msgid "order_no_comment"
+msgstr "Geen commentaar"
+
+#. Default: "No delivery Address defined"
+#: browser/order.pt:140
+msgid "order_no_delivery_address"
+msgstr "Geen bezorgadres opgegeven"
+
+#. Default: "Ordernumber:"
+#: browser/order.pt:14
+msgid "order_number"
+msgstr "Bestelnummer:"
+
+#. Default: "Your Order number: ${number}"
+#: browser/order_done.pt:25
+msgid "your_order_order_id"
+msgstr "Uw bestelnummer: ${number}"
+
+#. Default: "Payment:"
+#: browser/order.pt:59
+msgid "order_payment"
+msgstr "Betaling:"
+
+#. Default: "Phone:"
+#: browser/order.pt:33
+msgid "order_phone"
+msgstr "Telefoon:"
+
+#. Default: "Salaried:"
+#: browser/order.pt:62
+msgid "order_salaried"
+msgstr "Betaald:"
+
+#. Default: "Shipping Net:"
+#: browser/order.pt:102
+msgid "order_shipping_costs_net"
+msgstr "Verzending netto:"
+
+#. Default: "Shipping VAT:"
+#: browser/order.pt:105
+msgid "order_shipping_costs_vat"
+msgstr "Verzending BTW:"
+
+#. Default: "Shipping:"
+#: browser/order.pt:99
+msgid "order_shipping_title"
+msgstr "Verzending:"
+
+#. Default: "State:"
+#: browser/order.pt:68
+msgid "order_state"
+msgstr "Status:"
+
+#. Default: "Order State:"
+#: browser/order.pt:55
+msgid "order_state_heading"
+msgstr "Bestelstatus:"
+
+#. Default: "Street:"
+#: browser/order.pt:39
+msgid "order_street"
+msgstr "Straat:"
+
+#. Default: "Order Summary:"
+#: browser/order.pt:73
+msgid "order_summary"
+msgstr "Besteloverzicht:"
+
+#. Default: "Net: ${value} ${currency}"
+#: mailnotify.py:97
+msgid "order_summary_cart_net"
+msgstr "Netto: ${value} ${currency}"
+
+#. Default: "Total: ${value} ${currency}"
+#: mailnotify.py:192
+msgid "order_summary_cart_total"
+msgstr "Totaal: ${value} ${currency}"
+
+#. Default: "VAT: ${value} ${currency}"
+#: mailnotify.py:107
+msgid "order_summary_cart_vat"
+msgstr "BTW: ${value} ${currency}"
+
+#. Default: "Discount Net: ${value} ${currency}"
+#: mailnotify.py:119
+msgid "order_summary_discount_net"
+msgstr "Korting netto: ${value} ${currency}"
+
+#. Default: "Discount Total: ${value} ${currency}"
+#: mailnotify.py:139
+msgid "order_summary_discount_total"
+msgstr "Totaal korting: ${value} ${currency}"
+
+#. Default: "Discount VAT: ${value} ${currency}"
+#: mailnotify.py:129
+msgid "order_summary_discount_vat"
+msgstr "Korting BTW: ${value} ${currency}"
+
+#. Default: "Summary:"
+#: mailnotify.py:201
+msgid "order_summary_label"
+msgstr "Overzicht:"
+
+#. Default: "Shipping: ${label}"
+#: mailnotify.py:152
+msgid "order_summary_shipping_label"
+msgstr "Verzending: ${label}"
+
+#. Default: "Shipping Net: ${value} ${currency}"
+#: mailnotify.py:163
+msgid "order_summary_shipping_net"
+msgstr "Verzending netto: ${value} ${currency}"
+
+#. Default: "Shipping Total: ${value} ${currency}"
+#: mailnotify.py:183
+msgid "order_summary_shipping_total"
+msgstr "Verzending totaal: ${value} ${currency}"
+
+#. Default: "Shipping VAT: ${value} ${currency}"
+#: mailnotify.py:173
+msgid "order_summary_shipping_vat"
+msgstr "Verzending BTW: ${value} ${currency}"
+
+#. Default: "Thanks for your Order."
+#: browser/views.py:1240
+msgid "order_text"
+msgstr "Bedankt voor uw bestelling."
+
+#. Default: "Total:"
+#: browser/order.pt:108
+msgid "order_total"
+msgstr "Totaal:"
+
+#. Default: "Order UID:"
+#: browser/order.pt:10
+msgid "order_uid"
+msgstr "Bestelling UID:"
+
+#. Default: "VAT:"
+#: browser/order.pt:90
+msgid "order_vat"
+msgstr "BTW:"
+
+#. Default: "ZIP/City:"
+#: browser/order.pt:42
+msgid "order_zip_city"
+msgstr "Postcode/Stad:"
+
+#. Default: "Orders"
+#: browser/orders.pt:8
+msgid "orders"
+msgstr "Bestellingen"
+
+#. Default: "Personal Data:"
+#: browser/order.pt:19
+msgid "personal_data"
+msgstr "Persoonlijke data:"
+
+#. Default: "Process"
+#: vocabularies.py:28
+msgid "process"
+msgstr "Proces"
+
+#. Default: "Processing"
+#: vocabularies.py:16
+msgid "processing"
+msgstr "In behandeling"
+
+#. Default: "Renew"
+#: vocabularies.py:27
+msgid "renew"
+msgstr "Verversen"
+
+#. Default: "Reservation Done"
+#: browser/views.py:1222
+msgid "reservation_done"
+msgstr "Reservering is voltooid"
+
+#. Default: "Thanks for your Reservation."
+#: browser/views.py:1238
+msgid "reservation_text"
+msgstr "Bedankt voor uw reservering."
+
+#. Default: "Reserved"
+#: vocabularies.py:19
+msgid "reserved"
+msgstr "Gereserveerd"
+
+#. Default: "Salaried"
+#: browser/views.py:389
+msgid "salaried"
+msgstr "Betaald"
+
+#. Default: "Select all visible orders"
+#: browser/views.py:457
+msgid "select_all_orders"
+msgstr "Selecteer alle zichtbare bestellingen"
+
+# send
+msgid "send"
+msgstr "Verzenden"
+
+#. Default: "State"
+#: browser/views.py:393
+msgid "state"
+msgstr "Status"
+
+# subject
+msgid "subject"
+msgstr "Onderwerp"
+
+# subject_required
+msgid "subject_required"
+msgstr "Onderwerp vereist"
+
+# template
+msgid "template"
+msgstr "Sjabloon"
+
+# text
+msgid "text"
+msgstr "Bericht"
+
+# text_placeholders
+msgid "text_placeholders"
+msgstr "Tekst met placeholders"
+
+# text_required
+msgid "text_required"
+msgstr "Tekst voor bericht is vereist"
+
+#. Default: "Example Value"
+#: browser/mailtemplates_view.pt:54
+msgid "th_mailtemplatelib_example"
+msgstr "Voorbeeld waarde"
+
+#. Default: "Placeholder"
+#: browser/mailtemplates_view.pt:53
+msgid "th_mailtemplatelib_placeholder"
+msgstr "Placeholder"
+
+#. Default: "Can Buy"
+#: localroles.py:17
+msgid "title_customer_role"
+msgstr "Kan kopen"
+
+#. Default: "Can Sell"
+#: localroles.py:10
+msgid "title_vendor_role"
+msgstr "Kan verkopen"
+
+# to_date
+msgid "to_date"
+msgstr "Tot"
+
+# to_date_required
+msgid "to_date_required"
+msgstr "Tot-datum is vereist"
+
+#. Default: "Transaction ID:"
+#: browser/order.pt:65
+msgid "transaction_id"
+msgstr "Transacties ID:"
+
+#. Default: "Unknown"
+#: browser/views.py:755 common.py:270 upgrades.py:218
+msgid "unknown"
+msgstr "Onbekend"
+
+#. Default: "Unknown Order"
+#: browser/views.py:1225
+msgid "unknown_order"
+msgstr "Onbekende bestelling"
+
+#. Default: "Sorry, this order does not exist."
+#: browser/views.py:1242
+msgid "unknown_order_text"
+msgstr "Excuus, uw bestelling bestaat niet."
+
+# vendor_filter
+msgid "vendor_filter"
+msgstr "Verkoper"
+
+#. Default: "View Order"
+#: browser/views.py:490
+msgid "view_order"
+msgstr "Bekijk bestelling"
+
+#. Default: "Yes"
+#: browser/views.py:762 vocabularies.py:37
+msgid "yes"
+msgstr "Ja"
