@@ -10,6 +10,7 @@ Changelog
   filtering and text index support. The ``Bookings`` view gets called on the
   portal root and the ``Bookings in Context`` returns all bookings data on
   the corresponding context it is called.
+  [benniboy]
 
 - Major cleanup - code-analysis integrated, travis ci and moved IBuyable from
   bda.plone.shop to this package to avoid circular dependencies.
