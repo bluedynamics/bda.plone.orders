@@ -248,4 +248,5 @@ Contributors
 - Peter Holzer
 - Harald Frießnegger
 - Ezra Holder
+- Benjamin Stefaner (benniboy)
 

@@ -1,0 +1,73 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      lang="en"
+        metal:use-macro="here/main_template/macros/master"
+        i18n:domain="bda.plone.orders">
+
+<head>
+    <metal:top fill-slot="top_slot">
+        <tal:border define="dummy python:request.set('disable_border', True)"/>
+    </metal:top>
+</head>
+
+<body>
+<metal:main fill-slot="main">
+    <tal:main-macro metal:define-macro="main">
+        <div id="bookings_wrapper">
+            <div class="ajaxtable"
+                    tal:attributes="data-tablename view/__name__">
+
+                <h1 class="documentFirstHeading" i18n:translate="bookings">
+                    Bookings
+                </h1>
+
+                <div class="group_filter"
+                        tal:attributes="ajax:target context/absolute_url">
+                    <tal:filter replace="structure view/render_group_filter"/>
+                </div>
+
+                <div class="date_from_filter"
+                        tal:attributes="ajax:target context/absolute_url">
+                    <tal:filter replace="structure view/render_date_from_filter"/>
+                </div>
+
+                <div class="date_to_filter"
+                        tal:attributes="ajax:target context/absolute_url">
+                    <tal:filter replace="structure view/render_date_to_filter"/>
+                </div>
+
+                <table tal:define="ajaxurl view/ajaxurl;
+                                   columns view/columns"
+                       tal:attributes="data-ajaxurl ajaxurl;
+                                       id view/table_id">
+                    <thead>
+                    <tr>
+                        <tal:loop repeat="colinfo columns">
+                            <th tal:attributes="class python: 'datarow-' + colinfo['id']">
+                                <tal:additional
+                                        condition="nocall:colinfo/head|nothing"
+                                        replace="structure colinfo/head"/>
+                                    <span tal:replace="python: colinfo['label']">
+                                Title</span>
+                            </th>
+                        </tal:loop>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    <tr>
+                        <td tal:attributes="columnspan: python:len(columns)"
+                                i18n:translate="loading_please_wait">
+                            Loading Data, please wait...
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </tal:main-macro>
+</metal:main>
+</body>
+</html>

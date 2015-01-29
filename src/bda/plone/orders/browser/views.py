@@ -285,6 +285,7 @@ class TableData(BrowserView):
         length, lazydata = self.query(soup)
         columns = self.columns
         colnames = [_['id'] for _ in columns]
+        # todo json response header einbaun
 
         def record2list(record):
             result = list()

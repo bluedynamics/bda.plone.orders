@@ -3,6 +3,7 @@ from bda.plone.cart import get_object_by_uid
 from bda.plone.orders import message_factory as _
 from bda.plone.orders.common import acquire_vendor_or_shop_root
 from bda.plone.orders.common import get_bookings_soup
+from bda.plone.orders.common import get_order
 from bda.plone.orders.common import get_orders_soup
 from bda.plone.orders.common import OrderData
 from bda.plone.orders.interfaces import ITrading
@@ -368,3 +369,32 @@ def reset_records(ctx=None):
                 booking.attrs['uid']
             )
         )
+
+
+def fix_bookings_email(ctx=None):
+    """Add email attribute to booking records from the corresponding order.
+    """
+    portal = getSite()
+    soup = get_bookings_soup(portal)
+    data = soup.storage.data
+    need_rebuild = False
+    for item in data.values():
+        update = False
+        try:
+            item.attrs['email']
+        except KeyError:
+            update = True
+        if not update:
+            continue
+
+        order = get_order(portal, item.attrs['order_uid'])
+        email = order.attrs.get('personal_data.email', 'n/a')
+
+        item.attrs['email'] = email
+        need_rebuild = True
+        logging.info(
+            "Added email to booking {0}".format(item.attrs['uid'])
+        )
+    if need_rebuild:
+        soup.rebuild()
+        logging.info("Rebuilt bookings catalog")
