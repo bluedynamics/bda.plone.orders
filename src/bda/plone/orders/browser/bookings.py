@@ -18,7 +18,6 @@ from yafowil.base import factory
 from zExceptions import InternalError
 from zope.i18n import translate
 
-
 import datetime
 import json
 import plone.api
@@ -31,7 +30,7 @@ class BookingsTable(BrowserView):
     data_view_name = '@@bookingsdata'
 
     def render_group_filter(self):
-        #group orders
+        # group orders
         groups = vocabs.groups_vocab()
         group_selector = factory(
             'label:select',
@@ -246,21 +245,23 @@ class BookingsTable(BrowserView):
             },
             {
                 'id': 'bookings_total_sum',
-                'label': _('bookings_total_sum', default=u'Bookings total sum'),
+                'label': _(
+                    'bookings_total_sum',
+                    default=u'Bookings total sum'
+                ),
                 'renderer': self.render_bookings_total_sum,
                 'origin': 'b',
             }
         ]
 
     def jsondata(self):
+        # json response header needed?
         soup = get_bookings_soup(self.context)
         aaData = list()
         size, result = self.query(soup)
 
         columns = self.columns
         colnames = [_['id'] for _ in columns]
-        # todo json response header einbaun ?
-        # header('Content-Type: application/json');
 
         def record2list(record, bookings_quantity=None):
             result = list()
@@ -299,9 +300,10 @@ class BookingsTable(BrowserView):
             "recordsFiltered": size,
             "data": aaData,
         }
+
         return json.dumps(data)
 
- # helper methods
+# helper methods
     def _get_price(self, record):
         """
         returns net + vat price
@@ -400,7 +402,7 @@ class BookingsTable(BrowserView):
     def query(self, soup):
         self._get_buyables_in_context()
         req_group_id = self.request.get('group_by', 'email')
-        #if no req group is set
+        # if no req group is set
         if len(req_group_id) == 0:
             req_group_id = 'email'
 
