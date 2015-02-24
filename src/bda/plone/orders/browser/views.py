@@ -613,8 +613,10 @@ class OrdersData(OrdersTable, TableData):
         # filter by search term if given
         term = self.request.form['sSearch'].decode('utf-8')
         if term:
+            # append * for proper fulltext search
+            term += '*'
             query = query & Contains(self.search_text_index, term)
-        # get buyavle uids for given context, get all buyables on site root
+        # get buyable uids for given context, get all buyables on site root
         if not ISite.providedBy(self.context):
             buyable_uids = self._get_buyables_in_context()
             query = query & Any('buyable_uids', buyable_uids)
@@ -637,6 +639,8 @@ class MyOrdersData(MyOrdersTable, TableData):
         # filter by search term if given
         term = self.request.form['sSearch'].decode('utf-8')
         if term:
+            # append * for proper fulltext search
+            term += '*'
             query = query & Contains(self.search_text_index, term)
         # query orders and return result
         sort = self.sort()

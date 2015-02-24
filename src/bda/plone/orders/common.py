@@ -234,6 +234,7 @@ class OrdersCatalogFactory(object):
         catalog[u'billing_address.city'] = CatalogFieldIndex(city_indexer)
         search_attributes = ['personal_data.lastname',
                              'personal_data.firstname',
+                             'personal_data.email',
                              'billing_address.city',
                              'ordernumber']
         text_indexer = NodeTextIndexer(search_attributes)
