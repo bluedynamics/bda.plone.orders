@@ -217,6 +217,8 @@ class OrdersCatalogFactory(object):
         booking_uids_indexer = NodeAttributeIndexer('booking_uids')
         catalog[u'booking_uids'] = CatalogKeywordIndex(booking_uids_indexer)
         vendor_uids_indexer = NodeAttributeIndexer('vendor_uids')
+        buyable_uids_indexer = NodeAttributeIndexer('buyable_uids')
+        catalog[u'buyable_uids'] = CatalogKeywordIndex(buyable_uids_indexer)
         catalog[u'vendor_uids'] = CatalogKeywordIndex(vendor_uids_indexer)
         creator_indexer = NodeAttributeIndexer('creator')
         catalog[u'creator'] = CatalogFieldIndex(creator_indexer)
@@ -319,13 +321,16 @@ class OrderCheckoutAdapter(CheckoutAdapter):
             order.attrs['shipping'] = Decimal(0)
         # create order bookings
         bookings = self.create_bookings(order)
-        # lookup booking uids and vendor uids
+        # lookup booking uids, buyable uids and vendor uids
         booking_uids = list()
+        buyable_uids = list()
         vendor_uids = set()
         for booking in bookings:
             booking_uids.append(booking.attrs['uid'])
+            buyable_uids.append(booking.attrs['buyable_uid'])
             vendor_uids.add(booking.attrs['vendor_uid'])
         order.attrs['booking_uids'] = booking_uids
+        order.attrs['buyable_uids'] = buyable_uids
         order.attrs['vendor_uids'] = list(vendor_uids)
         # cart discount related information
         cart_discount = cart_data.discount(self.items)

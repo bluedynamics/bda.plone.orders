@@ -41,6 +41,7 @@ from yafowil.base import factory
 from yafowil.controller import Controller
 from yafowil.plone.form import YAMLForm
 from yafowil.utils import Tag
+from zope.component.interfaces import ISite
 from zope.i18n import translate
 from zope.i18nmessageid import Message
 
@@ -539,8 +540,9 @@ class OrdersTable(OrdersTableBase):
         ]
         query = urllib.urlencode(dict([it for it in params if it[1]]))
         query = query and '?{0}'.format(query) or ''
-        site = plone.api.portal.get()
-        return '%s/%s%s' % (site.absolute_url(), self.data_view_name, query)
+        # site = plone.api.portal.get()
+        # return '%s/%s%s' % (site.absolute_url(), self.data_view_name, query)
+        return '%s/%s%s' % (self.context.absolute_url(), self.data_view_name, query)
 
     def __call__(self):
         # check if authenticated user is vendor
@@ -581,6 +583,13 @@ class OrdersData(OrdersTable, TableData):
     soup_name = 'bda_plone_orders_orders'
     search_text_index = 'text'
 
+    def _get_buyables_in_context(self):
+        catalog = plone.api.portal.get_tool("portal_catalog")
+        path = '/'.join(self.context.getPhysicalPath())
+        brains = catalog(path=path, object_provides=IBuyable.__identifier__)
+        for brain in brains:
+            yield brain.UID
+
     def query(self, soup):
         # fetch user vendor uids
         vendor_uids = get_vendor_uids_for()
@@ -602,6 +611,10 @@ class OrdersData(OrdersTable, TableData):
         term = self.request.form['sSearch'].decode('utf-8')
         if term:
             query = query & Contains(self.search_text_index, term)
+        # get buyavle uids for given context, get all buyables on site root
+        if not ISite.providedBy(self.context):
+            buyable_uids = self._get_buyables_in_context()
+            query = query & Any('buyable_uids', buyable_uids)
         # query orders and return result
         sort = self.sort()
         res = soup.lazy(query,

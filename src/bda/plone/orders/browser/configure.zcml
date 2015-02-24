@@ -19,7 +19,7 @@
 
   <!-- orders view -->
   <browser:page
-    for="zope.component.interfaces.ISite"
+    for="*"
     name="orders"
     template="orders_view.pt"
     class=".views.OrdersView"
@@ -36,7 +36,7 @@
 
   <!-- orders table -->
   <browser:page
-    for="zope.component.interfaces.ISite"
+    for="*"
     name="orderstable"
     template="orders.pt"
     class=".views.OrdersTable"
@@ -71,7 +71,7 @@
 
   <!-- orders data -->
   <browser:page
-    for="zope.component.interfaces.ISite"
+    for="*"
     name="ordersdata"
     class=".views.OrdersData"
     permission="bda.plone.orders.ViewOrders"
