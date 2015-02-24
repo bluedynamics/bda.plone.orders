@@ -101,7 +101,7 @@
 
   <!-- order view -->
   <browser:page
-    for="zope.component.interfaces.ISite"
+    for="*"
     name="order"
     template="order.pt"
     class=".views.OrderView"

@@ -387,6 +387,9 @@ class OrdersTableBase(BrowserView):
             'id': 'personal_data.firstname',
             'label': _('firstname', default=u'First Name'),
         }, {
+            'id': 'personal_data.email',
+            'label': _('email', default=u'Email'),
+        }, {
             'id': 'billing_address.city',
             'label': _('city', default=u'City'),
         }, {
