@@ -42,6 +42,10 @@
     name="bda_plone_orders_orders"
     factory=".common.OrdersCatalogFactory"/>
 
+  <utility
+    name="bda_plone_orders_contacts"
+    factory=".contacts.ContactsCatalogFactory" />
+
   <!-- order checkout adapter -->
   <adapter
     for="*
@@ -80,4 +84,8 @@
     for="bda.plone.checkout.interfaces.ICheckoutDone"
     handler=".mailnotify.dispatch_notify_checkout_success"/>
 
+  <!-- create contact on checkout success and save it in soup catalog-->
+  <subscriber
+    for="bda.plone.checkout.interfaces.ICheckoutDone"
+    handler=".contacts.save_contact" />
 </configure>

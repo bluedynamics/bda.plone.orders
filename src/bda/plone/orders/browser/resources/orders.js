@@ -5,6 +5,7 @@
             orders_datatable_binder: orders.datatable_binder,
             orders_filter_binder: orders.filter_binder,
             orders_bookings_datatable_binder: orders.bookings_datatable_binder,
+            orders_contacts_datatable_binder: orders.contacts_datatable_binder,
             orders_dropdown_menus: orders.dropdown_binder,
             orders_notification_form_binder: orders.notification_form_binder,
             orders_qr_code_binder: orders.qr_code_binder
@@ -12,6 +13,7 @@
         orders.datatable_binder(document);
         orders.filter_binder(document);
         orders.bookings_datatable_binder(document);
+        orders.contacts_datatable_binder(document);
         orders.order_select_binder(document);
         orders.notification_binder(document);
         orders.qr_code_binder(document);
@@ -38,6 +40,14 @@
 
         datatable_binder: function(context) {
             var url = $('#bdaploneorders', context).attr('data-ajaxurl');
+            // if the table gets called with a hash (this happens on the contacts
+            // site) then the table gets initialized via oSearch to only show orders
+            // that match the given email
+            var hash = window.location.hash.substring(1);
+            //hide customer filter if hash is sent
+            if (hash) {
+                $('.filter').hide();
+            }
             var oTable = $('#bdaploneorders', context).dataTable({
                 "bProcessing": true,
                 "bServerSide": true,
@@ -51,10 +61,10 @@
                     'aTargets': [0]
                 }],
                 "aaSorting": [[1, "desc"]],
+                "oSearch": {"sSearch": hash},
                 "fnDrawCallback": orders.bind
             });
         },
-
 
         filter_binder: function(context) {
             $('#input-vendor').unbind('change')
@@ -157,6 +167,10 @@
 
         bookings_datatable_binder: function (context) {
             var url = $('#bdaplonebookings', context).attr('data-ajaxurl');
+            // if the table gets called with a hash (this happens on the contacts
+            // site) then the table gets initialized via oSearch to only show orders
+            // that match the given email
+            var hash = window.location.hash.substring(1);
             var oTable;
             oTable = $('#bdaplonebookings', context).DataTable({
                 "sort": false,
@@ -192,6 +206,7 @@
                 "sorting": [
                     [1, "desc"]
                 ],
+                "oSearch": {"sSearch": hash},
 
                 "initComplete": function () {
                     $(".group_filter").detach().appendTo('.customfilter');
@@ -237,6 +252,34 @@
                         api.column(4).visible(show = false);
                     }
                 }
+            });
+        },
+
+        contacts_datatable_binder: function (context) {
+            var url = $('#bdaplonecontacts', context).attr('data-ajaxurl');
+            var oTable;
+            oTable = $('#bdaplonecontacts', context).DataTable({
+                "sort": false,
+                "processing": true,
+                "serverSide": true,
+                "ajax": {
+                    "url": url,
+                    "data": function (d) {
+                    }
+                },
+                "paginationType": "full_numbers",
+                "lengthMenu": [
+                    [5, 10, 20],
+                    [5, 10, 20]
+                ],
+                "displayLength": 5,
+                "language": {
+                    "url": "@@collective.js.datatables.translation"
+                },
+
+                "sorting": [
+                    [0, "desc"]
+                ]
             });
         },
 

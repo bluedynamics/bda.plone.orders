@@ -69,6 +69,24 @@
     permission="bda.plone.orders.ViewOrders"
     layer="..interfaces.IOrdersExtensionLayer"/>
 
+  <!-- contacts view -->
+  <browser:page
+    for="zope.component.interfaces.ISite"
+    name="contacts"
+    template="contacts.pt"
+    class=".contacts.ContactsTable"
+    permission="bda.plone.orders.ViewOrders"
+    layer="..interfaces.IOrdersExtensionLayer" />
+
+ <!-- contacts json -->
+  <browser:page
+    for="zope.component.interfaces.ISite"
+    name="contactsdata"
+    class=".contacts.ContactsTable"
+    attribute="jsondata"
+    permission="bda.plone.orders.ViewOrders"
+    layer="..interfaces.IOrdersExtensionLayer"/>
+
   <!-- orders data -->
   <browser:page
     for="*"
