@@ -82,4 +82,11 @@
     profile="bda.plone.orders:default"
     handler=".upgrades.fix_bookings_email"/>
 
+  <genericsetup:upgradeStep
+    source="8"
+    destination="9"
+    title="Add email to contacts"
+    description=""
+    profile="bda.plone.orders:default"
+    handler=".upgrades.fix_contacts_email"/>
 </configure>

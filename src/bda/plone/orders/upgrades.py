@@ -6,6 +6,7 @@ from bda.plone.orders.common import get_bookings_soup
 from bda.plone.orders.common import get_order
 from bda.plone.orders.common import get_orders_soup
 from bda.plone.orders.common import OrderData
+from bda.plone.orders.contacts import get_contacts_soup
 from bda.plone.orders.interfaces import ITrading
 from bda.plone.payment import Payments
 from bda.plone.shipping.interfaces import IShippingItem
@@ -398,3 +399,30 @@ def fix_bookings_email(ctx=None):
     if need_rebuild:
         soup.rebuild()
         logging.info("Rebuilt bookings catalog")
+
+
+def fix_contacts_email(ctx=None):
+    """Add email attribute to contact records.
+    """
+    portal = getSite()
+    soup = get_contacts_soup(portal)
+    data = soup.storage.data
+    need_rebuild = False
+    for item in data.values():
+        update = False
+        try:
+            item.attrs['email']
+        except KeyError:
+            update = True
+        if not update:
+            continue
+
+        email = item.attrs.get('personal_data.email', 'n/a')
+        item.attrs['email'] = email
+        need_rebuild = True
+        logging.info(
+            "Added email to contact {0}".format(item.attrs['uid'])
+        )
+    if need_rebuild:
+        soup.rebuild()
+        logging.info("Rebuilt contacts catalog")
