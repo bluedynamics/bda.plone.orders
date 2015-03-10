@@ -214,20 +214,34 @@ class OrdersCatalogFactory(object):
         catalog[u'uid'] = CatalogFieldIndex(uid_indexer)
         email_indexer = NodeAttributeIndexer('email')
         catalog[u'email'] = CatalogFieldIndex(email_indexer)
+        ordernumber_indexer = NodeAttributeIndexer('ordernumber')
+        catalog[u'ordernumber'] = CatalogFieldIndex(ordernumber_indexer)
+        booking_uids_indexer = NodeAttributeIndexer('booking_uids')
+        catalog[u'booking_uids'] = CatalogKeywordIndex(booking_uids_indexer)
+        vendor_uids_indexer = NodeAttributeIndexer('vendor_uids')
+        buyable_uids_indexer = NodeAttributeIndexer('buyable_uids')
+        catalog[u'buyable_uids'] = CatalogKeywordIndex(buyable_uids_indexer)
+        catalog[u'vendor_uids'] = CatalogKeywordIndex(vendor_uids_indexer)
+        creator_indexer = NodeAttributeIndexer('creator')
+        catalog[u'creator'] = CatalogFieldIndex(creator_indexer)
+        created_indexer = NodeAttributeIndexer('created')
+        catalog[u'created'] = CatalogFieldIndex(created_indexer)
         firstname_indexer = NodeAttributeIndexer('personal_data.firstname')
         catalog[u'personal_data.firstname'] = \
             CatalogFieldIndex(firstname_indexer)
         lastname_indexer = NodeAttributeIndexer('personal_data.lastname')
         catalog[u'personal_data.lastname'] = \
             CatalogFieldIndex(lastname_indexer)
-
+        city_indexer = NodeAttributeIndexer('billing_address.city')
+        catalog[u'billing_address.city'] = CatalogFieldIndex(city_indexer)
         search_attributes = ['personal_data.lastname',
                              'personal_data.firstname',
-                             'personal_data.email']
+                             'personal_data.email',
+                             'billing_address.city',
+                             'ordernumber']
         text_indexer = NodeTextIndexer(search_attributes)
         catalog[u'text'] = CatalogTextIndex(text_indexer)
         return catalog
-
 
 
 class OrderCheckoutAdapter(CheckoutAdapter):
