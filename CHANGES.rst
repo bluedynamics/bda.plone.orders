@@ -2,8 +2,11 @@
 Changelog
 =========
 
-0.9.dev0
---------
+0.9.dev
+-------
+
+- Fix: Calculation of price in listings with a vat of zero failed.
+  [jensens]
 
 - Add two datatable views, in which bookings are displayed and can be grouped
   by the buyers email adress or the buyable uid. Both views support daterange

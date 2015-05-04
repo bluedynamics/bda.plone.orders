@@ -312,10 +312,9 @@ class BookingsTable(BrowserView):
         if net and vat_percent:
             net = Decimal(net)
             vat_percent = Decimal(vat_percent)
-            vat = (100 + vat_percent) / 100
-            vat = Decimal(vat)
-            price = net * vat
-            return price
+            vat = 1 + vat_percent / 100
+            return net * vat
+        return net and Decimal(net) or Decimal(0)
 
     def _get_sum(self, record):
         """
@@ -326,8 +325,8 @@ class BookingsTable(BrowserView):
         if price and count:
             count = Decimal(count)
             sum = price * count
-            sum = Decimal(sum)
-            return sum
+            return Decimal(sum)
+        return Decimal(0)
 
     def _get_ordervalue(self, colname, record):
         """
