@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
-from bda.intellidatetime import convert
+from Products.Five import BrowserView
 from bda.intellidatetime import DateTimeConversionError
+from bda.intellidatetime import convert
 from bda.plone.orders import message_factory as _
 from bda.plone.orders import vocabularies as vocabs
 from bda.plone.orders.common import DT_FORMAT
@@ -9,7 +10,6 @@ from bda.plone.orders.common import get_order
 from bda.plone.orders.interfaces import IBuyable
 from decimal import Decimal
 from odict import odict
-from Products.Five import BrowserView
 from repoze.catalog.query import Contains
 from repoze.catalog.query import Ge
 from repoze.catalog.query import InRange
@@ -21,8 +21,7 @@ from zope.i18n import translate
 import datetime
 import json
 import plone.api
-
-import yafowil.loader  # loads registry  # nopep8
+import yafowil.loader  # noqa
 
 
 class BookingsTable(BrowserView):
@@ -287,7 +286,7 @@ class BookingsTable(BrowserView):
             bookings_quantity = 0
             bookings_total_sum = 0
             for record in result[key]:
-                bookings_quantity += record.attrs.get('buyable_count')
+                bookings_quantity += record.attrs.get('buyable_count') or 0
                 bookings_total_sum += self._get_sum(record)
             for record in result[key]:
                 record._v_bookings_quantity = bookings_quantity
