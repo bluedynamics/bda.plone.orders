@@ -5,6 +5,10 @@ Changelog
 0.9.dev
 -------
 
+- Move export related code in own file to reduce length and increase 
+  readability
+  [jensens]
+
 - Fix: Calculation of price in listings with a vat of zero failed.
   [jensens]
 

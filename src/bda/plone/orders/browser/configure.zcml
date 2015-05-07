@@ -175,14 +175,14 @@
   <browser:page
     for="zope.component.interfaces.ISite"
     name="exportorders"
-    class=".views.ExportOrdersForm"
+    class=".export.ExportOrdersForm"
     permission="bda.plone.orders.ExportOrders"
     layer="..interfaces.IOrdersExtensionLayer"/>
 
   <browser:page
     for="*"
     name="exportorders_contextual"
-    class=".views.ExportOrdersContextual"
+    class=".export.ExportOrdersContextual"
     permission="bda.plone.orders.ExportOrders"
     layer="..interfaces.IOrdersExtensionLayer"/>
 
