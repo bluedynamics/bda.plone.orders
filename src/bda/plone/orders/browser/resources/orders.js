@@ -8,7 +8,8 @@
             orders_contacts_datatable_binder: orders.contacts_datatable_binder,
             orders_dropdown_menus: orders.dropdown_binder,
             orders_notification_form_binder: orders.notification_form_binder,
-            orders_qr_code_binder: orders.qr_code_binder
+            orders_qr_code_binder: orders.qr_code_binder,
+            cancel_confirm_binder: orders.cancel_confirm_binder
         });
         orders.datatable_binder(document);
         orders.filter_binder(document);
@@ -17,6 +18,7 @@
         orders.order_select_binder(document);
         orders.notification_binder(document);
         orders.qr_code_binder(document);
+        orders.cancel_confirm_binder(document);
     });
 
     var orders = {
@@ -71,6 +73,19 @@
                               .bind('change', orders.filter_orders);
             $('#input-customer').unbind('change')
                                 .bind('change', orders.filter_orders);
+        },
+
+        cancel_confirm_binder: function(context) {
+            $('.booking-cancel-link')
+            .unbind('click')
+            .bind('click', orders.cancel_confirm);
+        },
+
+        cancel_confirm: function(event) {
+            var result = confirm('Are you sure?');
+            if (!result) {
+                event.preventDefault();
+            }
         },
 
         filter_orders: function(event) {

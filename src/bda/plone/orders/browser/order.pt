@@ -17,7 +17,7 @@
   <br />
 
   <strong i18n:translate="order_number">Ordernumber:</strong>
-  <span tal:replace="order/ordernumber">12345</span>
+  <span tal:replace="python:order.get('ordernumber', '-/-')">12345</span>
 
   <div class="order_details_row">
     <div class="personal_data">
@@ -192,7 +192,14 @@
             </td>
             <td tal:condition="show_exported" tal:content="python:view.exported(row)">No</td>
             <td tal:content="row/comment">comment</td>
-            <td tal:content="row/state">state</td>
+            <td>
+                <span tal:content="row/state">state</span>
+                <a tal:condition="python:view.can_cancel_booking"
+                   tal:attributes="href string:${context/absolute_url}/@@booking_cancel?uid=${row/uid}"
+                   i18n:translate="booking_cancel"
+                   class="booking-cancel-link discreet"
+                   href="#">cancel</a>
+            </td>
             <td tal:content="row/salaried">salaried</td>
           </tr>
 

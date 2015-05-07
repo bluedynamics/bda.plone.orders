@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 from AccessControl import Unauthorized
+from Products.Five import BrowserView
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from Products.statusmessages.interfaces import IStatusMessage
 from bda.plone.cart import ascur
 from bda.plone.cart import get_object_by_uid
 from bda.plone.checkout import message_factory as _co
@@ -9,29 +12,29 @@ from bda.plone.orders import message_factory as _
 from bda.plone.orders import permissions
 from bda.plone.orders import vocabularies as vocabs
 from bda.plone.orders.common import DT_FORMAT
+from bda.plone.orders.common import OrderData
+from bda.plone.orders.common import OrderTransitions
+from bda.plone.orders.common import get_bookings_soup
 from bda.plone.orders.common import get_order
 from bda.plone.orders.common import get_orders_soup
 from bda.plone.orders.common import get_vendor_by_uid
 from bda.plone.orders.common import get_vendor_uids_for
 from bda.plone.orders.common import get_vendors_for
-from bda.plone.orders.common import OrderData
-from bda.plone.orders.common import OrderTransitions
 from bda.plone.orders.interfaces import IBuyable
 from plone.memoize import view
-from Products.Five import BrowserView
-from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from Products.statusmessages.interfaces import IStatusMessage
 from repoze.catalog.query import Any
 from repoze.catalog.query import Contains
 from repoze.catalog.query import Eq
-from souper.soup import get_soup
 from souper.soup import LazyRecord
+from souper.soup import get_soup
 from yafowil.base import factory
 from yafowil.controller import Controller
 from yafowil.utils import Tag
+from zExceptions import BadRequest
 from zope.component.interfaces import ISite
 from zope.i18n import translate
 from zope.i18nmessageid import Message
+from zope.security import checkPermission
 
 import json
 import plone.api
@@ -143,8 +146,10 @@ class StateDropdown(OrderDropdown):
                 ifaces.STATE_TRANSITION_CANCEL,
                 ifaces.STATE_TRANSITION_RENEW
             ]
-        else:
+        elif state is not None:
             transitions = [ifaces.STATE_TRANSITION_RENEW]
+        else:  # empty dropdown
+            transitions = []
         return self.create_items(transitions)
 
 
@@ -717,13 +722,13 @@ class OrderViewBase(BrowserView):
             state = vocabs.state_vocab()[booking.attrs.get('state')]
             salaried = vocabs.salaried_vocab()[booking.attrs.get('salaried')]
             ret.append({
+                'uid': booking.attrs['uid'],
                 'title': booking.attrs['title'],
                 'url': obj.absolute_url(),
                 'count': booking.attrs['buyable_count'],
                 'net': ascur(booking.attrs.get('net', 0.0)),
                 'discount_net': ascur(float(booking.attrs['discount_net'])),
                 'vat': booking.attrs.get('vat', 0.0),
-                'exported': booking.attrs['exported'],
                 'comment': booking.attrs['buyable_comment'],
                 'quantity_unit': booking.attrs.get('quantity_unit'),
                 'currency': booking.attrs.get('currency'),
@@ -731,6 +736,10 @@ class OrderViewBase(BrowserView):
                 'salaried': salaried,
             })
         return ret
+
+    @property
+    def can_cancel_booking(self):
+        return checkPermission('bda.plone.orders.ModifyOrders', self.context)
 
     @property
     def gender(self):
@@ -809,6 +818,10 @@ class OrderView(OrderViewBase):
             uid=self.uid,
             vendor_uids=self.vendor_uids)
 
+    @property
+    def ordernumber(self):
+        return self.order_data.order.attrs['ordernumber']
+
 
 class MyOrderView(OrderViewBase):
 
@@ -818,6 +831,10 @@ class MyOrderView(OrderViewBase):
         if user.getId() != self.order['creator']:
             raise Unauthorized
         return super(MyOrderView, self).__call__()
+
+    @property
+    def ordernumber(self):
+        return self.order_data.order.attrs['ordernumber']
 
 
 class DirectOrderView(OrderViewBase):
@@ -950,3 +967,43 @@ class OrderDone(BrowserView):
         except ValueError:
             return _('unknown_order_text',
                      default=u'Sorry, this order does not exist.')
+
+
+class BookingCancel(BrowserView):
+
+    def __call__(self):
+        booking_uid = self.request.form.get('uid')
+        if not booking_uid:
+            raise BadRequest('value not given')
+        booking_uid = uuid.UUID(booking_uid)
+        bookings_soup = get_bookings_soup(self.context)
+        result = bookings_soup.query(
+            Eq('uid', booking_uid),
+            with_size=True
+        )
+        if result.next() != 1:  # first result is length
+            raise BadRequest('invalid value (booking)')
+        booking = result.next()
+        orders_soup = get_orders_soup(self.context)
+        result = orders_soup.query(
+            Eq('uid', booking.attrs['order_uid']),
+            with_size=True
+        )
+        if result.next() != 1:  # first result is length
+            raise ValueError('order_uid problem')
+        order = result.next()
+        order_booking_uids = order.attrs['booking_uids']
+        del order.attrs['booking_uids']
+        order.attrs['booking_uids'] = [
+            uid for uid in order_booking_uids
+            if uid != booking.attrs['order_uid']
+        ]
+        del bookings_soup[booking]
+        plone.api.portal.show_message(
+            message=_(u"Booking cancelled."),
+            request=self.request,
+            type='info'
+        )
+        self.request.response.redirect(
+            self.context.absolute_url() + '/@@orders'
+        )
