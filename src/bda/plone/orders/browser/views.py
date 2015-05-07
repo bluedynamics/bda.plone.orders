@@ -831,30 +831,6 @@ class DirectOrderView(OrderViewBase):
     ordernumber = ''
     email = ''
 
-    @property
-    def listing(self):
-        """Custom bookings listing to expose fewer options.
-        """
-        ret = list()
-        for booking in self.order_data.bookings:
-            obj = get_object_by_uid(self.context, booking.attrs['buyable_uid'])
-            state = vocabs.state_vocab()[booking.attrs.get('state')]
-            salaried = vocabs.salaried_vocab()[booking.attrs.get('salaried')]
-            ret.append({
-                'title': booking.attrs['title'],
-                'url': obj.absolute_url(),
-                'count': booking.attrs['buyable_count'],
-                'net': ascur(booking.attrs.get('net', 0.0)),
-                'discount_net': ascur(float(booking.attrs['discount_net'])),
-                'vat': booking.attrs.get('vat', 0.0),
-                'comment': booking.attrs['buyable_comment'],
-                'quantity_unit': booking.attrs.get('quantity_unit'),
-                'currency': booking.attrs.get('currency'),
-                'state': state,
-                'salaried': salaried,
-            })
-        return ret
-
     def _form_handler(self, widget, data):
         self.ordernumber = data['ordernumber'].extracted
         self.email = data['email'].extracted
