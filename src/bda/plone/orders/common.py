@@ -11,6 +11,7 @@ from bda.plone.cart import get_object_by_uid
 from bda.plone.cart import readcookie
 from bda.plone.checkout import CheckoutAdapter
 from bda.plone.checkout import CheckoutError
+from bda.plone.orders import events
 from bda.plone.orders import interfaces as ifaces
 from bda.plone.orders import message_factory as _
 from bda.plone.orders import permissions
@@ -38,6 +39,7 @@ from souper.soup import NodeAttributeIndexer
 from souper.soup import NodeTextIndexer
 from souper.soup import Record
 from zope.component import queryAdapter
+from zope.event import notify
 from zope.interface import implementer
 
 import datetime
@@ -751,3 +753,37 @@ class OrderTransitions(object):
             raise ValueError(u"invalid transition: %s" % transition)
         bookings_soup = get_bookings_soup(self.context)
         bookings_soup.reindex(records=[booking])
+
+
+def booking_cancel(context, request, booking_uid):
+    bookings_soup = get_bookings_soup(context)
+    result = bookings_soup.query(
+        Eq('uid', booking_uid),
+        with_size=True
+    )
+    if result.next() != 1:  # first result is length
+        raise ValueError('invalid value (booking)')
+    booking = result.next()
+    booking_attrs = dict(booking.attrs.items())
+    orders_soup = get_orders_soup(context)
+    result = orders_soup.query(
+        Eq('uid', booking.attrs['order_uid']),
+        with_size=True
+    )
+    if result.next() != 1:  # first result is length
+        raise ValueError('order_uid problem')
+    order = result.next()
+    order_booking_uids = order.attrs['booking_uids']
+    del order.attrs['booking_uids']
+    order.attrs['booking_uids'] = [
+        uid for uid in order_booking_uids
+        if uid != booking.attrs['order_uid']
+    ]
+    del bookings_soup[booking]
+    event = events.BookingCancelledEvent(
+        context,
+        request,
+        order.attrs['uid'],
+        booking_attrs,
+    )
+    notify(event)

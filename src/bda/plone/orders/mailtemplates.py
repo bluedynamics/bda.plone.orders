@@ -42,7 +42,7 @@ Comment:
 Ordered items:
 %(item_listing)s
 
-%(order_summery)s%(global_text)s%(payment_text)s
+%(order_summary)s%(global_text)s%(payment_text)s
 """
 
 RESERVATION_BODY_EN = """
@@ -71,7 +71,7 @@ Comment:
 Ordered items:
 %(item_listing)s
 
-%(order_summery)s%(global_text)s%(payment_text)s
+%(order_summary)s%(global_text)s%(payment_text)s
 """
 
 DELIVERY_ADDRESS_EN = """
@@ -84,6 +84,18 @@ City: %(delivery_address.city)s
 Country: %(delivery_address.country)s
 """
 
+CANCELLED_BOOKING_SUBJECT_EN = u"Cancelled one booking of Order %s."
+
+CANCELLED_BOOKING_BODY_EN = """
+Date: %(date)s
+
+One of your bookings was cancelled.
+
+Ordernumber: %(ordernumber)s
+Cancelled item: %(booking_cancelled_title)s
+
+Order details: %(portal_url)s/@@showorder?ordernumber=%(ordernumber)s
+"""
 
 ###############################################################################
 # de
@@ -119,7 +131,7 @@ Kommentar:
 Bestellte Artikel:
 %(item_listing)s
 
-%(order_summery)s%(global_text)s%(payment_text)s
+%(order_summary)s%(global_text)s%(payment_text)s
 """
 
 RESERVATION_BODY_DE = """
@@ -148,7 +160,7 @@ Kommentar:
 Bestellte Artikel:
 %(item_listing)s
 
-%(order_summery)s%(global_text)s%(payment_text)s
+%(order_summary)s%(global_text)s%(payment_text)s
 """  # noqa
 
 DELIVERY_ADDRESS_DE = """
@@ -161,6 +173,18 @@ Ort: %(delivery_address.city)s
 Land: %(delivery_address.country)s
 """
 
+CANCELLED_BOOKING_SUBJECT_DE = u"Stornierung eines Artikels in Bestellung %s."
+
+CANCELLED_BOOKING_BODY_DE = """
+Datum: %(date)s
+
+Eine Ihrer bestellten Artikel wurde storniert.
+
+Bestellnummer: %(ordernumber)s
+Stornierter Artikel: %(booking_cancelled_title)s
+
+Details zur Bestellung: %(portal_url)s/@@showorder?ordernumber=%(ordernumber)s
+"""
 
 ###############################################################################
 # fr
@@ -196,7 +220,7 @@ Commentaires:
 Produit commandé:
 %(item_listing)s
 
-%(order_summery)s%(global_text)s%(payment_text)s
+%(order_summary)s%(global_text)s%(payment_text)s
 """
 
 RESERVATION_BODY_FR = """
@@ -225,7 +249,7 @@ Commentaires:
 Produit commandé:
 %(item_listing)s
 
-%(order_summery)s%(global_text)s%(payment_text)s
+%(order_summary)s%(global_text)s%(payment_text)s
 """
 
 DELIVERY_ADDRESS_FR = """
@@ -238,6 +262,18 @@ Localité: %(delivery_address.city)s
 Pays: %(delivery_address.country)s
 """
 
+CANCELLED_BOOKING_SUBJECT_FR = u"Cancelled one booking of Order %s."
+
+CANCELLED_BOOKING_BODY_FR = """
+Date: %(date)s
+
+One of your bookings was cancelled.
+
+Ordernumber: %(ordernumber)s
+Cancelled item: %(booking_cancelled_title)s
+
+Order details: %(portal_url)s/@@showorder?ordernumber=%(ordernumber)s
+"""
 
 ###############################################################################
 # it
@@ -272,7 +308,7 @@ Commento:
 Articolo ordinato:
 %(item_listing)s
 
-%(order_summery)s%(global_text)s%(payment_text)s
+%(order_summary)s%(global_text)s%(payment_text)s
 """
 
 RESERVATION_BODY_IT = """
@@ -300,7 +336,7 @@ Commento:
 Articolo ordinato:
 %(item_listing)s
 
-%(order_summery)s%(global_text)s%(payment_text)s
+%(order_summary)s%(global_text)s%(payment_text)s
 """
 
 DELIVERY_ADDRESS_IT = """
@@ -311,6 +347,19 @@ Via: %(delivery_address.street)s
 CAP: %(delivery_address.zip)s
 Città: %(delivery_address.city)s
 Nazione: %(delivery_address.country)s
+"""
+
+CANCELLED_BOOKING_SUBJECT_IT = u"Cancelled one booking of Order %s."
+
+CANCELLED_BOOKING_BODY_IT = """
+Date: %(date)s
+
+One of your bookings was cancelled.
+
+Ordernumber: %(ordernumber)s
+Cancelled item: %(booking_cancelled_title)s
+
+Order details: %(portal_url)s/@@showorder?ordernumber=%(ordernumber)s
 """
 
 ###############################################################################
@@ -347,7 +396,7 @@ Kommentar:
 Bestilte produkter:
 %(item_listing)s
 
-%(order_summery)s%(global_text)s%(payment_text)s
+%(order_summary)s%(global_text)s%(payment_text)s
 """
 
 RESERVATION_BODY_NO = """
@@ -376,7 +425,7 @@ Kommentar:
 Bestilte produkter:
 %(item_listing)s
 
-%(order_summery)s%(global_text)s%(payment_text)s
+%(order_summary)s%(global_text)s%(payment_text)s
 """
 
 DELIVERY_ADDRESS_NO = """
@@ -389,6 +438,18 @@ Poststed: %(delivery_address.city)s
 Land: %(delivery_address.country)s
 """
 
+CANCELLED_BOOKING_SUBJECT_NO = u"Cancelled one booking of Order %s."
+
+CANCELLED_BOOKING_BODY_NO = """
+Date: %(date)s
+
+One of your bookings was cancelled.
+
+Ordernumber: %(ordernumber)s
+Cancelled item: %(booking_cancelled_title)s
+
+Order details: %(portal_url)s/@@showorder?ordernumber=%(ordernumber)s
+"""
 
 ###############################################################################
 # language templates
@@ -440,15 +501,40 @@ RESERVATION_TEMPLATES = {
         'delivery_address': DELIVERY_ADDRESS_NO}
 }
 
+CANCELLED_BOOKING_TEMPLATES = {
+    'en': {
+        'subject': CANCELLED_BOOKING_SUBJECT_EN,
+        'body': CANCELLED_BOOKING_BODY_EN},
+    'de': {
+        'subject': CANCELLED_BOOKING_SUBJECT_DE,
+        'body': CANCELLED_BOOKING_BODY_DE},
+    'fr': {
+        'subject': CANCELLED_BOOKING_SUBJECT_FR,
+        'body': CANCELLED_BOOKING_BODY_FR},
+    'it': {
+        'subject': CANCELLED_BOOKING_SUBJECT_IT,
+        'body': CANCELLED_BOOKING_BODY_IT},
+    'no': {
+        'subject': CANCELLED_BOOKING_SUBJECT_NO,
+        'body': CANCELLED_BOOKING_BODY_NO}
+}
+
+
+def _get_templates(context, TPL, default='en'):
+    lang = context.restrictedTraverse('@@plone_portal_state').language()
+    return TPL.get(lang, TPL[default])
+
 
 def get_order_templates(context):
-    lang = context.restrictedTraverse('@@plone_portal_state').language()
-    return ORDER_TEMPLATES.get(lang, ORDER_TEMPLATES['en'])
+    return _get_templates(context, ORDER_TEMPLATES)
 
 
 def get_reservation_templates(context):
-    lang = context.restrictedTraverse('@@plone_portal_state').language()
-    return RESERVATION_TEMPLATES.get(lang, RESERVATION_TEMPLATES['en'])
+    return _get_templates(context, RESERVATION_TEMPLATES)
+
+
+def get_booking_cancelled_templates(context):
+    return _get_templates(context, CANCELLED_BOOKING_TEMPLATES)
 
 
 # list of template attributes which are required. by default, no attributes are

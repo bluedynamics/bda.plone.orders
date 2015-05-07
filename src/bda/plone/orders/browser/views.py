@@ -14,7 +14,7 @@ from bda.plone.orders import vocabularies as vocabs
 from bda.plone.orders.common import DT_FORMAT
 from bda.plone.orders.common import OrderData
 from bda.plone.orders.common import OrderTransitions
-from bda.plone.orders.common import get_bookings_soup
+from bda.plone.orders.common import booking_cancel
 from bda.plone.orders.common import get_order
 from bda.plone.orders.common import get_orders_soup
 from bda.plone.orders.common import get_vendor_by_uid
@@ -975,30 +975,11 @@ class BookingCancel(BrowserView):
         booking_uid = self.request.form.get('uid')
         if not booking_uid:
             raise BadRequest('value not given')
-        booking_uid = uuid.UUID(booking_uid)
-        bookings_soup = get_bookings_soup(self.context)
-        result = bookings_soup.query(
-            Eq('uid', booking_uid),
-            with_size=True
-        )
-        if result.next() != 1:  # first result is length
-            raise BadRequest('invalid value (booking)')
-        booking = result.next()
-        orders_soup = get_orders_soup(self.context)
-        result = orders_soup.query(
-            Eq('uid', booking.attrs['order_uid']),
-            with_size=True
-        )
-        if result.next() != 1:  # first result is length
-            raise ValueError('order_uid problem')
-        order = result.next()
-        order_booking_uids = order.attrs['booking_uids']
-        del order.attrs['booking_uids']
-        order.attrs['booking_uids'] = [
-            uid for uid in order_booking_uids
-            if uid != booking.attrs['order_uid']
-        ]
-        del bookings_soup[booking]
+        try:
+            booking_cancel(self.context, self.request, uuid.UUID(booking_uid))
+        except ValueError:
+            raise BadRequest('something is wrong with the value')
+
         plone.api.portal.show_message(
             message=_(u"Booking cancelled."),
             request=self.request,

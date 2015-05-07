@@ -143,7 +143,7 @@ Changelog
   [rnix]
 
 - Rename ``bda.plone.orders.mailnotify.create_order_total`` to
-  ``bda.plone.orders.mailnotify.create_order_summery``.
+  ``bda.plone.orders.mailnotify.create_order_summary``.
   [rnix]
 
 - Rename ``order_total`` to ``order_summary`` in order notification mail

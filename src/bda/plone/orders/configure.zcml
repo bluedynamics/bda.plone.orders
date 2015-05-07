@@ -84,6 +84,11 @@
     for="bda.plone.checkout.interfaces.ICheckoutDone"
     handler=".mailnotify.dispatch_notify_checkout_success"/>
 
+  <!-- event subscribers booking cancelled-->
+  <subscriber
+    for="bda.plone.orders.interfaces.IBookingCancelledEvent"
+    handler=".mailnotify.dispatch_notify_booking_cancelled"/>
+
   <!-- create contact on checkout success and save it in soup catalog-->
   <subscriber
     for="bda.plone.checkout.interfaces.ICheckoutDone"

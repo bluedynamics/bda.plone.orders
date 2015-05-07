@@ -9,10 +9,12 @@ from bda.plone.orders import safe_encode
 from bda.plone.orders import vocabularies as vocabs
 from bda.plone.orders.common import DT_FORMAT
 from bda.plone.orders.common import OrderData
+from bda.plone.orders.interfaces import IBookingCancelledEvent
 from bda.plone.orders.interfaces import IGlobalNotificationText
 from bda.plone.orders.interfaces import IItemNotificationText
 from bda.plone.orders.interfaces import INotificationSettings
 from bda.plone.orders.interfaces import IPaymentText
+from bda.plone.orders.mailtemplates import get_booking_cancelled_templates
 from bda.plone.orders.mailtemplates import get_order_templates
 from bda.plone.orders.mailtemplates import get_reservation_templates
 from bda.plone.payment.interfaces import IPaymentEvent
@@ -30,6 +32,7 @@ logger = logging.getLogger('bda.plone.orders')
 NOTIFICATIONS = {
     'checkout_success': [],
     'payment_success': [],
+    'booking_cancelled': [],
 }
 
 
@@ -40,6 +43,11 @@ def dispatch_notify_checkout_success(event):
 
 def dispatch_notify_payment_success(event):
     for func in NOTIFICATIONS['payment_success']:
+        func(event)
+
+
+def dispatch_notify_booking_cancelled(event):
+    for func in NOTIFICATIONS['booking_cancelled']:
         func(event)
 
 
@@ -122,7 +130,7 @@ def create_mail_listing(context, order_data):
     return '\n'.join([safe_encode(l) for l in lines])
 
 
-def create_order_summery(context, order_data):
+def create_order_summary(context, order_data):
     """Create summary for notification mail.
     """
     attrs = order_data.order.attrs
@@ -277,11 +285,25 @@ def create_payment_text(context, order_data):
     return ''
 
 
+POSSIBLE_TEMPLATE_CALLBACKS = [
+    'item_listing',
+    'order_summary',
+    'global_text',
+    'booking_cancelled_title',
+]
+
+
+def _process_template_cb(name, tpls, args, context, order_data):
+    cb_name = '{0:s}_cb'.format(name)
+    if cb_name in tpls:
+        args[name] = tpls[cb_name](context, order_data)
+
+
 def create_mail_body(templates, context, order_data):
     """Creates a rendered mail body
 
     templates
-        Dict with a bunch of callbacks and the body template itself.
+        Dict with a bunch of cbs and the body template itself.
 
     context
         Some object in Plone which can be used as a context to acquire from
@@ -298,21 +320,23 @@ def create_mail_body(templates, context, order_data):
                            domain='bda.plone.checkout',
                            target_language=lang)
     arguments['salutation'] = safe_encode(salutation)
+
+    # todo: next should be a cb
     if attrs['delivery_address.alternative_delivery']:
         delivery_address_template = templates['delivery_address']
         arguments['delivery_address'] = delivery_address_template % arguments
     else:
         arguments['delivery_address'] = ''
-    item_listing_callback = templates['item_listing_callback']
-    arguments['item_listing'] = item_listing_callback(context, order_data)
-    order_summery_callback = templates['order_summery_callback']
-    arguments['order_summery'] = order_summery_callback(context, order_data)
-    global_text_callback = templates['global_text_callback']
-    arguments['global_text'] = global_text_callback(context, order_data)
-    payment_text_callback = templates['payment_text_callback']
-    arguments['payment_text'] = payment_text_callback(context, order_data)
-    body_template = templates['body']
-    return body_template % arguments
+
+    for name in POSSIBLE_TEMPLATE_CALLBACKS:
+        _process_template_cb(
+            name,
+            templates,
+            arguments,
+            context,
+            order_data
+        )
+    return templates['body'] % arguments
 
 
 def do_notify(context, order_data, templates, receiver):
@@ -346,12 +370,14 @@ def get_order_uid(event):
         return event.uid
     if IPaymentEvent.providedBy(event):
         return event.order_uid
+    if IBookingCancelledEvent.providedBy(event):
+        return event.order_uid
 
 
 def notify_order_success(event, who=None):
     """Send notification mail after order succeed.
     """
-    if who is None:
+    if who not in ['customer', 'shopmanager']:
         raise ValueError(
             'kw "who" mus be one out of ("customer", "shopmanager")'
         )
@@ -365,15 +391,43 @@ def notify_order_success(event, who=None):
         templates.update(get_reservation_templates(event.context))
     else:
         templates.update(get_order_templates(event.context))
-    templates['item_listing_callback'] = create_mail_listing
-    templates['order_summery_callback'] = create_order_summery
-    templates['global_text_callback'] = create_global_text
-    templates['payment_text_callback'] = create_payment_text
+    templates['item_listing_cb'] = create_mail_listing
+    templates['order_summary_cb'] = create_order_summary
+    templates['global_text_cb'] = create_global_text
+    templates['payment_text_cb'] = create_payment_text
     if who == "customer":
         do_notify_customer(event.context, order_data, templates)
     else:
         do_notify_shopmanager(event.context, order_data, templates)
 
+
+class BookingCancelledTitleCB(object):
+
+    def __init__(self, event):
+        self.event = event
+
+    def __call__(self, *args):
+        return self.event.booking_attrs['eventtitle']
+
+
+def notify_booking_cancelled(event, who=None):
+    """Send notification mail after booking was cancelled.
+    """
+    order_data = OrderData(event.context, uid=get_order_uid(event))
+    templates = dict()
+    templates.update(get_booking_cancelled_templates(event.context))
+    templates['booking_cancelled_title_cb'] = BookingCancelledTitleCB(event)
+    if who == "customer":
+        do_notify_customer(event.context, order_data, templates)
+    elif who == 'shopmanager':
+        do_notify_shopmanager(event.context, order_data, templates)
+    else:
+        raise ValueError(
+            'kw "who" mus be one out of ("customer", "shopmanager")'
+        )
+
+
+# below here we have the actual events
 
 def notify_checkout_success_customer(event):
     """Send notification mail after checkout succeed.
@@ -409,3 +463,15 @@ def notify_payment_success_shopmanager(event):
 
 NOTIFICATIONS['payment_success'].append(notify_payment_success_customer)
 NOTIFICATIONS['payment_success'].append(notify_payment_success_shopmanager)
+
+
+def notify_booking_cancelled_customer(event):
+    notify_booking_cancelled(event, who="customer")
+
+
+def notify_booking_cancelled_shopmanager(event):
+    notify_booking_cancelled(event, who="shopmanager")
+
+
+NOTIFICATIONS['booking_cancelled'].append(notify_booking_cancelled_customer)
+NOTIFICATIONS['booking_cancelled'].append(notify_booking_cancelled_shopmanager)
