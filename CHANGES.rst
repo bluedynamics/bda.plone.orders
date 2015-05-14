@@ -5,6 +5,9 @@ Changelog
 0.9.dev
 -------
 
+- JSHint JavaScript resources.
+  [thet]
+
 - fix: #24 error on submitting the checkout
   [jensens]
 
