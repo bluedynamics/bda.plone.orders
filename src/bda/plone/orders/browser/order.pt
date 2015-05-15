@@ -191,7 +191,12 @@
               <span tal:replace="row/vat">20.0</span>%
             </td>
             <td tal:condition="show_exported" tal:content="python:view.exported(row)">No</td>
-            <td tal:content="row/comment">comment</td>
+            <td>
+                <span class="booking_comment_display"
+                      tal:content="row/comment">comment
+                </span>
+                <input class="booking_comment_edit" />
+            </td>
             <td>
                 <span tal:content="row/state">state</span>
                 <a tal:condition="python:view.can_cancel_booking"

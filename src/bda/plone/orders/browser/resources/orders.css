@@ -267,6 +267,9 @@ a.notify_customers {
     width:380px;
     padding:0.4em;
 }
+.order_details .booking_comment_edit {
+    display: hidden;
+}
 .order_bookings {
     padding:0 0.4em 0.4em 0.4em;
 }
