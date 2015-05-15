@@ -489,7 +489,7 @@ class OrdersTable(OrdersTableBase):
             'href': '',
             'title': _('view_order', default=u'View Order'),
         }
-        view_order = tag('a', '&nbsp', **view_order_attrs)
+        view_order = tag('a', '&nbsp;', **view_order_attrs)
         select_order_attrs = {
             'name': 'select_order',
             'type': 'checkbox',
