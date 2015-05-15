@@ -346,8 +346,9 @@ class OrdersTableBase(BrowserView):
 
     def render_state(self, colname, record):
         state = OrderData(self.context, order=record).state
-        return translate(vocabs.state_vocab()[state],
-                         context=self.request)
+        if not state:
+            return '-/-'
+        return translate(vocabs.state_vocab()[state], context=self.request)
 
     def render_dt(self, colname, record):
         value = record.attrs.get(colname, '')
