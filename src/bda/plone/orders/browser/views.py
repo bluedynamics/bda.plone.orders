@@ -15,6 +15,7 @@ from bda.plone.orders.common import DT_FORMAT
 from bda.plone.orders.common import OrderData
 from bda.plone.orders.common import OrderTransitions
 from bda.plone.orders.common import booking_cancel
+from bda.plone.orders.common import booking_update_comment
 from bda.plone.orders.common import get_order
 from bda.plone.orders.common import get_orders_soup
 from bda.plone.orders.common import get_vendor_by_uid
@@ -988,3 +989,20 @@ class BookingCancel(BrowserView):
         self.request.response.redirect(
             self.context.absolute_url() + '/@@orders'
         )
+
+
+class BookingUpdateComment(BrowserView):
+
+    def __call__(self):
+        booking_uid = self.request.form.get('uid')
+        if not booking_uid:
+            raise BadRequest('value not given')
+        booking_comment = self.request.form.get('comment')
+        try:
+            booking_update_comment(
+                self,
+                uuid.UUID(booking_uid),
+                booking_comment
+            )
+        except ValueError:
+            raise BadRequest('something is wrong with the value')

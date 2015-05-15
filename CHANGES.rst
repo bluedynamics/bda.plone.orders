@@ -5,7 +5,10 @@ Changelog
 0.9.dev
 -------
 
-- enable to delete single booking from order.
+- feature: booking comment editable
+  [jensens]
+
+- feature: delete single booking from order
   [jensens]
 
 - Move export related code in own file to reduce length and increase 

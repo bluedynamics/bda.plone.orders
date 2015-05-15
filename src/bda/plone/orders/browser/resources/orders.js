@@ -9,7 +9,8 @@
             orders_dropdown_menus: orders.dropdown_binder,
             orders_notification_form_binder: orders.notification_form_binder,
             orders_qr_code_binder: orders.qr_code_binder,
-            cancel_confirm_binder: orders.cancel_confirm_binder
+            cancel_confirm_binder: orders.cancel_confirm_binder,
+            comment_edit_binder: orders.comment_edit_binder
         });
         orders.datatable_binder(document);
         orders.filter_binder(document);
@@ -19,6 +20,7 @@
         orders.notification_binder(document);
         orders.qr_code_binder(document);
         orders.cancel_confirm_binder(document);
+        orders.comment_edit_binder(document);
     });
 
     var orders = {
@@ -87,6 +89,56 @@
                 event.preventDefault();
             }
         },
+
+        comment_edit_binder: function(event) {
+            $('.booking_comment_edit_action')
+                .unbind('click')
+                .bind('click', orders.comment_edit_start);
+            $('.booking_comment_save_action')
+                .unbind('click')
+                .bind('click', orders.comment_edit_save);
+            $('.booking_comment_abort_action')
+                .unbind('click')
+                .bind('click', orders.comment_edit_abort);
+
+        },
+        comment_edit_start: function(event) {
+            event.preventDefault();
+            $(this).parent().find('.booking_comment_display').hide();
+            $(this).parent().find('.booking_comment_edit').show();
+        },
+        comment_edit_save: function(event) {
+            event.preventDefault();
+            var parent = $(this).parent()
+            parent.find('.booking_comment_spinner').show();
+            parent.find('.booking_comment_edit').hide();
+            var input = $(parent.find('input'));
+            var uid = input.data('booking-uid');
+            var url = input.data('edit-url');
+            $.ajax({
+                url: url,
+                data: {uid: uid, comment: input.val()}
+            })
+            .done(function(data, status, request) {
+                parent.find('.booking_comment_text').text(input.val());
+                parent.find('.booking_comment_spinner').hide();
+                parent.find('.booking_comment_display').show();
+            })
+            .fail(function(data, status, request) {
+                alert('Server error!');
+                input.val(
+                    parent.find('.booking_comment_text').text()
+                );
+                parent.find('.booking_comment_spinner').hide();
+                parent.find('.booking_comment_display').show();
+            });
+        },
+        comment_edit_abort: function(event) {
+            event.preventDefault();
+            $(this).parent().find('.booking_comment_display').show();
+            $(this).parent().find('.booking_comment_edit').hide();
+        },
+
 
         filter_orders: function(event) {
             event.preventDefault();

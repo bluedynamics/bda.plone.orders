@@ -787,3 +787,16 @@ def booking_cancel(context, request, booking_uid):
         booking_attrs,
     )
     notify(event)
+
+
+def booking_update_comment(context, booking_uid, comment):
+    bookings_soup = get_bookings_soup(context)
+    result = bookings_soup.query(
+        Eq('uid', booking_uid),
+        with_size=True
+    )
+    if result.next() != 1:  # first result is length
+        raise ValueError('invalid value (booking)')
+    booking = result.next()
+    booking.attrs['comment'] = comment
+    bookings_soup.reindex(booking)

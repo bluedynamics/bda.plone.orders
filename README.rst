@@ -250,3 +250,4 @@ Contributors
 - Ezra Holder
 - Benjamin Stefaner (benniboy)
 
+Icons used are `Silk-Icons by FamFamFam <http://www.famfamfam.com/lab/icons/silk/>`_ under CC-BY 2.5 license.
