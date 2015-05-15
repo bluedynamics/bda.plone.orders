@@ -466,7 +466,7 @@ class OrdersTable(OrdersTableBase):
             'title': _('notify_customers',
                        default=u'Notify customers of selected orders'),
         }
-        notify_customers = tag('a', '&nbsp', **notify_customers_attributes)
+        notify_customers = tag('a', '&nbsp;', **notify_customers_attributes)
         return select_all_orders + notify_customers
 
     def render_order_actions(self, colname, record):
