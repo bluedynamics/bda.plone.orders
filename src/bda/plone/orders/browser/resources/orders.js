@@ -113,7 +113,7 @@
         },
         comment_edit_save: function(event) {
             event.preventDefault();
-            var parent = $(this).parent()
+            var parent = $(this).parent();
             parent.find('.booking_comment_spinner').show();
             parent.find('.booking_comment_edit').hide();
             var input = $(parent.find('input'));
@@ -129,7 +129,7 @@
                 parent.find('.booking_comment_display').show();
             })
             .fail(function(data, status, request) {
-                alert('Server error!');
+                window.alert('Server error!');
                 input.val(
                     parent.find('.booking_comment_text').text()
                 );
