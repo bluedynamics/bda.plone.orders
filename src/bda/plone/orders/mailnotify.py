@@ -286,10 +286,11 @@ def create_payment_text(context, order_data):
 
 
 POSSIBLE_TEMPLATE_CALLBACKS = [
+    'booking_cancelled_title',
+    'global_text',
     'item_listing',
     'order_summary',
-    'global_text',
-    'booking_cancelled_title',
+    'payment_text',
 ]
 
 

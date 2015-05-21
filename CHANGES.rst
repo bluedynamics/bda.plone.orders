@@ -5,6 +5,9 @@ Changelog
 0.9.dev
 -------
 
+- fix: #24 error on submitting the checkout
+  [jensens]
+
 - feature: booking comment editable
   [jensens]
 
