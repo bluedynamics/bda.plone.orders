@@ -1,4 +1,7 @@
-(function ($) {
+/* jslint browser: true */
+/* global jQuery, bdajax, QRCode */
+(function ($, bdajax, QRCode) {
+    "use strict";
 
     $(document).ready(function () {
         $.extend(bdajax.binders, {
@@ -52,7 +55,8 @@
             if (hash) {
                 $('.filter').hide();
             }
-            var oTable = $('#bdaploneorders', context).dataTable({
+            
+            $('#bdaploneorders', context).dataTable({
                 "bProcessing": true,
                 "bServerSide": true,
                 "sAjaxSource": url,
@@ -84,7 +88,7 @@
         },
 
         cancel_confirm: function(event) {
-            var result = confirm('Are you sure?');
+            var result = window.confirm('Are you sure?');
             if (!result) {
                 event.preventDefault();
             }
@@ -109,7 +113,7 @@
         },
         comment_edit_save: function(event) {
             event.preventDefault();
-            var parent = $(this).parent()
+            var parent = $(this).parent();
             parent.find('.booking_comment_spinner').show();
             parent.find('.booking_comment_edit').hide();
             var input = $(parent.find('input'));
@@ -125,7 +129,7 @@
                 parent.find('.booking_comment_display').show();
             })
             .fail(function(data, status, request) {
-                alert('Server error!');
+                window.alert('Server error!');
                 input.val(
                     parent.find('.booking_comment_text').text()
                 );
@@ -145,7 +149,7 @@
             var selection = $(this);
             var wrapper = selection.parent();
             var vendor, customer;
-            if (selection.attr('name') == 'vendor') {
+            if (selection.attr('name') === 'vendor') {
                 vendor = selection.val();
                 customer = $('#input-customer', wrapper).val();
             } else {
@@ -155,8 +159,8 @@
             var ajax_table = wrapper.parents('.ajaxtable');
             var action = ajax_table.data('tablename');
             var target = bdajax.parsetarget(wrapper.attr('ajax:target'));
-            target.params['vendor'] = vendor;
-            target.params['customer'] = customer;
+            target.params.vendor = vendor;
+            target.params.customer = customer;
             bdajax.action({
                 name: action,
                 selector: '#orders_wrapper',
@@ -189,7 +193,7 @@
         },
 
         selected_order_uids: function() {
-            var uids = new Array();
+            var uids = [];
             $('input:checkbox[name=select_order]:checked').each(function() {
                 uids.push($(this).val());
             });
@@ -294,8 +298,8 @@
                     var api = this.api();
                     var rows = api.rows({page: 'current'}).nodes();
                     var last = null;
-//                  only show email info if grouped by email
-                    if ($('#input-group').val() == 'email') {
+                    // only show email info if grouped by email
+                    if ($('#input-group').val() === 'email') {
                         api.column(0, {page: 'current'}).data().each(function (group, i) {
                             if (last !== group) {
                                 $(rows).eq(i).before(
@@ -304,10 +308,10 @@
                                 last = group;
                             }
                         });
-                        api.column(4).visible(show = true);
+                        api.column(4).visible(true);
                     }
-//                  only show email info if grouped by buyable
-                    if ($('#input-group').val() == 'buyable') {
+                    // only show email info if grouped by buyable
+                    if ($('#input-group').val() === 'buyable') {
                         api.column(1, {page: 'current'}).data().each(function (group, i) {
                             if (last !== group) {
                                 $(rows).eq(i).before(
@@ -316,7 +320,7 @@
                                 last = group;
                             }
                         });
-                        api.column(4).visible(show = false);
+                        api.column(4).visible(false);
                     }
                 }
             });
@@ -383,4 +387,4 @@
         return this;
     };
 
-})(jQuery);
+}(jQuery, bdajax, QRCode));

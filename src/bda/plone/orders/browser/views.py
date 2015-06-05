@@ -466,7 +466,7 @@ class OrdersTable(OrdersTableBase):
             'title': _('notify_customers',
                        default=u'Notify customers of selected orders'),
         }
-        notify_customers = tag('a', '&nbsp', **notify_customers_attributes)
+        notify_customers = tag('a', '&nbsp;', **notify_customers_attributes)
         return select_all_orders + notify_customers
 
     def render_order_actions(self, colname, record):
@@ -489,7 +489,7 @@ class OrdersTable(OrdersTableBase):
             'href': '',
             'title': _('view_order', default=u'View Order'),
         }
-        view_order = tag('a', '&nbsp', **view_order_attrs)
+        view_order = tag('a', '&nbsp;', **view_order_attrs)
         select_order_attrs = {
             'name': 'select_order',
             'type': 'checkbox',
