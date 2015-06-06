@@ -5,6 +5,9 @@ Changelog
 0.9.dev
 -------
 
+- JSON response header needed for @@bookingsdata.
+  [thet]
+
 - JSHint JavaScript resources.
   [thet]
 

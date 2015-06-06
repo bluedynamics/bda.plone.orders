@@ -164,7 +164,7 @@ class BookingsTable(BrowserView):
 
     @property
     def columns(self):
-        return [
+        columns = [
             {
                 'id': 'email',
                 'label': _('email', default=u'Email'),
@@ -252,9 +252,9 @@ class BookingsTable(BrowserView):
                 'origin': 'b',
             }
         ]
+        return columns
 
     def jsondata(self):
-        # json response header needed?
         soup = get_bookings_soup(self.context)
         aaData = list()
         size, result = self.query(soup)
@@ -300,6 +300,8 @@ class BookingsTable(BrowserView):
             "data": aaData,
         }
 
+        self.request.response.setHeader('Content-Type',
+                                        'application/json; charset=utf-8')
         return json.dumps(data)
 
 # helper methods
