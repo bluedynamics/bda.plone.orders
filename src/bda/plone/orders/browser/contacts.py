@@ -113,7 +113,10 @@ class ContactsTable(BrowserView):
             "recordsFiltered": size,
             "data": aaData,
         }
-
+        self.request.reponse.setHeader(
+            'Content-Type',
+            'application/json; charset=utf-8'
+        )
         return json.dumps(data)
 
     def slice(self, fullresult):
