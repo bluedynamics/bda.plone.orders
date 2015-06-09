@@ -199,8 +199,8 @@ class Transition(BrowserView):
             vendor_uids = get_vendor_uids_for()
             if not vendor_uids:
                 raise Unauthorized
-        transitions = OrderTransitions(self.context)
-        order = transitions.do_transition(uid, vendor_uids, transition)
+        transitions = OrderTransitions(self.context, vendor_uids=vendor_uids)
+        order = transitions.do_transition(uid, transition)
         return self.dropdown(self.context, self.request, order).render()
 
 

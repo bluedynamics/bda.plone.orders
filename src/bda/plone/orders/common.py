@@ -16,8 +16,8 @@ from bda.plone.orders import interfaces as ifaces
 from bda.plone.orders import message_factory as _
 from bda.plone.orders import permissions
 from bda.plone.orders import safe_encode
-from bda.plone.orders.interfaces import IVendor
 from bda.plone.orders.interfaces import IBuyable
+from bda.plone.orders.interfaces import IVendor
 from bda.plone.payment import Payments
 from bda.plone.payment.interfaces import IPaymentData
 from bda.plone.shipping import Shippings
@@ -426,7 +426,7 @@ class OrderData(object):
     """Object for extracting order information.
     """
 
-    def __init__(self, context, uid=None, order=None, vendor_uids=list()):
+    def __init__(self, context, uid=None, order=None, vendor_uids=[]):
         """Create order data object by criteria
 
         :param uid: Order uid. XOR with order
@@ -702,10 +702,20 @@ def payment_failed(event):
 
 class OrderTransitions(object):
 
-    def __init__(self, context, vendor_uids=list()):
+    def __init__(self, context, vendor_uids=[]):
         self.context = context
+        self.vendor_uids = vendor_uids
 
-    def do_transition(self, uid, vendor_uids, transition):
+    def _order_data(self, uid):
+        if not isinstance(uid, uuid.UUID):
+            uid = uuid.UUID(uid)
+        return OrderData(
+            self.context,
+            uid=uid,
+            vendor_uids=self.vendor_uids
+        )
+
+    def do_transition(self, uid, transition):
         """Do transition for order by UID and transition name.
 
         @param uid: uuid.UUID or string representing a UUID
@@ -714,17 +724,11 @@ class OrderTransitions(object):
 
         @return: order record
         """
-        if not isinstance(uid, uuid.UUID):
-            uid = uuid.UUID(uid)
-        order_data = OrderData(self.context, uid=uid, vendor_uids=vendor_uids)
-        order = order_data.order
+        order_data = self._order_data(uid)
         for booking in order_data.bookings:
             self.do_transition_for_booking(booking, transition)
-        if transition == ifaces.STATE_TRANSITION_RENEW:
-            order_data.decrease_stock(order_data.bookings)
-        elif transition == ifaces.STATE_TRANSITION_CANCEL:
-            order_data.increase_stock(order_data.bookings)
         orders_soup = get_orders_soup(self.context)
+        order = order_data.order
         orders_soup.reindex(records=[order])
         return order
 
@@ -740,6 +744,9 @@ class OrderTransitions(object):
         elif transition == ifaces.STATE_TRANSITION_RENEW:
             del booking.attrs['state']
             booking.attrs['state'] = ifaces.STATE_NEW
+            # fix stock item available
+            order_data = self._order_data(booking.attrs['order_uid'])
+            order_data.decrease_stock([booking])
         elif transition == ifaces.STATE_TRANSITION_PROCESS:
             del booking.attrs['state']
             booking.attrs['state'] = ifaces.STATE_PROCESSING
@@ -749,6 +756,9 @@ class OrderTransitions(object):
         elif transition == ifaces.STATE_TRANSITION_CANCEL:
             del booking.attrs['state']
             booking.attrs['state'] = ifaces.STATE_CANCELLED
+            # fix stock item available
+            order_data = self._order_data(booking.attrs['order_uid'])
+            order_data.increase_stock([booking])
         else:
             raise ValueError(u"invalid transition: %s" % transition)
         bookings_soup = get_bookings_soup(self.context)
@@ -766,7 +776,7 @@ def booking_cancel(context, request, booking_uid):
     booking = result.next()
     booking_attrs = dict(booking.attrs.items())
 
-    ot = OrderTransitions(context, None)  # wf api sucks and need rethinking
+    ot = OrderTransitions(context)
     ot.do_transition_for_booking(booking, ifaces.STATE_TRANSITION_CANCEL)
 
     event = events.BookingCancelledEvent(

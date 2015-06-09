@@ -5,6 +5,10 @@ Changelog
 0.9.dev
 -------
 
+- Renew/Cancel Booking inc-/decreases stock now.
+  Also some changes in API to be more consistent.
+  [jensens]
+
 - Cancel Booking now uses transition API.
   [jensens]
 
