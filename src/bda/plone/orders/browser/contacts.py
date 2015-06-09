@@ -113,7 +113,7 @@ class ContactsTable(BrowserView):
             "recordsFiltered": size,
             "data": aaData,
         }
-        self.request.reponse.setHeader(
+        self.request.response.setHeader(
             'Content-Type',
             'application/json; charset=utf-8'
         )
