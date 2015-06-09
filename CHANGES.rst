@@ -5,6 +5,9 @@ Changelog
 0.9.dev
 -------
 
+- Cancel Booking now uses transition API.
+  [jensens]
+
 - JSON response header needed for @@contactsdata.
   [jensens]
 

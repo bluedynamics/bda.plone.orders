@@ -765,25 +765,14 @@ def booking_cancel(context, request, booking_uid):
         raise ValueError('invalid value (booking)')
     booking = result.next()
     booking_attrs = dict(booking.attrs.items())
-    orders_soup = get_orders_soup(context)
-    result = orders_soup.query(
-        Eq('uid', booking.attrs['order_uid']),
-        with_size=True
-    )
-    if result.next() != 1:  # first result is length
-        raise ValueError('order_uid problem')
-    order = result.next()
-    order_booking_uids = order.attrs['booking_uids']
-    del order.attrs['booking_uids']
-    order.attrs['booking_uids'] = [
-        uid for uid in order_booking_uids
-        if uid != booking.attrs['order_uid']
-    ]
-    del bookings_soup[booking]
+
+    ot = OrderTransitions(context, None)  # wf api sucks and need rethinking
+    ot.do_transition_for_booking(booking, ifaces.STATE_TRANSITION_CANCEL)
+
     event = events.BookingCancelledEvent(
         context,
         request,
-        order.attrs['uid'],
+        booking_attrs['order_uid'],
         booking_attrs,
     )
     notify(event)
