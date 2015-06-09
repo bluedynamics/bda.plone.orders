@@ -186,6 +186,33 @@ Permission ``bda.plone.orders.DelegateVendorRole``
 TODO: document
 
 
+How To allow anonymous users to buy items
+=========================================
+
+In your Generic Setup's profile, add to ``rolemap.xml``::
+
+    <!-- Allow Anonymous to buy items -->
+    <permission name="bda.plone.orders: View Order Directly" acquire="True">
+      <role name="Manager" />
+      <role name="Site Administrator" />
+      <role name="Authenticated" />
+      <role name="Anonymous"/>
+    </permission>
+    <permission name="bda.plone.shop: View Buyable Info" acquire="True">
+      <role name="Manager" />
+      <role name="Site Administrator" />
+      <role name="Reviewer" />
+      <role name="Editor" />
+      <role name="Customer" />
+      <role name="Anonymous"/>
+    </permission>
+    <permission name="bda.plone.shop: Buy Items" acquire="True">
+      <role name="Manager" />
+      <role name="Site Administrator" />
+      <role name="Customer" />
+      <role name="Anonymous"/>
+    </permission>
+
 
 Create translations
 ===================
