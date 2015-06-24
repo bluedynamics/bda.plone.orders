@@ -18,6 +18,7 @@ from bda.plone.orders import permissions
 from bda.plone.orders import safe_encode
 from bda.plone.orders.interfaces import IBuyable
 from bda.plone.orders.interfaces import IVendor
+from bda.plone.orders.transitions import do_transition_for_booking
 from bda.plone.payment import Payments
 from bda.plone.payment.interfaces import IPaymentData
 from bda.plone.shipping import Shippings
@@ -602,6 +603,59 @@ class OrderData(object):
                 stock.available -= float(booking.attrs['buyable_count'])
 
 
+class BookingData(object):
+
+    def __init__(self, context, uid=None, booking=None, vendor_uids=[]):
+        """Create booking data object by criteria
+
+        :param uid: Booking uid. XOR with booking
+        :type uid: string or uuid.UUID object
+        :param booking: Booking record. XOR with uid
+        :type booking: souper.soup.Record object
+        :param vendor_uids: Vendor uids, used to filter order bookings.
+        :type vendor_uids: List of vendor uids as string or uuid.UUID object.
+        """
+        assert(bool(uid) != bool(booking))  # ^= xor
+        if uid and not isinstance(uid, uuid.UUID):
+            uid = uuid.UUID(uid)
+        vendor_uids = [uuid.UUID(str(vuid)) for vuid in vendor_uids]
+        self.context = context
+        self._uid = uid
+        self._booking = booking
+        self.vendor_uids = vendor_uids
+
+    @property
+    def uid(self):
+        if self._uid:
+            return self._uid
+        return self.booking.attrs['uid']
+
+    def reindex(self):
+        return
+
+    @property
+    def booking(self):
+        if self._booking:
+            return self._booking
+        soup = get_bookings_soup(self.context)
+        query = Eq('uid', self.uid)
+        if self.vendor_uids:
+            query = query & Any('vendor_uid', self.vendor_uids)
+        result = soup.query(query, with_size=True)
+        if result.next() != 1:  # first result is length
+            return None
+        self._booking = result.next()
+        return self._booking
+
+    @property
+    def order(self):
+        return OrderData(
+            self.context,
+            uid=self.booking.attrs['order_uid'],
+            vendor_uids=self.vendor_uids
+        )
+
+
 class BuyableData(object):
 
     def __init__(self, context):
@@ -726,59 +780,31 @@ class OrderTransitions(object):
         """
         order_data = self._order_data(uid)
         for booking in order_data.bookings:
-            self.do_transition_for_booking(booking, transition)
+            do_transition_for_booking(booking, transition, order_data)
         orders_soup = get_orders_soup(self.context)
         order = order_data.order
         orders_soup.reindex(records=[order])
         return order
 
-    def do_transition_for_booking(self, booking, transition):
-        # XXX: currently we need to delete attribute before setting to a new
-        #      value in order to persist change. fix in appropriate place.
-        if transition == ifaces.SALARIED_TRANSITION_SALARIED:
-            del booking.attrs['salaried']
-            booking.attrs['salaried'] = ifaces.SALARIED_YES
-        elif transition == ifaces.SALARIED_TRANSITION_OUTSTANDING:
-            del booking.attrs['salaried']
-            booking.attrs['salaried'] = ifaces.SALARIED_NO
-        elif transition == ifaces.STATE_TRANSITION_RENEW:
-            del booking.attrs['state']
-            booking.attrs['state'] = ifaces.STATE_NEW
-            # fix stock item available
-            order_data = self._order_data(booking.attrs['order_uid'])
-            order_data.decrease_stock([booking])
-        elif transition == ifaces.STATE_TRANSITION_PROCESS:
-            del booking.attrs['state']
-            booking.attrs['state'] = ifaces.STATE_PROCESSING
-        elif transition == ifaces.STATE_TRANSITION_FINISH:
-            del booking.attrs['state']
-            booking.attrs['state'] = ifaces.STATE_FINISHED
-        elif transition == ifaces.STATE_TRANSITION_CANCEL:
-            del booking.attrs['state']
-            booking.attrs['state'] = ifaces.STATE_CANCELLED
-            # fix stock item available
-            order_data = self._order_data(booking.attrs['order_uid'])
-            order_data.increase_stock([booking])
-        else:
-            raise ValueError(u"invalid transition: %s" % transition)
-        bookings_soup = get_bookings_soup(self.context)
-        bookings_soup.reindex(records=[booking])
+
+def order_data_of_booking(context, booking, vendor_uids=[]):
+    return OrderData(
+        context,
+        uid=booking.order_uid,
+        vendor_uids=vendor_uids
+    )
 
 
 def booking_cancel(context, request, booking_uid):
-    bookings_soup = get_bookings_soup(context)
-    result = bookings_soup.query(
-        Eq('uid', booking_uid),
-        with_size=True
-    )
-    if result.next() != 1:  # first result is length
+    booking_data = BookingData(context, uid=booking_uid)
+    if booking_data.booking is None:
         raise ValueError('invalid value (booking)')
-    booking = result.next()
-    booking_attrs = dict(booking.attrs.items())
-
-    ot = OrderTransitions(context)
-    ot.do_transition_for_booking(booking, ifaces.STATE_TRANSITION_CANCEL)
-
+    booking_attrs = dict(booking_data.booking.attrs.items())
+    do_transition_for_booking(
+        booking_data.booking,
+        ifaces.STATE_TRANSITION_CANCEL,
+        booking_data.order
+    )
     event = events.BookingCancelledEvent(
         context,
         request,
@@ -789,13 +815,9 @@ def booking_cancel(context, request, booking_uid):
 
 
 def booking_update_comment(context, booking_uid, comment):
-    bookings_soup = get_bookings_soup(context)
-    result = bookings_soup.query(
-        Eq('uid', booking_uid),
-        with_size=True
-    )
-    if result.next() != 1:  # first result is length
+    booking_data = BookingData(context, uid=booking_uid)
+    if booking_data.booking is None:
         raise ValueError('invalid value (booking)')
-    booking = result.next()
+    booking = booking_data.booking
     booking.attrs['comment'] = comment
-    bookings_soup.reindex(booking)
+    booking_data.reindex()

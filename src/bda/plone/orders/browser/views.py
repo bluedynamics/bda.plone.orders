@@ -1,8 +1,5 @@
 # -*- coding: utf-8 -*-
 from AccessControl import Unauthorized
-from Products.Five import BrowserView
-from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from Products.statusmessages.interfaces import IStatusMessage
 from bda.plone.cart import ascur
 from bda.plone.cart import get_object_by_uid
 from bda.plone.checkout import message_factory as _co
@@ -11,23 +8,31 @@ from bda.plone.orders import interfaces as ifaces
 from bda.plone.orders import message_factory as _
 from bda.plone.orders import permissions
 from bda.plone.orders import vocabularies as vocabs
-from bda.plone.orders.common import DT_FORMAT
-from bda.plone.orders.common import OrderData
-from bda.plone.orders.common import OrderTransitions
+from bda.plone.orders.browser.dropdown import BaseDropdown
 from bda.plone.orders.common import booking_cancel
 from bda.plone.orders.common import booking_update_comment
+from bda.plone.orders.common import BookingData
+from bda.plone.orders.common import DT_FORMAT
 from bda.plone.orders.common import get_order
 from bda.plone.orders.common import get_orders_soup
 from bda.plone.orders.common import get_vendor_by_uid
 from bda.plone.orders.common import get_vendor_uids_for
 from bda.plone.orders.common import get_vendors_for
+from bda.plone.orders.common import OrderData
+from bda.plone.orders.common import OrderTransitions
 from bda.plone.orders.interfaces import IBuyable
+from bda.plone.orders.transitions import transitions_of_main_state
+from bda.plone.orders.transitions import transitions_of_salaried_state
+from bda.plone.orders.transitions import do_transition_for_booking
 from plone.memoize import view
+from Products.Five import BrowserView
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from Products.statusmessages.interfaces import IStatusMessage
 from repoze.catalog.query import Any
 from repoze.catalog.query import Contains
 from repoze.catalog.query import Eq
-from souper.soup import LazyRecord
 from souper.soup import get_soup
+from souper.soup import LazyRecord
 from yafowil.base import factory
 from yafowil.controller import Controller
 from yafowil.utils import Tag
@@ -54,19 +59,7 @@ class Translate(object):
         return translate(msg, context=self.request)
 
 
-class OrderDropdown(object):
-    render = ViewPageTemplateFile('dropdown.pt')
-    name = ''
-    css = 'dropdown'
-    action = ''
-    vocab = {}
-    transitions = {}
-    value = ''
-
-    def __init__(self, context, request, record):
-        self.context = context
-        self.request = request
-        self.record = record
+class OrderDropdown(BaseDropdown):
 
     @property
     def order_data(self):
@@ -79,44 +72,12 @@ class OrderDropdown(object):
                          order=self.record,
                          vendor_uids=vendor_uids)
 
-    def create_items(self, transitions):
-        ret = list()
-        url = self.context.absolute_url()
-        # create and return available transitions for order
-        uid = str(self.record.attrs['uid'])
-        vendor = self.request.form.get('vendor', '')
-        for transition in transitions:
-            if vendor:
-                target = '%s?transition=%s&uid=%s&vendor=%s' % (
-                    url, transition, uid, vendor)
-            else:
-                target = '%s?transition=%s&uid=%s' % (url, transition, uid)
-            ret.append({
-                'title': self.transitions[transition],
-                'target': target,
-            })
-        return ret
-
-    @property
-    def identifyer(self):
-        return '%s-%s' % (self.name, str(self.record.attrs['uid']))
-
-    @property
-    def ajax_action(self):
-        return '%s:#%s-%s:replace' % (self.action,
-                                      self.name,
-                                      str(self.record.attrs['uid']))
-
-    @property
-    def items(self):
-        raise NotImplementedError(u"Abstract Dropdown does not implement "
-                                  u"``items``.")
-
 
 class StateDropdown(OrderDropdown):
     name = 'state'
     css = 'dropdown change_order_state_dropdown'
     action = 'statetransition'
+    subtype = 'order'
     vocab = vocabs.state_vocab()
     transitions = vocabs.state_transitions_vocab()
 
@@ -126,31 +87,7 @@ class StateDropdown(OrderDropdown):
 
     @property
     def items(self):
-        state = self.order_data.state
-        transitions = list()
-        if state in [ifaces.STATE_NEW, ifaces.STATE_RESERVED]:
-            transitions = [
-                ifaces.STATE_TRANSITION_PROCESS,
-                ifaces.STATE_TRANSITION_FINISH,
-                ifaces.STATE_TRANSITION_CANCEL
-            ]
-        elif state == ifaces.STATE_MIXED:
-            transitions = [
-                ifaces.STATE_TRANSITION_PROCESS,
-                ifaces.STATE_TRANSITION_FINISH,
-                ifaces.STATE_TRANSITION_CANCEL,
-                ifaces.STATE_TRANSITION_RENEW
-            ]
-        elif state == ifaces.STATE_PROCESSING:
-            transitions = [
-                ifaces.STATE_TRANSITION_FINISH,
-                ifaces.STATE_TRANSITION_CANCEL,
-                ifaces.STATE_TRANSITION_RENEW
-            ]
-        elif state is not None:
-            transitions = [ifaces.STATE_TRANSITION_RENEW]
-        else:  # empty dropdown
-            transitions = []
+        transitions = transitions_of_main_state(self.value)
         return self.create_items(transitions)
 
 
@@ -158,6 +95,7 @@ class SalariedDropdown(OrderDropdown):
     name = 'salaried'
     css = 'dropdown change_order_salaried_dropdown'
     action = 'salariedtransition'
+    subtype = 'order'
     vocab = vocabs.salaried_vocab()
     transitions = vocabs.salaried_transitions_vocab()
 
@@ -167,28 +105,36 @@ class SalariedDropdown(OrderDropdown):
 
     @property
     def items(self):
-        salaried = self.order_data.salaried or ifaces.SALARIED_NO
-        transitions = []
-        if salaried == ifaces.SALARIED_YES:
-            transitions = [ifaces.SALARIED_TRANSITION_OUTSTANDING]
-        elif salaried == ifaces.SALARIED_NO:
-            transitions = [ifaces.SALARIED_TRANSITION_SALARIED]
-        else:
-            transitions = [
-                ifaces.SALARIED_TRANSITION_OUTSTANDING,
-                ifaces.SALARIED_TRANSITION_SALARIED
-            ]
+        transitions = transitions_of_salaried_state(self.value)
         return self.create_items(transitions)
 
 
 class Transition(BrowserView):
     dropdown = None
 
+    def _do_transition_for_order(self, uid, transition, vendor_uids):
+        order = get_order(self.context, uid)
+        transitions = OrderTransitions(self.context, vendor_uids=vendor_uids)
+        order = transitions.do_transition(uid, transition)
+        return order
+
+    def _do_transition_for_booking(self, uid, transition, vendor_uids):
+        booking_data = BookingData(uid=uid, vendor_uids=vendor_uids)
+        order_data = OrderData(
+            uid=booking_data.booking.attrs['order_uid'],
+            vendor_uids=vendor_uids,
+        )
+        do_transition_for_booking(
+            booking_data.booking,
+            transition,
+            order_data
+        )
+
     def __call__(self):
         transition = self.request['transition']
         uid = self.request['uid']
-        order = get_order(self.context, uid)
         vendor_uid = self.request.form.get('vendor', '')
+        subtype = self.request.form.get('subtype', '')
         if vendor_uid:
             vendor_uids = [vendor_uid]
             vendor = get_vendor_by_uid(self.context, vendor_uid)
@@ -199,9 +145,22 @@ class Transition(BrowserView):
             vendor_uids = get_vendor_uids_for()
             if not vendor_uids:
                 raise Unauthorized
-        transitions = OrderTransitions(self.context, vendor_uids=vendor_uids)
-        order = transitions.do_transition(uid, transition)
-        return self.dropdown(self.context, self.request, order).render()
+
+        if subtype == 'order':
+            record = self._do_transition_for_order(
+                uid,
+                transition,
+                vendor_uids
+            )
+        elif subtype == 'booking':
+            record = self._do_transition_for_booking(
+                uid,
+                transition,
+                vendor_uids
+            )
+        else:
+            raise ValueError('subtype must be either "order" or "booking"!')
+        return self.dropdown(self.context, self.request, record).render()
 
 
 class StateTransition(Transition):
@@ -740,8 +699,13 @@ class OrderViewBase(BrowserView):
         return ret
 
     @property
-    def can_cancel_booking(self):
+    def can_modify_order(self):
         return checkPermission('bda.plone.orders.ModifyOrders', self.context)
+
+    @property
+    def can_cancel_booking(self):
+        return self.can_modify_order \
+               and self.order_data.state != ifaces.STATE_CANCELLED
 
     @property
     def gender(self):

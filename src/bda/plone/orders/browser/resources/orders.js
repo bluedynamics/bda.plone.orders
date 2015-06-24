@@ -55,7 +55,7 @@
             if (hash) {
                 $('.filter').hide();
             }
-            
+
             $('#bdaploneorders', context).dataTable({
                 "bProcessing": true,
                 "bServerSide": true,
@@ -303,7 +303,7 @@
                         api.column(0, {page: 'current'}).data().each(function (group, i) {
                             if (last !== group) {
                                 $(rows).eq(i).before(
-                                        '<tr class="group_email"><td colspan="11">' + group + '</td></tr>'
+                                        '<tr class="group_email"><td colspan="13">' + group + '</td></tr>'
                                 );
                                 last = group;
                             }
@@ -315,13 +315,14 @@
                         api.column(1, {page: 'current'}).data().each(function (group, i) {
                             if (last !== group) {
                                 $(rows).eq(i).before(
-                                        '<tr class="group_buyable"><td colspan="11">' + group + '</td></tr>'
+                                        '<tr class="group_buyable"><td colspan="13">' + group + '</td></tr>'
                                 );
                                 last = group;
                             }
                         });
                         api.column(4).visible(false);
                     }
+                    $(this).bdajax();
                 }
             });
         },
@@ -355,16 +356,21 @@
         },
 
         dropdown_binder: function (context) {
+            var options = {
+                menu: '.dropdown_items',
+                trigger: '.dropdown_header'
+            };
             var sel = '.change_order_salaried_dropdown';
-            $(sel, context).ordersdropdownmenu({
-                menu: '.dropdown_items',
-                trigger: '.dropdown_header'
-            });
+            $(sel, context).ordersdropdownmenu(options);
+
             sel = '.change_order_state_dropdown';
-            $(sel, context).ordersdropdownmenu({
-                menu: '.dropdown_items',
-                trigger: '.dropdown_header'
-            });
+            $(sel, context).ordersdropdownmenu(options);
+
+            sel = '.change_booking_salaried_dropdown';
+            $(sel, context).ordersdropdownmenu(options);
+
+            sel = '.change_booking_state_dropdown';
+            $(sel, context).ordersdropdownmenu(options);
         }
     };
 

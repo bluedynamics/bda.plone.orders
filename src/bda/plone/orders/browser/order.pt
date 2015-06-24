@@ -195,7 +195,7 @@
                 <span class="booking_comment_display booking_comment_text"
                       tal:content="row/comment">comment
                 </span>
-                <input tal:condition="python:view.can_cancel_booking"
+                <input tal:condition="python:view.can_modify_order"
                        class="booking_comment_edit"
                        type="text"
                        tal:attributes="value row/comment;
@@ -203,32 +203,32 @@
                                        data-edit-url string:${context/absolute_url}/@@booking_update_comment"
                 />
 
-                <a tal:condition="python:view.can_cancel_booking"
+                <a tal:condition="python:view.can_modify_order"
                     class="booking_comment_display booking_comment_edit_action"
                     href="#"><img src="#"
-                        title="cancel booking"
+                        title="edit comment"
                         alt="cancel-icon"
                         tal:attributes="src string:${context/absolute_url}/++resource++bda.plone.orders/pencil.png"/></a>
 
-                <img tal:condition="python:view.can_cancel_booking"
+                <img tal:condition="python:view.can_modify_order"
                      class="booking_comment_spinner"
                      src="#"
                      alt="spinner-icon"
                      tal:attributes="src string:${context/absolute_url}/spinner.gif"/>
 
-                <a tal:condition="python:view.can_cancel_booking"
+                <a tal:condition="python:view.can_modify_order"
                     class="booking_comment_edit booking_comment_save_action"
                     href="#"><img
                         src="#"
-                        title="cancel booking"
+                        title="save comment"
                         alt="cancel-icon"
                         tal:attributes="src string:${context/absolute_url}/++resource++bda.plone.orders/tick.png"/></a>
 
-                <a tal:condition="python:view.can_cancel_booking"
+                <a tal:condition="python:view.can_modify_order"
                     class="booking_comment_edit booking_comment_abort_action"
                     href="#"><img
                         src="#"
-                        title="cancel booking"
+                        title="undo edit comment"
                         alt="cancel-icon"
                         tal:attributes="src string:${context/absolute_url}/++resource++bda.plone.orders/cross.png"/></a>
 

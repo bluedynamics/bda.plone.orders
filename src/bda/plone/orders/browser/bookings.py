@@ -1,15 +1,23 @@
 # -*- coding: utf-8 -*-
-from Products.Five import BrowserView
-from bda.intellidatetime import DateTimeConversionError
 from bda.intellidatetime import convert
+from bda.intellidatetime import DateTimeConversionError
+from bda.plone.orders import interfaces as ifaces
 from bda.plone.orders import message_factory as _
+from bda.plone.orders import permissions
 from bda.plone.orders import vocabularies as vocabs
+from bda.plone.orders.browser.dropdown import BaseDropdown
+from bda.plone.orders.common import BookingData
 from bda.plone.orders.common import DT_FORMAT
 from bda.plone.orders.common import get_bookings_soup
 from bda.plone.orders.common import get_order
+from bda.plone.orders.common import get_vendor_by_uid
+from bda.plone.orders.common import get_vendor_uids_for
 from bda.plone.orders.interfaces import IBuyable
+from bda.plone.orders.transitions import transitions_of_main_state
+from bda.plone.orders.transitions import transitions_of_salaried_state
 from decimal import Decimal
 from odict import odict
+from Products.Five import BrowserView
 from repoze.catalog.query import Contains
 from repoze.catalog.query import Ge
 from repoze.catalog.query import InRange
@@ -22,6 +30,60 @@ import datetime
 import json
 import plone.api
 import yafowil.loader  # noqa
+
+
+class BookingsDropdown(BaseDropdown):
+
+    @property
+    def booking_data(self):
+        vendor_uid = self.request.form.get('vendor', '')
+        if vendor_uid:
+            vendor_uids = [vendor_uid]
+        else:
+            vendor_uids = get_vendor_uids_for()
+
+        return BookingData(
+            self.context,
+            booking=self.record,
+            vendor_uids=vendor_uids
+        )
+
+
+class StateDropdown(BookingsDropdown):
+    name = 'state'
+    css = 'dropdown change_booking_state_dropdown'
+    action = 'statetransition'
+    subtype = 'booking'
+    vocab = vocabs.state_vocab()
+    transitions = vocabs.state_transitions_vocab()
+
+    @property
+    def value(self):
+        return self.booking_data.booking.attrs['state']
+
+    @property
+    def items(self):
+        transitions = transitions_of_main_state(self.value)
+        return self.create_items(transitions)
+
+
+class SalariedDropdown(BookingsDropdown):
+    name = 'salaried'
+    css = 'dropdown change_booking_salaried_dropdown'
+    action = 'salariedtransition'
+    subtype = 'booking'
+    vocab = vocabs.salaried_vocab()
+    transitions = vocabs.salaried_transitions_vocab()
+
+    @property
+    def value(self):
+        return self.booking_data.booking.attrs['salaried'] \
+               or ifaces.SALARIED_NO
+
+    @property
+    def items(self):
+        transitions = transitions_of_salaried_state(self.value)
+        return self.create_items(transitions)
 
 
 class BookingsTable(BrowserView):
@@ -82,7 +144,7 @@ class BookingsTable(BrowserView):
         bookings_total_sum = self.render_bookings_total_sum(colname, record)
         value = \
             '<tr class="group_email">' \
-            '<td colspan="11">' + '<p>' + email + '</p>' +\
+            '<td colspan="13">' + '<p>' + email + '</p>' +\
             '<span>' +\
             translate(
                 _("bookings_quantity", default=u"Bookings quantity"),
@@ -105,7 +167,7 @@ class BookingsTable(BrowserView):
         bookings_total_sum = self.render_bookings_total_sum(colname, record)
         value = \
             '<tr class="group_buyable">' \
-            '<td colspan="11">' + '<p>' + title + '</p>' +\
+            '<td colspan="13">' + '<p>' + title + '</p>' +\
             '<span>' +\
             translate(
                 _("bookings_quantity", default=u"Bookings quantity"),
@@ -250,7 +312,19 @@ class BookingsTable(BrowserView):
                 ),
                 'renderer': self.render_bookings_total_sum,
                 'origin': 'b',
-            }
+            },
+            {
+                'id': 'salaried',
+                'label': _('salaried', default=u'Salaried'),
+                'renderer': self.render_salaried,
+                'origin': 'b',
+            },
+            {
+                'id': 'state',
+                'label': _('state', default=u'State'),
+                'renderer': self.render_state,
+                'origin': 'b',
+            },
         ]
         return columns
 
@@ -300,8 +374,10 @@ class BookingsTable(BrowserView):
             "data": aaData,
         }
 
-        self.request.response.setHeader('Content-Type',
-                                        'application/json; charset=utf-8')
+        self.request.response.setHeader(
+            'Content-Type',
+            'application/json; charset=utf-8'
+        )
         return json.dumps(data)
 
 # helper methods
@@ -399,6 +475,20 @@ class BookingsTable(BrowserView):
         for brain in brains:
             yield brain.UID
 
+    def check_modify_order(self, order):
+        vendor_uid = self.request.form.get('vendor', '')
+        if vendor_uid:
+            vendor_uids = [vendor_uid]
+            vendor = get_vendor_by_uid(self.context, vendor_uid)
+            user = plone.api.user.get_current()
+            if not user.checkPermission(permissions.ModifyOrders, vendor):
+                return False
+        else:
+            vendor_uids = get_vendor_uids_for()
+            if not vendor_uids:
+                return False
+        return True
+
     def query(self, soup):
         self._get_buyables_in_context()
         req_group_id = self.request.get('group_by', 'email')
@@ -462,3 +552,27 @@ class BookingsTable(BrowserView):
                     res[group_id].append(soup.get(group_booking_id))
 
         return size, res
+
+    def render_salaried(self, colname, record):
+        if not self.check_modify_order(record):
+            salaried = BookingData(
+                self.context,
+                booking=record
+            ).booking.salaried
+            return translate(
+                vocabs.salaried_vocab()[salaried],
+                context=self.request
+            )
+        return SalariedDropdown(self.context, self.request, record).render()
+
+    def render_state(self, colname, record):
+        if not self.check_modify_order(record):
+            state = BookingData(
+                self.context,
+                booking=record
+            ).booking.state
+            return translate(
+                vocabs.state_vocab()[state],
+                context=self.request
+            )
+        return StateDropdown(self.context, self.request, record).render()
