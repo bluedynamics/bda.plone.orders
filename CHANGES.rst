@@ -5,6 +5,9 @@ Changelog
 0.9.dev
 -------
 
+- Make orders view for whole site play nice with lineage.
+  [jensens]
+
 - Renew/Cancel Booking inc-/decreases stock now.
   Also some changes in API to be more consistent.
   [jensens]

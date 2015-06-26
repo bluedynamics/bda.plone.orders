@@ -25,6 +25,7 @@ from bda.plone.orders.transitions import transitions_of_main_state
 from bda.plone.orders.transitions import transitions_of_salaried_state
 from bda.plone.orders.transitions import do_transition_for_booking
 from plone.memoize import view
+from Products.CMFPlone.interfaces import IPloneSiteRoot
 from Products.Five import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from Products.statusmessages.interfaces import IStatusMessage
@@ -37,7 +38,6 @@ from yafowil.base import factory
 from yafowil.controller import Controller
 from yafowil.utils import Tag
 from zExceptions import BadRequest
-from zope.component.interfaces import ISite
 from zope.i18n import translate
 from zope.i18nmessageid import Message
 from zope.security import checkPermission
@@ -570,7 +570,8 @@ class OrdersData(OrdersTable, TableData):
             term += '*'
             query = query & Contains(self.search_text_index, term)
         # get buyable uids for given context, get all buyables on site root
-        if not ISite.providedBy(self.context):
+        # use explicit IPloneSiteRoot to make it play nice with lineage
+        if not IPloneSiteRoot.providedBy(self.context):
             buyable_uids = self._get_buyables_in_context()
             query = query & Any('buyable_uids', buyable_uids)
         # query orders and return result
