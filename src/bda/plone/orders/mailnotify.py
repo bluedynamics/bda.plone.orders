@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from Products.CMFPlone.utils import safe_unicode
 from bda.plone.cart import ascur
 from bda.plone.cart import get_catalog_brain
 from bda.plone.checkout.interfaces import ICheckoutEvent
@@ -80,7 +81,11 @@ class MailNotify(object):
 
 def _indent(text, ind=5, width=80):
     """helper indents text"""
-    wrapped = textwrap.fill(text, width, initial_indent=ind*u' ')
+    wrapped = textwrap.fill(
+        safe_unicode(text),
+        width,
+        initial_indent=ind * u' '
+    )
     return safe_encode(wrapped)
 
 

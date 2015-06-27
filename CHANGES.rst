@@ -5,6 +5,9 @@ Changelog
 0.9.dev
 -------
 
+- Fix indentation method in mailnotify module to handle non-ASCII data.
+  [thet]
+
 - Make orders view for whole site play nice with lineage.
   [jensens]
 
