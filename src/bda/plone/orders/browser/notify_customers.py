@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
-from bda.plone.ajax import ajax_continue
-from bda.plone.ajax import ajax_form_fiddle
+from Acquisition import aq_parent
+from Products.Five import BrowserView
 from bda.plone.ajax import AjaxMessage
 from bda.plone.ajax import AjaxOverlay
+from bda.plone.ajax import ajax_continue
+from bda.plone.ajax import ajax_form_fiddle
 from bda.plone.orders import message_factory as _
 from bda.plone.orders.browser.mailtemplates import TEMPLATE
 from bda.plone.orders.common import OrderData
@@ -11,9 +13,9 @@ from bda.plone.orders.mailnotify import MailNotify
 from bda.plone.orders.vocabularies import salaried_vocab
 from bda.plone.orders.vocabularies import state_vocab
 from node.utils import UNSET
-from Products.Five import BrowserView
 from yafowil.base import ExtractionError
 from yafowil.plone.form import YAMLBaseForm
+from zope.component.interfaces import ISite
 from zope.i18n import translate
 
 import json
@@ -32,6 +34,16 @@ class NotifyCustomers(YAMLBaseForm):
     """
     form_template = 'bda.plone.orders.browser:forms/notify_customers.yaml'
     message_factory = _
+
+    def __init__(self, context, request):
+        # Find a ISite context when called anywhere.
+        # The context must be a ISite, but the view can be called anywhere.
+        def _find_parent(context):
+            if ISite.providedBy(context):
+                return context
+            return _find_parent(aq_parent(context))
+        self.context = _find_parent(aq_parent(context))
+        self.request = request
 
     def form_action(self, widget, data):
         return '%s/ajaxform?form_name=notify_customers' % \

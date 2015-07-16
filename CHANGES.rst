@@ -5,6 +5,10 @@ Changelog
 0.9.dev
 -------
 
+- Fix ``notify_customers`` view to work on any context. This allows for sending
+  mail in the ``@@orders`` view when called somewhere else than ISite contexts.
+  [thet]
+
 - Fix indentation method in mailnotify module to handle non-ASCII data.
   [thet]
 

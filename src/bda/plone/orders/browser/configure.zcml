@@ -104,7 +104,7 @@
 
   <!-- customer notification -->
   <browser:page
-    for="zope.component.interfaces.ISite"
+    for="*"
     name="notify_customers"
     class=".notify_customers.NotifyCustomers"
     permission="bda.plone.orders.ViewOrders"
