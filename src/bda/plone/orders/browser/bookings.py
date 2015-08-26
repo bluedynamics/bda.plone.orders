@@ -558,7 +558,7 @@ class BookingsTable(BrowserView):
             salaried = BookingData(
                 self.context,
                 booking=record
-            ).booking.salaried
+            ).salaried
             return translate(
                 vocabs.salaried_vocab()[salaried],
                 context=self.request
@@ -570,7 +570,7 @@ class BookingsTable(BrowserView):
             state = BookingData(
                 self.context,
                 booking=record
-            ).booking.state
+            ).state
             return translate(
                 vocabs.state_vocab()[state],
                 context=self.request

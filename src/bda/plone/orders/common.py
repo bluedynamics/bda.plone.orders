@@ -348,6 +348,10 @@ class OrderCheckoutAdapter(CheckoutAdapter):
         while self.ordernumber_exists(orders_soup, ordernumber):
             ordernumber = create_ordernumber()
         order.attrs['ordernumber'] = ordernumber
+        
+        order.attrs['state'] = ifaces.STATE_NEW
+        order.attrs['salaried'] = ifaces.SALARIED_NO
+        
         # add order
         orders_soup.add(order)
         # add bookings
@@ -496,6 +500,7 @@ class OrderData(object):
     def state(self, value):
         for booking in self.bookings:
             booking.attrs['state'] = value
+        self.updateWithBooking()
 
     @property
     def salaried(self):
@@ -513,7 +518,8 @@ class OrderData(object):
     def salaried(self, value):
         for booking in self.bookings:
             booking.attrs['salaried'] = value
-
+        self.updateWithBooking()
+        
     @property
     def tid(self):
         ret = set()
@@ -603,6 +609,10 @@ class OrderData(object):
             # if stock.available is None, no stock information used
             if stock.available is not None:
                 stock.available -= float(booking.attrs['buyable_count'])
+    def updateWithBooking(self):       
+        self.order.state = self.state
+        self.order.salaried = self.salaried
+ 
 
 
 class BookingData(object):
@@ -659,7 +669,33 @@ class BookingData(object):
             vendor_uids=self.vendor_uids
         )
 
+    @property
+    def state(self):        
+        return self.booking.state
 
+    @state.setter
+    def state(self, value):        
+        self.order.updateWithBooking()
+
+    @property
+    def salaried(self):
+        ret = None
+        for booking in self.bookings:
+            val = booking.attrs['salaried']
+            if ret and ret != val:
+                ret = ifaces.SALARIED_MIXED
+                break
+            else:
+                ret = val
+        return ret
+
+    @salaried.setter
+    def salaried(self, value):
+        for booking in self.bookings:
+            booking.attrs['salaried'] = value
+        self.order['salaried'] = self.salaried
+        
+        
 class BuyableData(object):
 
     def __init__(self, context):
