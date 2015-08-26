@@ -430,6 +430,8 @@ class OrderData(object):
     def __init__(self, context, uid=None, order=None, vendor_uids=[]):
         """Create order data object by criteria
 
+        :param context: Context to work with
+        :type object: Plone or Content instance
         :param uid: Order uid. XOR with order
         :type uid: string or uuid.UUID object
         :param order: Order record. XOR with uid
