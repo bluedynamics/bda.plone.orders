@@ -215,8 +215,8 @@ class OrdersCatalogFactory(object):
         catalog = Catalog()
         uid_indexer = NodeAttributeIndexer('uid')
         catalog[u'uid'] = CatalogFieldIndex(uid_indexer)
-        email_indexer = NodeAttributeIndexer('email')
-        catalog[u'email'] = CatalogFieldIndex(email_indexer)
+        email_indexer = NodeAttributeIndexer('personal_data.email')
+        catalog[u'personal_data.email'] = CatalogFieldIndex(email_indexer)
         ordernumber_indexer = NodeAttributeIndexer('ordernumber')
         catalog[u'ordernumber'] = CatalogFieldIndex(ordernumber_indexer)
         booking_uids_indexer = NodeAttributeIndexer('booking_uids')
@@ -237,6 +237,10 @@ class OrdersCatalogFactory(object):
             CatalogFieldIndex(lastname_indexer)
         city_indexer = NodeAttributeIndexer('billing_address.city')
         catalog[u'billing_address.city'] = CatalogFieldIndex(city_indexer)
+        state_indexer = NodeAttributeIndexer('state')
+        catalog[u'state'] = CatalogFieldIndex(state_indexer)
+        salaried_indexer = NodeAttributeIndexer('salaried')
+        catalog[u'salaried'] = CatalogFieldIndex(salaried_indexer)
         search_attributes = ['personal_data.lastname',
                              'personal_data.firstname',
                              'personal_data.email',
