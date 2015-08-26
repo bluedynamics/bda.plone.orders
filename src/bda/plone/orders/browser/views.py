@@ -119,11 +119,15 @@ class Transition(BrowserView):
         return order
 
     def _do_transition_for_booking(self, uid, transition, vendor_uids):
-        booking_data = BookingData(uid=uid, vendor_uids=vendor_uids)
+        booking_data = BookingData(
+            self.context,
+            uid=uid,
+            vendor_uids=vendor_uids
+        )
         order_data = OrderData(
             self.context,
             uid=booking_data.booking.attrs['order_uid'],
-            vendor_uids=vendor_uids,
+            vendor_uids=vendor_uids
         )
         do_transition_for_booking(
             booking_data.booking,

@@ -610,6 +610,8 @@ class BookingData(object):
     def __init__(self, context, uid=None, booking=None, vendor_uids=[]):
         """Create booking data object by criteria
 
+        :param context: Context to work with
+        :type object: Plone or Content instance
         :param uid: Booking uid. XOR with booking
         :type uid: string or uuid.UUID object
         :param booking: Booking record. XOR with uid
