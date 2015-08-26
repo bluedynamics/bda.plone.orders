@@ -38,11 +38,11 @@ class NotifyCustomers(YAMLBaseForm):
     def __init__(self, context, request):
         # Find a ISite context when called anywhere.
         # The context must be a ISite, but the view can be called anywhere.
-        def _find_parent(context):
+        def _acquire_site(context):
             if ISite.providedBy(context):
                 return context
-            return _find_parent(aq_parent(context))
-        self.context = _find_parent(aq_parent(context))
+            return _acquire_site(aq_parent(context))
+        self.context = _acquire_site(context)
         self.request = request
 
     def form_action(self, widget, data):
