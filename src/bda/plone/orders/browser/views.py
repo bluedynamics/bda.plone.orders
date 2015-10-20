@@ -262,6 +262,7 @@ class TableData(BrowserView):
             "iTotalDisplayRecords": length,
             "aaData": aaData,
         }
+        self.request.response.setHeader("Content-type", "application/json")
         return json.dumps(data)
 
 

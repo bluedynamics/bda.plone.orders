@@ -5,6 +5,9 @@ Changelog
 0.9.dev
 -------
 
+- Set JSON response headers in ``TableData.__call__``.
+  [rnix]
+
 - Fix ``notify_customers`` view to work on any context. This allows for sending
   mail in the ``@@orders`` view when called somewhere else than ISite contexts.
   [thet]
