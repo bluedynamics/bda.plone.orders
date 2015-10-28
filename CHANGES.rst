@@ -2,6 +2,13 @@
 Changelog
 =========
 
+0.3.1
+---
+
+- fixed order overview json
+  [agitator]
+
+
 0.3
 ---
 

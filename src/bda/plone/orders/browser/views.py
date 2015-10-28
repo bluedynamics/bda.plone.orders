@@ -256,6 +256,7 @@ class TableData(BrowserView):
             "iTotalDisplayRecords": length,
             "aaData": aaData,
         }
+        self.request.response.setHeader("Content-type", "application/json")
         return json.dumps(data)
 
 
@@ -439,7 +440,7 @@ class OrderView(BrowserView):
         return item['exported'] and _('yes', 'Yes') or _('no', 'No')
 
 
-class DialectExcelWithColons(csv.excel):    
+class DialectExcelWithColons(csv.excel):
     delimiter = ';'
 
 
