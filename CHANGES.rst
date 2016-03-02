@@ -2,6 +2,12 @@
 Changelog
 =========
 
+0.10.dev0
+-------
+
+- Plone 5 update
+  [agitator]
+
 0.9.dev
 -------
 
@@ -43,7 +49,7 @@ Changelog
 - feature: delete single booking from order
   [jensens]
 
-- Move export related code in own file to reduce length and increase 
+- Move export related code in own file to reduce length and increase
   readability
   [jensens]
 
