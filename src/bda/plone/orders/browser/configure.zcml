@@ -8,8 +8,28 @@
     layer="..interfaces.IOrdersExtensionLayer"/>
 
   <browser:resource
+    name="qrcode.js"
+    file="resources/qrcode.js"
+    layer="..interfaces.IOrdersExtensionLayer"/>
+
+  <browser:resource
+    name="bda.plone.orders-compiled.js"
+    file="resources/orders-compiled.js"
+    layer="..interfaces.IOrdersExtensionLayer"/>
+
+  <browser:resource
     name="bda.plone.orders.css"
     file="resources/orders.css"
+    layer="..interfaces.IOrdersExtensionLayer"/>
+
+  <browser:resource
+    name="bda.plone.orders.less"
+    file="resources/orders.less"
+    layer="..interfaces.IOrdersExtensionLayer"/>
+
+  <browser:resource
+    name="bda.plone.orders-compiled.css"
+    file="resources/orders-compiled.css"
     layer="..interfaces.IOrdersExtensionLayer"/>
 
   <browser:resourceDirectory

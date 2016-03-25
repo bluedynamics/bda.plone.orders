@@ -1,6 +1,31 @@
 <?xml version="1.0"?>
 <registry xmlns:i18n="http://xml.zope.org/namespaces/i18n"
-          i18n:domain="bda.plone.shop">
+          i18n:domain="bda.plone.orders">
 
+  <records prefix="plone.resources/qrcode"
+           interface='Products.CMFPlone.interfaces.IResourceRegistry'>
+    <value key="js">++resource++qrcode.js</value>
+  </records>
+
+  <records prefix="plone.resources/bda-plone-orders"
+           interface='Products.CMFPlone.interfaces.IResourceRegistry'>
+    <value key="js">++resource++bda.plone.orders.js</value>
+    <value key="css">
+      <element>++resource++bda.plone.orders.less</element>
+    </value>
+  </records>
+
+  <records prefix="plone.bundles/bda-plone-orders-bundle"
+           interface='Products.CMFPlone.interfaces.IBundleRegistry'>
+    <value key="resources">
+      <element>qrcode</element>
+      <element>bda-plone-orders</element>
+    </value>
+    <value key="enabled">True</value>
+    <value key="compile">True</value>
+    <value key="jscompilation">++resource++bda.plone.orders-compiled.js</value>
+    <value key="csscompilation">++resource++bda.plone.orders-compiled.css</value>
+    <value key="last_compilation">2016-03-04 17:00:00</value>
+   </records>
 
 </registry>
