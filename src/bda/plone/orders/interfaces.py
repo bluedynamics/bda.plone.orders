@@ -134,3 +134,17 @@ class IBookingCancelledEvent(Interface):
     order_uid = Attribute(u"UUID of Order")
 
     booking_attrs = Attribute(u"Dict of attributes of the cancelled booking.")
+
+
+class IItemOutOfStockEvent(Interface):
+    """Checkout related event.
+    """
+    context = Attribute(u"Context in which this event was triggered.")
+
+    request = Attribute(u"Current request.")
+
+    order_uid = Attribute(u"UUID of Order")
+
+    items_out_of_stock = Attribute(u"List of items that are out of stock.")
+
+

@@ -89,6 +89,11 @@
     for="bda.plone.orders.interfaces.IBookingCancelledEvent"
     handler=".mailnotify.dispatch_notify_booking_cancelled"/>
 
+  <!-- event subscribers item is getting out of stock -->
+  <subscriber
+    for="bda.plone.orders.interfaces.IItemOutOfStockEvent"
+    handler=".mailnotify.dispatch_notify_item_out_of_stock"/>
+
   <!-- create contact on checkout success and save it in soup catalog-->
   <subscriber
     for="bda.plone.checkout.interfaces.ICheckoutDone"
