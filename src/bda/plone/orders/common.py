@@ -355,14 +355,17 @@ class OrderCheckoutAdapter(CheckoutAdapter):
         bookings_soup = get_bookings_soup(self.context)
 
         items_out_of_stock = list()
-        items_out_of_stock_limit = get_shop_article_settings().default_item_minimum_stock
 
         for booking in bookings:
             bookings_soup.add(booking)
 
-            # Item is getting out of stock
-            if items_out_of_stock_limit:
-                if booking.attrs['remaining_stock_available'] <= items_out_of_stock_limit:
+            buyable = get_object_by_uid(self.context, booking.attrs['buyable_uid'])
+            item_stock = get_item_stock(buyable)
+            item_out_of_stock_limit = item_stock.minimum_stock
+
+            if item_out_of_stock_limit:
+                if booking.attrs['remaining_stock_available'] <= item_out_of_stock_limit:
+                    # Item is getting out of stock
                     items_out_of_stock.append(booking.attrs)
         
         if items_out_of_stock:

@@ -454,9 +454,9 @@ class ItemsOutOfStockCB(object):
         for item_attrs in items:
             title = item_attrs['title']
             remaining_stock = item_attrs['remaining_stock_available']
-            item_out_of_stock_text += "%s (Remaining stock: %s)\n" %(title, remaining_stock)
+            items_out_of_stock_text += "%s (Remaining stock: %s)\n" %(title, remaining_stock)
 
-        return item_out_of_stock_text
+        return items_out_of_stock_text
 
 
 def notify_item_out_of_stock(event, who=None):
