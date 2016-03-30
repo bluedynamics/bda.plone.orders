@@ -55,6 +55,7 @@ def dispatch_notify_booking_cancelled(event):
     for func in NOTIFICATIONS['booking_cancelled']:
         func(event)
 
+
 def dispatch_notify_item_out_of_stock(event):
     for func in NOTIFICATIONS['item_out_of_stock']:
         func(event)
@@ -432,7 +433,7 @@ def notify_booking_cancelled(event, who=None):
     order_data = OrderData(event.context, uid=get_order_uid(event))
     templates = dict()
     templates.update(get_booking_cancelled_templates(event.context))
-    templates['booking_cancelled_title_cb'] = ItemOutOfStockTitleCB(event)
+    templates['booking_cancelled_title_cb'] = BookingCancelledTitleCB(event)
     if who == "customer":
         do_notify_customer(event.context, order_data, templates)
     elif who == 'shopmanager':
@@ -453,7 +454,7 @@ class ItemsOutOfStockCB(object):
         for item_attrs in items:
             title = item_attrs['title']
             remaining_stock = item_attrs['remaining_stock_available']
-            item_out_of_stock_text = "%s (Remaining stock: %s)\n" %(title, remaining_stock)
+            item_out_of_stock_text += "%s (Remaining stock: %s)\n" %(title, remaining_stock)
 
         return item_out_of_stock_text
 

@@ -356,7 +356,6 @@ class OrderCheckoutAdapter(CheckoutAdapter):
 
         items_out_of_stock = list()
         items_out_of_stock_limit = get_shop_article_settings().default_item_minimum_stock
-        print items_out_of_stock_limit
 
         for booking in bookings:
             bookings_soup.add(booking)
@@ -380,7 +379,6 @@ class OrderCheckoutAdapter(CheckoutAdapter):
 
     def create_bookings(self, order):
         ret = list()
-        items_out_of_stock = list()
 
         cart_data = get_data_provider(self.context)
         for uid, count, comment in self.items:
