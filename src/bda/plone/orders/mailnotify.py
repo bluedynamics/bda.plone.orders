@@ -459,7 +459,7 @@ class StockThresholdReachedCB(object):
         return items_stock_threshold_reached_text
 
 
-def notify_stock_threshold_reached(event, who=None):
+def notify_stock_threshold_reached(event):
     """Send notification mail when item is getting out of stock.
     """
     order_data = OrderData(event.context, uid=get_order_uid(event))
@@ -467,12 +467,8 @@ def notify_stock_threshold_reached(event, who=None):
     templates.update(get_stock_threshold_reached_templates(event.context))
     templates['items_stock_threshold_reached_text_cb'] = StockThresholdReachedCB(event)
 
-    if who == 'shopmanager':
-        do_notify_shopmanager(event.context, order_data, templates)
-    else:
-        raise ValueError(
-            'kw "who" mus be one out of ("customer", "shopmanager")'
-        )
+    do_notify_shopmanager(event.context, order_data, templates)
+    
 
 
 # below here we have the actual events
@@ -524,10 +520,6 @@ def notify_booking_cancelled_shopmanager(event):
 NOTIFICATIONS['booking_cancelled'].append(notify_booking_cancelled_customer)
 NOTIFICATIONS['booking_cancelled'].append(notify_booking_cancelled_shopmanager)
 
-
-def notify_stock_threshold_reached_shopmanager(event):
-    notify_stock_threshold_reached(event, who="shopmanager")
-
-NOTIFICATIONS['stock_threshold_reached'].append(notify_stock_threshold_reached_shopmanager)
+NOTIFICATIONS['stock_threshold_reached'].append(notify_stock_threshold_reached)
 
 
