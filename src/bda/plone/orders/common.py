@@ -23,6 +23,7 @@ from bda.plone.payment import Payments
 from bda.plone.payment.interfaces import IPaymentData
 from bda.plone.shipping import Shippings
 from bda.plone.shipping.interfaces import IShippingItem
+from bda.plone.shop.utils import get_shop_article_settings
 from decimal import Decimal
 from node.ext.zodb import OOBTNode
 from node.utils import instance_property
@@ -352,19 +353,43 @@ class OrderCheckoutAdapter(CheckoutAdapter):
         orders_soup.add(order)
         # add bookings
         bookings_soup = get_bookings_soup(self.context)
+
+        items_stock_threshold_reached = list()
+
         for booking in bookings:
             bookings_soup.add(booking)
+
+            buyable = get_object_by_uid(self.context, booking.attrs['buyable_uid'])
+            item_stock = get_item_stock(buyable)
+            stock_warning_threshold = item_stock.stock_warning_threshold
+
+            if stock_warning_threshold:
+                if booking.attrs['remaining_stock_available'] <= stock_warning_threshold:
+                    # Item is getting out of stock
+                    items_stock_threshold_reached.append(booking.attrs)
+        
+        if items_stock_threshold_reached:
+            event = events.StockThresholdReached(
+                self.context,
+                self.request,
+                order.attrs['uid'],
+                items_stock_threshold_reached,
+            )
+            notify(event)
+
         # return uid of added order
         return uid
 
     def create_bookings(self, order):
         ret = list()
+
         cart_data = get_data_provider(self.context)
         for uid, count, comment in self.items:
             booking = self.create_booking(
                 order, cart_data, uid, count, comment)
             if booking:
                 ret.append(booking)
+
         return ret
 
     def create_booking(self, order, cart_data, uid, count, comment):

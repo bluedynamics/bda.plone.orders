@@ -2,6 +2,7 @@
 from Products.CMFPlone.utils import safe_unicode
 from bda.plone.cart import ascur
 from bda.plone.cart import get_catalog_brain
+from bda.plone.cart import get_object_by_uid
 from bda.plone.checkout.interfaces import ICheckoutEvent
 from bda.plone.checkout.interfaces import ICheckoutSettings
 from bda.plone.orders import interfaces as ifaces
@@ -11,6 +12,7 @@ from bda.plone.orders import vocabularies as vocabs
 from bda.plone.orders.common import DT_FORMAT
 from bda.plone.orders.common import OrderData
 from bda.plone.orders.interfaces import IBookingCancelledEvent
+from bda.plone.orders.interfaces import IStockThresholdReached
 from bda.plone.orders.interfaces import IGlobalNotificationText
 from bda.plone.orders.interfaces import IItemNotificationText
 from bda.plone.orders.interfaces import INotificationSettings
@@ -18,6 +20,7 @@ from bda.plone.orders.interfaces import IPaymentText
 from bda.plone.orders.mailtemplates import get_booking_cancelled_templates
 from bda.plone.orders.mailtemplates import get_order_templates
 from bda.plone.orders.mailtemplates import get_reservation_templates
+from bda.plone.orders.mailtemplates import get_stock_threshold_reached_templates
 from bda.plone.payment.interfaces import IPaymentEvent
 from email.utils import formataddr
 from plone import api
@@ -34,6 +37,7 @@ NOTIFICATIONS = {
     'checkout_success': [],
     'payment_success': [],
     'booking_cancelled': [],
+    'stock_threshold_reached': []
 }
 
 
@@ -49,6 +53,11 @@ def dispatch_notify_payment_success(event):
 
 def dispatch_notify_booking_cancelled(event):
     for func in NOTIFICATIONS['booking_cancelled']:
+        func(event)
+
+
+def dispatch_notify_stock_threshold_reached(event):
+    for func in NOTIFICATIONS['stock_threshold_reached']:
         func(event)
 
 
@@ -296,6 +305,7 @@ POSSIBLE_TEMPLATE_CALLBACKS = [
     'item_listing',
     'order_summary',
     'payment_text',
+    'items_stock_threshold_reached_text'
 ]
 
 
@@ -378,6 +388,8 @@ def get_order_uid(event):
         return event.order_uid
     if IBookingCancelledEvent.providedBy(event):
         return event.order_uid
+    if IStockThresholdReached.providedBy(event):
+        return event.order_uid
 
 
 def notify_order_success(event, who=None):
@@ -415,7 +427,6 @@ class BookingCancelledTitleCB(object):
     def __call__(self, *args):
         return self.event.booking_attrs['eventtitle']
 
-
 def notify_booking_cancelled(event, who=None):
     """Send notification mail after booking was cancelled.
     """
@@ -431,6 +442,33 @@ def notify_booking_cancelled(event, who=None):
         raise ValueError(
             'kw "who" mus be one out of ("customer", "shopmanager")'
         )
+
+class StockThresholdReachedCB(object):
+
+    def __init__(self, event):
+        self.event = event
+
+    def __call__(self, *args):
+        items_stock_threshold_reached_text = ""
+        items = self.event.items_stock_threshold_reached
+        for item_attrs in items:
+            title = item_attrs['title']
+            remaining_stock = item_attrs['remaining_stock_available']
+            items_stock_threshold_reached_text += "%s (Remaining stock: %s)\n" %(title, remaining_stock)
+
+        return items_stock_threshold_reached_text
+
+
+def notify_stock_threshold_reached(event):
+    """Send notification mail when item is getting out of stock.
+    """
+    order_data = OrderData(event.context, uid=get_order_uid(event))
+    templates = dict()
+    templates.update(get_stock_threshold_reached_templates(event.context))
+    templates['items_stock_threshold_reached_text_cb'] = StockThresholdReachedCB(event)
+
+    do_notify_shopmanager(event.context, order_data, templates)
+    
 
 
 # below here we have the actual events
@@ -481,3 +519,7 @@ def notify_booking_cancelled_shopmanager(event):
 
 NOTIFICATIONS['booking_cancelled'].append(notify_booking_cancelled_customer)
 NOTIFICATIONS['booking_cancelled'].append(notify_booking_cancelled_shopmanager)
+
+NOTIFICATIONS['stock_threshold_reached'].append(notify_stock_threshold_reached)
+
+

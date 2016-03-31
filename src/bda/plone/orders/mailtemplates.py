@@ -97,6 +97,17 @@ Cancelled item: %(booking_cancelled_title)s
 Order details: %(portal_url)s/@@showorder?ordernumber=%(ordernumber)s
 """
 
+STOCK_THRESHOLD_REACHED_SUBJECT_EN = u"Order %s has products that are getting out of stock."
+
+STOCK_THRESHOLD_REACHED_BODY_EN = """
+Date: %(date)s
+
+Products getting out of stock:
+%(items_stock_threshold_reached_text)s
+
+"""
+
+
 ###############################################################################
 # de
 ###############################################################################
@@ -519,6 +530,13 @@ CANCELLED_BOOKING_TEMPLATES = {
         'body': CANCELLED_BOOKING_BODY_NO}
 }
 
+STOCK_THRESHOLD_REACHED_TEMPLATES = {
+    'en': {
+        'subject': STOCK_THRESHOLD_REACHED_SUBJECT_EN,
+        'body': STOCK_THRESHOLD_REACHED_BODY_EN
+    }
+}
+
 
 def _get_templates(context, TPL, default='en'):
     lang = context.restrictedTraverse('@@plone_portal_state').language()
@@ -535,6 +553,10 @@ def get_reservation_templates(context):
 
 def get_booking_cancelled_templates(context):
     return _get_templates(context, CANCELLED_BOOKING_TEMPLATES)
+
+
+def get_stock_threshold_reached_templates(context):
+    return _get_templates(context, STOCK_THRESHOLD_REACHED_TEMPLATES)
 
 
 # list of template attributes which are required. by default, no attributes are
