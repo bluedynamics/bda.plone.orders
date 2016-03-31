@@ -91,8 +91,8 @@
 
   <!-- event subscribers item is getting out of stock -->
   <subscriber
-    for="bda.plone.orders.interfaces.IItemOutOfStockEvent"
-    handler=".mailnotify.dispatch_notify_item_out_of_stock"/>
+    for="bda.plone.orders.interfaces.IStockThresholdReached"
+    handler=".mailnotify.dispatch_notify_stock_threshold_reached"/>
 
   <!-- create contact on checkout success and save it in soup catalog-->
   <subscriber

@@ -97,13 +97,13 @@ Cancelled item: %(booking_cancelled_title)s
 Order details: %(portal_url)s/@@showorder?ordernumber=%(ordernumber)s
 """
 
-ITEM_OUT_OF_STOCK_SUBJECT_EN = u"Order %s has products that are getting out of stock."
+STOCK_THRESHOLD_REACHED_SUBJECT_EN = u"Order %s has products that are getting out of stock."
 
-ITEM_OUT_OF_STOCK_BODY_EN = """
+STOCK_THRESHOLD_REACHED_BODY_EN = """
 Date: %(date)s
 
 Products getting out of stock:
-%(items_out_of_stock)s
+%(items_stock_threshold_reached_text)s
 
 """
 
@@ -530,10 +530,10 @@ CANCELLED_BOOKING_TEMPLATES = {
         'body': CANCELLED_BOOKING_BODY_NO}
 }
 
-ITEM_OUT_OF_STOCK_TEMPLATES = {
+STOCK_THRESHOLD_REACHED_TEMPLATES = {
     'en': {
-        'subject': ITEM_OUT_OF_STOCK_SUBJECT_EN,
-        'body': ITEM_OUT_OF_STOCK_BODY_EN
+        'subject': STOCK_THRESHOLD_REACHED_SUBJECT_EN,
+        'body': STOCK_THRESHOLD_REACHED_BODY_EN
     }
 }
 
@@ -555,8 +555,8 @@ def get_booking_cancelled_templates(context):
     return _get_templates(context, CANCELLED_BOOKING_TEMPLATES)
 
 
-def get_item_out_of_stock_templates(context):
-    return _get_templates(context, ITEM_OUT_OF_STOCK_TEMPLATES)
+def get_stock_threshold_reached_templates(context):
+    return _get_templates(context, STOCK_THRESHOLD_REACHED_TEMPLATES)
 
 
 # list of template attributes which are required. by default, no attributes are

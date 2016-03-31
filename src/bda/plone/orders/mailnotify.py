@@ -12,7 +12,7 @@ from bda.plone.orders import vocabularies as vocabs
 from bda.plone.orders.common import DT_FORMAT
 from bda.plone.orders.common import OrderData
 from bda.plone.orders.interfaces import IBookingCancelledEvent
-from bda.plone.orders.interfaces import IItemOutOfStockEvent
+from bda.plone.orders.interfaces import IStockThresholdReached
 from bda.plone.orders.interfaces import IGlobalNotificationText
 from bda.plone.orders.interfaces import IItemNotificationText
 from bda.plone.orders.interfaces import INotificationSettings
@@ -20,7 +20,7 @@ from bda.plone.orders.interfaces import IPaymentText
 from bda.plone.orders.mailtemplates import get_booking_cancelled_templates
 from bda.plone.orders.mailtemplates import get_order_templates
 from bda.plone.orders.mailtemplates import get_reservation_templates
-from bda.plone.orders.mailtemplates import get_item_out_of_stock_templates
+from bda.plone.orders.mailtemplates import get_stock_threshold_reached_templates
 from bda.plone.payment.interfaces import IPaymentEvent
 from email.utils import formataddr
 from plone import api
@@ -37,7 +37,7 @@ NOTIFICATIONS = {
     'checkout_success': [],
     'payment_success': [],
     'booking_cancelled': [],
-    'item_out_of_stock': []
+    'stock_threshold_reached': []
 }
 
 
@@ -56,8 +56,8 @@ def dispatch_notify_booking_cancelled(event):
         func(event)
 
 
-def dispatch_notify_item_out_of_stock(event):
-    for func in NOTIFICATIONS['item_out_of_stock']:
+def dispatch_notify_stock_threshold_reached(event):
+    for func in NOTIFICATIONS['stock_threshold_reached']:
         func(event)
 
 
@@ -305,7 +305,7 @@ POSSIBLE_TEMPLATE_CALLBACKS = [
     'item_listing',
     'order_summary',
     'payment_text',
-    'items_out_of_stock'
+    'items_stock_threshold_reached_text'
 ]
 
 
@@ -388,7 +388,7 @@ def get_order_uid(event):
         return event.order_uid
     if IBookingCancelledEvent.providedBy(event):
         return event.order_uid
-    if IItemOutOfStockEvent.providedBy(event):
+    if IStockThresholdReached.providedBy(event):
         return event.order_uid
 
 
@@ -443,29 +443,29 @@ def notify_booking_cancelled(event, who=None):
             'kw "who" mus be one out of ("customer", "shopmanager")'
         )
 
-class ItemsOutOfStockCB(object):
+class StockThresholdReachedCB(object):
 
     def __init__(self, event):
         self.event = event
 
     def __call__(self, *args):
-        items_out_of_stock_text = ""
-        items = self.event.items_out_of_stock
+        items_stock_threshold_reached_text = ""
+        items = self.event.items_stock_threshold_reached
         for item_attrs in items:
             title = item_attrs['title']
             remaining_stock = item_attrs['remaining_stock_available']
-            items_out_of_stock_text += "%s (Remaining stock: %s)\n" %(title, remaining_stock)
+            items_stock_threshold_reached_text += "%s (Remaining stock: %s)\n" %(title, remaining_stock)
 
-        return items_out_of_stock_text
+        return items_stock_threshold_reached_text
 
 
-def notify_item_out_of_stock(event, who=None):
+def notify_stock_threshold_reached(event, who=None):
     """Send notification mail when item is getting out of stock.
     """
     order_data = OrderData(event.context, uid=get_order_uid(event))
     templates = dict()
-    templates.update(get_item_out_of_stock_templates(event.context))
-    templates['items_out_of_stock_cb'] = ItemsOutOfStockCB(event)
+    templates.update(get_stock_threshold_reached_templates(event.context))
+    templates['items_stock_threshold_reached_text_cb'] = StockThresholdReachedCB(event)
 
     if who == 'shopmanager':
         do_notify_shopmanager(event.context, order_data, templates)
@@ -525,9 +525,9 @@ NOTIFICATIONS['booking_cancelled'].append(notify_booking_cancelled_customer)
 NOTIFICATIONS['booking_cancelled'].append(notify_booking_cancelled_shopmanager)
 
 
-def notify_item_out_of_stock_shopmanager(event):
-    notify_item_out_of_stock(event, who="shopmanager")
+def notify_stock_threshold_reached_shopmanager(event):
+    notify_stock_threshold_reached(event, who="shopmanager")
 
-NOTIFICATIONS['item_out_of_stock'].append(notify_item_out_of_stock_shopmanager)
+NOTIFICATIONS['stock_threshold_reached'].append(notify_stock_threshold_reached_shopmanager)
 
 
