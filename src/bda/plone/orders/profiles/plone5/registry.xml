@@ -12,10 +12,11 @@
     <value key="js">++resource++bda.plone.orders.js</value>
     <value key="css">
       <element>++resource++bda.plone.orders.less</element>
+      <element>++resource++bda.plone.orders_print.less</element>
     </value>
   </records>
 
-  <records prefix="plone.bundles/bda-plone-orders-bundle"
+  <records prefix="plone.bundles/bda-plone-orders"
            interface='Products.CMFPlone.interfaces.IBundleRegistry'>
     <value key="resources">
       <element>qrcode</element>
@@ -23,9 +24,9 @@
     </value>
     <value key="enabled">True</value>
     <value key="compile">True</value>
-    <value key="jscompilation">++plone++bda.plone.orders.compiled/orders.css</value>
-    <value key="csscompilation">++plone++bda.plone.orders.compiled/orders.js</value>
+    <value key="jscompilation">++plone++bda.plone.orders/orders.css</value>
+    <value key="csscompilation">++plone++bda.plone.orders/orders.js</value>
     <value key="last_compilation">2016-03-04 17:00:00</value>
-   </records>
+  </records>
 
 </registry>

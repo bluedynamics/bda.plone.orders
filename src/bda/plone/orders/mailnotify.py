@@ -24,11 +24,12 @@ from plone import api
 from zope.component.hooks import getSite
 from zope.globalrequest import getRequest
 from zope.i18n import translate
-
 import logging
 import textwrap
 
+
 logger = logging.getLogger('bda.plone.orders')
+
 
 NOTIFICATIONS = {
     'checkout_success': [],
@@ -452,6 +453,7 @@ def notify_checkout_success_shopmanager(event):
     if checkout_settings.skip_payment(get_order_uid(event)):
         notify_order_success(event, who="shopmanager")
 
+
 NOTIFICATIONS['checkout_success'].append(notify_checkout_success_customer)
 NOTIFICATIONS['checkout_success'].append(notify_checkout_success_shopmanager)
 
@@ -466,6 +468,7 @@ def notify_payment_success_shopmanager(event):
     """Send notification mail after payment succeed.
     """
     notify_order_success(event, who="shopmanager")
+
 
 NOTIFICATIONS['payment_success'].append(notify_payment_success_customer)
 NOTIFICATIONS['payment_success'].append(notify_payment_success_shopmanager)

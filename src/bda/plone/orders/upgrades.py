@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 from bda.plone.cart import get_object_by_uid
 from bda.plone.orders import message_factory as _
+from bda.plone.orders.common import OrderData
 from bda.plone.orders.common import acquire_vendor_or_shop_root
 from bda.plone.orders.common import get_bookings_soup
 from bda.plone.orders.common import get_order
 from bda.plone.orders.common import get_orders_soup
-from bda.plone.orders.common import OrderData
 from bda.plone.orders.contacts import get_contacts_soup
 from bda.plone.orders.interfaces import ITrading
 from bda.plone.payment import Payments
@@ -14,9 +14,9 @@ from decimal import Decimal
 from node.ext.zodb.utils import reset_odict
 from plone.uuid.interfaces import IUUID
 from zope.component.hooks import getSite
-
 import logging
 import uuid
+
 
 logger = logging.getLogger('bda.plone.orders UPGRADE')
 

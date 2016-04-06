@@ -7,7 +7,7 @@
       cookable="True"
       enabled="True"
       expression=""
-      id="++resource++bda.plone.orders/qrcode.js"
+      id="++resource++qrcode.js"
       inline="False"/>
 
   <javascript
@@ -18,4 +18,5 @@
       expression=""
       id="++resource++bda.plone.orders.js"
       inline="False"/>
+
 </object>

@@ -93,4 +93,5 @@
   <subscriber
     for="bda.plone.checkout.interfaces.ICheckoutDone"
     handler=".contacts.save_contact" />
+
 </configure>

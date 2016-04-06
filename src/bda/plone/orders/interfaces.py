@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
+from bda.plone.cart.interfaces import ICartItem
 from bda.plone.checkout.interfaces import ICheckoutExtensionLayer
 from bda.plone.discount.interfaces import IDiscountSettingsEnabled
-from bda.plone.cart.interfaces import ICartItem
 from zope.interface import Attribute
 from zope.interface import Interface
 

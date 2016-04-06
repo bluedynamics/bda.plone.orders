@@ -7,7 +7,6 @@ from bda.plone.orders.common import get_vendor_order_uids_for
 from bda.plone.orders.common import get_vendors_for
 from plone.uuid.interfaces import IUUID
 from zope.component.hooks import getSite
-
 import plone.api
 
 

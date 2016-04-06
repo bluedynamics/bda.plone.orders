@@ -5,14 +5,13 @@ from repoze.catalog.indexes.field import CatalogFieldIndex
 from repoze.catalog.indexes.text import CatalogTextIndex
 from repoze.catalog.query import Eq
 from souper.interfaces import ICatalogFactory
-from souper.soup import get_soup
 from souper.soup import NodeAttributeIndexer
 from souper.soup import NodeTextIndexer
 from souper.soup import Record
+from souper.soup import get_soup
 from zope.interface import implementer
-
-import uuid
 import random
+import uuid
 
 
 def get_contacts_soup(context):
@@ -85,6 +84,7 @@ def extract_contact(order):
     for attr in CONTACT_ATTRIBUTES:
         contact[attr] = order.attrs.get(attr, u'').strip()
     return contact
+
 
 # maximum attempts for creating a new contact id before failure
 MAX_NEW_CONTACT_ID_ATTEMPTS = 10

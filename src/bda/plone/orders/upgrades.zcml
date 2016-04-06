@@ -89,4 +89,5 @@
     description=""
     profile="bda.plone.orders:default"
     handler=".upgrades.fix_contacts_email"/>
+
 </configure>
