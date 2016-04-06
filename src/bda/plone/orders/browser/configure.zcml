@@ -266,14 +266,14 @@
 
   <browser:resource
     zcml:condition="have plone-5"
-    name="bda.plone.orders_print.less"
-    file="resources/orders_print_p5.less"
+    name="bda.plone.orders.css"
+    file="resources/orders_p5.css"
     layer="..interfaces.IOrdersExtensionLayer" />
 
-  <plone:static
+  <browser:resource
     zcml:condition="have plone-5"
-    directory="compiled"
-    type="plone"
-    name="bda.plone.orders" />
+    name="bda.plone.orders.css.map"
+    file="resources/orders_p5.css.map"
+    layer="..interfaces.IOrdersExtensionLayer" />
 
 </configure>
