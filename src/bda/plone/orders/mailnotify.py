@@ -12,11 +12,11 @@ from bda.plone.orders import vocabularies as vocabs
 from bda.plone.orders.common import DT_FORMAT
 from bda.plone.orders.common import OrderData
 from bda.plone.orders.interfaces import IBookingCancelledEvent
-from bda.plone.orders.interfaces import IStockThresholdReached
 from bda.plone.orders.interfaces import IGlobalNotificationText
 from bda.plone.orders.interfaces import IItemNotificationText
 from bda.plone.orders.interfaces import INotificationSettings
 from bda.plone.orders.interfaces import IPaymentText
+from bda.plone.orders.interfaces import IStockThresholdReached
 from bda.plone.orders.mailtemplates import get_booking_cancelled_templates
 from bda.plone.orders.mailtemplates import get_order_templates
 from bda.plone.orders.mailtemplates import get_reservation_templates
@@ -80,7 +80,6 @@ class MailNotify(object):
             mailfrom = formataddr((from_name, shop_manager_address))
         else:
             mailfrom = shop_manager_address
-
         api.portal.send_email(
             recipient=receiver,
             sender=mailfrom,
@@ -306,7 +305,7 @@ POSSIBLE_TEMPLATE_CALLBACKS = [
     'item_listing',
     'order_summary',
     'payment_text',
-    'items_stock_threshold_reached_text'
+    'stock_threshold_reached_text'
 ]
 
 
@@ -428,6 +427,7 @@ class BookingCancelledTitleCB(object):
     def __call__(self, *args):
         return self.event.booking_attrs['eventtitle']
 
+
 def notify_booking_cancelled(event, who=None):
     """Send notification mail after booking was cancelled.
     """
@@ -444,20 +444,23 @@ def notify_booking_cancelled(event, who=None):
             'kw "who" mus be one out of ("customer", "shopmanager")'
         )
 
+
 class StockThresholdReachedCB(object):
 
     def __init__(self, event):
         self.event = event
 
     def __call__(self, *args):
-        items_stock_threshold_reached_text = ""
-        items = self.event.items_stock_threshold_reached
+        stock_threshold_reached_text = ""
+        items = self.event.stock_threshold_reached_items
         for item_attrs in items:
             title = item_attrs['title']
             remaining_stock = item_attrs['remaining_stock_available']
-            items_stock_threshold_reached_text += "%s (Remaining stock: %s)\n" %(title, remaining_stock)
-
-        return items_stock_threshold_reached_text
+            stock_threshold_reached_text += "{} (Remaining stock: {})\n".format(
+                title,
+                remaining_stock
+            )
+        return stock_threshold_reached_text
 
 
 def notify_stock_threshold_reached(event):
@@ -466,13 +469,10 @@ def notify_stock_threshold_reached(event):
     order_data = OrderData(event.context, uid=get_order_uid(event))
     templates = dict()
     templates.update(get_stock_threshold_reached_templates(event.context))
-    templates['items_stock_threshold_reached_text_cb'] = StockThresholdReachedCB(event)
-
+    templates['stock_threshold_reached_text_cb'] = \
+        StockThresholdReachedCB(event)
     do_notify_shopmanager(event.context, order_data, templates)
-    
 
-
-# below here we have the actual events
 
 def notify_checkout_success_customer(event):
     """Send notification mail after checkout succeed.
@@ -522,7 +522,4 @@ def notify_booking_cancelled_shopmanager(event):
 
 NOTIFICATIONS['booking_cancelled'].append(notify_booking_cancelled_customer)
 NOTIFICATIONS['booking_cancelled'].append(notify_booking_cancelled_shopmanager)
-
 NOTIFICATIONS['stock_threshold_reached'].append(notify_stock_threshold_reached)
-
-

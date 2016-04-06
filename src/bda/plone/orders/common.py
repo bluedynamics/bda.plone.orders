@@ -43,7 +43,6 @@ from souper.soup import get_soup
 from zope.component import queryAdapter
 from zope.event import notify
 from zope.interface import implementer
-
 import datetime
 import logging
 import plone.api
@@ -202,8 +201,10 @@ class BookingsCatalogFactory(object):
         catalog[u'state'] = CatalogFieldIndex(state_indexer)
         salaried_indexer = NodeAttributeIndexer('salaried')
         catalog[u'salaried'] = CatalogFieldIndex(salaried_indexer)
-        search_attributes = ['email',
-                             'title']
+        search_attributes = [
+            'email',
+            'title'
+        ]
         text_indexer = NodeTextIndexer(search_attributes)
         catalog[u'text'] = CatalogTextIndex(text_indexer)
         return catalog
@@ -238,11 +239,13 @@ class OrdersCatalogFactory(object):
             CatalogFieldIndex(lastname_indexer)
         city_indexer = NodeAttributeIndexer('billing_address.city')
         catalog[u'billing_address.city'] = CatalogFieldIndex(city_indexer)
-        search_attributes = ['personal_data.lastname',
-                             'personal_data.firstname',
-                             'personal_data.email',
-                             'billing_address.city',
-                             'ordernumber']
+        search_attributes = [
+            'personal_data.lastname',
+            'personal_data.firstname',
+            'personal_data.email',
+            'billing_address.city',
+            'ordernumber'
+        ]
         text_indexer = NodeTextIndexer(search_attributes)
         catalog[u'text'] = CatalogTextIndex(text_indexer)
         return catalog
@@ -353,43 +356,40 @@ class OrderCheckoutAdapter(CheckoutAdapter):
         orders_soup.add(order)
         # add bookings
         bookings_soup = get_bookings_soup(self.context)
-
-        items_stock_threshold_reached = list()
-
+        # list containing items where stock threshold has been reached
+        stock_threshold_reached_items = list()
         for booking in bookings:
             bookings_soup.add(booking)
-
-            buyable = get_object_by_uid(self.context, booking.attrs['buyable_uid'])
+            buyable = get_object_by_uid(
+                self.context,
+                booking.attrs['buyable_uid']
+            )
             item_stock = get_item_stock(buyable)
             stock_warning_threshold = item_stock.stock_warning_threshold
-
             if stock_warning_threshold:
-                if booking.attrs['remaining_stock_available'] <= stock_warning_threshold:
-                    # Item is getting out of stock
-                    items_stock_threshold_reached.append(booking.attrs)
-        
-        if items_stock_threshold_reached:
+                remaining = booking.attrs['remaining_stock_available']
+                # stock threshold has been reached
+                if remaining <= stock_warning_threshold:
+                    stock_threshold_reached_items.append(booking.attrs)
+        if stock_threshold_reached_items:
             event = events.StockThresholdReached(
                 self.context,
                 self.request,
                 order.attrs['uid'],
-                items_stock_threshold_reached,
+                stock_threshold_reached_items,
             )
             notify(event)
-
         # return uid of added order
         return uid
 
     def create_bookings(self, order):
         ret = list()
-
         cart_data = get_data_provider(self.context)
         for uid, count, comment in self.items:
             booking = self.create_booking(
                 order, cart_data, uid, count, comment)
             if booking:
                 ret.append(booking)
-
         return ret
 
     def create_booking(self, order, cart_data, uid, count, comment):
@@ -411,7 +411,6 @@ class OrderCheckoutAdapter(CheckoutAdapter):
             else ifaces.STATE_RESERVED
         item_data = get_item_data_provider(buyable)
         vendor = acquire_vendor_or_shop_root(buyable)
-
         booking = OOBTNode()
         booking.attrs['email'] = order.attrs['personal_data.email']
         booking.attrs['uid'] = uuid.uuid4()

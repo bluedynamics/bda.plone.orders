@@ -145,6 +145,5 @@ class IStockThresholdReached(Interface):
 
     order_uid = Attribute(u"UUID of Order")
 
-    items_stock_threshold_reached = Attribute(u"List of items that are getting out of stock.")
-
-
+    stock_threshold_reached_items = Attribute(u"List of items that are "
+                                              u"getting out of stock.")

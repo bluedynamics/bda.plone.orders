@@ -13,11 +13,16 @@ class BookingCancelledEvent(object):
         self.order_uid = order_uid
         self.booking_attrs = booking_attrs
 
+
 @implementer(IStockThresholdReached)
 class StockThresholdReached(object):
     
-    def __init__(self, context, request, order_uid, items_stock_threshold_reached):
+    def __init__(self,
+                 context,
+                 request,
+                 order_uid,
+                 stock_threshold_reached_items):
         self.context = context
         self.request = request
         self.order_uid = order_uid
-        self.items_stock_threshold_reached = items_stock_threshold_reached
+        self.stock_threshold_reached_items = stock_threshold_reached_items

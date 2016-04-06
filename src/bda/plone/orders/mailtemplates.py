@@ -103,7 +103,7 @@ STOCK_THRESHOLD_REACHED_BODY_EN = """
 Date: %(date)s
 
 Products getting out of stock:
-%(items_stock_threshold_reached_text)s
+%(stock_threshold_reached_text)s
 
 """
 
@@ -533,8 +533,7 @@ CANCELLED_BOOKING_TEMPLATES = {
 STOCK_THRESHOLD_REACHED_TEMPLATES = {
     'en': {
         'subject': STOCK_THRESHOLD_REACHED_SUBJECT_EN,
-        'body': STOCK_THRESHOLD_REACHED_BODY_EN
-    }
+        'body': STOCK_THRESHOLD_REACHED_BODY_EN}
 }
 
 
