@@ -52,7 +52,7 @@ class BookingsDropdown(BaseDropdown):
 class StateDropdown(BookingsDropdown):
     name = 'state'
     css = 'dropdown change_booking_state_dropdown'
-    action = 'statetransition'
+    action = 'bookingstatetransition'
     subtype = 'booking'
     vocab = vocabs.state_vocab()
     transitions = vocabs.state_transitions_vocab()
@@ -70,7 +70,7 @@ class StateDropdown(BookingsDropdown):
 class SalariedDropdown(BookingsDropdown):
     name = 'salaried'
     css = 'dropdown change_booking_salaried_dropdown'
-    action = 'salariedtransition'
+    action = 'bookingsalariedtransition'
     subtype = 'booking'
     vocab = vocabs.salaried_vocab()
     transitions = vocabs.salaried_transitions_vocab()
@@ -262,7 +262,7 @@ class BookingsTable(BrowserView):
             },
             {
                 'id': 'personal_data.firstname',
-                'label': _('firstname', default=u'First Name'),
+                'label': _('firstname', default=u'First_Name'),
                 'origin': 'o',
             },
             {
@@ -277,7 +277,7 @@ class BookingsTable(BrowserView):
             },
             {
                 'id': 'personal_data.phone',
-                'label': _('phone', default=u'Phone'),
+                'label': _('phone', default=u'Phone__'),
                 'origin': 'o',
             },
             {
@@ -558,7 +558,7 @@ class BookingsTable(BrowserView):
             salaried = BookingData(
                 self.context,
                 booking=record
-            ).booking.salaried
+            ).salaried
             return translate(
                 vocabs.salaried_vocab()[salaried],
                 context=self.request
@@ -570,7 +570,7 @@ class BookingsTable(BrowserView):
             state = BookingData(
                 self.context,
                 booking=record
-            ).booking.state
+            ).state
             return translate(
                 vocabs.state_vocab()[state],
                 context=self.request

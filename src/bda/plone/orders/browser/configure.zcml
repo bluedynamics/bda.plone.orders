@@ -185,6 +185,36 @@
     permission="bda.plone.orders.ModifyOrders"
     layer="..interfaces.IOrdersExtensionLayer"/>
 
+  <!-- booking transitions for plone root -->
+  <browser:page
+    for="zope.component.interfaces.ISite"
+    name="bookingstatetransition"
+    class=".views.BookingStateTransition"
+    permission="bda.plone.orders.ModifyOrders"
+    layer="..interfaces.IOrdersExtensionLayer"/>
+
+  <browser:page
+    for="zope.component.interfaces.ISite"
+    name="bookingsalariedtransition"
+    class=".views.BookingSalariedTransition"
+    permission="bda.plone.orders.ModifyOrders"
+    layer="..interfaces.IOrdersExtensionLayer"/>
+
+  <!-- booking transitions for vendor -->
+  <browser:page
+    for="bda.plone.orders.interfaces.IVendor"
+    name="bookingstatetransition"
+    class=".views.BookingStateTransition"
+    permission="bda.plone.orders.ModifyOrders"
+    layer="..interfaces.IOrdersExtensionLayer"/>
+
+  <browser:page
+    for="bda.plone.orders.interfaces.IVendor"
+    name="bookingsalariedtransition"
+    class=".views.BookingSalariedTransition"
+    permission="bda.plone.orders.ModifyOrders"
+    layer="..interfaces.IOrdersExtensionLayer"/>    
+    
   <!-- export orders -->
   <browser:page
     for="zope.component.interfaces.ISite"

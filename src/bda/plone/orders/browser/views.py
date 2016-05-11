@@ -20,6 +20,7 @@ from bda.plone.orders.common import get_vendor_uids_for
 from bda.plone.orders.common import get_vendors_for
 from bda.plone.orders.common import OrderData
 from bda.plone.orders.common import OrderTransitions
+import bda.plone.orders.browser.bookings as _bookings
 from bda.plone.orders.interfaces import IBuyable
 from bda.plone.orders.transitions import transitions_of_main_state
 from bda.plone.orders.transitions import transitions_of_salaried_state
@@ -134,6 +135,7 @@ class Transition(BrowserView):
             transition,
             order_data
         )
+        return booking_data.booking
 
     def __call__(self):
         transition = self.request['transition']
@@ -164,7 +166,7 @@ class Transition(BrowserView):
                 vendor_uids
             )
         else:
-            raise ValueError('subtype must be either "order" or "booking"!')
+            raise ValueError('subtype must be either "order" or "booking"!')       
         return self.dropdown(self.context, self.request, record).render()
 
 
@@ -176,6 +178,14 @@ class SalariedTransition(Transition):
     dropdown = SalariedDropdown
 
 
+class BookingStateTransition(Transition):
+    dropdown = _bookings.StateDropdown
+
+
+class BookingSalariedTransition(Transition):
+    dropdown = _bookings.SalariedDropdown
+
+    
 class TableData(BrowserView):
     soup_name = None
     search_text_index = None
