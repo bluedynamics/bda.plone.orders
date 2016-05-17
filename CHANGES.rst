@@ -4,6 +4,9 @@ Changelog
 
 0.10.dev0
 -------
+- Show user filter as "Lastname, Firstname (Username) - Email" instead of
+  "Username (Firstname, Lastname)", sort the users on Lastname.
+  [rene]
 
 - Plone 5 update
   [agitator]
