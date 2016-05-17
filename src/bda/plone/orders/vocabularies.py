@@ -69,7 +69,7 @@ def all_vendors_vocab():
     """
     vendors = get_all_vendors()
     vocab = [(IUUID(vendor),
-             '{0} ({1})'.format(vendor.Title(), vendor.absolute_url_path()))
+             u'{0} ({1})'.format(vendor.Title(), vendor.absolute_url_path()))
              for vendor in vendors]
     return vocab
 
@@ -79,7 +79,7 @@ def vendors_vocab_for(user=None):
     """
     vendors = get_vendors_for(user=user)
     vocab = [(IUUID(vendor),
-             '{0} ({1})'.format(vendor.Title(), vendor.absolute_url_path()))
+             u'{0} ({1})'.format(vendor.Title(), vendor.absolute_url_path()))
              for vendor in vendors]
     return vocab
 
@@ -107,10 +107,10 @@ def customers_vocab_for(user=None):
             email = customer.getProperty('email', '')
             # fallback
             full = customer.getProperty('fullname', '')
-            name = (first or last) and '{0}, {1}'.format(last, first) or full
+            name = (first or last) and u'{0}, {1}'.format(last, first) or full
 
         if email and name:
-            title = '{0} ({1}) - {2}'.format(name, creator, email)
+            title = u'{0} ({1}) - {2}'.format(name, creator, email)
         else:
             title = creator
         vocab.append((creator, title))
