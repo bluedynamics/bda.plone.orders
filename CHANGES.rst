@@ -5,6 +5,9 @@ Changelog
 0.10.dev0
 ---------
 
+- Fix sorting on email address in orders table.
+  [rnix]
+
 - Re-add calculated values for state and salaried on order booking. Needed
   for orders view to ensure sorting works.
   [rnix]
