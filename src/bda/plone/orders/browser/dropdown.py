@@ -8,7 +8,6 @@ class BaseDropdown(object):
     name = ''
     css = 'dropdown'
     action = ''
-    subtype = ''
     vocab = {}
     transitions = {}
     value = ''
@@ -25,7 +24,6 @@ class BaseDropdown(object):
         url = self.context.absolute_url()
         params = {
             'uid': str(self.record.attrs['uid']),
-            'subtype': self.subtype,
         }
         vendor = self.request.form.get('vendor', '')
         if vendor:

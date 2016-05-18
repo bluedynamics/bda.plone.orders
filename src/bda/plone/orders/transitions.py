@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
 from bda.plone.orders import interfaces
-from souper.soup import get_soup
 
 
 def transitions_of_main_state(state):
-    """list of transitions for a given orders or bookings main state
+    """List of transitions for a given orders or bookings main state
     """
     transitions = list()
     if state in [interfaces.STATE_NEW, interfaces.STATE_RESERVED]:
@@ -34,7 +33,7 @@ def transitions_of_main_state(state):
 
 
 def transitions_of_salaried_state(state):
-    """list of transitions for a given orders or bookings salaried state
+    """List of transitions for a given orders or bookings salaried state
     """
     transitions = []
     if state == interfaces.SALARIED_YES:
@@ -49,36 +48,22 @@ def transitions_of_salaried_state(state):
     return transitions
 
 
-def do_transition_for_booking(booking, transition, order_data, event=False):
-    """do any transition for a given single booking
+def do_transition_for(order_state, transition, event=False):
+    """Do any transition for given ``OrderState`` implementation.
 
-    this mixes main state and salaried!
+    This mixes main state and salaried!
     """
-    # XXX: currently we need to delete attribute before setting to a new
-    #      value in order to persist change. fix in appropriate place.
     if transition == interfaces.SALARIED_TRANSITION_SALARIED:
-        del booking.attrs['salaried']
-        booking.attrs['salaried'] = interfaces.SALARIED_YES
+        order_state.salaried = interfaces.SALARIED_YES
     elif transition == interfaces.SALARIED_TRANSITION_OUTSTANDING:
-        del booking.attrs['salaried']
-        booking.attrs['salaried'] = interfaces.SALARIED_NO
+        order_state.salaried = interfaces.SALARIED_NO
     elif transition == interfaces.STATE_TRANSITION_RENEW:
-        del booking.attrs['state']
-        booking.attrs['state'] = interfaces.STATE_NEW
-        # fix stock item available
-        order_data.decrease_stock([booking])
+        order_state.state = interfaces.STATE_NEW
     elif transition == interfaces.STATE_TRANSITION_PROCESS:
-        del booking.attrs['state']
-        booking.attrs['state'] = interfaces.STATE_PROCESSING
+        order_state.state = interfaces.STATE_PROCESSING
     elif transition == interfaces.STATE_TRANSITION_FINISH:
-        del booking.attrs['state']
-        booking.attrs['state'] = interfaces.STATE_FINISHED
+        order_state.state = interfaces.STATE_FINISHED
     elif transition == interfaces.STATE_TRANSITION_CANCEL:
-        del booking.attrs['state']
-        booking.attrs['state'] = interfaces.STATE_CANCELLED
-        # fix stock item available
-        order_data.increase_stock([booking])
+        order_state.state = interfaces.STATE_CANCELLED
     else:
-        raise ValueError(u"invalid transition: %s" % transition)
-    bookings_soup = get_soup('bda_plone_orders_bookings', order_data.context)
-    bookings_soup.reindex(records=[booking])
+        raise ValueError(u"Invalid transition: %s" % transition)

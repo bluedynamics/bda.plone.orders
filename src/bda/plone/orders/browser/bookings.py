@@ -8,6 +8,7 @@ from bda.plone.orders import message_factory as _
 from bda.plone.orders import permissions
 from bda.plone.orders import vocabularies as vocabs
 from bda.plone.orders.browser.dropdown import BaseDropdown
+from bda.plone.orders.browser.views import Transition
 from bda.plone.orders.common import BookingData
 from bda.plone.orders.common import DT_FORMAT
 from bda.plone.orders.common import get_bookings_soup
@@ -15,6 +16,7 @@ from bda.plone.orders.common import get_order
 from bda.plone.orders.common import get_vendor_by_uid
 from bda.plone.orders.common import get_vendor_uids_for
 from bda.plone.orders.interfaces import IBuyable
+from bda.plone.orders.transitions import do_transition_for
 from bda.plone.orders.transitions import transitions_of_main_state
 from bda.plone.orders.transitions import transitions_of_salaried_state
 from decimal import Decimal
@@ -48,17 +50,16 @@ class BookingsDropdown(BaseDropdown):
         )
 
 
-class StateDropdown(BookingsDropdown):
+class BookingStateDropdown(BookingsDropdown):
     name = 'state'
     css = 'dropdown change_booking_state_dropdown'
-    action = 'statetransition'
-    subtype = 'booking'
+    action = 'bookingstatetransition'
     vocab = vocabs.state_vocab()
     transitions = vocabs.state_transitions_vocab()
 
     @property
     def value(self):
-        return self.booking_data.booking.attrs['state']
+        return self.booking_data.state
 
     @property
     def items(self):
@@ -66,23 +67,41 @@ class StateDropdown(BookingsDropdown):
         return self.create_items(transitions)
 
 
-class SalariedDropdown(BookingsDropdown):
+class BookingSalariedDropdown(BookingsDropdown):
     name = 'salaried'
     css = 'dropdown change_booking_salaried_dropdown'
-    action = 'salariedtransition'
-    subtype = 'booking'
+    action = 'bookingsalariedtransition'
     vocab = vocabs.salaried_vocab()
     transitions = vocabs.salaried_transitions_vocab()
 
     @property
     def value(self):
-        return self.booking_data.booking.attrs['salaried'] \
-               or ifaces.SALARIED_NO
+        return self.booking_data.salaried or ifaces.SALARIED_NO
 
     @property
     def items(self):
         transitions = transitions_of_salaried_state(self.value)
         return self.create_items(transitions)
+
+
+class BookingTransition(Transition):
+
+    def do_transition(self, uid, transition, vendor_uids):
+        booking_data = BookingData(
+            self.context,
+            uid=uid,
+            vendor_uids=vendor_uids
+        )
+        do_transition_for(booking_data, transition)
+        return booking_data.booking
+
+
+class BookingStateTransition(BookingTransition):
+    dropdown = BookingStateDropdown
+
+
+class BookingSalariedTransition(BookingTransition):
+    dropdown = BookingSalariedDropdown
 
 
 class BookingsTable(BrowserView):
@@ -554,24 +573,32 @@ class BookingsTable(BrowserView):
 
     def render_salaried(self, colname, record):
         if not self.check_modify_order(record):
-            salaried = BookingData(
+            booking_data = BookingData(
                 self.context,
                 booking=record
-            ).booking.salaried
+            )
             return translate(
-                vocabs.salaried_vocab()[salaried],
+                vocabs.salaried_vocab()[booking_data.salaried],
                 context=self.request
             )
-        return SalariedDropdown(self.context, self.request, record).render()
+        return BookingSalariedDropdown(
+            self.context,
+            self.request,
+            record
+        ).render()
 
     def render_state(self, colname, record):
         if not self.check_modify_order(record):
-            state = BookingData(
+            booking_data = BookingData(
                 self.context,
                 booking=record
-            ).booking.state
+            )
             return translate(
-                vocabs.state_vocab()[state],
+                vocabs.state_vocab()[booking_data.state],
                 context=self.request
             )
-        return StateDropdown(self.context, self.request, record).render()
+        return BookingStateDropdown(
+            self.context,
+            self.request,
+            record
+        ).render()

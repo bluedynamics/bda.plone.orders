@@ -37,7 +37,7 @@
     permission="bda.plone.orders.ViewOwnOrders"
     layer="..interfaces.IOrdersExtensionLayer" />
 
-   <!-- bookings view -->
+  <!-- bookings view -->
   <browser:page
     for="*"
     name="bookings"
@@ -46,7 +46,7 @@
     permission="bda.plone.orders.ViewOrders"
     layer="..interfaces.IOrdersExtensionLayer" />
 
- <!-- bookings json -->
+  <!-- bookings json -->
   <browser:page
     for="*"
     name="bookingsdata"
@@ -145,14 +145,14 @@
   <browser:page
     for="zope.component.interfaces.ISite"
     name="statetransition"
-    class=".views.StateTransition"
+    class=".views.OrderStateTransition"
     permission="bda.plone.orders.ModifyOrders"
     layer="..interfaces.IOrdersExtensionLayer" />
 
   <browser:page
     for="zope.component.interfaces.ISite"
     name="salariedtransition"
-    class=".views.SalariedTransition"
+    class=".views.OrderSalariedTransition"
     permission="bda.plone.orders.ModifyOrders"
     layer="..interfaces.IOrdersExtensionLayer" />
 
@@ -160,14 +160,44 @@
   <browser:page
     for="bda.plone.orders.interfaces.IVendor"
     name="statetransition"
-    class=".views.StateTransition"
+    class=".views.OrderStateTransition"
     permission="bda.plone.orders.ModifyOrders"
     layer="..interfaces.IOrdersExtensionLayer" />
 
   <browser:page
     for="bda.plone.orders.interfaces.IVendor"
     name="salariedtransition"
-    class=".views.SalariedTransition"
+    class=".views.OrderSalariedTransition"
+    permission="bda.plone.orders.ModifyOrders"
+    layer="..interfaces.IOrdersExtensionLayer" />
+
+  <!-- booking transitions for plone root -->
+  <browser:page
+    for="zope.component.interfaces.ISite"
+    name="bookingstatetransition"
+    class=".bookings.BookingStateTransition"
+    permission="bda.plone.orders.ModifyOrders"
+    layer="..interfaces.IOrdersExtensionLayer" />
+
+  <browser:page
+    for="zope.component.interfaces.ISite"
+    name="bookingsalariedtransition"
+    class=".bookings.BookingSalariedTransition"
+    permission="bda.plone.orders.ModifyOrders"
+    layer="..interfaces.IOrdersExtensionLayer" />
+
+  <!-- booking transitions for vendor -->
+  <browser:page
+    for="bda.plone.orders.interfaces.IVendor"
+    name="bookingstatetransition"
+    class=".bookings.BookingStateTransition"
+    permission="bda.plone.orders.ModifyOrders"
+    layer="..interfaces.IOrdersExtensionLayer" />
+
+  <browser:page
+    for="bda.plone.orders.interfaces.IVendor"
+    name="bookingsalariedtransition"
+    class=".bookings.BookingSalariedTransition"
     permission="bda.plone.orders.ModifyOrders"
     layer="..interfaces.IOrdersExtensionLayer" />
 

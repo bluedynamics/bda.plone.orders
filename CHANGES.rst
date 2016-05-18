@@ -5,6 +5,9 @@ Changelog
 0.10.dev0
 ---------
 
+- Overhaul order and bookings state and salaried transitions.
+  [rnix]
+
 - Add filter for order state and salaried to the @@orders view.
   [pcdummy]
 
