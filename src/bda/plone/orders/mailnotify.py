@@ -419,13 +419,16 @@ def notify_order_success(event, who=None):
         do_notify_shopmanager(event.context, order_data, templates)
 
 
+BOOKING_CANCELLED_TITLE_ATTRIBUTE = 'title'
+
+
 class BookingCancelledTitleCB(object):
 
     def __init__(self, event):
         self.event = event
 
     def __call__(self, *args):
-        return self.event.booking_attrs['eventtitle']
+        return self.event.booking_attrs[BOOKING_CANCELLED_TITLE_ATTRIBUTE]
 
 
 def notify_booking_cancelled(event, who=None):

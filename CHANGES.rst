@@ -5,6 +5,11 @@ Changelog
 0.10.dev0
 ---------
 
+- Introduce ``bda.plone.orders.mailnotify.BOOKING_CANCELLED_TITLE_ATTRIBUTE``
+  which is used to lookup title attribute for booking cancellation
+  notification.
+  [rnix]
+
 - Fix sorting on email address in orders table.
   [rnix]
 
