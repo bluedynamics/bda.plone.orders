@@ -366,7 +366,7 @@ class OrdersTable(OrdersTableBase):
         # vendor selection, include if more than one vendor
         if len(vendors) > 2:
             vendor_selector = factory(
-                'label:select',
+                'div:label:select',
                 name='vendor',
                 value=self.request.form.get('vendor', ''),
                 props={
@@ -381,7 +381,7 @@ class OrdersTable(OrdersTableBase):
         # customers selection, include if more than one customer
         if len(customers) > 2:
             customer_selector = factory(
-                'label:select',
+                'div:label:select',
                 name='customer',
                 value=self.request.form.get('customer', ''),
                 props={
@@ -393,7 +393,7 @@ class OrdersTable(OrdersTableBase):
 
         states = states_form_vocab()
         state_selector = factory(
-            'label:select',
+            'div:label:select',
             name='state',
             value=self.request.form.get('state', ''),
             props={
@@ -405,7 +405,7 @@ class OrdersTable(OrdersTableBase):
 
         salaried = salaried_form_vocab()
         salaried_selector = factory(
-            'label:select',
+            'div:label:select',
             name='salaried',
             value=self.request.form.get('salaried', ''),
             props={
