@@ -3,13 +3,19 @@ Changelog
 =========
 
 0.10.dev0
--------
+---------
+
+- Re-add calculated values for state and salaried on order booking. Needed
+  for orders view to ensure sorting works.
+  [rnix]
+
 - Show user filter as "Lastname, Firstname (Username) - Email" instead of
   "Username (Firstname, Lastname)", sort the users on Lastname.
-  [rene]
+  [pcdummy]
 
 - Plone 5 update
   [agitator]
+
 
 0.9.dev
 -------
@@ -83,6 +89,7 @@ Changelog
 
 - added translated salutation to available mail template attributes
   [agitator]
+
 
 0.8
 ---
