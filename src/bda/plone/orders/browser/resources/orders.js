@@ -79,6 +79,10 @@
                               .bind('change', orders.filter_orders);
             $('#input-customer').unbind('change')
                                 .bind('change', orders.filter_orders);
+            $('#input-state').unbind('change')
+                             .bind('change', orders.filter_orders);
+            $('#input-salaried').unbind('change')
+                                .bind('change', orders.filter_orders);
         },
 
         cancel_confirm_binder: function(context) {
@@ -148,19 +152,18 @@
             event.preventDefault();
             var selection = $(this);
             var wrapper = selection.parent();
-            var vendor, customer;
-            if (selection.attr('name') === 'vendor') {
-                vendor = selection.val();
-                customer = $('#input-customer', wrapper).val();
-            } else {
-                vendor = $('#input-vendor', wrapper).val();
-                customer = selection.val();
-            }
+            var vendor = $('#input-vendor', wrapper).val();
+            var customer = $('#input-customer', wrapper).val();
+            var state = $('#input-state', wrapper).val();
+            var salaried = $('#input-salaried', wrapper).val();
+
             var ajax_table = wrapper.parents('.ajaxtable');
             var action = ajax_table.data('tablename');
             var target = bdajax.parsetarget(wrapper.attr('ajax:target'));
             target.params.vendor = vendor;
             target.params.customer = customer;
+            target.params.state = state;
+            target.params.salaried = salaried;
             bdajax.action({
                 name: action,
                 selector: '#orders_wrapper',

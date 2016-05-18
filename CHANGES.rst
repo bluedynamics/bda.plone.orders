@@ -5,6 +5,9 @@ Changelog
 0.10.dev0
 ---------
 
+- Add filter for order state and salaried to the @@orders view.
+  [pcdummy]
+
 - Introduce ``bda.plone.orders.mailnotify.BOOKING_CANCELLED_TITLE_ATTRIBUTE``
   which is used to lookup title attribute for booking cancellation
   notification.
