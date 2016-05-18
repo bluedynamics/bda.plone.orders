@@ -76,7 +76,7 @@ class OrderDropdown(BaseDropdown):
 class OrderStateDropdown(OrderDropdown):
     name = 'state'
     css = 'dropdown change_order_state_dropdown'
-    action = 'statetransition'
+    action = 'orderstatetransition'
     vocab = vocabs.state_vocab()
     transitions = vocabs.state_transitions_vocab()
 
@@ -93,7 +93,7 @@ class OrderStateDropdown(OrderDropdown):
 class OrderSalariedDropdown(OrderDropdown):
     name = 'salaried'
     css = 'dropdown change_order_salaried_dropdown'
-    action = 'salariedtransition'
+    action = 'ordersalariedtransition'
     vocab = vocabs.salaried_vocab()
     transitions = vocabs.salaried_transitions_vocab()
 
