@@ -107,7 +107,7 @@ def customers_vocab_for(user=None):
             email = customer.getProperty('email', '')
             # fallback
             full = customer.getProperty('fullname', '')
-            name = (first or last) and u'{0}, {1}'.format(last, first) or full
+            name = u'{0}, {1}'.format(last, first) if (first or last) else full
 
         if email and name:
             title = u'{0} ({1}) - {2}'.format(name, creator, email)
