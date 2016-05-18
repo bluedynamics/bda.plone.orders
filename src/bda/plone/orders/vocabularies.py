@@ -7,7 +7,9 @@ from bda.plone.orders.common import get_vendor_order_uids_for
 from bda.plone.orders.common import get_vendors_for
 from plone.i18n.normalizer.base import baseNormalize
 from plone.uuid.interfaces import IUUID
+from Products.CMFPlone.utils import safe_unicode
 from zope.component.hooks import getSite
+
 import plone.api
 
 
@@ -102,11 +104,11 @@ def customers_vocab_for(user=None):
         name = None
         if customer:
             # soft dep on bda.plone.shop
-            first = customer.getProperty('firstname', '')
-            last = customer.getProperty('lastname', '')
-            email = customer.getProperty('email', '')
+            first = safe_unicode(customer.getProperty('firstname', ''))
+            last = safe_unicode(customer.getProperty('lastname', ''))
+            email = safe_unicode(customer.getProperty('email', ''))
             # fallback
-            full = customer.getProperty('fullname', '')
+            full = safe_unicode(customer.getProperty('fullname', ''))
             name = u'{0}, {1}'.format(last, first) if (first or last) else full
 
         if email and name:
