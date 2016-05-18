@@ -3,10 +3,30 @@ Changelog
 =========
 
 0.10.dev0
--------
+---------
+
+- Add filter for order state and salaried to the @@orders view.
+  [pcdummy]
+
+- Introduce ``bda.plone.orders.mailnotify.BOOKING_CANCELLED_TITLE_ATTRIBUTE``
+  which is used to lookup title attribute for booking cancellation
+  notification.
+  [rnix]
+
+- Fix sorting on email address in orders table.
+  [rnix]
+
+- Re-add calculated values for state and salaried on order booking. Needed
+  for orders view to ensure sorting works.
+  [rnix]
+
+- Show user filter as "Lastname, Firstname (Username) - Email" instead of
+  "Username (Firstname, Lastname)", sort the users on Lastname.
+  [pcdummy]
 
 - Plone 5 update
   [agitator]
+
 
 0.9.dev
 -------
@@ -80,6 +100,7 @@ Changelog
 
 - added translated salutation to available mail template attributes
   [agitator]
+
 
 0.8
 ---

@@ -3,6 +3,8 @@ from bda.plone.cart import get_object_by_uid
 from bda.plone.orders import message_factory as _
 from bda.plone.orders.common import OrderData
 from bda.plone.orders.common import acquire_vendor_or_shop_root
+from bda.plone.orders.common import calculate_order_salaried
+from bda.plone.orders.common import calculate_order_state
 from bda.plone.orders.common import get_bookings_soup
 from bda.plone.orders.common import get_order
 from bda.plone.orders.common import get_orders_soup
@@ -426,3 +428,17 @@ def fix_contacts_email(ctx=None):
     if need_rebuild:
         soup.rebuild()
         logging.info("Rebuilt contacts catalog")
+
+
+def fix_order_state_and_salaried(ctx=None):
+    """Re-add state and salaried on order, needed for sorting in orders table
+    """
+    portal = getSite()
+    soup = get_orders_soup(portal)
+    data = soup.storage.data
+    for order in data.values():
+        order_data = OrderData(portal, uid=order.attrs['uid'])
+        bookings = order_data.bookings
+        order.attrs['state'] = calculate_order_state(bookings)
+        order.attrs['salaried'] = calculate_order_salaried(bookings)
+    soup.rebuild()

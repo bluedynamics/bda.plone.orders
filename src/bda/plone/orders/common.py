@@ -217,8 +217,8 @@ class OrdersCatalogFactory(object):
         catalog = Catalog()
         uid_indexer = NodeAttributeIndexer('uid')
         catalog[u'uid'] = CatalogFieldIndex(uid_indexer)
-        email_indexer = NodeAttributeIndexer('email')
-        catalog[u'email'] = CatalogFieldIndex(email_indexer)
+        email_indexer = NodeAttributeIndexer('personal_data.email')
+        catalog[u'personal_data.email'] = CatalogFieldIndex(email_indexer)
         ordernumber_indexer = NodeAttributeIndexer('ordernumber')
         catalog[u'ordernumber'] = CatalogFieldIndex(ordernumber_indexer)
         booking_uids_indexer = NodeAttributeIndexer('booking_uids')
@@ -248,6 +248,12 @@ class OrdersCatalogFactory(object):
         ]
         text_indexer = NodeTextIndexer(search_attributes)
         catalog[u'text'] = CatalogTextIndex(text_indexer)
+        # state on order only used for sorting in orders table
+        state_indexer = NodeAttributeIndexer('state')
+        catalog[u'state'] = CatalogFieldIndex(state_indexer)
+        # salaried on order only used for sorting in orders table
+        salaried_indexer = NodeAttributeIndexer('salaried')
+        catalog[u'salaried'] = CatalogFieldIndex(salaried_indexer)
         return catalog
 
 
@@ -331,6 +337,10 @@ class OrderCheckoutAdapter(CheckoutAdapter):
             order.attrs['shipping'] = Decimal(0)
         # create order bookings
         bookings = self.create_bookings(order)
+        # set order state, needed for sorting in orders table
+        order.attrs['state'] = calculate_order_state(bookings)
+        # set order salaried, needed for sorting in orders table
+        order.attrs['salaried'] = ifaces.SALARIED_NO
         # lookup booking uids, buyable uids and vendor uids
         booking_uids = list()
         buyable_uids = list()
@@ -447,6 +457,34 @@ class OrderCheckoutAdapter(CheckoutAdapter):
         return booking
 
 
+def _calculate_order_attr_from_bookings(bookings, attr, mixed_value):
+    ret = None
+    for booking in bookings:
+        val = booking.attrs[attr]
+        if ret and ret != val:
+            ret = mixed_value
+            break
+        else:
+            ret = val
+    return ret
+
+
+def calculate_order_state(bookings):
+    return _calculate_order_attr_from_bookings(
+        bookings,
+        'state',
+        ifaces.STATE_MIXED
+    )
+
+
+def calculate_order_salaried(bookings):
+    return _calculate_order_attr_from_bookings(
+        bookings,
+        'salaried',
+        ifaces.SALARIED_MIXED
+    )
+
+
 class OrderData(object):
     """Object for extracting order information.
     """
@@ -506,37 +544,23 @@ class OrderData(object):
 
     @property
     def state(self):
-        ret = None
-        for booking in self.bookings:
-            val = booking.attrs['state']
-            if ret and ret != val:
-                ret = ifaces.STATE_MIXED
-                break
-            else:
-                ret = val
-        return ret
+        return calculate_order_state(self.bookings)
 
     @state.setter
     def state(self, value):
         for booking in self.bookings:
             booking.attrs['state'] = value
+        self.order['state'] = value
 
     @property
     def salaried(self):
-        ret = None
-        for booking in self.bookings:
-            val = booking.attrs['salaried']
-            if ret and ret != val:
-                ret = ifaces.SALARIED_MIXED
-                break
-            else:
-                ret = val
-        return ret
+        return calculate_order_salaried(self.bookings)
 
     @salaried.setter
     def salaried(self, value):
         for booking in self.bookings:
             booking.attrs['salaried'] = value
+        self.order['salaried'] = value
 
     @property
     def tid(self):

@@ -1,5 +1,9 @@
 # -*- coding: utf-8 -*-
 from AccessControl import Unauthorized
+from Products.CMFPlone.interfaces import IPloneSiteRoot
+from Products.Five import BrowserView
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from Products.statusmessages.interfaces import IStatusMessage
 from bda.plone.cart import ascur
 from bda.plone.cart import get_object_by_uid
 from bda.plone.checkout import message_factory as _co
@@ -9,31 +13,27 @@ from bda.plone.orders import message_factory as _
 from bda.plone.orders import permissions
 from bda.plone.orders import vocabularies as vocabs
 from bda.plone.orders.browser.dropdown import BaseDropdown
-from bda.plone.orders.common import booking_cancel
-from bda.plone.orders.common import booking_update_comment
 from bda.plone.orders.common import BookingData
 from bda.plone.orders.common import DT_FORMAT
+from bda.plone.orders.common import OrderData
+from bda.plone.orders.common import OrderTransitions
+from bda.plone.orders.common import booking_cancel
+from bda.plone.orders.common import booking_update_comment
 from bda.plone.orders.common import get_order
 from bda.plone.orders.common import get_orders_soup
 from bda.plone.orders.common import get_vendor_by_uid
 from bda.plone.orders.common import get_vendor_uids_for
 from bda.plone.orders.common import get_vendors_for
-from bda.plone.orders.common import OrderData
-from bda.plone.orders.common import OrderTransitions
 from bda.plone.orders.interfaces import IBuyable
+from bda.plone.orders.transitions import do_transition_for_booking
 from bda.plone.orders.transitions import transitions_of_main_state
 from bda.plone.orders.transitions import transitions_of_salaried_state
-from bda.plone.orders.transitions import do_transition_for_booking
 from plone.memoize import view
-from Products.CMFPlone.interfaces import IPloneSiteRoot
-from Products.Five import BrowserView
-from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from Products.statusmessages.interfaces import IStatusMessage
 from repoze.catalog.query import Any
 from repoze.catalog.query import Contains
 from repoze.catalog.query import Eq
-from souper.soup import get_soup
 from souper.soup import LazyRecord
+from souper.soup import get_soup
 from yafowil.base import factory
 from yafowil.controller import Controller
 from yafowil.utils import Tag
@@ -41,7 +41,6 @@ from zExceptions import BadRequest
 from zope.i18n import translate
 from zope.i18nmessageid import Message
 from zope.security import checkPermission
-
 import json
 import plone.api
 import urllib
@@ -370,6 +369,16 @@ def customers_form_vocab():
     return [('', _('all', default='All'))] + customers
 
 
+def states_form_vocab():
+    states = vocabs.state_vocab()
+    return [('', _('all', default='All'))] + states.items()
+
+
+def salaried_form_vocab():
+    salaried = vocabs.salaried_vocab()
+    return [('', _('all', default='All'))] + salaried.items()
+
+
 class OrdersTable(OrdersTableBase):
 
     def render_filter(self):
@@ -403,15 +412,42 @@ class OrdersTable(OrdersTableBase):
                                default=u'Filter for customers'),
                 }
             )
-        if not vendor_selector and not customer_selector:
-            return
+
+        states = states_form_vocab()
+        state_selector = factory(
+            'label:select',
+            name='state',
+            value=self.request.form.get('state', ''),
+            props={
+                'vocabulary': states,
+                'label': _('filter_for_state',
+                           default=u'Filter for states'),
+            }
+        )
+
+        salaried = salaried_form_vocab()
+        salaried_selector = factory(
+            'label:select',
+            name='salaried',
+            value=self.request.form.get('salaried', ''),
+            props={
+                'vocabulary': salaried,
+                'label': _('filter_for_salaried',
+                           default=u'Filter for salaried state'),
+            }
+        )
+
         # concatenate filters
-        filter = ''
+        filter_widgets = ''
         if vendor_selector:
-            filter += vendor_selector(request=self.request)
+            filter_widgets += vendor_selector(request=self.request)
         if customer_selector:
-            filter += customer_selector(request=self.request)
-        return filter
+            filter_widgets += customer_selector(request=self.request)
+
+        filter_widgets += state_selector(request=self.request)
+        filter_widgets += salaried_selector(request=self.request)
+
+        return filter_widgets
 
     def render_order_actions_head(self):
         tag = Tag(Translate(self.request))
@@ -496,7 +532,9 @@ class OrdersTable(OrdersTableBase):
     def ajaxurl(self):
         params = [
             ('vendor', self.request.form.get('vendor')),
-            ('customer', self.request.form.get('customer'))
+            ('customer', self.request.form.get('customer')),
+            ('state', self.request.form.get('state')),
+            ('salaried', self.request.form.get('salaried')),
         ]
         query = urllib.urlencode(dict([it for it in params if it[1]]))
         query = query and '?{0}'.format(query) or ''
@@ -565,10 +603,22 @@ class OrdersData(OrdersTable, TableData):
             query = Any('vendor_uids', [vendor_uid])
         else:
             query = Any('vendor_uids', vendor_uids)
+
         # filter by customer if given
         customer = self.request.form.get('customer')
         if customer:
             query = query & Eq('creator', customer)
+
+        # Filter by state if given
+        state = self.request.form.get('state')
+        if state:
+            query = query & Eq('state', state)
+
+        # Filter by salaried if given
+        salaried = self.request.form.get('salaried')
+        if salaried:
+            query = query & Eq('salaried', salaried)
+
         # filter by search term if given
         term = self.request.form['sSearch'].decode('utf-8')
         if term:

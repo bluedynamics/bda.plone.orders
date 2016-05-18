@@ -5,6 +5,7 @@ from bda.plone.orders.common import get_all_vendors
 from bda.plone.orders.common import get_order
 from bda.plone.orders.common import get_vendor_order_uids_for
 from bda.plone.orders.common import get_vendors_for
+from plone.i18n.normalizer.base import baseNormalize
 from plone.uuid.interfaces import IUUID
 from zope.component.hooks import getSite
 import plone.api
@@ -68,7 +69,7 @@ def all_vendors_vocab():
     """
     vendors = get_all_vendors()
     vocab = [(IUUID(vendor),
-             '{0} ({1})'.format(vendor.Title(), vendor.absolute_url_path()))
+             u'{0} ({1})'.format(vendor.Title(), vendor.absolute_url_path()))
              for vendor in vendors]
     return vocab
 
@@ -78,7 +79,7 @@ def vendors_vocab_for(user=None):
     """
     vendors = get_vendors_for(user=user)
     vocab = [(IUUID(vendor),
-             '{0} ({1})'.format(vendor.Title(), vendor.absolute_url_path()))
+             u'{0} ({1})'.format(vendor.Title(), vendor.absolute_url_path()))
              for vendor in vendors]
     return vocab
 
@@ -96,15 +97,25 @@ def customers_vocab_for(user=None):
             # Development edge case: creator might be None
             continue
         customer = plone.api.user.get(userid=creator)
+
+        email = None
+        name = None
         if customer:
             # soft dep on bda.plone.shop
             first = customer.getProperty('firstname', '')
             last = customer.getProperty('lastname', '')
+            email = customer.getProperty('email', '')
             # fallback
             full = customer.getProperty('fullname', '')
-            name = (first or last) and '{0}, {1}'.format(first, last) or full
+            name = u'{0}, {1}'.format(last, first) if (first or last) else full
+
+        if email and name:
+            title = u'{0} ({1}) - {2}'.format(name, creator, email)
         else:
-            name = creator
-        title = name and '{0} ({1})'.format(creator, name) or creator
+            title = creator
         vocab.append((creator, title))
+
+    # Sort the vocab by title, normalized like sortable_title
+    vocab = sorted(vocab, key=lambda x: baseNormalize(x[1]).lower())
+
     return vocab
