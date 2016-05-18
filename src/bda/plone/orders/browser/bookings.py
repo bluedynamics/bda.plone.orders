@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
-from bda.intellidatetime import convert
+from Products.CMFPlone.utils import safe_unicode
+from Products.Five import BrowserView
 from bda.intellidatetime import DateTimeConversionError
+from bda.intellidatetime import convert
 from bda.plone.orders import interfaces as ifaces
 from bda.plone.orders import message_factory as _
 from bda.plone.orders import permissions
@@ -17,8 +19,6 @@ from bda.plone.orders.transitions import transitions_of_main_state
 from bda.plone.orders.transitions import transitions_of_salaried_state
 from decimal import Decimal
 from odict import odict
-from Products.CMFPlone.utils import safe_unicode
-from Products.Five import BrowserView
 from repoze.catalog.query import Contains
 from repoze.catalog.query import Ge
 from repoze.catalog.query import InRange
@@ -26,7 +26,6 @@ from repoze.catalog.query import Le
 from yafowil.base import factory
 from zExceptions import InternalError
 from zope.i18n import translate
-
 import datetime
 import json
 import plone.api
@@ -42,7 +41,6 @@ class BookingsDropdown(BaseDropdown):
             vendor_uids = [vendor_uid]
         else:
             vendor_uids = get_vendor_uids_for()
-
         return BookingData(
             self.context,
             booking=self.record,
