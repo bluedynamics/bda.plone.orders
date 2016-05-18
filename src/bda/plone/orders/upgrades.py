@@ -437,7 +437,7 @@ def fix_order_state_and_salaried(ctx=None):
     soup = get_orders_soup(portal)
     data = soup.storage.data
     for order in data.values():
-        order_data = OrderData(uid=order.attrs['uid'])
+        order_data = OrderData(portal, uid=order.attrs['uid'])
         bookings = order_data.bookings
         order.attrs['state'] = calculate_order_state(bookings)
         order.attrs['salaried'] = calculate_order_salaried(bookings)
