@@ -5,6 +5,9 @@ Changelog
 0.10.dev0
 ---------
 
+- Add filters for Vendor, Customer, State and Salaried state to the @@bookings view.
+  [pcdummy]
+
 - Overhaul order and bookings state and salaried transitions.
   [rnix]
 

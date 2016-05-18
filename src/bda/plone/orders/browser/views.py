@@ -13,12 +13,10 @@ from bda.plone.orders import message_factory as _
 from bda.plone.orders import permissions
 from bda.plone.orders import vocabularies as vocabs
 from bda.plone.orders.browser.dropdown import BaseDropdown
-from bda.plone.orders.common import BookingData
 from bda.plone.orders.common import DT_FORMAT
 from bda.plone.orders.common import OrderData
 from bda.plone.orders.common import booking_cancel
 from bda.plone.orders.common import booking_update_comment
-from bda.plone.orders.common import get_order
 from bda.plone.orders.common import get_orders_soup
 from bda.plone.orders.common import get_vendor_by_uid
 from bda.plone.orders.common import get_vendor_uids_for
