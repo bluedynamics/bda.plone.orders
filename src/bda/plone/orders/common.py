@@ -19,7 +19,7 @@ from bda.plone.orders import permissions
 from bda.plone.orders import safe_encode
 from bda.plone.orders.interfaces import IBuyable
 from bda.plone.orders.interfaces import IVendor
-from bda.plone.orders.transitions import do_transition_for_booking
+from bda.plone.orders.transitions import do_transition_for
 from bda.plone.payment import Payments
 from bda.plone.payment.interfaces import IPaymentData
 from bda.plone.shipping import Shippings
@@ -485,7 +485,74 @@ def calculate_order_salaried(bookings):
     )
 
 
-class OrderData(object):
+class OrderState(object):
+    context = None
+
+    @instance_property
+    def orders_soup(self):
+        return get_orders_soup(self.context)
+
+    @instance_property
+    def bookings_soup(self):
+        return get_bookings_soup(self.context)
+
+    def reindex_order(self, order):
+        self.orders_soup.reindex(records=[order])
+
+    def reindex_bookings(self, bookings):
+        self.bookings_soup.reindex(records=bookings)
+
+    @property
+    def state(self):
+        raise NotImplementedError(
+            'Abstract OrderState does not implement state')
+
+    @state.setter
+    def state(self, value):
+        raise NotImplementedError(
+            'Abstract OrderState does not implement state.setter')
+
+    @property
+    def salaried(self):
+        raise NotImplementedError(
+            'Abstract OrderState does not implement salaried')
+
+    @salaried.setter
+    def salaried(self, value):
+        raise NotImplementedError(
+            'Abstract OrderState does not implement salaried.setter')
+
+    def update_item_stock(self, booking, old_state, new_state):
+        if old_state == new_state:
+            return
+        # XXX: fix stock item available??
+        if new_state == ifaces.STATE_NEW:
+            self.decrease_stock(booking)
+        if new_state == ifaces.STATE_CANCELLED:
+            self.increase_stock(booking)
+
+    def increase_stock(self, booking):
+        obj = get_object_by_uid(self.context, booking.attrs['buyable_uid'])
+        # object no longer exists
+        if not obj:
+            return
+        stock = get_item_stock(obj)
+        # if stock.available is None, no stock information used
+        if stock.available is not None:
+            stock.available += float(booking.attrs['buyable_count'])
+
+    def decrease_stock(self, booking):
+        obj = get_object_by_uid(self.context, booking.attrs['buyable_uid'])
+        # object no longer exists
+        if not obj:
+            return
+        stock = get_item_stock(obj)
+        # if stock.available is None, no stock information used
+        if stock.available is not None:
+            stock.available -= float(booking.attrs['buyable_count'])
+
+
+class OrderData(OrderState):
     """Object for extracting order information.
     """
 
@@ -524,7 +591,7 @@ class OrderData(object):
 
     @property
     def bookings(self):
-        soup = get_bookings_soup(self.context)
+        soup = self.bookings_soup
         query = Eq('order_uid', self.uid)
         if self.vendor_uids:
             query = query & Any('vendor_uid', self.vendor_uids)
@@ -548,9 +615,18 @@ class OrderData(object):
 
     @state.setter
     def state(self, value):
-        for booking in self.bookings:
+        # XXX: currently we need to delete attributes before setting to a new
+        #      value in order to persist change. fix in appropriate place.
+        bookings = self.bookings
+        for booking in bookings:
+            self.update_item_stock(booking, booking.attrs['state'], value)
+            del booking.attrs['state']
             booking.attrs['state'] = value
-        self.order['state'] = value
+        order = self.order
+        del order.attrs['state']
+        order.attrs['state'] = value
+        self.reindex_bookings(bookings)
+        self.reindex_order(order)
 
     @property
     def salaried(self):
@@ -558,9 +634,17 @@ class OrderData(object):
 
     @salaried.setter
     def salaried(self, value):
-        for booking in self.bookings:
+        # XXX: currently we need to delete attributes before setting to a new
+        #      value in order to persist change. fix in appropriate place.
+        bookings = self.bookings
+        for booking in bookings:
+            del booking.attrs['salaried']
             booking.attrs['salaried'] = value
-        self.order['salaried'] = value
+        order = self.order
+        del order.attrs['salaried']
+        order.attrs['salaried'] = value
+        self.reindex_bookings(bookings)
+        self.reindex_order(order)
 
     @property
     def tid(self):
@@ -630,30 +714,8 @@ class OrderData(object):
         total = self.net - self.discount_net + self.vat - self.discount_vat
         return total + self.shipping
 
-    def increase_stock(self, bookings):
-        for booking in bookings:
-            obj = get_object_by_uid(self.context, booking.attrs['buyable_uid'])
-            # object no longer exists
-            if not obj:
-                continue
-            stock = get_item_stock(obj)
-            # if stock.available is None, no stock information used
-            if stock.available is not None:
-                stock.available += float(booking.attrs['buyable_count'])
 
-    def decrease_stock(self, bookings):
-        for booking in bookings:
-            obj = get_object_by_uid(self.context, booking.attrs['buyable_uid'])
-            # object no longer exists
-            if not obj:
-                continue
-            stock = get_item_stock(obj)
-            # if stock.available is None, no stock information used
-            if stock.available is not None:
-                stock.available -= float(booking.attrs['buyable_count'])
-
-
-class BookingData(object):
+class BookingData(OrderState):
 
     def __init__(self, context, uid=None, booking=None, vendor_uids=[]):
         """Create booking data object by criteria
@@ -689,7 +751,7 @@ class BookingData(object):
     def booking(self):
         if self._booking:
             return self._booking
-        soup = get_bookings_soup(self.context)
+        soup = self.bookings_soup
         query = Eq('uid', self.uid)
         if self.vendor_uids:
             query = query & Any('vendor_uid', self.vendor_uids)
@@ -701,11 +763,47 @@ class BookingData(object):
 
     @property
     def order(self):
+        # XXX: rename to order_data for less confusion
         return OrderData(
             self.context,
             uid=self.booking.attrs['order_uid'],
             vendor_uids=self.vendor_uids
         )
+
+    @property
+    def state(self):
+        return self.booking.attrs['state']
+
+    @state.setter
+    def state(self, value):
+        # XXX: currently we need to delete attributes before setting to a new
+        #      value in order to persist change. fix in appropriate place.
+        booking = self.booking
+        self.update_item_stock(booking, booking.attrs['state'], value)
+        del booking.attrs['state']
+        booking.attrs['state'] = value
+        order = self.order
+        del order.order.attrs['state']
+        order.order.attrs['state'] = calculate_order_state(order.bookings)
+        self.reindex_bookings([booking])
+        self.reindex_order(order.order)
+
+    @property
+    def salaried(self):
+        return self.booking.attrs['salaried']
+
+    @salaried.setter
+    def salaried(self, value):
+        # XXX: currently we need to delete attributes before setting to a new
+        #      value in order to persist change. fix in appropriate place.
+        booking = self.booking
+        del booking.attrs['salaried']
+        booking.attrs['salaried'] = value
+        order = self.order
+        del order.order.attrs['salaried']
+        order.order.attrs['salaried'] = calculate_order_salaried(order.bookings)
+        self.reindex_bookings([booking])
+        self.reindex_order(order.order)
 
 
 class BuyableData(object):
@@ -806,57 +904,12 @@ def payment_failed(event):
         order.tid = data['tid']
 
 
-class OrderTransitions(object):
-
-    def __init__(self, context, vendor_uids=[]):
-        self.context = context
-        self.vendor_uids = vendor_uids
-
-    def _order_data(self, uid):
-        if not isinstance(uid, uuid.UUID):
-            uid = uuid.UUID(uid)
-        return OrderData(
-            self.context,
-            uid=uid,
-            vendor_uids=self.vendor_uids
-        )
-
-    def do_transition(self, uid, transition):
-        """Do transition for order by UID and transition name.
-
-        @param uid: uuid.UUID or string representing a UUID
-        @param vendor_uids: list of uuid.UUID objects
-        @param transition: string
-
-        @return: order record
-        """
-        order_data = self._order_data(uid)
-        for booking in order_data.bookings:
-            do_transition_for_booking(booking, transition, order_data)
-        orders_soup = get_orders_soup(self.context)
-        order = order_data.order
-        orders_soup.reindex(records=[order])
-        return order
-
-
-def order_data_of_booking(context, booking, vendor_uids=[]):
-    return OrderData(
-        context,
-        uid=booking.order_uid,
-        vendor_uids=vendor_uids
-    )
-
-
 def booking_cancel(context, request, booking_uid):
     booking_data = BookingData(context, uid=booking_uid)
     if booking_data.booking is None:
-        raise ValueError('invalid value (booking)')
+        raise ValueError('invalid value (no booking found)')
     booking_attrs = dict(booking_data.booking.attrs.items())
-    do_transition_for_booking(
-        booking_data.booking,
-        ifaces.STATE_TRANSITION_CANCEL,
-        booking_data.order
-    )
+    do_transition_for(booking_data, ifaces.STATE_TRANSITION_CANCEL)
     event = events.BookingCancelledEvent(
         context,
         request,

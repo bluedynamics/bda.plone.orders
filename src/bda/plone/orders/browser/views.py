@@ -16,7 +16,6 @@ from bda.plone.orders.browser.dropdown import BaseDropdown
 from bda.plone.orders.common import BookingData
 from bda.plone.orders.common import DT_FORMAT
 from bda.plone.orders.common import OrderData
-from bda.plone.orders.common import OrderTransitions
 from bda.plone.orders.common import booking_cancel
 from bda.plone.orders.common import booking_update_comment
 from bda.plone.orders.common import get_order
@@ -25,7 +24,7 @@ from bda.plone.orders.common import get_vendor_by_uid
 from bda.plone.orders.common import get_vendor_uids_for
 from bda.plone.orders.common import get_vendors_for
 from bda.plone.orders.interfaces import IBuyable
-from bda.plone.orders.transitions import do_transition_for_booking
+from bda.plone.orders.transitions import do_transition_for
 from bda.plone.orders.transitions import transitions_of_main_state
 from bda.plone.orders.transitions import transitions_of_salaried_state
 from plone.memoize import view
@@ -67,16 +66,17 @@ class OrderDropdown(BaseDropdown):
             vendor_uids = [vendor_uid]
         else:
             vendor_uids = get_vendor_uids_for()
-        return OrderData(self.context,
-                         order=self.record,
-                         vendor_uids=vendor_uids)
+        return OrderData(
+            self.context,
+            order=self.record,
+            vendor_uids=vendor_uids
+        )
 
 
-class StateDropdown(OrderDropdown):
+class OrderStateDropdown(OrderDropdown):
     name = 'state'
     css = 'dropdown change_order_state_dropdown'
     action = 'statetransition'
-    subtype = 'order'
     vocab = vocabs.state_vocab()
     transitions = vocabs.state_transitions_vocab()
 
@@ -90,11 +90,10 @@ class StateDropdown(OrderDropdown):
         return self.create_items(transitions)
 
 
-class SalariedDropdown(OrderDropdown):
+class OrderSalariedDropdown(OrderDropdown):
     name = 'salaried'
     css = 'dropdown change_order_salaried_dropdown'
     action = 'salariedtransition'
-    subtype = 'order'
     vocab = vocabs.salaried_vocab()
     transitions = vocabs.salaried_transitions_vocab()
 
@@ -111,34 +110,9 @@ class SalariedDropdown(OrderDropdown):
 class Transition(BrowserView):
     dropdown = None
 
-    def _do_transition_for_order(self, uid, transition, vendor_uids):
-        order = get_order(self.context, uid)
-        transitions = OrderTransitions(self.context, vendor_uids=vendor_uids)
-        order = transitions.do_transition(uid, transition)
-        return order
-
-    def _do_transition_for_booking(self, uid, transition, vendor_uids):
-        booking_data = BookingData(
-            self.context,
-            uid=uid,
-            vendor_uids=vendor_uids
-        )
-        order_data = OrderData(
-            self.context,
-            uid=booking_data.booking.attrs['order_uid'],
-            vendor_uids=vendor_uids
-        )
-        do_transition_for_booking(
-            booking_data.booking,
-            transition,
-            order_data
-        )
-
-    def __call__(self):
-        transition = self.request['transition']
-        uid = self.request['uid']
+    @property
+    def vendor_uids(self):
         vendor_uid = self.request.form.get('vendor', '')
-        subtype = self.request.form.get('subtype', '')
         if vendor_uid:
             vendor_uids = [vendor_uid]
             vendor = get_vendor_by_uid(self.context, vendor_uid)
@@ -149,30 +123,34 @@ class Transition(BrowserView):
             vendor_uids = get_vendor_uids_for()
             if not vendor_uids:
                 raise Unauthorized
+        return vendor_uids
 
-        if subtype == 'order':
-            record = self._do_transition_for_order(
-                uid,
-                transition,
-                vendor_uids
-            )
-        elif subtype == 'booking':
-            record = self._do_transition_for_booking(
-                uid,
-                transition,
-                vendor_uids
-            )
-        else:
-            raise ValueError('subtype must be either "order" or "booking"!')
+    def __call__(self):
+        uid = self.request['uid']
+        transition = self.request['transition']
+        vendor_uids = self.vendor_uids
+        record = self.do_transition(uid, transition, vendor_uids)
         return self.dropdown(self.context, self.request, record).render()
 
 
-class StateTransition(Transition):
-    dropdown = StateDropdown
+class OrderTransition(Transition):
+
+    def do_transition(self, uid, transition, vendor_uids):
+        order_data = OrderData(
+            self.context,
+            uid=uid,
+            vendor_uids=vendor_uids
+        )
+        do_transition_for(order_data, transition)
+        return order_data.order
 
 
-class SalariedTransition(Transition):
-    dropdown = SalariedDropdown
+class OrderStateTransition(OrderTransition):
+    dropdown = OrderStateDropdown
+
+
+class OrderSalariedTransition(OrderTransition):
+    dropdown = OrderSalariedDropdown
 
 
 class TableData(BrowserView):
@@ -519,14 +497,22 @@ class OrdersTable(OrdersTableBase):
             salaried = OrderData(self.context, order=record).salaried
             return translate(vocabs.salaried_vocab()[salaried],
                              context=self.request)
-        return SalariedDropdown(self.context, self.request, record).render()
+        return OrderSalariedDropdown(
+            self.context,
+            self.request,
+            record
+        ).render()
 
     def render_state(self, colname, record):
         if not self.check_modify_order(record):
             state = OrderData(self.context, order=record).state
             return translate(vocabs.state_vocab()[state],
                              context=self.request)
-        return StateDropdown(self.context, self.request, record).render()
+        return OrderStateDropdown(
+            self.context,
+            self.request,
+            record
+        ).render()
 
     @property
     def ajaxurl(self):
