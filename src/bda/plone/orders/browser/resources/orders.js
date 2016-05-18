@@ -151,13 +151,13 @@
         filter_orders: function(event) {
             event.preventDefault();
             var selection = $(this);
-            var wrapper = selection.parent();
+            var wrapper = selection.closest('.filter');
             var vendor = $('#input-vendor', wrapper).val();
             var customer = $('#input-customer', wrapper).val();
             var state = $('#input-state', wrapper).val();
             var salaried = $('#input-salaried', wrapper).val();
 
-            var ajax_table = wrapper.parents('.ajaxtable');
+            var ajax_table = wrapper.closest('.ajaxtable');
             var action = ajax_table.data('tablename');
             var target = bdajax.parsetarget(wrapper.attr('ajax:target'));
             target.params.vendor = vendor;
