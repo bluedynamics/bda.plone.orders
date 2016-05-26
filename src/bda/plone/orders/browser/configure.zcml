@@ -41,8 +41,8 @@
   <browser:page
     for="*"
     name="bookings"
-    template="bookings.pt"
-    class=".bookings.BookingsTable"
+    template="bookings_view.pt"
+    class=".bookings.BookingsView"
     permission="bda.plone.orders.ViewOrders"
     layer="..interfaces.IOrdersExtensionLayer" />
 
@@ -52,6 +52,15 @@
     name="bookingsdata"
     class=".bookings.BookingsTable"
     attribute="jsondata"
+    permission="bda.plone.orders.ViewOrders"
+    layer="..interfaces.IOrdersExtensionLayer" />
+
+  <!-- bookings table -->
+  <browser:page
+    for="*"
+    name="bookingstable"
+    template="bookings.pt"
+    class=".bookings.BookingsTable"
     permission="bda.plone.orders.ViewOrders"
     layer="..interfaces.IOrdersExtensionLayer" />
 

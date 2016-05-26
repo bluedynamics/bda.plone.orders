@@ -164,9 +164,16 @@
             target.params.customer = customer;
             target.params.state = state;
             target.params.salaried = salaried;
+
+            var selector = '#orders_wrapper';
+            if (!$('#orders_wrapper').length) {
+                selector = '#bookings_wrapper';
+                target.params.group_by = $('#input-group_by').val();
+            }
+
             bdajax.action({
                 name: action,
-                selector: '#orders_wrapper',
+                selector: selector,
                 mode: 'inner',
                 url: target.url,
                 params: target.params
@@ -255,7 +262,11 @@
                     "url": url,
                     "data": function (d) {
                         return $.extend({}, d, {
-                            "group_by": $('#input-group').val(),
+                            "vendor": $('#input-vendor').val(),
+                            "customer": $('#input-customer').val(),
+                            "state": $('#input-state').val(),
+                            "salaried": $('#input-salaried').val(),
+                            "group_by": $('#input-group_by').val(),
                             "from_date": $('#input-from_date').val(),
                             "to_date": $('#input-to_date').val()
                         });
@@ -284,9 +295,9 @@
 
                 "initComplete": function () {
                     $(".group_filter").detach().appendTo('.customfilter');
-                    $(".date_from_filter").detach().appendTo('.customfilter');
-                    $(".date_to_filter").detach().appendTo('.customfilter');
-                    $('#input-group').change(function () {
+                    //$(".date_from_filter").detach().appendTo('.customfilter');
+                    //$(".date_to_filter").detach().appendTo('.customfilter');
+                    $('#input-group_by').change(function () {
                         oTable.search($('#bdaplonebookings_filter input').val()).draw();
                     });
                     $('#input-from_date').on('keyup click', function () {
@@ -302,7 +313,7 @@
                     var rows = api.rows({page: 'current'}).nodes();
                     var last = null;
                     // only show email info if grouped by email
-                    if ($('#input-group').val() === 'email') {
+                    if ($('#input-group_by').val() === 'email') {
                         api.column(0, {page: 'current'}).data().each(function (group, i) {
                             if (last !== group) {
                                 $(rows).eq(i).before(
@@ -314,7 +325,7 @@
                         api.column(4).visible(true);
                     }
                     // only show email info if grouped by buyable
-                    if ($('#input-group').val() === 'buyable') {
+                    if ($('#input-group_by').val() === 'buyable') {
                         api.column(1, {page: 'current'}).data().each(function (group, i) {
                             if (last !== group) {
                                 $(rows).eq(i).before(
