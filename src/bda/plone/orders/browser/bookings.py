@@ -101,7 +101,12 @@ class BookingTransition(Transition):
             uid=uid,
             vendor_uids=vendor_uids
         )
-        do_transition_for(booking_data, transition)
+        do_transition_for(
+            booking_data,
+            transition=transition,
+            context=self.context,
+            request=self.request
+        )
         return booking_data.booking
 
 

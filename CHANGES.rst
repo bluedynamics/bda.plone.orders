@@ -5,6 +5,10 @@ Changelog
 0.10.dev0
 ---------
 
+- Send out mails when cancelling whole orders or individual bookings from the ``@@orders`` and ``@@bookings`` views, not only from the order detail view.
+  This is done by moving the necessary logic into ``bda.plone.orders.transitions.do_transition_for``.
+  [thet]
+
 - Add filters for Vendor, Customer, State and Salaried state to the @@bookings view.
   [pcdummy]
 

@@ -16,7 +16,7 @@ class BookingCancelledEvent(object):
 
 @implementer(IStockThresholdReached)
 class StockThresholdReached(object):
-    
+
     def __init__(self,
                  context,
                  request,

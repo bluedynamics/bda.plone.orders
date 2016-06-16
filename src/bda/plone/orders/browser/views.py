@@ -139,7 +139,12 @@ class OrderTransition(Transition):
             uid=uid,
             vendor_uids=vendor_uids
         )
-        do_transition_for(order_data, transition)
+        do_transition_for(
+            order_data,
+            transition=transition,
+            context=self.context,
+            request=self.request
+        )
         return order_data.order
 
 
