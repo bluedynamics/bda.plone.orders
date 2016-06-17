@@ -56,44 +56,64 @@ def do_transition_for(order_state, transition, context=None, request=None):
 
     This mixes main state and salaried!
     """
-    if transition == interfaces.SALARIED_TRANSITION_SALARIED:
-        order_state.salaried = interfaces.SALARIED_YES
 
-    elif transition == interfaces.SALARIED_TRANSITION_OUTSTANDING:
-        order_state.salaried = interfaces.SALARIED_NO
-
-    elif transition == interfaces.STATE_TRANSITION_RENEW:
-        order_state.state = interfaces.STATE_NEW
-
-    elif transition == interfaces.STATE_TRANSITION_PROCESS:
-        order_state.state = interfaces.STATE_PROCESSING
-
-    elif transition == interfaces.STATE_TRANSITION_FINISH:
-        order_state.state = interfaces.STATE_FINISHED
-
-    elif transition == interfaces.STATE_TRANSITION_CANCEL:
-        bookings = getattr(order_state, 'bookings', [order_state])
+    def _set_state(data, state_value, state_attr='state', event_class=None):
+        #
+        #                             Case BookingData
+        #                    Case OrderData    |
+        # BookingData or OrderData    |        |
+        #                   V         V        V
+        bookings = getattr(data, 'bookings', [data])
         for booking_data in bookings:
 
             if not isinstance(booking_data, BookingData):
+                # Case OrderData
                 # It's a booking record from iterating over ``bookings`` in
                 # OrderData. We have to factorize a BookingData object now.
                 booking_data = BookingData(
                     context=context,
                     booking=booking_data
                 )
-            booking_attrs = dict(booking_data.booking.attrs.items())
-            # Set state to cancelled. This includes updat of OrderData state
-            # and update of item_stock.
-            booking_data.state = interfaces.STATE_CANCELLED
-            # Send out event, which includes sending a notification mail
-            event = events.BookingCancelledEvent(
-                context=context,
-                request=request,
-                order_uid=booking_attrs['order_uid'],
-                booking_attrs=booking_attrs,
-            )
-            notify(event)
+
+            # Set state. This includes updates via it's setter method (E.g.
+            # OrderData state and item_stock).
+            setattr(booking_data, state_attr, state_value)
+
+            # Optionally send out event.
+            # May include sending out a notification mail.
+            if event_class:
+                booking_attrs = dict(booking_data.booking.attrs.items())
+                event = event_class(
+                    context=context,
+                    request=request,
+                    order_uid=booking_attrs['order_uid'],
+                    booking_attrs=booking_attrs,
+                )
+                notify(event)
+
+    if transition == interfaces.SALARIED_TRANSITION_SALARIED:
+        _set_state(order_state, interfaces.SALARIED_YES, 'salaried')
+
+    elif transition == interfaces.SALARIED_TRANSITION_OUTSTANDING:
+        _set_state(order_state, interfaces.SALARIED_NO, 'salaried')
+
+    elif transition == interfaces.STATE_TRANSITION_RENEW:
+        _set_state(order_state, interfaces.STATE_NEW)
+
+    elif transition == interfaces.STATE_TRANSITION_PROCESS:
+        _set_state(order_state, interfaces.STATE_PROCESSING)
+        order_state.state = interfaces.STATE_PROCESSING
+
+    elif transition == interfaces.STATE_TRANSITION_FINISH:
+        _set_state(order_state, interfaces.STATE_FINISHED)
+        order_state.state = interfaces.STATE_FINISHED
+
+    elif transition == interfaces.STATE_TRANSITION_CANCEL:
+        _set_state(
+            order_state,
+            interfaces.STATE_CANCELLED,
+            event_class=events.BookingCancelledEvent
+        )
 
     else:
         raise ValueError(u"Invalid transition: %s" % transition)

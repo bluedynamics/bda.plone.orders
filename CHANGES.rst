@@ -5,6 +5,10 @@ Changelog
 0.10.dev0
 ---------
 
+- In ``do_transition_for`` on orders, set the state on each booking instead directly on the order.
+  This way each booking setter is called, e.g. for changing stock items, setting overall order state and so on.
+  [thet]
+
 - Send out mails when cancelling whole orders or individual bookings from the ``@@orders`` and ``@@bookings`` views, not only from the order detail view.
   This is done by moving the necessary logic into ``bda.plone.orders.transitions.do_transition_for``.
   [thet]
