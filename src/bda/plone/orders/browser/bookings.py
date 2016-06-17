@@ -308,7 +308,7 @@ class BookingsTable(BrowserView):
         currency = record.attrs.get('currency', '')
         price = self._get_price(record)
         if currency and price:
-            value = currency + ' {0:.2f}'.format(price)
+            value = currency + u' {0:.2f}'.format(price)
             return value
 
     def render_sum(self, colname, record):
@@ -318,7 +318,7 @@ class BookingsTable(BrowserView):
         if currency and price and count:
             count = Decimal(count)
             sum = price * count
-            value = currency + ' {0:.2f}'.format(sum)
+            value = currency + u' {0:.2f}'.format(sum)
             return value
 
     def render_bookings_quantity(self, colname, record):
@@ -330,7 +330,7 @@ class BookingsTable(BrowserView):
         currency = record.attrs.get('currency', '')
         value = record._v_bookings_total_sum
         if currency and value:
-            value = currency + ' {0:.2f}'.format(value)
+            value = currency + u' {0:.2f}'.format(value)
             return value
 
     @property

@@ -526,8 +526,8 @@ class OrdersTable(OrdersTableBase):
             ('salaried', self.request.form.get('salaried')),
         ]
         query = urllib.urlencode(dict([it for it in params if it[1]]))
-        query = query and '?{0}'.format(query) or ''
-        return '{0:s}/{1:s}{2:s}'.format(
+        query = query and u'?{0}'.format(query) or ''
+        return u'{0:s}/{1:s}{2:s}'.format(
             self.context.absolute_url(),
             self.data_view_name,
             query

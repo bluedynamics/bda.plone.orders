@@ -601,8 +601,8 @@ class OrderData(OrderState):
         for booking in self.bookings:
             val = booking.attrs['currency']
             if ret and ret != val:
-                msg = 'Order contains bookings with inconsistent ' +\
-                      'currencies {0} != {1}'.format(ret, val)
+                msg = u'Order contains bookings with inconsistent ' +\
+                      u'currencies {0} != {1}'.format(ret, val)
                 raise ValueError(msg)
             ret = val
         return ret

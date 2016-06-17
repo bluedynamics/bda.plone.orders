@@ -5,6 +5,10 @@ Changelog
 0.10.dev0
 ---------
 
+- Unicode almost everywhere.
+  Fixes some ``Unicode Decode Error``.
+  [thet]
+
 - Add transition actions when state is changed from "Reserved".
   Sends out a mail with a notification for the customer and adminitrator, that the item became available and is ordered.
   [thet]
