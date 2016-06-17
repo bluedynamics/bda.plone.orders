@@ -2,7 +2,6 @@
 from Products.CMFPlone.utils import safe_unicode
 from bda.plone.cart import ascur
 from bda.plone.cart import get_catalog_brain
-from bda.plone.cart import get_object_by_uid
 from bda.plone.checkout.interfaces import ICheckoutEvent
 from bda.plone.checkout.interfaces import ICheckoutSettings
 from bda.plone.orders import interfaces as ifaces
@@ -20,7 +19,7 @@ from bda.plone.orders.interfaces import IStockThresholdReached
 from bda.plone.orders.mailtemplates import get_booking_cancelled_templates
 from bda.plone.orders.mailtemplates import get_order_templates
 from bda.plone.orders.mailtemplates import get_reservation_templates
-from bda.plone.orders.mailtemplates import get_stock_threshold_reached_templates
+from bda.plone.orders.mailtemplates import get_stock_threshold_reached_templates  # noqa
 from bda.plone.payment.interfaces import IPaymentEvent
 from email.utils import formataddr
 from plone import api
@@ -34,58 +33,30 @@ import textwrap
 logger = logging.getLogger('bda.plone.orders')
 
 
-NOTIFICATIONS = {
-    'checkout_success': [],
-    'payment_success': [],
-    'booking_cancelled': [],
-    'stock_threshold_reached': []
-}
+NOTIFICATIONS = {}
 
 
-def dispatch_notify_checkout_success(event):
-    for func in NOTIFICATIONS['checkout_success']:
-        func(event)
+POSSIBLE_TEMPLATE_CALLBACKS = [
+    'booking_cancelled_title',
+    'global_text',
+    'item_listing',
+    'order_summary',
+    'payment_text',
+    'stock_threshold_reached_text',
+]
 
 
-def dispatch_notify_payment_success(event):
-    for func in NOTIFICATIONS['payment_success']:
-        func(event)
+# MAIL NOTIFICATION UTILITIES
 
-
-def dispatch_notify_booking_cancelled(event):
-    for func in NOTIFICATIONS['booking_cancelled']:
-        func(event)
-
-
-def dispatch_notify_stock_threshold_reached(event):
-    for func in NOTIFICATIONS['stock_threshold_reached']:
-        func(event)
-
-
-class MailNotify(object):
-    """Mail notifyer.
-    """
-
-    def __init__(self, context):
-        self.context = context
-        self.settings = INotificationSettings(self.context)
-
-    def send(self, subject, message, receiver):
-        shop_manager_address = self.settings.admin_email
-        if not shop_manager_address:
-            raise ValueError('Shop manager address is missing in settings.')
-        shop_manager_name = self.settings.admin_name
-        if shop_manager_name:
-            from_name = safe_encode(shop_manager_name)
-            mailfrom = formataddr((from_name, shop_manager_address))
-        else:
-            mailfrom = shop_manager_address
-        api.portal.send_email(
-            recipient=receiver,
-            sender=mailfrom,
-            subject=subject,
-            body=message,
-        )
+def get_order_uid(event):
+    if ICheckoutEvent.providedBy(event):
+        return event.uid
+    if IPaymentEvent.providedBy(event):
+        return event.order_uid
+    if IBookingCancelledEvent.providedBy(event):
+        return event.order_uid
+    if IStockThresholdReached.providedBy(event):
+        return event.order_uid
 
 
 def _indent(text, ind=5, width=80):
@@ -96,6 +67,12 @@ def _indent(text, ind=5, width=80):
         initial_indent=ind * u' '
     )
     return safe_encode(wrapped)
+
+
+def _process_template_cb(name, tpls, args, context, order_data):
+    cb_name = '{0:s}_cb'.format(name)
+    if cb_name in tpls:
+        args[name] = tpls[cb_name](context, order_data)
 
 
 def create_mail_listing(context, order_data):
@@ -299,22 +276,6 @@ def create_payment_text(context, order_data):
     return ''
 
 
-POSSIBLE_TEMPLATE_CALLBACKS = [
-    'booking_cancelled_title',
-    'global_text',
-    'item_listing',
-    'order_summary',
-    'payment_text',
-    'stock_threshold_reached_text'
-]
-
-
-def _process_template_cb(name, tpls, args, context, order_data):
-    cb_name = '{0:s}_cb'.format(name)
-    if cb_name in tpls:
-        args[name] = tpls[cb_name](context, order_data)
-
-
 def create_mail_body(templates, context, order_data):
     """Creates a rendered mail body
 
@@ -355,6 +316,34 @@ def create_mail_body(templates, context, order_data):
     return templates['body'] % arguments
 
 
+# DO NOTIFY
+
+class MailNotify(object):
+    """Mail notifyer.
+    """
+
+    def __init__(self, context):
+        self.context = context
+        self.settings = INotificationSettings(self.context)
+
+    def send(self, subject, message, receiver):
+        shop_manager_address = self.settings.admin_email
+        if not shop_manager_address:
+            raise ValueError('Shop manager address is missing in settings.')
+        shop_manager_name = self.settings.admin_name
+        if shop_manager_name:
+            from_name = safe_encode(shop_manager_name)
+            mailfrom = formataddr((from_name, shop_manager_address))
+        else:
+            mailfrom = shop_manager_address
+        api.portal.send_email(
+            recipient=receiver,
+            sender=mailfrom,
+            subject=subject,
+            body=message,
+        )
+
+
 def do_notify(context, order_data, templates, receiver):
     attrs = order_data.order.attrs
     subject = templates['subject'] % attrs['ordernumber']
@@ -381,16 +370,7 @@ def do_notify_shopmanager(context, order_data, templates):
     do_notify(context, order_data, templates, shop_manager_address)
 
 
-def get_order_uid(event):
-    if ICheckoutEvent.providedBy(event):
-        return event.uid
-    if IPaymentEvent.providedBy(event):
-        return event.order_uid
-    if IBookingCancelledEvent.providedBy(event):
-        return event.order_uid
-    if IStockThresholdReached.providedBy(event):
-        return event.order_uid
-
+# ORDER SUCCSESS
 
 def notify_order_success(event, who=None):
     """Send notification mail after order succeed.
@@ -419,7 +399,69 @@ def notify_order_success(event, who=None):
         do_notify_shopmanager(event.context, order_data, templates)
 
 
+# CHECKOUT SUCCSESS
+
+def dispatch_notify_checkout_success(event):
+    for func in NOTIFICATIONS['checkout_success']:
+        func(event)
+
+
+def notify_checkout_success_customer(event):
+    """Send notification mail after checkout succeed.
+    """
+    # if skip payment, do notification
+    checkout_settings = ICheckoutSettings(event.context)
+    if checkout_settings.skip_payment(get_order_uid(event)):
+        notify_order_success(event, who="customer")
+
+
+def notify_checkout_success_shopmanager(event):
+    """Send notification mail after checkout succeed.
+    """
+    # if skip payment, do notification
+    checkout_settings = ICheckoutSettings(event.context)
+    if checkout_settings.skip_payment(get_order_uid(event)):
+        notify_order_success(event, who="shopmanager")
+
+
+NOTIFICATIONS['checkout_success'] = []
+NOTIFICATIONS['checkout_success'].append(notify_checkout_success_customer)
+NOTIFICATIONS['checkout_success'].append(notify_checkout_success_shopmanager)
+
+
+# PAYMENT SUCCESS
+
+
+def dispatch_notify_payment_success(event):
+    for func in NOTIFICATIONS['payment_success']:
+        func(event)
+
+
+def notify_payment_success_customer(event):
+    """Send notification mail after payment succeed.
+    """
+    notify_order_success(event, who="customer")
+
+
+def notify_payment_success_shopmanager(event):
+    """Send notification mail after payment succeed.
+    """
+    notify_order_success(event, who="shopmanager")
+
+
+NOTIFICATIONS['payment_success'] = []
+NOTIFICATIONS['payment_success'].append(notify_payment_success_customer)
+NOTIFICATIONS['payment_success'].append(notify_payment_success_shopmanager)
+
+
+# BOOKING CANCELLED
+
 BOOKING_CANCELLED_TITLE_ATTRIBUTE = 'title'
+
+
+def dispatch_notify_booking_cancelled(event):
+    for func in NOTIFICATIONS['booking_cancelled']:
+        func(event)
 
 
 class BookingCancelledTitleCB(object):
@@ -446,6 +488,26 @@ def notify_booking_cancelled(event, who=None):
         raise ValueError(
             'kw "who" mus be one out of ("customer", "shopmanager")'
         )
+
+
+def notify_booking_cancelled_customer(event):
+    notify_booking_cancelled(event, who="customer")
+
+
+def notify_booking_cancelled_shopmanager(event):
+    notify_booking_cancelled(event, who="shopmanager")
+
+
+NOTIFICATIONS['booking_cancelled'] = []
+NOTIFICATIONS['booking_cancelled'].append(notify_booking_cancelled_customer)
+NOTIFICATIONS['booking_cancelled'].append(notify_booking_cancelled_shopmanager)
+
+
+# STOCK THRESHOLD REACHED
+
+def dispatch_notify_stock_threshold_reached(event):
+    for func in NOTIFICATIONS['stock_threshold_reached']:
+        func(event)
 
 
 class StockThresholdReachedCB(object):
@@ -477,52 +539,5 @@ def notify_stock_threshold_reached(event):
     do_notify_shopmanager(event.context, order_data, templates)
 
 
-def notify_checkout_success_customer(event):
-    """Send notification mail after checkout succeed.
-    """
-    # if skip payment, do notification
-    checkout_settings = ICheckoutSettings(event.context)
-    if checkout_settings.skip_payment(get_order_uid(event)):
-        notify_order_success(event, who="customer")
-
-
-def notify_checkout_success_shopmanager(event):
-    """Send notification mail after checkout succeed.
-    """
-    # if skip payment, do notification
-    checkout_settings = ICheckoutSettings(event.context)
-    if checkout_settings.skip_payment(get_order_uid(event)):
-        notify_order_success(event, who="shopmanager")
-
-
-NOTIFICATIONS['checkout_success'].append(notify_checkout_success_customer)
-NOTIFICATIONS['checkout_success'].append(notify_checkout_success_shopmanager)
-
-
-def notify_payment_success_customer(event):
-    """Send notification mail after payment succeed.
-    """
-    notify_order_success(event, who="customer")
-
-
-def notify_payment_success_shopmanager(event):
-    """Send notification mail after payment succeed.
-    """
-    notify_order_success(event, who="shopmanager")
-
-
-NOTIFICATIONS['payment_success'].append(notify_payment_success_customer)
-NOTIFICATIONS['payment_success'].append(notify_payment_success_shopmanager)
-
-
-def notify_booking_cancelled_customer(event):
-    notify_booking_cancelled(event, who="customer")
-
-
-def notify_booking_cancelled_shopmanager(event):
-    notify_booking_cancelled(event, who="shopmanager")
-
-
-NOTIFICATIONS['booking_cancelled'].append(notify_booking_cancelled_customer)
-NOTIFICATIONS['booking_cancelled'].append(notify_booking_cancelled_shopmanager)
+NOTIFICATIONS['stock_threshold_reached'] = []
 NOTIFICATIONS['stock_threshold_reached'].append(notify_stock_threshold_reached)
