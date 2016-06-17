@@ -98,8 +98,7 @@ def do_transition_for(order_state, transition, context=None, request=None):
         _set_state(order_state, interfaces.SALARIED_NO, 'salaried')
 
     elif transition == interfaces.STATE_TRANSITION_RENEW:
-        # _set_state(order_state, interfaces.STATE_NEW)
-        _set_state(order_state, interfaces.STATE_RESERVED)
+        _set_state(order_state, interfaces.STATE_NEW)
 
     elif transition == interfaces.STATE_TRANSITION_PROCESS:
         event_class = None
