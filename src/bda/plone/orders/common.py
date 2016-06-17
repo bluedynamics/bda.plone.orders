@@ -19,7 +19,6 @@ from bda.plone.orders import permissions
 from bda.plone.orders import safe_encode
 from bda.plone.orders.interfaces import IBuyable
 from bda.plone.orders.interfaces import IVendor
-from bda.plone.orders.transitions import do_transition_for
 from bda.plone.payment import Payments
 from bda.plone.payment.interfaces import IPaymentData
 from bda.plone.shipping import Shippings
@@ -901,18 +900,6 @@ def payment_failed(event):
         order = OrderData(event.context, uid=event.order_uid)
         order.salaried = ifaces.SALARIED_FAILED
         order.tid = data['tid']
-
-
-def booking_cancel(context, request, booking_uid):
-    booking_data = BookingData(context, uid=booking_uid)
-    if booking_data.booking is None:
-        raise ValueError('invalid value (no booking found)')
-    do_transition_for(
-        booking_data,
-        transition=ifaces.STATE_TRANSITION_CANCEL,
-        context=context,
-        request=request
-    )
 
 
 def booking_update_comment(context, booking_uid, comment):

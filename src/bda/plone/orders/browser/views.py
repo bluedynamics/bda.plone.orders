@@ -15,7 +15,7 @@ from bda.plone.orders import vocabularies as vocabs
 from bda.plone.orders.browser.dropdown import BaseDropdown
 from bda.plone.orders.common import DT_FORMAT
 from bda.plone.orders.common import OrderData
-from bda.plone.orders.common import booking_cancel
+from bda.plone.orders.common import BookingData
 from bda.plone.orders.common import booking_update_comment
 from bda.plone.orders.common import get_orders_soup
 from bda.plone.orders.common import get_vendor_by_uid
@@ -988,7 +988,15 @@ class BookingCancel(BrowserView):
         if not booking_uid:
             raise BadRequest('value not given')
         try:
-            booking_cancel(self.context, self.request, uuid.UUID(booking_uid))
+            booking_data = BookingData(self.context, uid=uuid.UUID(booking_uid))  # noqa
+            if booking_data.booking is None:
+                raise ValueError('invalid value (no booking found)')
+            do_transition_for(
+                booking_data,
+                transition=ifaces.STATE_TRANSITION_CANCEL,
+                context=self.context,
+                request=self.request
+            )
         except ValueError:
             raise BadRequest('something is wrong with the value')
 
