@@ -102,11 +102,9 @@ def do_transition_for(order_state, transition, context=None, request=None):
 
     elif transition == interfaces.STATE_TRANSITION_PROCESS:
         _set_state(order_state, interfaces.STATE_PROCESSING)
-        order_state.state = interfaces.STATE_PROCESSING
 
     elif transition == interfaces.STATE_TRANSITION_FINISH:
         _set_state(order_state, interfaces.STATE_FINISHED)
-        order_state.state = interfaces.STATE_FINISHED
 
     elif transition == interfaces.STATE_TRANSITION_CANCEL:
         _set_state(
