@@ -84,10 +84,15 @@
     for="bda.plone.checkout.interfaces.ICheckoutDone"
     handler=".mailnotify.dispatch_notify_checkout_success" />
 
-  <!-- event subscribers booking cancelled-->
+  <!-- event subscribers booking cancelled -->
   <subscriber
     for="bda.plone.orders.interfaces.IBookingCancelledEvent"
     handler=".mailnotify.dispatch_notify_booking_cancelled" />
+
+  <!-- event subscribers reserved to ordered -->
+  <subscriber
+    for="bda.plone.orders.interfaces.IBookingReservedToOrderedEvent"
+    handler=".mailnotify.dispatch_notify_booking_reserved_to_ordered" />
 
   <!-- event subscribers item is getting out of stock -->
   <subscriber

@@ -10,17 +10,15 @@ from bda.plone.orders import safe_encode
 from bda.plone.orders import vocabularies as vocabs
 from bda.plone.orders.common import DT_FORMAT
 from bda.plone.orders.common import OrderData
-from bda.plone.orders.interfaces import IBookingCancelledEvent
 from bda.plone.orders.interfaces import IGlobalNotificationText
 from bda.plone.orders.interfaces import IItemNotificationText
 from bda.plone.orders.interfaces import INotificationSettings
 from bda.plone.orders.interfaces import IPaymentText
-from bda.plone.orders.interfaces import IStockThresholdReached
 from bda.plone.orders.mailtemplates import get_booking_cancelled_templates
+from bda.plone.orders.mailtemplates import get_booking_reserved_to_ordered_templates  # noqa
 from bda.plone.orders.mailtemplates import get_order_templates
 from bda.plone.orders.mailtemplates import get_reservation_templates
 from bda.plone.orders.mailtemplates import get_stock_threshold_reached_templates  # noqa
-from bda.plone.payment.interfaces import IPaymentEvent
 from email.utils import formataddr
 from plone import api
 from zope.component.hooks import getSite
@@ -38,6 +36,7 @@ NOTIFICATIONS = {}
 
 POSSIBLE_TEMPLATE_CALLBACKS = [
     'booking_cancelled_title',
+    'booking_reserved_to_ordered_title',
     'global_text',
     'item_listing',
     'order_summary',
@@ -49,14 +48,10 @@ POSSIBLE_TEMPLATE_CALLBACKS = [
 # MAIL NOTIFICATION UTILITIES
 
 def get_order_uid(event):
+    uid = event.order_uid
     if ICheckoutEvent.providedBy(event):
-        return event.uid
-    if IPaymentEvent.providedBy(event):
-        return event.order_uid
-    if IBookingCancelledEvent.providedBy(event):
-        return event.order_uid
-    if IStockThresholdReached.providedBy(event):
-        return event.order_uid
+        uid = event.uid
+    return uid
 
 
 def _indent(text, ind=5, width=80):
@@ -70,7 +65,7 @@ def _indent(text, ind=5, width=80):
 
 
 def _process_template_cb(name, tpls, args, context, order_data):
-    cb_name = '{0:s}_cb'.format(name)
+    cb_name = u'{0:s}_cb'.format(name)
     if cb_name in tpls:
         args[name] = tpls[cb_name](context, order_data)
 
@@ -99,8 +94,8 @@ def create_mail_listing(context, order_data):
         state = booking.attrs.get('state')
         state_text = ''
         if state == ifaces.STATE_RESERVED:
-            state_text = ' ({})'.format(vocabs.state_vocab()[state])
-        line = '{count: 4f} {title}{state} {price}'.format(
+            state_text = u' ({})'.format(vocabs.state_vocab()[state])
+        line = u'{count: 4f} {title}{state} {price}'.format(
             count=booking.attrs['buyable_count'],
             title=title,
             state=state_text,
@@ -108,7 +103,7 @@ def create_mail_listing(context, order_data):
         )
         lines.append(line)
         if comment:
-            lines.append(_indent('({0})'.format(comment)))
+            lines.append(_indent(u'({0})'.format(comment)))
         notificationtext = IItemNotificationText(buyable)
         if state == ifaces.STATE_RESERVED:
             text = notificationtext.overbook_text
@@ -503,6 +498,47 @@ NOTIFICATIONS['booking_cancelled'].append(notify_booking_cancelled_customer)
 NOTIFICATIONS['booking_cancelled'].append(notify_booking_cancelled_shopmanager)
 
 
+# BOOKING RESERVED TO ORDERED
+
+
+def dispatch_notify_booking_reserved_to_ordered(event):
+    for func in NOTIFICATIONS['booking_reserved_to_ordered']:
+        func(event)
+
+
+BookingReservedToOrderedTitleCB = BookingCancelledTitleCB
+
+
+def notify_booking_reserved_to_ordered(event, who=None):
+    """Send notification mail after booking was changed from reserved to ordered.
+    """
+    order_data = OrderData(event.context, uid=get_order_uid(event))
+    templates = dict()
+    templates.update(get_booking_reserved_to_ordered_templates(event.context))
+    templates['booking_reserved_to_ordered_title_cb'] = BookingReservedToOrderedTitleCB(event)  # noqa
+    if who == "customer":
+        do_notify_customer(event.context, order_data, templates)
+    elif who == 'shopmanager':
+        do_notify_shopmanager(event.context, order_data, templates)
+    else:
+        raise ValueError(
+            'kw "who" mus be one out of ("customer", "shopmanager")'
+        )
+
+
+def notify_booking_reserved_to_ordered_customer(event):
+    notify_booking_reserved_to_ordered(event, who="customer")
+
+
+def notify_booking_reserved_to_ordered_shopmanager(event):
+    notify_booking_reserved_to_ordered(event, who="shopmanager")
+
+
+NOTIFICATIONS['booking_reserved_to_ordered'] = []
+NOTIFICATIONS['booking_reserved_to_ordered'].append(notify_booking_reserved_to_ordered_customer)  # noqa
+NOTIFICATIONS['booking_reserved_to_ordered'].append(notify_booking_reserved_to_ordered_shopmanager)  # noqa
+
+
 # STOCK THRESHOLD REACHED
 
 def dispatch_notify_stock_threshold_reached(event):
@@ -521,7 +557,7 @@ class StockThresholdReachedCB(object):
         for item_attrs in items:
             title = item_attrs['title']
             remaining_stock = item_attrs['remaining_stock_available']
-            stock_threshold_reached_text += "{} (Remaining stock: {})\n".format(
+            stock_threshold_reached_text += u"{} (Remaining stock: {})\n".format(  # noqa
                 title,
                 remaining_stock
             )

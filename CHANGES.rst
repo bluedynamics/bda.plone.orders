@@ -5,6 +5,10 @@ Changelog
 0.10.dev0
 ---------
 
+- Add transition actions when state is changed from "Reserved".
+  Sends out a mail with a notification for the customer and adminitrator, that the item became available and is ordered.
+  [thet]
+
 - In ``do_transition_for`` on orders, set the state on each booking instead directly on the order.
   This way each booking setter is called, e.g. for changing stock items, setting overall order state and so on.
   [thet]

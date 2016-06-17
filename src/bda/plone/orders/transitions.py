@@ -101,10 +101,16 @@ def do_transition_for(order_state, transition, context=None, request=None):
         _set_state(order_state, interfaces.STATE_NEW)
 
     elif transition == interfaces.STATE_TRANSITION_PROCESS:
-        _set_state(order_state, interfaces.STATE_PROCESSING)
+        event_class = None
+        if order_state.state == interfaces.STATE_RESERVED:
+            event_class = events.BookingReservedToOrderedEvent
+        _set_state(order_state, interfaces.STATE_PROCESSING, event_class=event_class)  # noqa
 
     elif transition == interfaces.STATE_TRANSITION_FINISH:
-        _set_state(order_state, interfaces.STATE_FINISHED)
+        event_class = None
+        if order_state.state == interfaces.STATE_RESERVED:
+            event_class = events.BookingReservedToOrderedEvent
+        _set_state(order_state, interfaces.STATE_FINISHED, event_class=event_class)  # noqa
 
     elif transition == interfaces.STATE_TRANSITION_CANCEL:
         _set_state(

@@ -14,8 +14,6 @@ from zope.interface import implementer
 
 ORDER_SUBJECT_EN = u'Order %s received.'
 
-RESERVATION_SUBJECT_EN = u'Reservation %s received.'
-
 ORDER_BODY_EN = """
 Date: %(date)s
 
@@ -44,6 +42,9 @@ Ordered items:
 
 %(order_summary)s%(global_text)s%(payment_text)s
 """
+
+
+RESERVATION_SUBJECT_EN = u'Reservation %s received.'
 
 RESERVATION_BODY_EN = """
 Date: %(date)s
@@ -84,6 +85,7 @@ City: %(delivery_address.city)s
 Country: %(delivery_address.country)s
 """
 
+
 CANCELLED_BOOKING_SUBJECT_EN = u"Cancelled one booking of Order %s."
 
 CANCELLED_BOOKING_BODY_EN = """
@@ -97,7 +99,23 @@ Cancelled item: %(booking_cancelled_title)s
 Order details: %(portal_url)s/@@showorder?ordernumber=%(ordernumber)s
 """
 
-STOCK_THRESHOLD_REACHED_SUBJECT_EN = u"Order %s has products that are getting out of stock."
+
+BOOKING_RESERVED_TO_ORDERED_SUBJECT_EN = u"Reservation of %s is now ordered."
+
+BOOKING_RESERVED_TO_ORDERED_BODY_EN = """
+Date: %(date)s
+
+You made a reservation of an article in our shop.
+The article became available and we could accept your ordering.
+
+Ordernumber: %(ordernumber)s
+Booked item: %(booking_reserved_to_ordered_title)s
+
+Order details: %(portal_url)s/@@showorder?ordernumber=%(ordernumber)s
+"""
+
+
+STOCK_THRESHOLD_REACHED_SUBJECT_EN = u"Order %s has products that are getting out of stock."  # noqa
 
 STOCK_THRESHOLD_REACHED_BODY_EN = """
 Date: %(date)s
@@ -193,6 +211,21 @@ Eine Ihrer bestellten Artikel wurde storniert.
 
 Bestellnummer: %(ordernumber)s
 Stornierter Artikel: %(booking_cancelled_title)s
+
+Details zur Bestellung: %(portal_url)s/@@showorder?ordernumber=%(ordernumber)s
+"""
+
+
+BOOKING_RESERVED_TO_ORDERED_SUBJECT_DE = u"Reservierung %s ist nun bestellt."
+
+BOOKING_RESERVED_TO_ORDERED_BODY_DE = """
+Datum: %(date)s
+
+Sie haben eine Reservierung in unserem Shop vorgenommen.
+Der Artikel ist verfügbar geworden und wir konnten ihre Bestellung akzeptieren.
+
+Bestellnummer: %(ordernumber)s
+Bestellter Artikel: %(booking_reserved_to_ordered_title)s
 
 Details zur Bestellung: %(portal_url)s/@@showorder?ordernumber=%(ordernumber)s
 """
@@ -530,6 +563,15 @@ CANCELLED_BOOKING_TEMPLATES = {
         'body': CANCELLED_BOOKING_BODY_NO}
 }
 
+BOOKING_RESERVED_TO_ORDERED_TEMPLATES = {
+    'en': {
+        'subject': BOOKING_RESERVED_TO_ORDERED_SUBJECT_EN,
+        'body': BOOKING_RESERVED_TO_ORDERED_BODY_EN},
+    'de': {
+        'subject': BOOKING_RESERVED_TO_ORDERED_SUBJECT_DE,
+        'body': BOOKING_RESERVED_TO_ORDERED_BODY_DE}
+}
+
 STOCK_THRESHOLD_REACHED_TEMPLATES = {
     'en': {
         'subject': STOCK_THRESHOLD_REACHED_SUBJECT_EN,
@@ -552,6 +594,10 @@ def get_reservation_templates(context):
 
 def get_booking_cancelled_templates(context):
     return _get_templates(context, CANCELLED_BOOKING_TEMPLATES)
+
+
+def get_booking_reserved_to_ordered_templates(context):
+    return _get_templates(context, BOOKING_RESERVED_TO_ORDERED_TEMPLATES)
 
 
 def get_stock_threshold_reached_templates(context):
