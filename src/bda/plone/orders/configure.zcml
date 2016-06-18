@@ -55,6 +55,7 @@
   <!-- payment data adapter -->
   <adapter for="*" factory=".common.PaymentData" />
 
+
   <!-- mail templates storage -->
   <adapter
     for="zope.component.interfaces.ISite"
@@ -66,42 +67,41 @@
     provides=".interfaces.IDynamicMailTemplateLibraryStorage"
     factory=".mailtemplates.DynamicMailTemplateLibraryStorage" />
 
-  <!-- event subscribers payment-->
+
+  <!-- EVENT SUBSCRIBERS -->
+
+  <!-- payment-->
   <subscriber
     for="bda.plone.payment.interfaces.IPaymentFailedEvent"
     handler=".common.payment_failed" />
-
   <subscriber
     for="bda.plone.payment.interfaces.IPaymentSuccessEvent"
     handler=".common.payment_success" />
 
-  <!-- event subscribers mailnotify-->
+  <!-- mailnotify -->
   <subscriber
     for="bda.plone.payment.interfaces.IPaymentSuccessEvent"
     handler=".mailnotify.dispatch_notify_payment_success" />
-
   <subscriber
     for="bda.plone.checkout.interfaces.ICheckoutDone"
     handler=".mailnotify.dispatch_notify_checkout_success" />
-
-  <!-- event subscribers booking cancelled -->
   <subscriber
     for="bda.plone.orders.interfaces.IBookingCancelledEvent"
     handler=".mailnotify.dispatch_notify_booking_cancelled" />
-
-  <!-- event subscribers reserved to ordered -->
   <subscriber
     for="bda.plone.orders.interfaces.IBookingReservedToOrderedEvent"
     handler=".mailnotify.dispatch_notify_booking_reserved_to_ordered" />
-
-  <!-- event subscribers item is getting out of stock -->
   <subscriber
     for="bda.plone.orders.interfaces.IStockThresholdReached"
     handler=".mailnotify.dispatch_notify_stock_threshold_reached" />
+  <subscriber
+    for="bda.plone.orders.interfaces.IOrderSuccessfulEvent"
+    handler=".mailnotify.dispatch_notify_order_success" />
 
   <!-- create contact on checkout success and save it in soup catalog-->
   <subscriber
     for="bda.plone.checkout.interfaces.ICheckoutDone"
     handler=".contacts.save_contact" />
+
 
 </configure>

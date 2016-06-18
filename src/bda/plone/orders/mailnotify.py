@@ -83,16 +83,16 @@ def create_mail_listing(context, order_data):
         # fetch buyable comment
         comment = booking.attrs['buyable_comment']
         if comment:
-            title = '%s (%s)' % (title, comment)
+            title = u'%s (%s)' % (title, comment)
         # fetch currency
         currency = booking.attrs['currency']
         # fetch net
         net = booking.attrs['net']
         # build price
-        price = '%s %0.2f' % (currency, net)
+        price = u'%s %0.2f' % (currency, net)
         # XXX: discount
         state = booking.attrs.get('state')
-        state_text = ''
+        state_text = u''
         if state == ifaces.STATE_RESERVED:
             state_text = u' ({})'.format(vocabs.state_vocab()[state])
         line = u'{count: 4f} {title}{state} {price}'.format(
@@ -113,7 +113,7 @@ def create_mail_listing(context, order_data):
             text = None
         if text:
             lines.append(_indent(text))
-    return '\n'.join([safe_encode(l) for l in lines])
+    return u'\n'.join([safe_encode(l) for l in lines])
 
 
 def create_order_summary(context, order_data):
@@ -123,7 +123,7 @@ def create_order_summary(context, order_data):
     cart_total = order_data.total
     # no costs at all
     if not cart_total:
-        return ''
+        return u''
     lines = []
     request = getRequest()
     # currency
@@ -237,8 +237,8 @@ def create_order_summary(context, order_data):
     lines.append(translate(order_summary_cart_total, context=request))
     summary_title = translate(
         _('order_summary_label', default=u'Summary:'), context=request)
-    summary_text = '\n' + '\n'.join([safe_encode(line) for line in lines])
-    return '\n' + safe_encode(summary_title) + summary_text + '\n'
+    summary_text = u'\n' + u'\n'.join([safe_encode(line) for line in lines])
+    return u'\n' + safe_encode(summary_title) + summary_text + u'\n'
 
 
 def create_global_text(context, order_data):
@@ -257,18 +257,18 @@ def create_global_text(context, order_data):
             text = notificationtext.global_order_text
             if text:
                 notifications.add(text)
-    global_text = '\n\n'.join([safe_encode(line) for line in notifications])
+    global_text = u'\n\n'.join([safe_encode(line) for line in notifications])
     if global_text.strip():
-        return '\n\n' + global_text.strip() + '\n'
-    return ''
+        return u'\n\n' + global_text.strip() + u'\n'
+    return u''
 
 
 def create_payment_text(context, order_data):
     payment = order_data.order.attrs['payment_method']
     payment_text = safe_encode(IPaymentText(getSite()).payment_text(payment))
     if payment_text.strip():
-        return '\n\n' + payment_text.strip() + '\n'
-    return ''
+        return u'\n\n' + payment_text.strip() + u'\n'
+    return u''
 
 
 def create_mail_body(templates, context, order_data):
@@ -367,8 +367,14 @@ def do_notify_shopmanager(context, order_data, templates):
 
 # ORDER SUCCSESS
 
+
+def dispatch_notify_order_success(event):
+    for func in NOTIFICATIONS['order_success']:
+        func(event)
+
+
 def notify_order_success(event, who=None):
-    """Send notification mail after order succeed.
+    """Send notification mail after order succeeded.
     """
     if who not in ['customer', 'shopmanager']:
         raise ValueError(
@@ -392,6 +398,19 @@ def notify_order_success(event, who=None):
         do_notify_customer(event.context, order_data, templates)
     else:
         do_notify_shopmanager(event.context, order_data, templates)
+
+
+def notify_order_success_customer(event):
+    notify_order_success(event, who="customer")
+
+
+def notify_order_success_shopmanager(event):
+    notify_order_success(event, who="shopmanager")
+
+
+NOTIFICATIONS['order_success'] = []
+NOTIFICATIONS['order_success'].append(notify_order_success_customer)
+NOTIFICATIONS['order_success'].append(notify_order_success_shopmanager)
 
 
 # CHECKOUT SUCCSESS

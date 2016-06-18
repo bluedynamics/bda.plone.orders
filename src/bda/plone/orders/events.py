@@ -1,8 +1,19 @@
 # -*- coding: utf-8 -*-
 from bda.plone.orders.interfaces import IBookingCancelledEvent
 from bda.plone.orders.interfaces import IBookingReservedToOrderedEvent
+from bda.plone.orders.interfaces import IOrderSuccessfulEvent
 from bda.plone.orders.interfaces import IStockThresholdReached
 from zope.interface import implementer
+
+
+@implementer(IOrderSuccessfulEvent)
+class OrderSuccessfulEvent(object):
+
+    def __init__(self, context, request, order_uid, booking_attrs=None):
+        self.context = context
+        self.request = request
+        self.order_uid = order_uid
+        self.booking_attrs = booking_attrs
 
 
 @implementer(IBookingCancelledEvent)

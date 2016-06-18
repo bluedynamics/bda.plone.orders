@@ -57,14 +57,17 @@ def do_transition_for(order_state, transition, context=None, request=None):
     This mixes main state and salaried!
     """
 
-    def _set_state(data, state_value, state_attr='state', event_class=None):
+    def _set_state(data, state_value, state_attr='state',
+                   event_class=None, event_emit_on_last=False):
         #
         #                             Case BookingData
         #                    Case OrderData    |
         # BookingData or OrderData    |        |
         #                   V         V        V
         bookings = getattr(data, 'bookings', [data])
-        for booking_data in bookings:
+        bookings = list(bookings)  # make list out of generator to have a len
+        bookings_len = len(bookings)
+        for cnt, booking_data in enumerate(bookings):
 
             if not isinstance(booking_data, BookingData):
                 # Case OrderData
@@ -81,7 +84,10 @@ def do_transition_for(order_state, transition, context=None, request=None):
 
             # Optionally send out event.
             # May include sending out a notification mail.
-            if event_class:
+            if event_class and (
+                cnt == bookings_len - 1 or  # event_emit_on_last
+                not event_emit_on_last      # or emit always
+            ):
                 booking_attrs = dict(booking_data.booking.attrs.items())
                 event = event_class(
                     context=context,
@@ -98,7 +104,12 @@ def do_transition_for(order_state, transition, context=None, request=None):
         _set_state(order_state, interfaces.SALARIED_NO, 'salaried')
 
     elif transition == interfaces.STATE_TRANSITION_RENEW:
-        _set_state(order_state, interfaces.STATE_NEW)
+        _set_state(
+            order_state,
+            interfaces.STATE_NEW,
+            event_class=events.OrderSuccessfulEvent,
+            event_emit_on_last=True
+        )
 
     elif transition == interfaces.STATE_TRANSITION_PROCESS:
         event_class = None
