@@ -6,7 +6,6 @@ from bda.plone.checkout.interfaces import ICheckoutEvent
 from bda.plone.checkout.interfaces import ICheckoutSettings
 from bda.plone.orders import interfaces as ifaces
 from bda.plone.orders import message_factory as _
-from bda.plone.orders import safe_encode
 from bda.plone.orders import vocabularies as vocabs
 from bda.plone.orders.common import DT_FORMAT
 from bda.plone.orders.common import OrderData
@@ -61,7 +60,7 @@ def _indent(text, ind=5, width=80):
         width,
         initial_indent=ind * u' '
     )
-    return safe_encode(wrapped)
+    return wrapped
 
 
 def _process_template_cb(name, tpls, args, context, order_data):
@@ -79,23 +78,29 @@ def create_mail_listing(context, order_data):
         # fetch buyable
         buyable = brain.getObject()
         # fetch buyable title
-        title = safe_encode(booking.attrs['title'])
+        title = booking.attrs['title']
         # fetch buyable comment
         comment = booking.attrs['buyable_comment']
         if comment:
-            title = u'%s (%s)' % (title, comment)
+            title = u'{0} ({1})'.format(
+                safe_unicode(title),
+                safe_unicode(comment)
+            )
         # fetch currency
         currency = booking.attrs['currency']
         # fetch net
         net = booking.attrs['net']
         # build price
-        price = u'%s %0.2f' % (currency, net)
+        price = u'{currency} {net: 0.2f}'.format(
+            currency=currency,
+            net=net
+        )
         # XXX: discount
         state = booking.attrs.get('state')
         state_text = u''
         if state == ifaces.STATE_RESERVED:
-            state_text = u' ({})'.format(vocabs.state_vocab()[state])
-        line = u'{count: 4f} {title}{state} {price}'.format(
+            state_text = u' ({0})'.format(vocabs.state_vocab()[state])
+        line = u'{count: 4f} {title} {state} {price}'.format(
             count=booking.attrs['buyable_count'],
             title=title,
             state=state_text,
@@ -113,7 +118,7 @@ def create_mail_listing(context, order_data):
             text = None
         if text:
             lines.append(_indent(text))
-    return u'\n'.join([safe_encode(l) for l in lines])
+    return u'\n'.join(lines)
 
 
 def create_order_summary(context, order_data):
@@ -237,8 +242,11 @@ def create_order_summary(context, order_data):
     lines.append(translate(order_summary_cart_total, context=request))
     summary_title = translate(
         _('order_summary_label', default=u'Summary:'), context=request)
-    summary_text = u'\n' + u'\n'.join([safe_encode(line) for line in lines])
-    return u'\n' + safe_encode(summary_title) + summary_text + u'\n'
+    summary_text = u'\n'.join(lines)
+    return u'\n{summary_title}\n{summary_text}\n'.format(
+        summary_title=summary_title,
+        summary_text=summary_text
+    )
 
 
 def create_global_text(context, order_data):
@@ -257,17 +265,17 @@ def create_global_text(context, order_data):
             text = notificationtext.global_order_text
             if text:
                 notifications.add(text)
-    global_text = u'\n\n'.join([safe_encode(line) for line in notifications])
+    global_text = u'\n\n'.join(notifications)
     if global_text.strip():
-        return u'\n\n' + global_text.strip() + u'\n'
+        return u'\n\n{global_text}\n'.format(global_text=global_text.strip())
     return u''
 
 
 def create_payment_text(context, order_data):
     payment = order_data.order.attrs['payment_method']
-    payment_text = safe_encode(IPaymentText(getSite()).payment_text(payment))
+    payment_text = IPaymentText(getSite()).payment_text(payment)
     if payment_text.strip():
-        return u'\n\n' + payment_text.strip() + u'\n'
+        return u'\n\n{payment_text}\n'.format(payment_text=payment_text.strip())  # noqa
     return u''
 
 
@@ -291,7 +299,7 @@ def create_mail_body(templates, context, order_data):
     salutation = translate(attrs['personal_data.gender'],
                            domain='bda.plone.checkout',
                            target_language=lang)
-    arguments['salutation'] = safe_encode(salutation)
+    arguments['salutation'] = salutation
 
     # todo: next should be a cb
     if attrs['delivery_address.alternative_delivery']:
@@ -327,7 +335,7 @@ class MailNotify(object):
             raise ValueError('Shop manager address is missing in settings.')
         shop_manager_name = self.settings.admin_name
         if shop_manager_name:
-            from_name = safe_encode(shop_manager_name)
+            from_name = shop_manager_name
             mailfrom = formataddr((from_name, shop_manager_address))
         else:
             mailfrom = shop_manager_address
@@ -576,7 +584,7 @@ class StockThresholdReachedCB(object):
         for item_attrs in items:
             title = item_attrs['title']
             remaining_stock = item_attrs['remaining_stock_available']
-            stock_threshold_reached_text += u"{} (Remaining stock: {})\n".format(  # noqa
+            stock_threshold_reached_text += u"{0} (Remaining stock: {1})\n".format(  # noqa
                 title,
                 remaining_stock
             )
