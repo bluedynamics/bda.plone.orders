@@ -47,9 +47,11 @@ POSSIBLE_TEMPLATE_CALLBACKS = [
 # MAIL NOTIFICATION UTILITIES
 
 def get_order_uid(event):
-    uid = event.order_uid
+    uid = None
     if ICheckoutEvent.providedBy(event):
         uid = event.uid
+    else:
+        uid = event.order_uid
     return uid
 
 
@@ -78,16 +80,13 @@ def create_mail_listing(context, order_data):
         # fetch buyable
         buyable = brain.getObject()
         # fetch buyable title
-        title = booking.attrs['title']
+        title = safe_unicode(booking.attrs['title'])
         # fetch buyable comment
-        comment = booking.attrs['buyable_comment']
+        comment = safe_unicode(booking.attrs['buyable_comment'])
         if comment:
-            title = u'{0} ({1})'.format(
-                safe_unicode(title),
-                safe_unicode(comment)
-            )
+            title = u'{0} ({1})'.format(title, comment)
         # fetch currency
-        currency = booking.attrs['currency']
+        currency = safe_unicode(booking.attrs['currency'])
         # fetch net
         net = booking.attrs['net']
         # build price
@@ -96,7 +95,7 @@ def create_mail_listing(context, order_data):
             net=net
         )
         # XXX: discount
-        state = booking.attrs.get('state')
+        state = safe_unicode(booking.attrs.get('state'))
         state_text = u''
         if state == ifaces.STATE_RESERVED:
             state_text = u' ({0})'.format(vocabs.state_vocab()[state])
@@ -293,7 +292,10 @@ def create_mail_body(templates, context, order_data):
     """
     lang = context.restrictedTraverse('@@plone_portal_state').language()
     attrs = order_data.order.attrs
-    arguments = dict(attrs.items())
+    arguments = dict(
+        (safe_unicode(key), safe_unicode(value))
+        for (key, value) in attrs.items()
+    )
     arguments['portal_url'] = getSite().absolute_url()
     arguments['date'] = attrs['created'].strftime(DT_FORMAT)
     salutation = translate(attrs['personal_data.gender'],
@@ -302,11 +304,13 @@ def create_mail_body(templates, context, order_data):
     arguments['salutation'] = salutation
 
     # todo: next should be a cb
+    arguments['delivery_address'] = ''
     if attrs['delivery_address.alternative_delivery']:
-        delivery_address_template = templates['delivery_address']
-        arguments['delivery_address'] = delivery_address_template % arguments
-    else:
-        arguments['delivery_address'] = ''
+        delivery_address_template = templates.get('delivery_address', None)
+        if delivery_address_template:
+            # If no template is defined, it might not be useful in this context
+            # (e.g. cancelling bookings)
+            arguments['delivery_address'] = delivery_address_template % arguments  # noqa
 
     for name in POSSIBLE_TEMPLATE_CALLBACKS:
         _process_template_cb(

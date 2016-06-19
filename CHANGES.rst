@@ -5,6 +5,10 @@ Changelog
 0.10.dev0
 ---------
 
+- On mail notifications, don't try to include delivery_address if no delivery_address template is available.
+  In some contexts, there is no need for a delivery_address, like booking canceling.
+  [thet]
+
 - Unicode almost everywhere.
   Fixes some ``Unicode Decode Error``.
   [thet]
