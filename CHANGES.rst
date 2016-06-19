@@ -5,6 +5,9 @@ Changelog
 0.10.dev0
 ---------
 
+- Translate country code in mail notifications.
+  [thet]
+
 - On mail notifications, don't try to include delivery_address if no delivery_address template is available.
   In some contexts, there is no need for a delivery_address, like booking canceling.
   [thet]

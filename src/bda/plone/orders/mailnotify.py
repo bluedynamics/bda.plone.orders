@@ -4,6 +4,7 @@ from bda.plone.cart import ascur
 from bda.plone.cart import get_catalog_brain
 from bda.plone.checkout.interfaces import ICheckoutEvent
 from bda.plone.checkout.interfaces import ICheckoutSettings
+from bda.plone.orders import get_country_name
 from bda.plone.orders import interfaces as ifaces
 from bda.plone.orders import message_factory as _
 from bda.plone.orders import vocabularies as vocabs
@@ -302,6 +303,13 @@ def create_mail_body(templates, context, order_data):
                            domain='bda.plone.checkout',
                            target_language=lang)
     arguments['salutation'] = salutation
+
+    # Change country code to translated country name
+    if arguments.get('billing_address.country', None):
+        arguments['billing_address.country'] = get_country_name(arguments['billing_address.country'], lang=lang)  # noqa
+
+    if arguments.get('delivery_address.country', None):
+        arguments['delivery_address.country'] = get_country_name(arguments['delivery_address.country'], lang=lang)  # noqa
 
     # todo: next should be a cb
     arguments['delivery_address'] = ''
