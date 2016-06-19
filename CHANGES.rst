@@ -5,6 +5,9 @@ Changelog
 0.10.dev0
 ---------
 
+- Fix modifications of ``buyable_comment`` in ``@@orders`` view not being saved.
+  [thet]
+
 - Translate country code in mail notifications.
   [thet]
 

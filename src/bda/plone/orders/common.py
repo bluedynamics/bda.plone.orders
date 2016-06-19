@@ -907,5 +907,5 @@ def booking_update_comment(context, booking_uid, comment):
     if booking_data.booking is None:
         raise ValueError('invalid value (booking)')
     booking = booking_data.booking
-    booking.attrs['comment'] = comment
+    booking.attrs['buyable_comment'] = comment
     booking_data.reindex()
