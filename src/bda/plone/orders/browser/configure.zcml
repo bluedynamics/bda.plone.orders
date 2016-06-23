@@ -3,6 +3,8 @@
            xmlns:browser="http://namespaces.zope.org/browser"
            xmlns:zcml="http://namespaces.zope.org/zcml">
 
+  <!-- ORDERS -->
+
   <!-- orders view -->
   <browser:page
     for="*"
@@ -37,6 +39,9 @@
     permission="bda.plone.orders.ViewOwnOrders"
     layer="..interfaces.IOrdersExtensionLayer" />
 
+
+  <!-- BOOKINGS -->
+
   <!-- bookings view -->
   <browser:page
     for="*"
@@ -63,6 +68,9 @@
     class=".bookings.BookingsTable"
     permission="bda.plone.orders.ViewOrders"
     layer="..interfaces.IOrdersExtensionLayer" />
+
+
+  <!-- OTHER -->
 
   <!-- contacts view -->
   <browser:page

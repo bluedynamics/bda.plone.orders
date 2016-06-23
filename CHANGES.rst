@@ -5,6 +5,32 @@ Changelog
 0.10.dev0
 ---------
 
+- Fix modifications of ``buyable_comment`` in ``@@orders`` view not being saved.
+  [thet]
+
+- Translate country code in mail notifications.
+  [thet]
+
+- On mail notifications, don't try to include delivery_address if no delivery_address template is available.
+  In some contexts, there is no need for a delivery_address, like booking canceling.
+  [thet]
+
+- Unicode almost everywhere.
+  Fixes some ``Unicode Decode Error``.
+  [thet]
+
+- Add transition actions when state is changed from "Reserved".
+  Sends out a mail with a notification for the customer and adminitrator, that the item became available and is ordered.
+  [thet]
+
+- In ``do_transition_for`` on orders, set the state on each booking instead directly on the order.
+  This way each booking setter is called, e.g. for changing stock items, setting overall order state and so on.
+  [thet]
+
+- Send out mails when cancelling whole orders or individual bookings from the ``@@orders`` and ``@@bookings`` views, not only from the order detail view.
+  This is done by moving the necessary logic into ``bda.plone.orders.transitions.do_transition_for``.
+  [thet]
+
 - Add filters for Vendor, Customer, State and Salaried state to the @@bookings view.
   [pcdummy]
 

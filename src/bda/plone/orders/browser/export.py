@@ -261,13 +261,13 @@ class ExportOrdersContextual(BrowserView):
         if not user.checkPermission(permissions.ModifyOrders, self.context):
             raise Unauthorized
 
-        filename = '{}_{}.csv'.format(
+        filename = u'{}_{}.csv'.format(
             safe_encode(self.context.title),
             datetime.datetime.now().strftime('%Y-%m-%d_%H-%M'))
         resp = self.request.response
         resp.setHeader('content-type', 'text/csv; charset=utf-8')
         resp.setHeader(
-            'content-disposition', 'attachment;filename={}'.format(filename))
+            'content-disposition', u'attachment;filename={}'.format(filename))
         return self.get_csv()
 
     def export_val(self, record, attr_name):

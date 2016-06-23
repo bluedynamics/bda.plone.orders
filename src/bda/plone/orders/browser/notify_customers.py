@@ -115,7 +115,7 @@ class NotifyCustomers(YAMLBaseForm):
             self._sendmail(notifier, uid, tpl, subject)
 
     def ajax_url(self, widget, data):
-        url = "{0}/@@load_notification_template".format(
+        url = u"{0}/@@load_notification_template".format(
             self.context.absolute_url()
         )
         return {'tplurl': url}

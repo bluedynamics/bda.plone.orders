@@ -19,12 +19,10 @@ from bda.plone.orders import permissions
 from bda.plone.orders import safe_encode
 from bda.plone.orders.interfaces import IBuyable
 from bda.plone.orders.interfaces import IVendor
-from bda.plone.orders.transitions import do_transition_for
 from bda.plone.payment import Payments
 from bda.plone.payment.interfaces import IPaymentData
 from bda.plone.shipping import Shippings
 from bda.plone.shipping.interfaces import IShippingItem
-from bda.plone.shop.utils import get_shop_article_settings
 from decimal import Decimal
 from node.ext.zodb import OOBTNode
 from node.utils import instance_property
@@ -378,7 +376,7 @@ class OrderCheckoutAdapter(CheckoutAdapter):
             stock_warning_threshold = item_stock.stock_warning_threshold
             if stock_warning_threshold:
                 remaining = booking.attrs['remaining_stock_available']
-                # stock threshold has been reached
+                # stock threshold has been reached
                 if remaining <= stock_warning_threshold:
                     stock_threshold_reached_items.append(booking.attrs)
         if stock_threshold_reached_items:
@@ -603,8 +601,8 @@ class OrderData(OrderState):
         for booking in self.bookings:
             val = booking.attrs['currency']
             if ret and ret != val:
-                msg = 'Order contains bookings with inconsistent ' +\
-                      'currencies {0} != {1}'.format(ret, val)
+                msg = u'Order contains bookings with inconsistent ' +\
+                      u'currencies {0} != {1}'.format(ret, val)
                 raise ValueError(msg)
             ret = val
         return ret
@@ -801,7 +799,7 @@ class BookingData(OrderState):
         booking.attrs['salaried'] = value
         order = self.order
         del order.order.attrs['salaried']
-        order.order.attrs['salaried'] = calculate_order_salaried(order.bookings)
+        order.order.attrs['salaried'] = calculate_order_salaried(order.bookings)  # noqa
         self.reindex_bookings([booking])
         self.reindex_order(order.order)
 
@@ -904,25 +902,10 @@ def payment_failed(event):
         order.tid = data['tid']
 
 
-def booking_cancel(context, request, booking_uid):
-    booking_data = BookingData(context, uid=booking_uid)
-    if booking_data.booking is None:
-        raise ValueError('invalid value (no booking found)')
-    booking_attrs = dict(booking_data.booking.attrs.items())
-    do_transition_for(booking_data, ifaces.STATE_TRANSITION_CANCEL)
-    event = events.BookingCancelledEvent(
-        context,
-        request,
-        booking_attrs['order_uid'],
-        booking_attrs,
-    )
-    notify(event)
-
-
 def booking_update_comment(context, booking_uid, comment):
     booking_data = BookingData(context, uid=booking_uid)
     if booking_data.booking is None:
         raise ValueError('invalid value (booking)')
     booking = booking_data.booking
-    booking.attrs['comment'] = comment
+    booking.attrs['buyable_comment'] = comment
     booking_data.reindex()

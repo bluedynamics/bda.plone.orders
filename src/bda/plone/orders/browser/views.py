@@ -15,7 +15,7 @@ from bda.plone.orders import vocabularies as vocabs
 from bda.plone.orders.browser.dropdown import BaseDropdown
 from bda.plone.orders.common import DT_FORMAT
 from bda.plone.orders.common import OrderData
-from bda.plone.orders.common import booking_cancel
+from bda.plone.orders.common import BookingData
 from bda.plone.orders.common import booking_update_comment
 from bda.plone.orders.common import get_orders_soup
 from bda.plone.orders.common import get_vendor_by_uid
@@ -139,7 +139,12 @@ class OrderTransition(Transition):
             uid=uid,
             vendor_uids=vendor_uids
         )
-        do_transition_for(order_data, transition)
+        do_transition_for(
+            order_data,
+            transition=transition,
+            context=self.context,
+            request=self.request
+        )
         return order_data.order
 
 
@@ -521,8 +526,8 @@ class OrdersTable(OrdersTableBase):
             ('salaried', self.request.form.get('salaried')),
         ]
         query = urllib.urlencode(dict([it for it in params if it[1]]))
-        query = query and '?{0}'.format(query) or ''
-        return '{0:s}/{1:s}{2:s}'.format(
+        query = query and u'?{0}'.format(query) or ''
+        return u'{0:s}/{1:s}{2:s}'.format(
             self.context.absolute_url(),
             self.data_view_name,
             query
@@ -983,7 +988,15 @@ class BookingCancel(BrowserView):
         if not booking_uid:
             raise BadRequest('value not given')
         try:
-            booking_cancel(self.context, self.request, uuid.UUID(booking_uid))
+            booking_data = BookingData(self.context, uid=uuid.UUID(booking_uid))  # noqa
+            if booking_data.booking is None:
+                raise ValueError('invalid value (no booking found)')
+            do_transition_for(
+                booking_data,
+                transition=ifaces.STATE_TRANSITION_CANCEL,
+                context=self.context,
+                request=self.request
+            )
         except ValueError:
             raise BadRequest('something is wrong with the value')
 

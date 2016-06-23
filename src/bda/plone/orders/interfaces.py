@@ -13,10 +13,10 @@ STATE_NEW = 'new'
 STATE_PROCESSING = 'processing'
 STATE_RESERVED = 'reserved'
 
-STATE_TRANSITION_RENEW = 'renew'
-STATE_TRANSITION_PROCESS = 'process'
-STATE_TRANSITION_FINISH = 'finish'
 STATE_TRANSITION_CANCEL = 'cancel'
+STATE_TRANSITION_FINISH = 'finish'
+STATE_TRANSITION_PROCESS = 'process'
+STATE_TRANSITION_RENEW = 'renew'
 
 SALARIED_YES = 'yes'
 SALARIED_NO = 'no'
@@ -124,7 +124,31 @@ class IDynamicMailTemplateLibraryStorage(IDynamicMailTemplateLibrary):
         """
 
 
+class IOrderSuccessfulEvent(Interface):
+    """Checkout related event.
+    """
+    context = Attribute(u"Context in which this event was triggered.")
+
+    request = Attribute(u"Current request.")
+
+    order_uid = Attribute(u"UUID of Order")
+
+    booking_attrs = Attribute(u"Dict of attributes of the cancelled booking.")
+
+
 class IBookingCancelledEvent(Interface):
+    """Checkout related event.
+    """
+    context = Attribute(u"Context in which this event was triggered.")
+
+    request = Attribute(u"Current request.")
+
+    order_uid = Attribute(u"UUID of Order")
+
+    booking_attrs = Attribute(u"Dict of attributes of the cancelled booking.")
+
+
+class IBookingReservedToOrderedEvent(Interface):
     """Checkout related event.
     """
     context = Attribute(u"Context in which this event was triggered.")
