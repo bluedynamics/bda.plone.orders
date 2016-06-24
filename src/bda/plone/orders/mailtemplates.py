@@ -72,6 +72,9 @@ Comment:
 Ordered items:
 %(item_listing)s
 
+Reserved items:
+%(reserved_item_listing)s
+
 %(order_summary)s%(global_text)s%(payment_text)s
 """
 
@@ -189,6 +192,9 @@ Kommentar:
 Bestellte Artikel:
 %(item_listing)s
 
+Reservierte Artikel:
+%(reserved_item_listing)s
+
 %(order_summary)s%(global_text)s%(payment_text)s
 """  # noqa
 
@@ -293,6 +299,9 @@ Commentaires:
 Produit commandé:
 %(item_listing)s
 
+Produit réservés:
+%(reserved_item_listing)s
+
 %(order_summary)s%(global_text)s%(payment_text)s
 """
 
@@ -379,6 +388,9 @@ Commento:
 
 Articolo ordinato:
 %(item_listing)s
+
+Articolo riservato:
+%(reserved_item_listing)s
 
 %(order_summary)s%(global_text)s%(payment_text)s
 """
@@ -468,6 +480,9 @@ Kommentar:
 
 Bestilte produkter:
 %(item_listing)s
+
+Reserverte produkter:
+%(reserved_item_listing)s
 
 %(order_summary)s%(global_text)s%(payment_text)s
 """

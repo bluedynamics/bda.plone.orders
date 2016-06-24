@@ -5,6 +5,9 @@ Changelog
 0.10.dev0
 ---------
 
+- In mail templates, list reserved items seperately from normal ordered items.
+  [thet]
+
 - Fix modifications of ``buyable_comment`` in ``@@orders`` view not being saved.
   [thet]
 
