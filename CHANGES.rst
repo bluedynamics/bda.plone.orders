@@ -5,6 +5,9 @@ Changelog
 0.10.dev0
 ---------
 
+- If no ``uid`` was given when calling the ``@@order`` view, redirect to current context and show an error message instead of failing.
+  [thet]
+
 - In ``@@bookings`` view, group by buyable per default.
   [thet]
 
