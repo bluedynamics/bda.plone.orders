@@ -354,7 +354,7 @@ class BookingsTable(BrowserView):
             record,
         ))
         phone  = safe_unicode(self._get_ordervalue(
-            'billing_address.phone',
+            'personal_data.phone',
             record,
         ))
         email  = safe_unicode(record.attrs.get('email', ''))
