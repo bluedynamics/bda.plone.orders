@@ -233,7 +233,7 @@ class BookingsTable(BrowserView):
         group_selector = factory(
             'div:label:select',
             name='group_by',
-            value=self.request.form.get('group_by', ''),
+            value=self.request.form.get('group_by', 'buyable'),
             props={
                 'div.class': 'group_filter',
                 'vocabulary': groups,
@@ -333,6 +333,41 @@ class BookingsTable(BrowserView):
             value = currency + u' {0:.2f}'.format(value)
             return value
 
+    def render_name(self, colname, record):
+        firstname = safe_unicode(self._get_ordervalue(
+            'personal_data.firstname',
+            record,
+        ))
+        lastname = safe_unicode(self._get_ordervalue(
+            'personal_data.lastname',
+            record,
+        ))
+        return u"{0}, {1}".format(firstname, lastname)
+
+    def render_address(self, colname, record):
+        street = safe_unicode(self._get_ordervalue(
+            'billing_address.street',
+            record,
+        ))
+        city   = safe_unicode(self._get_ordervalue(
+            'billing_address.city',
+            record,
+        ))
+        phone  = safe_unicode(self._get_ordervalue(
+            'billing_address.phone',
+            record,
+        ))
+        email  = safe_unicode(record.attrs.get('email', ''))
+
+        return u"{0} {1}<br/>{2}: {3}<br/>{4}: {5}".format(
+            street,
+            city,
+            _("phone", default=u"Phone"),
+            phone,
+            _("email", default=u"Email"),
+            email
+        )
+
     @property
     def ajaxurl(self):
         site = plone.api.portal.get()
@@ -370,28 +405,23 @@ class BookingsTable(BrowserView):
                 'origin': 'b',
             },
             {
-                'id': 'personal_data.lastname',
-                'label': _('lastname', default=u'Last Name'),
+                'id': 'buyable_comment',
+                'label': _('booking_comment', default=u'Comment'),
+                'origin': 'b',
+            },
+            {
+                'id': 'name',
+                'label': u'{0}, {1}'.format(
+                    _('firstname', default=u'First Name'),
+                    _('lastname', default=u'Last Name')
+                ),
+                'renderer': self.render_name,
                 'origin': 'o',
             },
             {
-                'id': 'personal_data.firstname',
-                'label': _('firstname', default=u'First Name'),
-                'origin': 'o',
-            },
-            {
-                'id': 'billing_address.street',
-                'label': _('street', default=u'Street'),
-                'origin': 'o',
-            },
-            {
-                'id': 'billing_address.city',
-                'label': _('city', default=u'City'),
-                'origin': 'o',
-            },
-            {
-                'id': 'personal_data.phone',
-                'label': _('phone', default=u'Phone'),
+                'id': 'address',
+                'label': _('address', default=u'Address'),
+                'renderer': self.render_address,
                 'origin': 'o',
             },
             {

@@ -284,7 +284,7 @@
                 "columnDefs": [
                     {
                         'visible': false,
-                        'targets': [0, 1, 13, 14]
+                        'targets': [0, 1, 11, 12]  // hide Email, buyable_uid, bookings_quantity, bookings_total_sum
                     }
                 ],
 
@@ -317,24 +317,24 @@
                         api.column(0, {page: 'current'}).data().each(function (group, i) {
                             if (last !== group) {
                                 $(rows).eq(i).before(
-                                        '<tr class="group_email"><td colspan="13">' + group + '</td></tr>'
+                                        '<tr class="group_email"><td colspan="10">' + group + '</td></tr>'
                                 );
                                 last = group;
                             }
                         });
-                        api.column(4).visible(true);
+                        api.column(4).visible(true);  // column 4 = item title
                     }
                     // only show email info if grouped by buyable
                     if ($('#input-group_by').val() === 'buyable') {
                         api.column(1, {page: 'current'}).data().each(function (group, i) {
                             if (last !== group) {
                                 $(rows).eq(i).before(
-                                        '<tr class="group_buyable"><td colspan="13">' + group + '</td></tr>'
+                                        '<tr class="group_buyable"><td colspan="10">' + group + '</td></tr>'
                                 );
                                 last = group;
                             }
                         });
-                        api.column(4).visible(false);
+                        api.column(4).visible(false);  // column 4 = item title
                     }
                     $(this).bdajax();
                 }

@@ -5,6 +5,12 @@ Changelog
 0.10.dev0
 ---------
 
+- In ``@@bookings`` view, group by buyable per default.
+  [thet]
+
+- In ``@@bookings`` view, add ``buyable_comment`` column and combine first name, last name and address information to save space.
+  [thet]
+
 - Don't include reserved bookings in ``OrderData`` payment information (net, vat) and don't count them when calculating the salaried state for orders.
   [thet]
 
