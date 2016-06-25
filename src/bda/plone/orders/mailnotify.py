@@ -39,7 +39,7 @@ POSSIBLE_TEMPLATE_CALLBACKS = [
     'booking_reserved_to_ordered_title',
     'global_text',
     'item_listing',
-    'reserved_item_listing'
+    'reserved_item_listing',
     'order_summary',
     'payment_text',
     'stock_threshold_reached_text',
@@ -422,7 +422,7 @@ def notify_order_success(event, who=None):
     order_data = OrderData(event.context, uid=get_order_uid(event))
     templates = dict()
     state = order_data.state
-    if state in (ifaces.STATE_RESERVED, state == ifaces.STATE_MIXED):
+    if state in (ifaces.STATE_RESERVED, ifaces.STATE_MIXED):
         templates.update(get_reservation_templates(event.context))
         templates['reserved_item_listing_cb'] = create_reserved_item_listing
     else:
