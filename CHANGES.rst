@@ -5,6 +5,9 @@ Changelog
 0.10.dev0
 ---------
 
+- Don't include reserved bookings in ``OrderData`` payment information (net, vat) and don't count them when calculating the salaried state for orders.
+  [thet]
+
 - In mail templates, list reserved items seperately from normal ordered items.
   [thet]
 

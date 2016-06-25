@@ -455,6 +455,17 @@ class OrderCheckoutAdapter(CheckoutAdapter):
         return booking
 
 
+def is_billable_booking(booking):
+    """Return True, if booking is billable and should be included in order
+    summary calculations.
+    To be used in Pythons filter function::
+        filter(is_billable_booking, bookings)
+    """
+    return booking.attrs['state'] not in (
+        ifaces.STATE_RESERVED, ifaces.STATE_CANCELLED
+    )
+
+
 def _calculate_order_attr_from_bookings(bookings, attr, mixed_value):
     ret = None
     for booking in bookings:
@@ -477,7 +488,7 @@ def calculate_order_state(bookings):
 
 def calculate_order_salaried(bookings):
     return _calculate_order_attr_from_bookings(
-        bookings,
+        filter(is_billable_booking, bookings),
         'salaried',
         ifaces.SALARIED_MIXED
     )
@@ -662,7 +673,7 @@ class OrderData(OrderState):
     def net(self):
         # XXX: use decimal
         ret = 0.0
-        for booking in self.bookings:
+        for booking in filter(is_billable_booking, self.bookings):
             count = float(booking.attrs['buyable_count'])
             net = booking.attrs.get('net', 0.0)
             discount_net = float(booking.attrs['discount_net'])
@@ -673,7 +684,7 @@ class OrderData(OrderState):
     def vat(self):
         # XXX: use decimal
         ret = 0.0
-        for booking in self.bookings:
+        for booking in filter(is_billable_booking, self.bookings):
             count = float(booking.attrs['buyable_count'])
             net = booking.attrs.get('net', 0.0)
             discount_net = float(booking.attrs['discount_net'])
