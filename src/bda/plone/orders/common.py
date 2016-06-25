@@ -532,13 +532,39 @@ class OrderState(object):
             'Abstract OrderState does not implement salaried.setter')
 
     def update_item_stock(self, booking, old_state, new_state):
+        """Change stock according to transition. See table in transitions.py
+        """
         if old_state == new_state:
             return
         # XXX: fix stock item available??
-        if new_state == ifaces.STATE_NEW:
-            self.decrease_stock(booking)
-        if new_state == ifaces.STATE_CANCELLED:
-            self.increase_stock(booking)
+        if old_state == ifaces.STATE_NEW:
+            if new_state == ifaces.STATE_CANCELLED:
+                self.increase_stock(booking)
+            else:
+                # do nothing
+                pass
+        elif old_state == ifaces.STATE_RESERVED:
+            if new_state in (ifaces.STATE_PROCESSING, ifaces.STATE_FINISHED):
+                self.decrease_stock(booking)
+            else:
+                # do nothing
+                pass
+        elif old_state == ifaces.STATE_PROCESSING:
+            if new_state == ifaces.STATE_CANCELLED:
+                self.increase_stock(booking)
+            else:
+                # do nothing
+                pass
+        elif old_state == ifaces.STATE_FINISHED:
+            if new_state == ifaces.STATE_NEW:
+                # do nothing
+                pass
+        elif old_state == ifaces.STATE_CANCELLED:
+            if new_state == ifaces.STATE_NEW:
+                self.decrease_stock(booking)
+            else:
+                # do nothing
+                pass
 
     def increase_stock(self, booking):
         obj = get_object_by_uid(self.context, booking.attrs['buyable_uid'])

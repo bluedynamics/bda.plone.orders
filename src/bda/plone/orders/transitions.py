@@ -4,6 +4,25 @@ from bda.plone.orders import interfaces
 from bda.plone.orders.common import BookingData
 from zope.event import notify
 
+"""
+State transitions and stock change
+
+origin state    target state    stock change
+============================================
+NEW             PROCESSING      0
+NEW             FINISHED        0
+NEW             CANCELLED       +1
+RESERVED        PROCESSING      -1
+RESERVED        FINISHED        -1
+RESERVED        CANCELLED       0
+PROCESSING      FINISH          0
+PROCESSING      CANCEL          +1
+PROCESSING      RENEW           0
+FINISHED        RENEW           0
+CANCELLED       RENEW           -1
+
+"""
+
 
 def transitions_of_main_state(state):
     """List of transitions for a given orders or bookings main state

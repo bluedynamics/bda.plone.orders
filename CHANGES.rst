@@ -5,6 +5,9 @@ Changelog
 0.10.dev0
 ---------
 
+- Reimplement ``update_item_stock`` according to transition changes, documented at the table in ``transitions.py``.
+  [thet]
+
 - If no ``uid`` was given when calling the ``@@order`` view, redirect to current context and show an error message instead of failing.
   [thet]
 
