@@ -370,8 +370,10 @@ class BookingsTable(BrowserView):
 
     @property
     def ajaxurl(self):
-        site = plone.api.portal.get()
-        return '%s/%s' % (site.absolute_url(), self.data_view_name)
+        return u'{0}/{1}'.format(
+            self.context.absolute_url(),
+            self.data_view_name
+        )
 
     @property
     def columns(self):

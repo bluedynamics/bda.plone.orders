@@ -5,6 +5,10 @@ Changelog
 0.10.dev0
 ---------
 
+- Make the current context as base url for ``ajaxurl`` in OrdersTable and BookingsTable.
+  This way, the current subsites settings are respected, e.g. when rendering state transition dropdowns, which again sends mails and those need the correct sender.
+  [thet]
+
 - Reimplement ``update_item_stock`` according to transition changes, documented at the table in ``transitions.py``.
   [thet]
 
