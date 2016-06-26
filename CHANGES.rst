@@ -5,6 +5,9 @@ Changelog
 0.10.dev0
 ---------
 
+- Create safe filenames for ``@@exportorders_contextual``.
+  [thet]
+
 - Make the current context as base url for ``ajaxurl`` in OrdersTable and BookingsTable.
   This way, the current subsites settings are respected, e.g. when rendering state transition dropdowns, which again sends mails and those need the correct sender.
   [thet]
