@@ -103,13 +103,12 @@ Order details: %(portal_url)s/@@showorder?ordernumber=%(ordernumber)s
 """
 
 
-BOOKING_RESERVED_TO_ORDERED_SUBJECT_EN = u"Reservation of %s is now ordered."
+BOOKING_RESERVED_TO_ORDERED_SUBJECT_EN = u"Reservation of %s is now available."
 
 BOOKING_RESERVED_TO_ORDERED_BODY_EN = u"""
 Date: %(date)s
 
-You made a reservation of an article in our shop.
-The article became available and we could accept your ordering.
+Your reserved item is now available and our order is being processed.
 
 Ordernumber: %(ordernumber)s
 Booked item: %(booking_reserved_to_ordered_title)s
@@ -222,13 +221,12 @@ Details zur Bestellung: %(portal_url)s/@@showorder?ordernumber=%(ordernumber)s
 """
 
 
-BOOKING_RESERVED_TO_ORDERED_SUBJECT_DE = u"Reservierung %s ist nun bestellt."
+BOOKING_RESERVED_TO_ORDERED_SUBJECT_DE = u"Reservierung %s ist nun verfügbar."
 
 BOOKING_RESERVED_TO_ORDERED_BODY_DE = u"""
 Datum: %(date)s
 
-Sie haben eine Reservierung in unserem Shop vorgenommen.
-Der Artikel ist verfügbar geworden und wir konnten ihre Bestellung akzeptieren.
+Ihr reservierter Artikel ist verfügbar geworden und Ihre Bestellung wird nun bearbeitet.
 
 Bestellnummer: %(ordernumber)s
 Bestellter Artikel: %(booking_reserved_to_ordered_title)s
