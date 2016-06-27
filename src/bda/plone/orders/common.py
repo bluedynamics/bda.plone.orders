@@ -413,6 +413,7 @@ class OrderCheckoutAdapter(CheckoutAdapter):
             raise CheckoutError(msg)
         item_stock = get_item_stock(buyable)
         if item_stock.available is not None:
+            # TODO: ATTENTION: here might get removed more than available..?
             item_stock.available -= float(count)
         available = item_stock.available
         state = ifaces.STATE_NEW if available is None or available >= 0.0\
@@ -584,6 +585,7 @@ class OrderState(object):
         stock = get_item_stock(obj)
         # if stock.available is None, no stock information used
         if stock.available is not None:
+            # TODO: ATTENTION: here might get removed more than available..?
             stock.available -= float(booking.attrs['buyable_count'])
 
 
