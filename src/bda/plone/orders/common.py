@@ -413,6 +413,7 @@ class OrderCheckoutAdapter(CheckoutAdapter):
             raise CheckoutError(msg)
         item_stock = get_item_stock(buyable)
         if item_stock.available is not None:
+            # TODO: ATTENTION: here might get removed more than available..?
             item_stock.available -= float(count)
         available = item_stock.available
         state = ifaces.STATE_NEW if available is None or available >= 0.0\
@@ -455,6 +456,17 @@ class OrderCheckoutAdapter(CheckoutAdapter):
         return booking
 
 
+def is_billable_booking(booking):
+    """Return True, if booking is billable and should be included in order
+    summary calculations.
+    To be used in Pythons filter function::
+        filter(is_billable_booking, bookings)
+    """
+    return booking.attrs['state'] not in (
+        ifaces.STATE_RESERVED, ifaces.STATE_CANCELLED
+    )
+
+
 def _calculate_order_attr_from_bookings(bookings, attr, mixed_value):
     ret = None
     for booking in bookings:
@@ -477,7 +489,7 @@ def calculate_order_state(bookings):
 
 def calculate_order_salaried(bookings):
     return _calculate_order_attr_from_bookings(
-        bookings,
+        filter(is_billable_booking, bookings),
         'salaried',
         ifaces.SALARIED_MIXED
     )
@@ -521,13 +533,39 @@ class OrderState(object):
             'Abstract OrderState does not implement salaried.setter')
 
     def update_item_stock(self, booking, old_state, new_state):
+        """Change stock according to transition. See table in transitions.py
+        """
         if old_state == new_state:
             return
         # XXX: fix stock item available??
-        if new_state == ifaces.STATE_NEW:
-            self.decrease_stock(booking)
-        if new_state == ifaces.STATE_CANCELLED:
-            self.increase_stock(booking)
+        if old_state == ifaces.STATE_NEW:
+            if new_state == ifaces.STATE_CANCELLED:
+                self.increase_stock(booking)
+            else:
+                # do nothing
+                pass
+        elif old_state == ifaces.STATE_RESERVED:
+            if new_state in (ifaces.STATE_PROCESSING, ifaces.STATE_FINISHED):
+                self.decrease_stock(booking)
+            else:
+                # do nothing
+                pass
+        elif old_state == ifaces.STATE_PROCESSING:
+            if new_state == ifaces.STATE_CANCELLED:
+                self.increase_stock(booking)
+            else:
+                # do nothing
+                pass
+        elif old_state == ifaces.STATE_FINISHED:
+            if new_state == ifaces.STATE_NEW:
+                # do nothing
+                pass
+        elif old_state == ifaces.STATE_CANCELLED:
+            if new_state == ifaces.STATE_NEW:
+                self.decrease_stock(booking)
+            else:
+                # do nothing
+                pass
 
     def increase_stock(self, booking):
         obj = get_object_by_uid(self.context, booking.attrs['buyable_uid'])
@@ -547,6 +585,7 @@ class OrderState(object):
         stock = get_item_stock(obj)
         # if stock.available is None, no stock information used
         if stock.available is not None:
+            # TODO: ATTENTION: here might get removed more than available..?
             stock.available -= float(booking.attrs['buyable_count'])
 
 
@@ -662,7 +701,7 @@ class OrderData(OrderState):
     def net(self):
         # XXX: use decimal
         ret = 0.0
-        for booking in self.bookings:
+        for booking in filter(is_billable_booking, self.bookings):
             count = float(booking.attrs['buyable_count'])
             net = booking.attrs.get('net', 0.0)
             discount_net = float(booking.attrs['discount_net'])
@@ -673,7 +712,7 @@ class OrderData(OrderState):
     def vat(self):
         # XXX: use decimal
         ret = 0.0
-        for booking in self.bookings:
+        for booking in filter(is_billable_booking, self.bookings):
             count = float(booking.attrs['buyable_count'])
             net = booking.attrs.get('net', 0.0)
             discount_net = float(booking.attrs['discount_net'])

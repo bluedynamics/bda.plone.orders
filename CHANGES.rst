@@ -5,6 +5,31 @@ Changelog
 0.10.dev0
 ---------
 
+- Create safe filenames for ``@@exportorders_contextual``.
+  [thet]
+
+- Make the current context as base url for ``ajaxurl`` in OrdersTable and BookingsTable.
+  This way, the current subsites settings are respected, e.g. when rendering state transition dropdowns, which again sends mails and those need the correct sender.
+  [thet]
+
+- Reimplement ``update_item_stock`` according to transition changes, documented at the table in ``transitions.py``.
+  [thet]
+
+- If no ``uid`` was given when calling the ``@@order`` view, redirect to current context and show an error message instead of failing.
+  [thet]
+
+- In ``@@bookings`` view, group by buyable per default.
+  [thet]
+
+- In ``@@bookings`` view, add ``buyable_comment`` column and combine first name, last name and address information to save space.
+  [thet]
+
+- Don't include reserved bookings in ``OrderData`` payment information (net, vat) and don't count them when calculating the salaried state for orders.
+  [thet]
+
+- In mail templates, list reserved items seperately from normal ordered items.
+  [thet]
+
 - Fix modifications of ``buyable_comment`` in ``@@orders`` view not being saved.
   [thet]
 

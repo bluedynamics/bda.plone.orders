@@ -39,6 +39,7 @@ POSSIBLE_TEMPLATE_CALLBACKS = [
     'booking_reserved_to_ordered_title',
     'global_text',
     'item_listing',
+    'reserved_item_listing',
     'order_summary',
     'payment_text',
     'stock_threshold_reached_text',
@@ -72,11 +73,22 @@ def _process_template_cb(name, tpls, args, context, order_data):
         args[name] = tpls[cb_name](context, order_data)
 
 
-def create_mail_listing(context, order_data):
+def create_mail_listing(
+    context,
+    order_data,
+    include_booking_states=(
+        ifaces.STATE_FINISHED,
+        ifaces.STATE_NEW,
+        ifaces.STATE_PROCESSING
+    )
+):
     """Create item listing for notification mail.
     """
     lines = []
     for booking in order_data.bookings:
+        state = safe_unicode(booking.attrs.get('state'))
+        if state not in include_booking_states:
+            continue
         brain = get_catalog_brain(context, booking.attrs['buyable_uid'])
         # fetch buyable
         buyable = brain.getObject()
@@ -96,7 +108,6 @@ def create_mail_listing(context, order_data):
             net=net
         )
         # XXX: discount
-        state = safe_unicode(booking.attrs.get('state'))
         state_text = u''
         if state == ifaces.STATE_RESERVED:
             state_text = u' ({0})'.format(vocabs.state_vocab()[state])
@@ -119,6 +130,14 @@ def create_mail_listing(context, order_data):
         if text:
             lines.append(_indent(text))
     return u'\n'.join(lines)
+
+
+def create_reserved_item_listing(context, order_data):
+    return create_mail_listing(
+        context,
+        order_data,
+        include_booking_states=(ifaces.STATE_RESERVED)
+    )
 
 
 def create_order_summary(context, order_data):
@@ -403,11 +422,9 @@ def notify_order_success(event, who=None):
     order_data = OrderData(event.context, uid=get_order_uid(event))
     templates = dict()
     state = order_data.state
-    if state == ifaces.STATE_RESERVED:
+    if state in (ifaces.STATE_RESERVED, ifaces.STATE_MIXED):
         templates.update(get_reservation_templates(event.context))
-    elif state == ifaces.STATE_MIXED:
-        # XXX: mixed templates
-        templates.update(get_reservation_templates(event.context))
+        templates['reserved_item_listing_cb'] = create_reserved_item_listing
     else:
         templates.update(get_order_templates(event.context))
     templates['item_listing_cb'] = create_mail_listing

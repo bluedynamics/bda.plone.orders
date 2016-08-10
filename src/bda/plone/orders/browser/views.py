@@ -1,43 +1,45 @@
 # -*- coding: utf-8 -*-
 from AccessControl import Unauthorized
-from Products.CMFPlone.interfaces import IPloneSiteRoot
-from Products.Five import BrowserView
-from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from Products.statusmessages.interfaces import IStatusMessage
 from bda.plone.cart import ascur
 from bda.plone.cart import get_object_by_uid
 from bda.plone.checkout import message_factory as _co
 from bda.plone.checkout.vocabularies import get_pycountry_name
 from bda.plone.orders import interfaces as ifaces
 from bda.plone.orders import message_factory as _
-from bda.plone.orders import permissions
 from bda.plone.orders import vocabularies as vocabs
+from bda.plone.orders import permissions
 from bda.plone.orders.browser.dropdown import BaseDropdown
-from bda.plone.orders.common import DT_FORMAT
-from bda.plone.orders.common import OrderData
-from bda.plone.orders.common import BookingData
 from bda.plone.orders.common import booking_update_comment
+from bda.plone.orders.common import BookingData
+from bda.plone.orders.common import DT_FORMAT
 from bda.plone.orders.common import get_orders_soup
 from bda.plone.orders.common import get_vendor_by_uid
 from bda.plone.orders.common import get_vendor_uids_for
 from bda.plone.orders.common import get_vendors_for
+from bda.plone.orders.common import OrderData
 from bda.plone.orders.interfaces import IBuyable
 from bda.plone.orders.transitions import do_transition_for
 from bda.plone.orders.transitions import transitions_of_main_state
 from bda.plone.orders.transitions import transitions_of_salaried_state
 from plone.memoize import view
+from Products.CMFPlone.interfaces import IPloneSiteRoot
+from Products.Five import BrowserView
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from Products.statusmessages.interfaces import IStatusMessage
 from repoze.catalog.query import Any
 from repoze.catalog.query import Contains
 from repoze.catalog.query import Eq
-from souper.soup import LazyRecord
 from souper.soup import get_soup
+from souper.soup import LazyRecord
 from yafowil.base import factory
 from yafowil.controller import Controller
 from yafowil.utils import Tag
 from zExceptions import BadRequest
+from zExceptions import Redirect
 from zope.i18n import translate
 from zope.i18nmessageid import Message
 from zope.security import checkPermission
+
 import json
 import plone.api
 import urllib
@@ -303,8 +305,10 @@ class OrdersTableBase(BrowserView):
 
     @property
     def ajaxurl(self):
-        site = plone.api.portal.get()
-        return '%s/%s' % (site.absolute_url(), self.data_view_name)
+        return u'{0}/{1}'.format(
+            self.context.absolute_url(),
+            self.data_view_name
+        )
 
     @property
     def columns(self):
@@ -660,10 +664,17 @@ class OrderViewBase(BrowserView):
 
     @property
     def uid(self):
-        return self.request.form['uid']
+        return self.request.form.get('uid', None)
 
     @property
     def order(self):
+        if not self.uid:
+            err = _(
+                'statusmessage_err_no_order_uid_given',
+                default='Cannot show order information because no order uid was given.'  # noqa
+            )
+            IStatusMessage(self.request).addStatusMessage(err, 'error')
+            raise Redirect(self.context.absolute_url())
         return dict(self.order_data.order.attrs)
 
     @property
