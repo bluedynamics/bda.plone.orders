@@ -94,6 +94,11 @@ def create_mail_listing(
         buyable = brain.getObject()
         # fetch buyable title
         title = safe_unicode(booking.attrs['title'])
+        # fetch item_number
+        item_number = u''
+        if 'item_number' in booking.attrs:
+            item_number = u' ({0})'.format(
+                safe_unicode(booking.attrs['item_number']))
         # fetch buyable comment
         comment = safe_unicode(booking.attrs['buyable_comment'])
         if comment:
@@ -111,9 +116,10 @@ def create_mail_listing(
         state_text = u''
         if state == ifaces.STATE_RESERVED:
             state_text = u' ({0})'.format(vocabs.state_vocab()[state])
-        line = u'{count: 4f} {title} {state} {price}'.format(
+        line = u'{count: 4f} {title}{item_number} {state} {price}'.format(
             count=booking.attrs['buyable_count'],
             title=title,
+            item_number=item_number,
             state=state_text,
             price=price,
         )

@@ -5,6 +5,9 @@ Changelog
 0.10.dev0
 ---------
 
+- Added item_number to order mails
+  [agitator]
+
 - Create safe filenames for ``@@exportorders_contextual``.
   [thet]
 
