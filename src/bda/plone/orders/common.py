@@ -446,7 +446,7 @@ class OrderCheckoutAdapter(CheckoutAdapter):
             booking.attrs['shippable'] = shipping_info.shippable
         else:
             booking.attrs['shippable'] = False
-        trading_info = queryAdapter(ifaces.ITrading, buyable)
+        trading_info = queryAdapter(buyable, ifaces.ITrading)
         if trading_info:
             booking.attrs['item_number'] = trading_info.item_number
             booking.attrs['gtin'] = trading_info.gtin
