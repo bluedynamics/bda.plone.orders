@@ -6,24 +6,21 @@ from bda.plone.checkout import message_factory as _co
 from bda.plone.checkout.vocabularies import get_pycountry_name
 from bda.plone.orders import interfaces as ifaces
 from bda.plone.orders import message_factory as _
-from bda.plone.orders import permissions
 from bda.plone.orders import vocabularies as vocabs
+from bda.plone.orders import permissions
 from bda.plone.orders.browser.dropdown import BaseDropdown
-from bda.plone.orders.common import booking_cancel
 from bda.plone.orders.common import booking_update_comment
 from bda.plone.orders.common import BookingData
 from bda.plone.orders.common import DT_FORMAT
-from bda.plone.orders.common import get_order
 from bda.plone.orders.common import get_orders_soup
 from bda.plone.orders.common import get_vendor_by_uid
 from bda.plone.orders.common import get_vendor_uids_for
 from bda.plone.orders.common import get_vendors_for
 from bda.plone.orders.common import OrderData
-from bda.plone.orders.common import OrderTransitions
 from bda.plone.orders.interfaces import IBuyable
+from bda.plone.orders.transitions import do_transition_for
 from bda.plone.orders.transitions import transitions_of_main_state
 from bda.plone.orders.transitions import transitions_of_salaried_state
-from bda.plone.orders.transitions import do_transition_for_booking
 from plone.memoize import view
 from Products.CMFPlone.interfaces import IPloneSiteRoot
 from Products.Five import BrowserView
@@ -38,6 +35,7 @@ from yafowil.base import factory
 from yafowil.controller import Controller
 from yafowil.utils import Tag
 from zExceptions import BadRequest
+from zExceptions import Redirect
 from zope.i18n import translate
 from zope.i18nmessageid import Message
 from zope.security import checkPermission
@@ -68,16 +66,17 @@ class OrderDropdown(BaseDropdown):
             vendor_uids = [vendor_uid]
         else:
             vendor_uids = get_vendor_uids_for()
-        return OrderData(self.context,
-                         order=self.record,
-                         vendor_uids=vendor_uids)
+        return OrderData(
+            self.context,
+            order=self.record,
+            vendor_uids=vendor_uids
+        )
 
 
-class StateDropdown(OrderDropdown):
+class OrderStateDropdown(OrderDropdown):
     name = 'state'
     css = 'dropdown change_order_state_dropdown'
-    action = 'statetransition'
-    subtype = 'order'
+    action = 'orderstatetransition'
     vocab = vocabs.state_vocab()
     transitions = vocabs.state_transitions_vocab()
 
@@ -91,11 +90,10 @@ class StateDropdown(OrderDropdown):
         return self.create_items(transitions)
 
 
-class SalariedDropdown(OrderDropdown):
+class OrderSalariedDropdown(OrderDropdown):
     name = 'salaried'
     css = 'dropdown change_order_salaried_dropdown'
-    action = 'salariedtransition'
-    subtype = 'order'
+    action = 'ordersalariedtransition'
     vocab = vocabs.salaried_vocab()
     transitions = vocabs.salaried_transitions_vocab()
 
@@ -112,34 +110,9 @@ class SalariedDropdown(OrderDropdown):
 class Transition(BrowserView):
     dropdown = None
 
-    def _do_transition_for_order(self, uid, transition, vendor_uids):
-        order = get_order(self.context, uid)
-        transitions = OrderTransitions(self.context, vendor_uids=vendor_uids)
-        order = transitions.do_transition(uid, transition)
-        return order
-
-    def _do_transition_for_booking(self, uid, transition, vendor_uids):
-        booking_data = BookingData(
-            self.context,
-            uid=uid,
-            vendor_uids=vendor_uids
-        )
-        order_data = OrderData(
-            self.context,
-            uid=booking_data.booking.attrs['order_uid'],
-            vendor_uids=vendor_uids
-        )
-        do_transition_for_booking(
-            booking_data.booking,
-            transition,
-            order_data
-        )
-
-    def __call__(self):
-        transition = self.request['transition']
-        uid = self.request['uid']
+    @property
+    def vendor_uids(self):
         vendor_uid = self.request.form.get('vendor', '')
-        subtype = self.request.form.get('subtype', '')
         if vendor_uid:
             vendor_uids = [vendor_uid]
             vendor = get_vendor_by_uid(self.context, vendor_uid)
@@ -150,30 +123,39 @@ class Transition(BrowserView):
             vendor_uids = get_vendor_uids_for()
             if not vendor_uids:
                 raise Unauthorized
+        return vendor_uids
 
-        if subtype == 'order':
-            record = self._do_transition_for_order(
-                uid,
-                transition,
-                vendor_uids
-            )
-        elif subtype == 'booking':
-            record = self._do_transition_for_booking(
-                uid,
-                transition,
-                vendor_uids
-            )
-        else:
-            raise ValueError('subtype must be either "order" or "booking"!')
+    def __call__(self):
+        uid = self.request['uid']
+        transition = self.request['transition']
+        vendor_uids = self.vendor_uids
+        record = self.do_transition(uid, transition, vendor_uids)
         return self.dropdown(self.context, self.request, record).render()
 
 
-class StateTransition(Transition):
-    dropdown = StateDropdown
+class OrderTransition(Transition):
+
+    def do_transition(self, uid, transition, vendor_uids):
+        order_data = OrderData(
+            self.context,
+            uid=uid,
+            vendor_uids=vendor_uids
+        )
+        do_transition_for(
+            order_data,
+            transition=transition,
+            context=self.context,
+            request=self.request
+        )
+        return order_data.order
 
 
-class SalariedTransition(Transition):
-    dropdown = SalariedDropdown
+class OrderStateTransition(OrderTransition):
+    dropdown = OrderStateDropdown
+
+
+class OrderSalariedTransition(OrderTransition):
+    dropdown = OrderSalariedDropdown
 
 
 class TableData(BrowserView):
@@ -323,8 +305,10 @@ class OrdersTableBase(BrowserView):
 
     @property
     def ajaxurl(self):
-        site = plone.api.portal.get()
-        return '%s/%s' % (site.absolute_url(), self.data_view_name)
+        return u'{0}/{1}'.format(
+            self.context.absolute_url(),
+            self.data_view_name
+        )
 
     @property
     def columns(self):
@@ -370,6 +354,16 @@ def customers_form_vocab():
     return [('', _('all', default='All'))] + customers
 
 
+def states_form_vocab():
+    states = vocabs.state_vocab()
+    return [('', _('all', default='All'))] + states.items()
+
+
+def salaried_form_vocab():
+    salaried = vocabs.salaried_vocab()
+    return [('', _('all', default='All'))] + salaried.items()
+
+
 class OrdersTable(OrdersTableBase):
 
     def render_filter(self):
@@ -379,7 +373,7 @@ class OrdersTable(OrdersTableBase):
         # vendor selection, include if more than one vendor
         if len(vendors) > 2:
             vendor_selector = factory(
-                'label:select',
+                'div:label:select',
                 name='vendor',
                 value=self.request.form.get('vendor', ''),
                 props={
@@ -394,7 +388,7 @@ class OrdersTable(OrdersTableBase):
         # customers selection, include if more than one customer
         if len(customers) > 2:
             customer_selector = factory(
-                'label:select',
+                'div:label:select',
                 name='customer',
                 value=self.request.form.get('customer', ''),
                 props={
@@ -403,15 +397,42 @@ class OrdersTable(OrdersTableBase):
                                default=u'Filter for customers'),
                 }
             )
-        if not vendor_selector and not customer_selector:
-            return
+
+        states = states_form_vocab()
+        state_selector = factory(
+            'div:label:select',
+            name='state',
+            value=self.request.form.get('state', ''),
+            props={
+                'vocabulary': states,
+                'label': _('filter_for_state',
+                           default=u'Filter for states'),
+            }
+        )
+
+        salaried = salaried_form_vocab()
+        salaried_selector = factory(
+            'div:label:select',
+            name='salaried',
+            value=self.request.form.get('salaried', ''),
+            props={
+                'vocabulary': salaried,
+                'label': _('filter_for_salaried',
+                           default=u'Filter for salaried state'),
+            }
+        )
+
         # concatenate filters
-        filter = ''
+        filter_widgets = ''
         if vendor_selector:
-            filter += vendor_selector(request=self.request)
+            filter_widgets += vendor_selector(request=self.request)
         if customer_selector:
-            filter += customer_selector(request=self.request)
-        return filter
+            filter_widgets += customer_selector(request=self.request)
+
+        filter_widgets += state_selector(request=self.request)
+        filter_widgets += salaried_selector(request=self.request)
+
+        return filter_widgets
 
     def render_order_actions_head(self):
         tag = Tag(Translate(self.request))
@@ -483,24 +504,34 @@ class OrdersTable(OrdersTableBase):
             salaried = OrderData(self.context, order=record).salaried
             return translate(vocabs.salaried_vocab()[salaried],
                              context=self.request)
-        return SalariedDropdown(self.context, self.request, record).render()
+        return OrderSalariedDropdown(
+            self.context,
+            self.request,
+            record
+        ).render()
 
     def render_state(self, colname, record):
         if not self.check_modify_order(record):
             state = OrderData(self.context, order=record).state
             return translate(vocabs.state_vocab()[state],
                              context=self.request)
-        return StateDropdown(self.context, self.request, record).render()
+        return OrderStateDropdown(
+            self.context,
+            self.request,
+            record
+        ).render()
 
     @property
     def ajaxurl(self):
         params = [
             ('vendor', self.request.form.get('vendor')),
-            ('customer', self.request.form.get('customer'))
+            ('customer', self.request.form.get('customer')),
+            ('state', self.request.form.get('state')),
+            ('salaried', self.request.form.get('salaried')),
         ]
         query = urllib.urlencode(dict([it for it in params if it[1]]))
-        query = query and '?{0}'.format(query) or ''
-        return '{0:s}/{1:s}{2:s}'.format(
+        query = query and u'?{0}'.format(query) or ''
+        return u'{0:s}/{1:s}{2:s}'.format(
             self.context.absolute_url(),
             self.data_view_name,
             query
@@ -565,10 +596,22 @@ class OrdersData(OrdersTable, TableData):
             query = Any('vendor_uids', [vendor_uid])
         else:
             query = Any('vendor_uids', vendor_uids)
+
         # filter by customer if given
         customer = self.request.form.get('customer')
         if customer:
             query = query & Eq('creator', customer)
+
+        # Filter by state if given
+        state = self.request.form.get('state')
+        if state:
+            query = query & Eq('state', state)
+
+        # Filter by salaried if given
+        salaried = self.request.form.get('salaried')
+        if salaried:
+            query = query & Eq('salaried', salaried)
+
         # filter by search term if given
         term = self.request.form['sSearch'].decode('utf-8')
         if term:
@@ -621,10 +664,17 @@ class OrderViewBase(BrowserView):
 
     @property
     def uid(self):
-        return self.request.form['uid']
+        return self.request.form.get('uid', None)
 
     @property
     def order(self):
+        if not self.uid:
+            err = _(
+                'statusmessage_err_no_order_uid_given',
+                default='Cannot show order information because no order uid was given.'  # noqa
+            )
+            IStatusMessage(self.request).addStatusMessage(err, 'error')
+            raise Redirect(self.context.absolute_url())
         return dict(self.order_data.order.attrs)
 
     @property
@@ -949,7 +999,15 @@ class BookingCancel(BrowserView):
         if not booking_uid:
             raise BadRequest('value not given')
         try:
-            booking_cancel(self.context, self.request, uuid.UUID(booking_uid))
+            booking_data = BookingData(self.context, uid=uuid.UUID(booking_uid))  # noqa
+            if booking_data.booking is None:
+                raise ValueError('invalid value (no booking found)')
+            do_transition_for(
+                booking_data,
+                transition=ifaces.STATE_TRANSITION_CANCEL,
+                context=self.context,
+                request=self.request
+            )
         except ValueError:
             raise BadRequest('something is wrong with the value')
 

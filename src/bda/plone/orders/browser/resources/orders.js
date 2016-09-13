@@ -79,6 +79,10 @@
                               .bind('change', orders.filter_orders);
             $('#input-customer').unbind('change')
                                 .bind('change', orders.filter_orders);
+            $('#input-state').unbind('change')
+                             .bind('change', orders.filter_orders);
+            $('#input-salaried').unbind('change')
+                                .bind('change', orders.filter_orders);
         },
 
         cancel_confirm_binder: function(context) {
@@ -147,23 +151,29 @@
         filter_orders: function(event) {
             event.preventDefault();
             var selection = $(this);
-            var wrapper = selection.parent();
-            var vendor, customer;
-            if (selection.attr('name') === 'vendor') {
-                vendor = selection.val();
-                customer = $('#input-customer', wrapper).val();
-            } else {
-                vendor = $('#input-vendor', wrapper).val();
-                customer = selection.val();
-            }
-            var ajax_table = wrapper.parents('.ajaxtable');
+            var wrapper = selection.closest('.filter');
+            var vendor = $('#input-vendor', wrapper).val();
+            var customer = $('#input-customer', wrapper).val();
+            var state = $('#input-state', wrapper).val();
+            var salaried = $('#input-salaried', wrapper).val();
+
+            var ajax_table = wrapper.closest('.ajaxtable');
             var action = ajax_table.data('tablename');
             var target = bdajax.parsetarget(wrapper.attr('ajax:target'));
             target.params.vendor = vendor;
             target.params.customer = customer;
+            target.params.state = state;
+            target.params.salaried = salaried;
+
+            var selector = '#orders_wrapper';
+            if (!$('#orders_wrapper').length) {
+                selector = '#bookings_wrapper';
+                target.params.group_by = $('#input-group_by').val();
+            }
+
             bdajax.action({
                 name: action,
-                selector: '#orders_wrapper',
+                selector: selector,
                 mode: 'inner',
                 url: target.url,
                 params: target.params
@@ -252,7 +262,11 @@
                     "url": url,
                     "data": function (d) {
                         return $.extend({}, d, {
-                            "group_by": $('#input-group').val(),
+                            "vendor": $('#input-vendor').val(),
+                            "customer": $('#input-customer').val(),
+                            "state": $('#input-state').val(),
+                            "salaried": $('#input-salaried').val(),
+                            "group_by": $('#input-group_by').val(),
                             "from_date": $('#input-from_date').val(),
                             "to_date": $('#input-to_date').val()
                         });
@@ -270,7 +284,7 @@
                 "columnDefs": [
                     {
                         'visible': false,
-                        'targets': [0, 1, 13, 14]
+                        'targets': [0, 1, 11, 12]  // hide Email, buyable_uid, bookings_quantity, bookings_total_sum
                     }
                 ],
 
@@ -281,9 +295,9 @@
 
                 "initComplete": function () {
                     $(".group_filter").detach().appendTo('.customfilter');
-                    $(".date_from_filter").detach().appendTo('.customfilter');
-                    $(".date_to_filter").detach().appendTo('.customfilter');
-                    $('#input-group').change(function () {
+                    //$(".date_from_filter").detach().appendTo('.customfilter');
+                    //$(".date_to_filter").detach().appendTo('.customfilter');
+                    $('#input-group_by').change(function () {
                         oTable.search($('#bdaplonebookings_filter input').val()).draw();
                     });
                     $('#input-from_date').on('keyup click', function () {
@@ -299,28 +313,28 @@
                     var rows = api.rows({page: 'current'}).nodes();
                     var last = null;
                     // only show email info if grouped by email
-                    if ($('#input-group').val() === 'email') {
+                    if ($('#input-group_by').val() === 'email') {
                         api.column(0, {page: 'current'}).data().each(function (group, i) {
                             if (last !== group) {
                                 $(rows).eq(i).before(
-                                        '<tr class="group_email"><td colspan="13">' + group + '</td></tr>'
+                                        '<tr class="group_email"><td colspan="10">' + group + '</td></tr>'
                                 );
                                 last = group;
                             }
                         });
-                        api.column(4).visible(true);
+                        api.column(4).visible(true);  // column 4 = item title
                     }
                     // only show email info if grouped by buyable
-                    if ($('#input-group').val() === 'buyable') {
+                    if ($('#input-group_by').val() === 'buyable') {
                         api.column(1, {page: 'current'}).data().each(function (group, i) {
                             if (last !== group) {
                                 $(rows).eq(i).before(
-                                        '<tr class="group_buyable"><td colspan="13">' + group + '</td></tr>'
+                                        '<tr class="group_buyable"><td colspan="10">' + group + '</td></tr>'
                                 );
                                 last = group;
                             }
                         });
-                        api.column(4).visible(false);
+                        api.column(4).visible(false);  // column 4 = item title
                     }
                     $(this).bdajax();
                 }

@@ -2,6 +2,92 @@
 Changelog
 =========
 
+0.10.dev0
+---------
+
+- Added item_number to order mails
+  [agitator]
+
+- Create safe filenames for ``@@exportorders_contextual``.
+  [thet]
+
+- Make the current context as base url for ``ajaxurl`` in OrdersTable and BookingsTable.
+  This way, the current subsites settings are respected, e.g. when rendering state transition dropdowns, which again sends mails and those need the correct sender.
+  [thet]
+
+- Reimplement ``update_item_stock`` according to transition changes, documented at the table in ``transitions.py``.
+  [thet]
+
+- If no ``uid`` was given when calling the ``@@order`` view, redirect to current context and show an error message instead of failing.
+  [thet]
+
+- In ``@@bookings`` view, group by buyable per default.
+  [thet]
+
+- In ``@@bookings`` view, add ``buyable_comment`` column and combine first name, last name and address information to save space.
+  [thet]
+
+- Don't include reserved bookings in ``OrderData`` payment information (net, vat) and don't count them when calculating the salaried state for orders.
+  [thet]
+
+- In mail templates, list reserved items seperately from normal ordered items.
+  [thet]
+
+- Fix modifications of ``buyable_comment`` in ``@@orders`` view not being saved.
+  [thet]
+
+- Translate country code in mail notifications.
+  [thet]
+
+- On mail notifications, don't try to include delivery_address if no delivery_address template is available.
+  In some contexts, there is no need for a delivery_address, like booking canceling.
+  [thet]
+
+- Unicode almost everywhere.
+  Fixes some ``Unicode Decode Error``.
+  [thet]
+
+- Add transition actions when state is changed from "Reserved".
+  Sends out a mail with a notification for the customer and adminitrator, that the item became available and is ordered.
+  [thet]
+
+- In ``do_transition_for`` on orders, set the state on each booking instead directly on the order.
+  This way each booking setter is called, e.g. for changing stock items, setting overall order state and so on.
+  [thet]
+
+- Send out mails when cancelling whole orders or individual bookings from the ``@@orders`` and ``@@bookings`` views, not only from the order detail view.
+  This is done by moving the necessary logic into ``bda.plone.orders.transitions.do_transition_for``.
+  [thet]
+
+- Add filters for Vendor, Customer, State and Salaried state to the @@bookings view.
+  [pcdummy]
+
+- Overhaul order and bookings state and salaried transitions.
+  [rnix]
+
+- Add filter for order state and salaried to the @@orders view.
+  [pcdummy]
+
+- Introduce ``bda.plone.orders.mailnotify.BOOKING_CANCELLED_TITLE_ATTRIBUTE``
+  which is used to lookup title attribute for booking cancellation
+  notification.
+  [rnix]
+
+- Fix sorting on email address in orders table.
+  [rnix]
+
+- Re-add calculated values for state and salaried on order booking. Needed
+  for orders view to ensure sorting works.
+  [rnix]
+
+- Show user filter as "Lastname, Firstname (Username) - Email" instead of
+  "Username (Firstname, Lastname)", sort the users on Lastname.
+  [pcdummy]
+
+- Plone 5 update
+  [agitator]
+
+
 0.9.dev
 -------
 
@@ -43,7 +129,7 @@ Changelog
 - feature: delete single booking from order
   [jensens]
 
-- Move export related code in own file to reduce length and increase 
+- Move export related code in own file to reduce length and increase
   readability
   [jensens]
 
@@ -74,6 +160,7 @@ Changelog
 
 - added translated salutation to available mail template attributes
   [agitator]
+
 
 0.8
 ---

@@ -17,20 +17,9 @@
 <metal:main fill-slot="main">
   <tal:main-macro metal:define-macro="main">
 
-    <h1 class="documentFirstHeading"
-        tal:content="view/heading">Order/Reservation Done</h1>
-
-    <p tal:condition="view/id">
-      <span i18n:translate="your_order_order_id">Your Order number</span>:
-      <span tal:content="view/id">345-424-2323</span>
-    </p>
-
-    <p tal:content="view/text">Text goes here</p>
-
-    <a href=""
-       class="payment_button standalone"
-       tal:attributes="href context/absolute_url"
-       i18n:translate="order_done_continue">continue</a>
+    <div id="bookings_wrapper">
+      <tal:table replace="structure view/bookings_table" />
+    </div>
 
   </tal:main-macro>
 </metal:main>

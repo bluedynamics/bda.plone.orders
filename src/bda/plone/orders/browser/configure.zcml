@@ -1,21 +1,9 @@
 <configure xmlns="http://namespaces.zope.org/zope"
-           xmlns:browser="http://namespaces.zope.org/browser">
+           xmlns:plone="http://namespaces.plone.org/plone"
+           xmlns:browser="http://namespaces.zope.org/browser"
+           xmlns:zcml="http://namespaces.zope.org/zcml">
 
-  <!-- resources -->
-  <browser:resource
-    name="bda.plone.orders.js"
-    file="resources/orders.js"
-    layer="..interfaces.IOrdersExtensionLayer"/>
-
-  <browser:resource
-    name="bda.plone.orders.css"
-    file="resources/orders.css"
-    layer="..interfaces.IOrdersExtensionLayer"/>
-
-  <browser:resourceDirectory
-    name="bda.plone.orders"
-    directory="resources"
-    layer="..interfaces.IOrdersExtensionLayer"/>
+  <!-- ORDERS -->
 
   <!-- orders view -->
   <browser:page
@@ -24,7 +12,7 @@
     template="orders_view.pt"
     class=".views.OrdersView"
     permission="bda.plone.orders.ViewOrders"
-    layer="..interfaces.IOrdersExtensionLayer"/>
+    layer="..interfaces.IOrdersExtensionLayer" />
 
   <browser:page
     for="zope.component.interfaces.ISite"
@@ -32,7 +20,7 @@
     template="orders_view.pt"
     class=".views.MyOrdersView"
     permission="bda.plone.orders.ViewOwnOrders"
-    layer="..interfaces.IOrdersExtensionLayer"/>
+    layer="..interfaces.IOrdersExtensionLayer" />
 
   <!-- orders table -->
   <browser:page
@@ -41,7 +29,7 @@
     template="orders.pt"
     class=".views.OrdersTable"
     permission="bda.plone.orders.ViewOrders"
-    layer="..interfaces.IOrdersExtensionLayer"/>
+    layer="..interfaces.IOrdersExtensionLayer" />
 
   <browser:page
     for="zope.component.interfaces.ISite"
@@ -49,25 +37,40 @@
     template="orders.pt"
     class=".views.MyOrdersTable"
     permission="bda.plone.orders.ViewOwnOrders"
-    layer="..interfaces.IOrdersExtensionLayer"/>
+    layer="..interfaces.IOrdersExtensionLayer" />
 
-   <!-- bookings view -->
+
+  <!-- BOOKINGS -->
+
+  <!-- bookings view -->
   <browser:page
     for="*"
     name="bookings"
-    template="bookings.pt"
-    class=".bookings.BookingsTable"
+    template="bookings_view.pt"
+    class=".bookings.BookingsView"
     permission="bda.plone.orders.ViewOrders"
-    layer="..interfaces.IOrdersExtensionLayer"/>
+    layer="..interfaces.IOrdersExtensionLayer" />
 
- <!-- bookings json -->
+  <!-- bookings json -->
   <browser:page
     for="*"
     name="bookingsdata"
     class=".bookings.BookingsTable"
     attribute="jsondata"
     permission="bda.plone.orders.ViewOrders"
-    layer="..interfaces.IOrdersExtensionLayer"/>
+    layer="..interfaces.IOrdersExtensionLayer" />
+
+  <!-- bookings table -->
+  <browser:page
+    for="*"
+    name="bookingstable"
+    template="bookings.pt"
+    class=".bookings.BookingsTable"
+    permission="bda.plone.orders.ViewOrders"
+    layer="..interfaces.IOrdersExtensionLayer" />
+
+
+  <!-- OTHER -->
 
   <!-- contacts view -->
   <browser:page
@@ -85,7 +88,7 @@
     class=".contacts.ContactsTable"
     attribute="jsondata"
     permission="bda.plone.orders.ViewOrders"
-    layer="..interfaces.IOrdersExtensionLayer"/>
+    layer="..interfaces.IOrdersExtensionLayer" />
 
   <!-- orders data -->
   <browser:page
@@ -93,14 +96,14 @@
     name="ordersdata"
     class=".views.OrdersData"
     permission="bda.plone.orders.ViewOrders"
-    layer="..interfaces.IOrdersExtensionLayer"/>
+    layer="..interfaces.IOrdersExtensionLayer" />
 
   <browser:page
     for="zope.component.interfaces.ISite"
     name="myordersdata"
     class=".views.MyOrdersData"
     permission="bda.plone.orders.ViewOwnOrders"
-    layer="..interfaces.IOrdersExtensionLayer"/>
+    layer="..interfaces.IOrdersExtensionLayer" />
 
   <!-- customer notification -->
   <browser:page
@@ -108,14 +111,14 @@
     name="notify_customers"
     class=".notify_customers.NotifyCustomers"
     permission="bda.plone.orders.ViewOrders"
-    layer="..interfaces.IOrdersExtensionLayer"/>
+    layer="..interfaces.IOrdersExtensionLayer" />
 
   <browser:page
     for="zope.component.interfaces.ISite"
     name="load_notification_template"
     class=".notify_customers.LoadTemplate"
     permission="bda.plone.orders.ViewOrders"
-    layer="..interfaces.IOrdersExtensionLayer"/>
+    layer="..interfaces.IOrdersExtensionLayer" />
 
   <!-- order view -->
   <browser:page
@@ -124,7 +127,7 @@
     template="order.pt"
     class=".views.OrderView"
     permission="bda.plone.orders.ViewOrders"
-    layer="..interfaces.IOrdersExtensionLayer"/>
+    layer="..interfaces.IOrdersExtensionLayer" />
 
   <browser:page
     for="zope.component.interfaces.ISite"
@@ -132,58 +135,88 @@
     template="order.pt"
     class=".views.MyOrderView"
     permission="bda.plone.orders.ViewOwnOrders"
-    layer="..interfaces.IOrdersExtensionLayer"/>
+    layer="..interfaces.IOrdersExtensionLayer" />
 
   <browser:page
     for="*"
     name="booking_cancel"
     class=".views.BookingCancel"
     permission="bda.plone.orders.ModifyOrders"
-    layer="..interfaces.IOrdersExtensionLayer"/>
+    layer="..interfaces.IOrdersExtensionLayer" />
 
   <browser:page
     for="*"
     name="booking_update_comment"
     class=".views.BookingUpdateComment"
     permission="bda.plone.orders.ModifyOrders"
-    layer="..interfaces.IOrdersExtensionLayer"/>
+    layer="..interfaces.IOrdersExtensionLayer" />
 
   <browser:page
     for="zope.component.interfaces.ISite"
     name="showorder"
     class=".views.DirectOrderView"
     permission="bda.plone.orders.ViewOrderDirectly"
-    layer="..interfaces.IOrdersExtensionLayer"/>
+    layer="..interfaces.IOrdersExtensionLayer" />
 
   <!-- order transitions for plone root -->
   <browser:page
     for="zope.component.interfaces.ISite"
-    name="statetransition"
-    class=".views.StateTransition"
+    name="orderstatetransition"
+    class=".views.OrderStateTransition"
     permission="bda.plone.orders.ModifyOrders"
-    layer="..interfaces.IOrdersExtensionLayer"/>
+    layer="..interfaces.IOrdersExtensionLayer" />
 
   <browser:page
     for="zope.component.interfaces.ISite"
-    name="salariedtransition"
-    class=".views.SalariedTransition"
+    name="ordersalariedtransition"
+    class=".views.OrderSalariedTransition"
     permission="bda.plone.orders.ModifyOrders"
-    layer="..interfaces.IOrdersExtensionLayer"/>
+    layer="..interfaces.IOrdersExtensionLayer" />
 
   <!-- order transitions for vendor -->
   <browser:page
     for="bda.plone.orders.interfaces.IVendor"
-    name="statetransition"
-    class=".views.StateTransition"
+    name="orderstatetransition"
+    class=".views.OrderStateTransition"
     permission="bda.plone.orders.ModifyOrders"
-    layer="..interfaces.IOrdersExtensionLayer"/>
+    layer="..interfaces.IOrdersExtensionLayer" />
 
   <browser:page
     for="bda.plone.orders.interfaces.IVendor"
-    name="salariedtransition"
-    class=".views.SalariedTransition"
+    name="ordersalariedtransition"
+    class=".views.OrderSalariedTransition"
     permission="bda.plone.orders.ModifyOrders"
-    layer="..interfaces.IOrdersExtensionLayer"/>
+    layer="..interfaces.IOrdersExtensionLayer" />
+
+  <!-- booking transitions for plone root -->
+  <browser:page
+    for="zope.component.interfaces.ISite"
+    name="bookingstatetransition"
+    class=".bookings.BookingStateTransition"
+    permission="bda.plone.orders.ModifyOrders"
+    layer="..interfaces.IOrdersExtensionLayer" />
+
+  <browser:page
+    for="zope.component.interfaces.ISite"
+    name="bookingsalariedtransition"
+    class=".bookings.BookingSalariedTransition"
+    permission="bda.plone.orders.ModifyOrders"
+    layer="..interfaces.IOrdersExtensionLayer" />
+
+  <!-- booking transitions for vendor -->
+  <browser:page
+    for="bda.plone.orders.interfaces.IVendor"
+    name="bookingstatetransition"
+    class=".bookings.BookingStateTransition"
+    permission="bda.plone.orders.ModifyOrders"
+    layer="..interfaces.IOrdersExtensionLayer" />
+
+  <browser:page
+    for="bda.plone.orders.interfaces.IVendor"
+    name="bookingsalariedtransition"
+    class=".bookings.BookingSalariedTransition"
+    permission="bda.plone.orders.ModifyOrders"
+    layer="..interfaces.IOrdersExtensionLayer" />
 
   <!-- export orders -->
   <browser:page
@@ -191,14 +224,14 @@
     name="exportorders"
     class=".export.ExportOrdersForm"
     permission="bda.plone.orders.ExportOrders"
-    layer="..interfaces.IOrdersExtensionLayer"/>
+    layer="..interfaces.IOrdersExtensionLayer" />
 
   <browser:page
     for="*"
     name="exportorders_contextual"
     class=".export.ExportOrdersContextual"
     permission="bda.plone.orders.ExportOrders"
-    layer="..interfaces.IOrdersExtensionLayer"/>
+    layer="..interfaces.IOrdersExtensionLayer" />
 
   <!-- order done view -->
   <browser:page
@@ -207,7 +240,7 @@
     template="order_done.pt"
     class=".views.OrderDone"
     permission="zope2.View"
-    layer="..interfaces.IOrdersExtensionLayer"/>
+    layer="..interfaces.IOrdersExtensionLayer" />
 
   <!-- global mail templates -->
   <browser:page
@@ -215,7 +248,7 @@
     name="mailtemplatesform"
     class=".mailtemplates.MailtemplatesForm"
     permission="bda.plone.orders.ManageTemplates"
-    layer="..interfaces.IOrdersExtensionLayer"/>
+    layer="..interfaces.IOrdersExtensionLayer" />
 
   <browser:page
     for="zope.component.interfaces.ISite"
@@ -223,7 +256,7 @@
     class=".mailtemplates.MailtemplatesView"
     template="mailtemplates_view.pt"
     permission="bda.plone.orders.ManageTemplates"
-    layer="..interfaces.IOrdersExtensionLayer"/>
+    layer="..interfaces.IOrdersExtensionLayer" />
 
   <!-- vendor mail templates -->
   <browser:page
@@ -231,7 +264,7 @@
     name="mailtemplatesform"
     class=".mailtemplates.MailtemplatesForm"
     permission="bda.plone.orders.ManageTemplates"
-    layer="..interfaces.IOrdersExtensionLayer"/>
+    layer="..interfaces.IOrdersExtensionLayer" />
 
   <browser:page
     for="..interfaces.IVendor"
@@ -239,6 +272,55 @@
     class=".mailtemplates.MailtemplatesView"
     template="mailtemplates_view.pt"
     permission="bda.plone.orders.ManageTemplates"
-    layer="..interfaces.IOrdersExtensionLayer"/>
+    layer="..interfaces.IOrdersExtensionLayer" />
+
+  <!-- generic resources -->
+  <browser:resource
+    name="qrcode.js"
+    file="resources/qrcode.js"
+    layer="..interfaces.IOrdersExtensionLayer" />
+
+  <browser:resource
+    name="bda.plone.orders.js"
+    file="resources/orders.js"
+    layer="..interfaces.IOrdersExtensionLayer" />
+
+  <!-- XXX: directory registration later needed for plone 4 icons only -->
+  <browser:resourceDirectory
+    name="bda.plone.orders"
+    directory="resources"
+    layer="..interfaces.IOrdersExtensionLayer" />
+
+  <!-- plone 4 resources -->
+  <browser:resource
+    zcml:condition="not-have plone-5"
+    name="bda.plone.orders.css"
+    file="resources/orders_p4.css"
+    layer="..interfaces.IOrdersExtensionLayer" />
+
+  <browser:resource
+    zcml:condition="not-have plone-5"
+    name="bda.plone.orders_print.css"
+    file="resources/orders_print_p4.css"
+    layer="..interfaces.IOrdersExtensionLayer" />
+
+  <!-- plone 5 resources -->
+  <browser:resource
+    zcml:condition="have plone-5"
+    name="bda.plone.orders.less"
+    file="resources/orders_p5.less"
+    layer="..interfaces.IOrdersExtensionLayer" />
+
+  <browser:resource
+    zcml:condition="have plone-5"
+    name="bda.plone.orders.css"
+    file="resources/orders_p5.css"
+    layer="..interfaces.IOrdersExtensionLayer" />
+
+  <browser:resource
+    zcml:condition="have plone-5"
+    name="bda.plone.orders.css.map"
+    file="resources/orders_p5.css.map"
+    layer="..interfaces.IOrdersExtensionLayer" />
 
 </configure>

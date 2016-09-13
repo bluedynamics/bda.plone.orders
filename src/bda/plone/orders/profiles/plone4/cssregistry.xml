@@ -14,7 +14,7 @@
 
   <stylesheet
       title=""
-      id="++resource++bda.plone.orders/orders_print.css"
+      id="++resource++bda.plone.orders_print.css"
       media="print"
       rel="stylesheet"
       rendering="link"

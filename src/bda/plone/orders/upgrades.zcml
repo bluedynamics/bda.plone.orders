@@ -8,7 +8,7 @@
     title="Add vendor_uid to booking records"
     description=""
     profile="bda.plone.orders:default"
-    handler=".upgrades.fix_bookings_vendor_uid"/>
+    handler=".upgrades.fix_bookings_vendor_uid" />
 
   <genericsetup:upgradeStep
     source="2"
@@ -16,7 +16,7 @@
     title="Add vendor_uids to order records"
     description=""
     profile="bda.plone.orders:default"
-    handler=".upgrades.fix_orders_vendor_uids"/>
+    handler=".upgrades.fix_orders_vendor_uids" />
 
   <genericsetup:upgradeStep
     source="3"
@@ -24,7 +24,7 @@
     title="Move state, salaried and tid from orders to bookings"
     description=""
     profile="bda.plone.orders:default"
-    handler=".upgrades.fix_bookings_state_salaried_tid"/>
+    handler=".upgrades.fix_bookings_state_salaried_tid" />
 
   <genericsetup:upgradeStep
     source="4"
@@ -32,7 +32,7 @@
     title="Add discount related attributes to orders and bookings"
     description=""
     profile="bda.plone.orders:default"
-    handler=".upgrades.fix_discount_attrs"/>
+    handler=".upgrades.fix_discount_attrs" />
 
   <genericsetup:upgradeStep
     source="5"
@@ -40,7 +40,7 @@
     title="Add shipping related attributes to orders"
     description=""
     profile="bda.plone.orders:default"
-    handler=".upgrades.fix_shipping_attrs"/>
+    handler=".upgrades.fix_shipping_attrs" />
 
   <genericsetup:upgradeStep
     source="5"
@@ -48,7 +48,7 @@
     title="Add payment related attributes to orders"
     description=""
     profile="bda.plone.orders:default"
-    handler=".upgrades.fix_payment_attrs"/>
+    handler=".upgrades.fix_payment_attrs" />
 
   <genericsetup:upgradeStep
     source="5"
@@ -56,7 +56,7 @@
     title="Add shippable flag to bookings"
     description=""
     profile="bda.plone.orders:default"
-    handler=".upgrades.fix_bookings_shippable"/>
+    handler=".upgrades.fix_bookings_shippable" />
 
   <genericsetup:upgradeStep
     source="5"
@@ -64,7 +64,7 @@
     title="Add item_number and gtin to bookings"
     description=""
     profile="bda.plone.orders:default"
-    handler=".upgrades.fix_bookings_trading"/>
+    handler=".upgrades.fix_bookings_trading" />
 
   <genericsetup:upgradeStep
     source="6"
@@ -72,7 +72,7 @@
     title="Reset all soup records attributes storage"
     description=""
     profile="bda.plone.orders:default"
-    handler=".upgrades.reset_records"/>
+    handler=".upgrades.reset_records" />
 
   <genericsetup:upgradeStep
     source="7"
@@ -80,7 +80,7 @@
     title="Add email to bookings"
     description=""
     profile="bda.plone.orders:default"
-    handler=".upgrades.fix_bookings_email"/>
+    handler=".upgrades.fix_bookings_email" />
 
   <genericsetup:upgradeStep
     source="8"
@@ -88,5 +88,14 @@
     title="Add email to contacts"
     description=""
     profile="bda.plone.orders:default"
-    handler=".upgrades.fix_contacts_email"/>
+    handler=".upgrades.fix_contacts_email" />
+
+  <genericsetup:upgradeStep
+    source="9"
+    destination="10"
+    title="Re-add state and salaried on order"
+    description=""
+    profile="bda.plone.orders:default"
+    handler=".upgrades.fix_order_state_and_salaried" />
+
 </configure>

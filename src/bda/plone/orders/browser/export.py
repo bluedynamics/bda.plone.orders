@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
+from Acquisition import aq_parent
 from AccessControl import Unauthorized
 from Products.CMFPlone.utils import getToolByName
+from Products.CMFPlone.utils import safe_unicode
 from Products.Five import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from StringIO import StringIO
@@ -9,6 +11,7 @@ from bda.plone.cart import get_object_by_uid
 from bda.plone.orders import message_factory as _
 from bda.plone.orders import permissions
 from bda.plone.orders import safe_encode
+from bda.plone.orders import safe_filename
 from bda.plone.orders.browser.views import customers_form_vocab
 from bda.plone.orders.browser.views import vendors_form_vocab
 from bda.plone.orders.common import DT_FORMAT
@@ -261,13 +264,21 @@ class ExportOrdersContextual(BrowserView):
         if not user.checkPermission(permissions.ModifyOrders, self.context):
             raise Unauthorized
 
-        filename = '{}_{}.csv'.format(
-            safe_encode(self.context.title),
-            datetime.datetime.now().strftime('%Y-%m-%d_%H-%M'))
+        # Special case for constructed objects like IEventOccurrence from
+        # plone.app.event
+        title = self.context.title or aq_parent(self.context).title
+
+        filename = u'{0}_{1}.csv'.format(
+            safe_unicode(title),
+            safe_unicode(datetime.datetime.now().strftime('%Y-%m-%d_%H-%M'))
+        )
+        filename = safe_filename(filename)
         resp = self.request.response
         resp.setHeader('content-type', 'text/csv; charset=utf-8')
         resp.setHeader(
-            'content-disposition', 'attachment;filename={}'.format(filename))
+            'content-disposition',
+            'attachment;filename={}'.format(filename)
+        )
         return self.get_csv()
 
     def export_val(self, record, attr_name):
@@ -307,7 +318,7 @@ class ExportOrdersContextual(BrowserView):
 
         all_orders = {}
         for booking in bookings_soup.query(query_b):
-            booking_attrs = list()
+            booking_attrs = []
             # booking export attrs
             for attr_name in BOOKING_EXPORT_ATTRS:
                 val = self.export_val(booking, attr_name)
@@ -326,7 +337,7 @@ class ExportOrdersContextual(BrowserView):
                 order_data = OrderData(context,
                                        order=order,
                                        vendor_uids=vendor_uids)
-                order_attrs = list()
+                order_attrs = []
                 # order export attrs
                 for attr_name in ORDER_EXPORT_ATTRS:
                     val = self.export_val(order, attr_name)

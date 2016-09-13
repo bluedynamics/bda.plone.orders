@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from Acquisition import aq_inner
 from Acquisition import aq_parent
+from Products.CMFPlone.interfaces import IPloneSiteRoot
 from bda.plone.cart import extractitems
 from bda.plone.cart import get_catalog_brain
 from bda.plone.cart import get_data_provider
@@ -18,17 +19,14 @@ from bda.plone.orders import permissions
 from bda.plone.orders import safe_encode
 from bda.plone.orders.interfaces import IBuyable
 from bda.plone.orders.interfaces import IVendor
-from bda.plone.orders.transitions import do_transition_for_booking
 from bda.plone.payment import Payments
 from bda.plone.payment.interfaces import IPaymentData
 from bda.plone.shipping import Shippings
 from bda.plone.shipping.interfaces import IShippingItem
-from bda.plone.shop.utils import get_shop_article_settings
 from decimal import Decimal
 from node.ext.zodb import OOBTNode
 from node.utils import instance_property
 from plone.uuid.interfaces import IUUID
-from Products.CMFPlone.interfaces import IPloneSiteRoot
 from repoze.catalog.catalog import Catalog
 from repoze.catalog.indexes.field import CatalogFieldIndex
 from repoze.catalog.indexes.keyword import CatalogKeywordIndex
@@ -36,14 +34,13 @@ from repoze.catalog.indexes.text import CatalogTextIndex
 from repoze.catalog.query import Any
 from repoze.catalog.query import Eq
 from souper.interfaces import ICatalogFactory
-from souper.soup import get_soup
 from souper.soup import NodeAttributeIndexer
 from souper.soup import NodeTextIndexer
 from souper.soup import Record
+from souper.soup import get_soup
 from zope.component import queryAdapter
 from zope.event import notify
 from zope.interface import implementer
-
 import datetime
 import logging
 import plone.api
@@ -202,8 +199,10 @@ class BookingsCatalogFactory(object):
         catalog[u'state'] = CatalogFieldIndex(state_indexer)
         salaried_indexer = NodeAttributeIndexer('salaried')
         catalog[u'salaried'] = CatalogFieldIndex(salaried_indexer)
-        search_attributes = ['email',
-                             'title']
+        search_attributes = [
+            'email',
+            'title'
+        ]
         text_indexer = NodeTextIndexer(search_attributes)
         catalog[u'text'] = CatalogTextIndex(text_indexer)
         return catalog
@@ -216,8 +215,8 @@ class OrdersCatalogFactory(object):
         catalog = Catalog()
         uid_indexer = NodeAttributeIndexer('uid')
         catalog[u'uid'] = CatalogFieldIndex(uid_indexer)
-        email_indexer = NodeAttributeIndexer('email')
-        catalog[u'email'] = CatalogFieldIndex(email_indexer)
+        email_indexer = NodeAttributeIndexer('personal_data.email')
+        catalog[u'personal_data.email'] = CatalogFieldIndex(email_indexer)
         ordernumber_indexer = NodeAttributeIndexer('ordernumber')
         catalog[u'ordernumber'] = CatalogFieldIndex(ordernumber_indexer)
         booking_uids_indexer = NodeAttributeIndexer('booking_uids')
@@ -238,13 +237,21 @@ class OrdersCatalogFactory(object):
             CatalogFieldIndex(lastname_indexer)
         city_indexer = NodeAttributeIndexer('billing_address.city')
         catalog[u'billing_address.city'] = CatalogFieldIndex(city_indexer)
-        search_attributes = ['personal_data.lastname',
-                             'personal_data.firstname',
-                             'personal_data.email',
-                             'billing_address.city',
-                             'ordernumber']
+        search_attributes = [
+            'personal_data.lastname',
+            'personal_data.firstname',
+            'personal_data.email',
+            'billing_address.city',
+            'ordernumber'
+        ]
         text_indexer = NodeTextIndexer(search_attributes)
         catalog[u'text'] = CatalogTextIndex(text_indexer)
+        # state on order only used for sorting in orders table
+        state_indexer = NodeAttributeIndexer('state')
+        catalog[u'state'] = CatalogFieldIndex(state_indexer)
+        # salaried on order only used for sorting in orders table
+        salaried_indexer = NodeAttributeIndexer('salaried')
+        catalog[u'salaried'] = CatalogFieldIndex(salaried_indexer)
         return catalog
 
 
@@ -328,6 +335,10 @@ class OrderCheckoutAdapter(CheckoutAdapter):
             order.attrs['shipping'] = Decimal(0)
         # create order bookings
         bookings = self.create_bookings(order)
+        # set order state, needed for sorting in orders table
+        order.attrs['state'] = calculate_order_state(bookings)
+        # set order salaried, needed for sorting in orders table
+        order.attrs['salaried'] = ifaces.SALARIED_NO
         # lookup booking uids, buyable uids and vendor uids
         booking_uids = list()
         buyable_uids = list()
@@ -353,43 +364,40 @@ class OrderCheckoutAdapter(CheckoutAdapter):
         orders_soup.add(order)
         # add bookings
         bookings_soup = get_bookings_soup(self.context)
-
-        items_stock_threshold_reached = list()
-
+        # list containing items where stock threshold has been reached
+        stock_threshold_reached_items = list()
         for booking in bookings:
             bookings_soup.add(booking)
-
-            buyable = get_object_by_uid(self.context, booking.attrs['buyable_uid'])
+            buyable = get_object_by_uid(
+                self.context,
+                booking.attrs['buyable_uid']
+            )
             item_stock = get_item_stock(buyable)
             stock_warning_threshold = item_stock.stock_warning_threshold
-
             if stock_warning_threshold:
-                if booking.attrs['remaining_stock_available'] <= stock_warning_threshold:
-                    # Item is getting out of stock
-                    items_stock_threshold_reached.append(booking.attrs)
-        
-        if items_stock_threshold_reached:
+                remaining = booking.attrs['remaining_stock_available']
+                # stock threshold has been reached
+                if remaining <= stock_warning_threshold:
+                    stock_threshold_reached_items.append(booking.attrs)
+        if stock_threshold_reached_items:
             event = events.StockThresholdReached(
                 self.context,
                 self.request,
                 order.attrs['uid'],
-                items_stock_threshold_reached,
+                stock_threshold_reached_items,
             )
             notify(event)
-
         # return uid of added order
         return uid
 
     def create_bookings(self, order):
         ret = list()
-
         cart_data = get_data_provider(self.context)
         for uid, count, comment in self.items:
             booking = self.create_booking(
                 order, cart_data, uid, count, comment)
             if booking:
                 ret.append(booking)
-
         return ret
 
     def create_booking(self, order, cart_data, uid, count, comment):
@@ -405,13 +413,13 @@ class OrderCheckoutAdapter(CheckoutAdapter):
             raise CheckoutError(msg)
         item_stock = get_item_stock(buyable)
         if item_stock.available is not None:
+            # TODO: ATTENTION: here might get removed more than available..?
             item_stock.available -= float(count)
         available = item_stock.available
         state = ifaces.STATE_NEW if available is None or available >= 0.0\
             else ifaces.STATE_RESERVED
         item_data = get_item_data_provider(buyable)
         vendor = acquire_vendor_or_shop_root(buyable)
-
         booking = OOBTNode()
         booking.attrs['email'] = order.attrs['personal_data.email']
         booking.attrs['uid'] = uuid.uuid4()
@@ -438,7 +446,7 @@ class OrderCheckoutAdapter(CheckoutAdapter):
             booking.attrs['shippable'] = shipping_info.shippable
         else:
             booking.attrs['shippable'] = False
-        trading_info = queryAdapter(ifaces.ITrading, buyable)
+        trading_info = queryAdapter(buyable, ifaces.ITrading)
         if trading_info:
             booking.attrs['item_number'] = trading_info.item_number
             booking.attrs['gtin'] = trading_info.gtin
@@ -448,7 +456,140 @@ class OrderCheckoutAdapter(CheckoutAdapter):
         return booking
 
 
-class OrderData(object):
+def is_billable_booking(booking):
+    """Return True, if booking is billable and should be included in order
+    summary calculations.
+    To be used in Pythons filter function::
+        filter(is_billable_booking, bookings)
+    """
+    return booking.attrs['state'] not in (
+        ifaces.STATE_RESERVED, ifaces.STATE_CANCELLED
+    )
+
+
+def _calculate_order_attr_from_bookings(bookings, attr, mixed_value):
+    ret = None
+    for booking in bookings:
+        val = booking.attrs[attr]
+        if ret and ret != val:
+            ret = mixed_value
+            break
+        else:
+            ret = val
+    return ret
+
+
+def calculate_order_state(bookings):
+    return _calculate_order_attr_from_bookings(
+        bookings,
+        'state',
+        ifaces.STATE_MIXED
+    )
+
+
+def calculate_order_salaried(bookings):
+    return _calculate_order_attr_from_bookings(
+        filter(is_billable_booking, bookings),
+        'salaried',
+        ifaces.SALARIED_MIXED
+    )
+
+
+class OrderState(object):
+    context = None
+
+    @instance_property
+    def orders_soup(self):
+        return get_orders_soup(self.context)
+
+    @instance_property
+    def bookings_soup(self):
+        return get_bookings_soup(self.context)
+
+    def reindex_order(self, order):
+        self.orders_soup.reindex(records=[order])
+
+    def reindex_bookings(self, bookings):
+        self.bookings_soup.reindex(records=bookings)
+
+    @property
+    def state(self):
+        raise NotImplementedError(
+            'Abstract OrderState does not implement state')
+
+    @state.setter
+    def state(self, value):
+        raise NotImplementedError(
+            'Abstract OrderState does not implement state.setter')
+
+    @property
+    def salaried(self):
+        raise NotImplementedError(
+            'Abstract OrderState does not implement salaried')
+
+    @salaried.setter
+    def salaried(self, value):
+        raise NotImplementedError(
+            'Abstract OrderState does not implement salaried.setter')
+
+    def update_item_stock(self, booking, old_state, new_state):
+        """Change stock according to transition. See table in transitions.py
+        """
+        if old_state == new_state:
+            return
+        # XXX: fix stock item available??
+        if old_state == ifaces.STATE_NEW:
+            if new_state == ifaces.STATE_CANCELLED:
+                self.increase_stock(booking)
+            else:
+                # do nothing
+                pass
+        elif old_state == ifaces.STATE_RESERVED:
+            if new_state in (ifaces.STATE_PROCESSING, ifaces.STATE_FINISHED):
+                self.decrease_stock(booking)
+            else:
+                # do nothing
+                pass
+        elif old_state == ifaces.STATE_PROCESSING:
+            if new_state == ifaces.STATE_CANCELLED:
+                self.increase_stock(booking)
+            else:
+                # do nothing
+                pass
+        elif old_state == ifaces.STATE_FINISHED:
+            if new_state == ifaces.STATE_NEW:
+                # do nothing
+                pass
+        elif old_state == ifaces.STATE_CANCELLED:
+            if new_state == ifaces.STATE_NEW:
+                self.decrease_stock(booking)
+            else:
+                # do nothing
+                pass
+
+    def increase_stock(self, booking):
+        obj = get_object_by_uid(self.context, booking.attrs['buyable_uid'])
+        # object no longer exists
+        if not obj:
+            return
+        stock = get_item_stock(obj)
+        # if stock.available is None, no stock information used
+        if stock.available is not None:
+            stock.available += float(booking.attrs['buyable_count'])
+
+    def decrease_stock(self, booking):
+        obj = get_object_by_uid(self.context, booking.attrs['buyable_uid'])
+        # object no longer exists
+        if not obj:
+            return
+        stock = get_item_stock(obj)
+        # if stock.available is None, no stock information used
+        if stock.available is not None:
+            # TODO: ATTENTION: here might get removed more than available..?
+            stock.available -= float(booking.attrs['buyable_count'])
+
+
+class OrderData(OrderState):
     """Object for extracting order information.
     """
 
@@ -487,7 +628,7 @@ class OrderData(object):
 
     @property
     def bookings(self):
-        soup = get_bookings_soup(self.context)
+        soup = self.bookings_soup
         query = Eq('order_uid', self.uid)
         if self.vendor_uids:
             query = query & Any('vendor_uid', self.vendor_uids)
@@ -499,45 +640,48 @@ class OrderData(object):
         for booking in self.bookings:
             val = booking.attrs['currency']
             if ret and ret != val:
-                msg = 'Order contains bookings with inconsistent ' +\
-                      'currencies {0} != {1}'.format(ret, val)
+                msg = u'Order contains bookings with inconsistent ' +\
+                      u'currencies {0} != {1}'.format(ret, val)
                 raise ValueError(msg)
             ret = val
         return ret
 
     @property
     def state(self):
-        ret = None
-        for booking in self.bookings:
-            val = booking.attrs['state']
-            if ret and ret != val:
-                ret = ifaces.STATE_MIXED
-                break
-            else:
-                ret = val
-        return ret
+        return calculate_order_state(self.bookings)
 
     @state.setter
     def state(self, value):
-        for booking in self.bookings:
+        # XXX: currently we need to delete attributes before setting to a new
+        #      value in order to persist change. fix in appropriate place.
+        bookings = self.bookings
+        for booking in bookings:
+            self.update_item_stock(booking, booking.attrs['state'], value)
+            del booking.attrs['state']
             booking.attrs['state'] = value
+        order = self.order
+        del order.attrs['state']
+        order.attrs['state'] = value
+        self.reindex_bookings(bookings)
+        self.reindex_order(order)
 
     @property
     def salaried(self):
-        ret = None
-        for booking in self.bookings:
-            val = booking.attrs['salaried']
-            if ret and ret != val:
-                ret = ifaces.SALARIED_MIXED
-                break
-            else:
-                ret = val
-        return ret
+        return calculate_order_salaried(self.bookings)
 
     @salaried.setter
     def salaried(self, value):
-        for booking in self.bookings:
+        # XXX: currently we need to delete attributes before setting to a new
+        #      value in order to persist change. fix in appropriate place.
+        bookings = self.bookings
+        for booking in bookings:
+            del booking.attrs['salaried']
             booking.attrs['salaried'] = value
+        order = self.order
+        del order.attrs['salaried']
+        order.attrs['salaried'] = value
+        self.reindex_bookings(bookings)
+        self.reindex_order(order)
 
     @property
     def tid(self):
@@ -557,7 +701,7 @@ class OrderData(object):
     def net(self):
         # XXX: use decimal
         ret = 0.0
-        for booking in self.bookings:
+        for booking in filter(is_billable_booking, self.bookings):
             count = float(booking.attrs['buyable_count'])
             net = booking.attrs.get('net', 0.0)
             discount_net = float(booking.attrs['discount_net'])
@@ -568,7 +712,7 @@ class OrderData(object):
     def vat(self):
         # XXX: use decimal
         ret = 0.0
-        for booking in self.bookings:
+        for booking in filter(is_billable_booking, self.bookings):
             count = float(booking.attrs['buyable_count'])
             net = booking.attrs.get('net', 0.0)
             discount_net = float(booking.attrs['discount_net'])
@@ -607,30 +751,8 @@ class OrderData(object):
         total = self.net - self.discount_net + self.vat - self.discount_vat
         return total + self.shipping
 
-    def increase_stock(self, bookings):
-        for booking in bookings:
-            obj = get_object_by_uid(self.context, booking.attrs['buyable_uid'])
-            # object no longer exists
-            if not obj:
-                continue
-            stock = get_item_stock(obj)
-            # if stock.available is None, no stock information used
-            if stock.available is not None:
-                stock.available += float(booking.attrs['buyable_count'])
 
-    def decrease_stock(self, bookings):
-        for booking in bookings:
-            obj = get_object_by_uid(self.context, booking.attrs['buyable_uid'])
-            # object no longer exists
-            if not obj:
-                continue
-            stock = get_item_stock(obj)
-            # if stock.available is None, no stock information used
-            if stock.available is not None:
-                stock.available -= float(booking.attrs['buyable_count'])
-
-
-class BookingData(object):
+class BookingData(OrderState):
 
     def __init__(self, context, uid=None, booking=None, vendor_uids=[]):
         """Create booking data object by criteria
@@ -666,7 +788,7 @@ class BookingData(object):
     def booking(self):
         if self._booking:
             return self._booking
-        soup = get_bookings_soup(self.context)
+        soup = self.bookings_soup
         query = Eq('uid', self.uid)
         if self.vendor_uids:
             query = query & Any('vendor_uid', self.vendor_uids)
@@ -678,11 +800,47 @@ class BookingData(object):
 
     @property
     def order(self):
+        # XXX: rename to order_data for less confusion
         return OrderData(
             self.context,
             uid=self.booking.attrs['order_uid'],
             vendor_uids=self.vendor_uids
         )
+
+    @property
+    def state(self):
+        return self.booking.attrs['state']
+
+    @state.setter
+    def state(self, value):
+        # XXX: currently we need to delete attributes before setting to a new
+        #      value in order to persist change. fix in appropriate place.
+        booking = self.booking
+        self.update_item_stock(booking, booking.attrs['state'], value)
+        del booking.attrs['state']
+        booking.attrs['state'] = value
+        order = self.order
+        del order.order.attrs['state']
+        order.order.attrs['state'] = calculate_order_state(order.bookings)
+        self.reindex_bookings([booking])
+        self.reindex_order(order.order)
+
+    @property
+    def salaried(self):
+        return self.booking.attrs['salaried']
+
+    @salaried.setter
+    def salaried(self, value):
+        # XXX: currently we need to delete attributes before setting to a new
+        #      value in order to persist change. fix in appropriate place.
+        booking = self.booking
+        del booking.attrs['salaried']
+        booking.attrs['salaried'] = value
+        order = self.order
+        del order.order.attrs['salaried']
+        order.order.attrs['salaried'] = calculate_order_salaried(order.bookings)  # noqa
+        self.reindex_bookings([booking])
+        self.reindex_order(order.order)
 
 
 class BuyableData(object):
@@ -783,70 +941,10 @@ def payment_failed(event):
         order.tid = data['tid']
 
 
-class OrderTransitions(object):
-
-    def __init__(self, context, vendor_uids=[]):
-        self.context = context
-        self.vendor_uids = vendor_uids
-
-    def _order_data(self, uid):
-        if not isinstance(uid, uuid.UUID):
-            uid = uuid.UUID(uid)
-        return OrderData(
-            self.context,
-            uid=uid,
-            vendor_uids=self.vendor_uids
-        )
-
-    def do_transition(self, uid, transition):
-        """Do transition for order by UID and transition name.
-
-        @param uid: uuid.UUID or string representing a UUID
-        @param vendor_uids: list of uuid.UUID objects
-        @param transition: string
-
-        @return: order record
-        """
-        order_data = self._order_data(uid)
-        for booking in order_data.bookings:
-            do_transition_for_booking(booking, transition, order_data)
-        orders_soup = get_orders_soup(self.context)
-        order = order_data.order
-        orders_soup.reindex(records=[order])
-        return order
-
-
-def order_data_of_booking(context, booking, vendor_uids=[]):
-    return OrderData(
-        context,
-        uid=booking.order_uid,
-        vendor_uids=vendor_uids
-    )
-
-
-def booking_cancel(context, request, booking_uid):
-    booking_data = BookingData(context, uid=booking_uid)
-    if booking_data.booking is None:
-        raise ValueError('invalid value (booking)')
-    booking_attrs = dict(booking_data.booking.attrs.items())
-    do_transition_for_booking(
-        booking_data.booking,
-        ifaces.STATE_TRANSITION_CANCEL,
-        booking_data.order
-    )
-    event = events.BookingCancelledEvent(
-        context,
-        request,
-        booking_attrs['order_uid'],
-        booking_attrs,
-    )
-    notify(event)
-
-
 def booking_update_comment(context, booking_uid, comment):
     booking_data = BookingData(context, uid=booking_uid)
     if booking_data.booking is None:
         raise ValueError('invalid value (booking)')
     booking = booking_data.booking
-    booking.attrs['comment'] = comment
+    booking.attrs['buyable_comment'] = comment
     booking_data.reindex()

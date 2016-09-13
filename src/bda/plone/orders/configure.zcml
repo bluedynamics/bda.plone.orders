@@ -5,18 +5,18 @@
            i18n_domain="bda.plone.orders">
 
   <include package="yafowil.plone" />
-  <include package="souper.plone"/>
-  <include package="collective.js.jqueryui"/>
-  <include package="collective.js.datatables"/>
-  <include package="bda.plone.checkout"/>
-  <include package="bda.plone.discount"/>
+  <include package="souper.plone" />
+  <include package="collective.js.jqueryui" />
+  <include package="collective.js.datatables" />
+  <include package="bda.plone.checkout" />
+  <include package="bda.plone.discount" />
 
-  <i18n:registerTranslations directory="locales"/>
+  <i18n:registerTranslations directory="locales" />
 
-  <include file="permissions.zcml"/>
-  <include file="profiles.zcml"/>
-  <include file="upgrades.zcml"/>
-  <include package=".browser"/>
+  <include file="permissions.zcml" />
+  <include file="profiles.zcml" />
+  <include file="upgrades.zcml" />
+  <include package=".browser" />
 
   <!-- roles -->
   <utility name="Vendor" factory=".localroles.VendorRole" />
@@ -36,11 +36,11 @@
   <!-- souper soups -->
   <utility
     name="bda_plone_orders_bookings"
-    factory=".common.BookingsCatalogFactory"/>
+    factory=".common.BookingsCatalogFactory" />
 
   <utility
     name="bda_plone_orders_orders"
-    factory=".common.OrdersCatalogFactory"/>
+    factory=".common.OrdersCatalogFactory" />
 
   <utility
     name="bda_plone_orders_contacts"
@@ -50,52 +50,58 @@
   <adapter
     for="*
          .interfaces.IOrdersExtensionLayer"
-    factory=".common.OrderCheckoutAdapter"/>
+    factory=".common.OrderCheckoutAdapter" />
 
   <!-- payment data adapter -->
-  <adapter for="*" factory=".common.PaymentData"/>
+  <adapter for="*" factory=".common.PaymentData" />
+
 
   <!-- mail templates storage -->
   <adapter
     for="zope.component.interfaces.ISite"
     provides=".interfaces.IDynamicMailTemplateLibraryStorage"
-    factory=".mailtemplates.DynamicMailTemplateLibraryStorage"/>
+    factory=".mailtemplates.DynamicMailTemplateLibraryStorage" />
 
   <adapter
     for="bda.plone.orders.interfaces.IVendor"
     provides=".interfaces.IDynamicMailTemplateLibraryStorage"
-    factory=".mailtemplates.DynamicMailTemplateLibraryStorage"/>
+    factory=".mailtemplates.DynamicMailTemplateLibraryStorage" />
 
-  <!-- event subscribers payment-->
+
+  <!-- EVENT SUBSCRIBERS -->
+
+  <!-- payment-->
   <subscriber
     for="bda.plone.payment.interfaces.IPaymentFailedEvent"
-    handler=".common.payment_failed"/>
-
+    handler=".common.payment_failed" />
   <subscriber
     for="bda.plone.payment.interfaces.IPaymentSuccessEvent"
-    handler=".common.payment_success"/>
+    handler=".common.payment_success" />
 
-  <!-- event subscribers mailnotify-->
+  <!-- mailnotify -->
   <subscriber
     for="bda.plone.payment.interfaces.IPaymentSuccessEvent"
-    handler=".mailnotify.dispatch_notify_payment_success"/>
-
+    handler=".mailnotify.dispatch_notify_payment_success" />
   <subscriber
     for="bda.plone.checkout.interfaces.ICheckoutDone"
-    handler=".mailnotify.dispatch_notify_checkout_success"/>
-
-  <!-- event subscribers booking cancelled-->
+    handler=".mailnotify.dispatch_notify_checkout_success" />
   <subscriber
     for="bda.plone.orders.interfaces.IBookingCancelledEvent"
-    handler=".mailnotify.dispatch_notify_booking_cancelled"/>
-
-  <!-- event subscribers item is getting out of stock -->
+    handler=".mailnotify.dispatch_notify_booking_cancelled" />
+  <subscriber
+    for="bda.plone.orders.interfaces.IBookingReservedToOrderedEvent"
+    handler=".mailnotify.dispatch_notify_booking_reserved_to_ordered" />
   <subscriber
     for="bda.plone.orders.interfaces.IStockThresholdReached"
-    handler=".mailnotify.dispatch_notify_stock_threshold_reached"/>
+    handler=".mailnotify.dispatch_notify_stock_threshold_reached" />
+  <subscriber
+    for="bda.plone.orders.interfaces.IOrderSuccessfulEvent"
+    handler=".mailnotify.dispatch_notify_order_success" />
 
   <!-- create contact on checkout success and save it in soup catalog-->
   <subscriber
     for="bda.plone.checkout.interfaces.ICheckoutDone"
     handler=".contacts.save_contact" />
+
+
 </configure>

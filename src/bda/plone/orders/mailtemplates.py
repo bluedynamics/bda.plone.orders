@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
+from BTrees.OOBTree import OOBTree
 from bda.plone.orders import interfaces as ifaces
 from bda.plone.orders.interfaces import IDynamicMailTemplateLibrary
 from bda.plone.orders.interfaces import IDynamicMailTemplateLibraryStorage
-from BTrees.OOBTree import OOBTree
 from zope.annotation import IAnnotations
 from zope.component import queryAdapter
 from zope.interface import implementer
@@ -14,9 +14,7 @@ from zope.interface import implementer
 
 ORDER_SUBJECT_EN = u'Order %s received.'
 
-RESERVATION_SUBJECT_EN = u'Reservation %s received.'
-
-ORDER_BODY_EN = """
+ORDER_BODY_EN = u"""
 Date: %(date)s
 
 Thank you for your order:
@@ -45,7 +43,10 @@ Ordered items:
 %(order_summary)s%(global_text)s%(payment_text)s
 """
 
-RESERVATION_BODY_EN = """
+
+RESERVATION_SUBJECT_EN = u'Reservation %s received.'
+
+RESERVATION_BODY_EN = u"""
 Date: %(date)s
 
 Thank you for your reservation:
@@ -71,10 +72,13 @@ Comment:
 Ordered items:
 %(item_listing)s
 
+Reserved items:
+%(reserved_item_listing)s
+
 %(order_summary)s%(global_text)s%(payment_text)s
 """
 
-DELIVERY_ADDRESS_EN = """
+DELIVERY_ADDRESS_EN = u"""
 Delivery Address:
 Name: %(delivery_address.firstname)s %(delivery_address.lastname)s
 Company: %(delivery_address.company)s
@@ -84,9 +88,10 @@ City: %(delivery_address.city)s
 Country: %(delivery_address.country)s
 """
 
+
 CANCELLED_BOOKING_SUBJECT_EN = u"Cancelled one booking of Order %s."
 
-CANCELLED_BOOKING_BODY_EN = """
+CANCELLED_BOOKING_BODY_EN = u"""
 Date: %(date)s
 
 One of your bookings was cancelled.
@@ -97,13 +102,28 @@ Cancelled item: %(booking_cancelled_title)s
 Order details: %(portal_url)s/@@showorder?ordernumber=%(ordernumber)s
 """
 
-STOCK_THRESHOLD_REACHED_SUBJECT_EN = u"Order %s has products that are getting out of stock."
 
-STOCK_THRESHOLD_REACHED_BODY_EN = """
+BOOKING_RESERVED_TO_ORDERED_SUBJECT_EN = u"Reservation of %s is now available."
+
+BOOKING_RESERVED_TO_ORDERED_BODY_EN = u"""
+Date: %(date)s
+
+Your reserved item is now available and our order is being processed.
+
+Ordernumber: %(ordernumber)s
+Booked item: %(booking_reserved_to_ordered_title)s
+
+Order details: %(portal_url)s/@@showorder?ordernumber=%(ordernumber)s
+"""
+
+
+STOCK_THRESHOLD_REACHED_SUBJECT_EN = u"Order %s has products that are getting out of stock."  # noqa
+
+STOCK_THRESHOLD_REACHED_BODY_EN = u"""
 Date: %(date)s
 
 Products getting out of stock:
-%(items_stock_threshold_reached_text)s
+%(stock_threshold_reached_text)s
 
 """
 
@@ -116,7 +136,7 @@ ORDER_SUBJECT_DE = u'Bestellung %s erhalten.'
 
 RESERVATION_SUBJECT_DE = u'Reservierung %s erhalten.'
 
-ORDER_BODY_DE = """
+ORDER_BODY_DE = u"""
 Datum: %(date)s
 
 Besten Dank für Ihre Bestellung:
@@ -145,7 +165,7 @@ Bestellte Artikel:
 %(order_summary)s%(global_text)s%(payment_text)s
 """
 
-RESERVATION_BODY_DE = """
+RESERVATION_BODY_DE = u"""
 Datum: %(date)s
 
 Besten Dank für Ihre Reservierung:
@@ -171,10 +191,13 @@ Kommentar:
 Bestellte Artikel:
 %(item_listing)s
 
+Reservierte Artikel:
+%(reserved_item_listing)s
+
 %(order_summary)s%(global_text)s%(payment_text)s
 """  # noqa
 
-DELIVERY_ADDRESS_DE = """
+DELIVERY_ADDRESS_DE = u"""
 Lieferadresse:
 Name: %(delivery_address.firstname)s %(delivery_address.lastname)s
 Firma: %(delivery_address.company)s
@@ -186,13 +209,27 @@ Land: %(delivery_address.country)s
 
 CANCELLED_BOOKING_SUBJECT_DE = u"Stornierung eines Artikels in Bestellung %s."
 
-CANCELLED_BOOKING_BODY_DE = """
+CANCELLED_BOOKING_BODY_DE = u"""
 Datum: %(date)s
 
 Eine Ihrer bestellten Artikel wurde storniert.
 
 Bestellnummer: %(ordernumber)s
 Stornierter Artikel: %(booking_cancelled_title)s
+
+Details zur Bestellung: %(portal_url)s/@@showorder?ordernumber=%(ordernumber)s
+"""
+
+
+BOOKING_RESERVED_TO_ORDERED_SUBJECT_DE = u"Reservierung %s ist nun verfügbar."
+
+BOOKING_RESERVED_TO_ORDERED_BODY_DE = u"""
+Datum: %(date)s
+
+Ihr reservierter Artikel ist verfügbar geworden und Ihre Bestellung wird nun bearbeitet.
+
+Bestellnummer: %(ordernumber)s
+Bestellter Artikel: %(booking_reserved_to_ordered_title)s
 
 Details zur Bestellung: %(portal_url)s/@@showorder?ordernumber=%(ordernumber)s
 """
@@ -205,7 +242,7 @@ ORDER_SUBJECT_FR = u'votre commande %s.'
 
 RESERVATION_SUBJECT_FR = u'votre réservation %s.'
 
-ORDER_BODY_FR = """
+ORDER_BODY_FR = u"""
 Date: %(date)s
 
 Nous vous remercions pour votre commande:
@@ -234,7 +271,7 @@ Produit commandé:
 %(order_summary)s%(global_text)s%(payment_text)s
 """
 
-RESERVATION_BODY_FR = """
+RESERVATION_BODY_FR = u"""
 Date: %(date)s
 
 Nous vous remercions pour votre réservation:
@@ -260,10 +297,13 @@ Commentaires:
 Produit commandé:
 %(item_listing)s
 
+Produit réservés:
+%(reserved_item_listing)s
+
 %(order_summary)s%(global_text)s%(payment_text)s
 """
 
-DELIVERY_ADDRESS_FR = """
+DELIVERY_ADDRESS_FR = u"""
 Adresse de livraison:
 Nom: %(delivery_address.firstname)s %(delivery_address.lastname)s
 Entreprise: %(delivery_address.company)s
@@ -275,7 +315,7 @@ Pays: %(delivery_address.country)s
 
 CANCELLED_BOOKING_SUBJECT_FR = u"Cancelled one booking of Order %s."
 
-CANCELLED_BOOKING_BODY_FR = """
+CANCELLED_BOOKING_BODY_FR = u"""
 Date: %(date)s
 
 One of your bookings was cancelled.
@@ -294,7 +334,7 @@ ORDER_SUBJECT_IT = u'Il tuo ordine %s.'
 
 RESERVATION_SUBJECT_IT = u'Il tuo prenotazione %s.'
 
-ORDER_BODY_IT = """
+ORDER_BODY_IT = u"""
 Data: %(date)s
 
 Grazie per l'ordine effettuato:
@@ -322,7 +362,7 @@ Articolo ordinato:
 %(order_summary)s%(global_text)s%(payment_text)s
 """
 
-RESERVATION_BODY_IT = """
+RESERVATION_BODY_IT = u"""
 Data: %(date)s
 
 Grazie per l'prenotazione effettuato:
@@ -347,10 +387,13 @@ Commento:
 Articolo ordinato:
 %(item_listing)s
 
+Articolo riservato:
+%(reserved_item_listing)s
+
 %(order_summary)s%(global_text)s%(payment_text)s
 """
 
-DELIVERY_ADDRESS_IT = """
+DELIVERY_ADDRESS_IT = u"""
 Indirizzo di spedizione:
 Nome: %(delivery_address.firstname)s %(delivery_address.lastname)s
 Ditta: %(delivery_address.company)s
@@ -362,7 +405,7 @@ Nazione: %(delivery_address.country)s
 
 CANCELLED_BOOKING_SUBJECT_IT = u"Cancelled one booking of Order %s."
 
-CANCELLED_BOOKING_BODY_IT = """
+CANCELLED_BOOKING_BODY_IT = u"""
 Date: %(date)s
 
 One of your bookings was cancelled.
@@ -381,7 +424,7 @@ ORDER_SUBJECT_NO = u'Bestilling %s mottatt.'
 
 RESERVATION_SUBJECT_NO = u'Bestilling %s mottatt.'
 
-ORDER_BODY_NO = """
+ORDER_BODY_NO = u"""
 Dato: %(date)s
 
 Takk for din bestilling:
@@ -410,7 +453,7 @@ Bestilte produkter:
 %(order_summary)s%(global_text)s%(payment_text)s
 """
 
-RESERVATION_BODY_NO = """
+RESERVATION_BODY_NO = u"""
 Dato: %(date)s
 
 Takk for din bestilling:
@@ -436,10 +479,13 @@ Kommentar:
 Bestilte produkter:
 %(item_listing)s
 
+Reserverte produkter:
+%(reserved_item_listing)s
+
 %(order_summary)s%(global_text)s%(payment_text)s
 """
 
-DELIVERY_ADDRESS_NO = """
+DELIVERY_ADDRESS_NO = u"""
 Leveringsadr.:
 Navn: %(delivery_address.firstname)s %(delivery_address.lastname)s
 Firma: %(delivery_address.company)s
@@ -451,7 +497,7 @@ Land: %(delivery_address.country)s
 
 CANCELLED_BOOKING_SUBJECT_NO = u"Cancelled one booking of Order %s."
 
-CANCELLED_BOOKING_BODY_NO = """
+CANCELLED_BOOKING_BODY_NO = u"""
 Date: %(date)s
 
 One of your bookings was cancelled.
@@ -530,11 +576,19 @@ CANCELLED_BOOKING_TEMPLATES = {
         'body': CANCELLED_BOOKING_BODY_NO}
 }
 
+BOOKING_RESERVED_TO_ORDERED_TEMPLATES = {
+    'en': {
+        'subject': BOOKING_RESERVED_TO_ORDERED_SUBJECT_EN,
+        'body': BOOKING_RESERVED_TO_ORDERED_BODY_EN},
+    'de': {
+        'subject': BOOKING_RESERVED_TO_ORDERED_SUBJECT_DE,
+        'body': BOOKING_RESERVED_TO_ORDERED_BODY_DE}
+}
+
 STOCK_THRESHOLD_REACHED_TEMPLATES = {
     'en': {
         'subject': STOCK_THRESHOLD_REACHED_SUBJECT_EN,
-        'body': STOCK_THRESHOLD_REACHED_BODY_EN
-    }
+        'body': STOCK_THRESHOLD_REACHED_BODY_EN}
 }
 
 
@@ -553,6 +607,10 @@ def get_reservation_templates(context):
 
 def get_booking_cancelled_templates(context):
     return _get_templates(context, CANCELLED_BOOKING_TEMPLATES)
+
+
+def get_booking_reserved_to_ordered_templates(context):
+    return _get_templates(context, BOOKING_RESERVED_TO_ORDERED_TEMPLATES)
 
 
 def get_stock_threshold_reached_templates(context):
@@ -605,8 +663,8 @@ class DynamicMailTemplate(object):
             if key in defaults:
                 continue
             raise ValueError(
-                'All required must be in defaults too, missing: '
-                '{0}'.format(key)
+                u'All required must be in defaults too, missing: '
+                u'{0}'.format(key)
             )
         self.required = required
         self.defaults = defaults
@@ -652,7 +710,7 @@ class DynamicMailTemplate(object):
         assert isinstance(template, unicode), 'template must be unicode'
         for key in self.required:
             if key not in data:
-                raise KeyError('Required key {0} is missing.'.format(key))
+                raise KeyError(u'Required key {0} is missing.'.format(key))
         return template.format(**self.normalized(indict=data))
 
 

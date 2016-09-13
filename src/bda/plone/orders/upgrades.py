@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
 from bda.plone.cart import get_object_by_uid
 from bda.plone.orders import message_factory as _
+from bda.plone.orders.common import OrderData
 from bda.plone.orders.common import acquire_vendor_or_shop_root
+from bda.plone.orders.common import calculate_order_salaried
+from bda.plone.orders.common import calculate_order_state
 from bda.plone.orders.common import get_bookings_soup
 from bda.plone.orders.common import get_order
 from bda.plone.orders.common import get_orders_soup
-from bda.plone.orders.common import OrderData
 from bda.plone.orders.contacts import get_contacts_soup
 from bda.plone.orders.interfaces import ITrading
 from bda.plone.payment import Payments
@@ -14,9 +16,9 @@ from decimal import Decimal
 from node.ext.zodb.utils import reset_odict
 from plone.uuid.interfaces import IUUID
 from zope.component.hooks import getSite
-
 import logging
 import uuid
+
 
 logger = logging.getLogger('bda.plone.orders UPGRADE')
 
@@ -48,7 +50,7 @@ def fix_bookings_vendor_uid(ctx=None):
         item.attrs['vendor_uid'] = vendor_uid
         need_rebuild = True
         logging.info(
-            "Added vendor_uid to booking {0}".format(item.attrs['uid'])
+            u"Added vendor_uid to booking {0}".format(item.attrs['uid'])
         )
     if need_rebuild:
         soup.rebuild()
@@ -80,7 +82,7 @@ def fix_orders_vendor_uids(ctx=None):
         item.attrs['vendor_uids'] = list(vendor_uids)
         need_rebuild = True
         logging.info(
-            "Added vendor_uids to order {0}".format(item.attrs['uid'])
+            u"Added vendor_uids to order {0}".format(item.attrs['uid'])
         )
     if need_rebuild:
         soup.rebuild()
@@ -120,7 +122,7 @@ def fix_bookings_state_salaried_tid(ctx=None):
                 booking.attrs['state'] = state
                 need_rebuild = True
                 logging.info(
-                    "Added state {0} to booking {1}".format(
+                    u"Added state {0} to booking {1}".format(
                         state, item.attrs['uid']
                     )
                 )
@@ -130,7 +132,7 @@ def fix_bookings_state_salaried_tid(ctx=None):
                 booking.attrs['salaried'] = salaried
                 need_rebuild = True
                 logging.info(
-                    "Added salaried {0} to booking {1}".format(
+                    u"Added salaried {0} to booking {1}".format(
                         salaried, item.attrs['uid']
                     )
                 )
@@ -140,7 +142,7 @@ def fix_bookings_state_salaried_tid(ctx=None):
                 booking.attrs['tid'] = tid
                 need_rebuild = True
                 logging.info(
-                    "Added tid {0} to booking {1}".format(
+                    u"Added tid {0} to booking {1}".format(
                         tid, item.attrs['uid']
                     )
                 )
@@ -170,7 +172,7 @@ def fix_discount_attrs(ctx=None):
             need_rebuild = True
             item.attrs['cart_discount_net'] = Decimal(0)
             logging.info(
-                "Added cart_discount_net to order {0}".format(
+                u"Added cart_discount_net to order {0}".format(
                     item.attrs['uid']
                 )
             )
@@ -180,7 +182,7 @@ def fix_discount_attrs(ctx=None):
             need_rebuild = True
             item.attrs['cart_discount_vat'] = Decimal(0)
             logging.info(
-                "Added cart_discount_vat to order {0}".format(
+                u"Added cart_discount_vat to order {0}".format(
                     item.attrs['uid']
                 )
             )
@@ -198,7 +200,7 @@ def fix_discount_attrs(ctx=None):
             need_rebuild = True
             item.attrs['discount_net'] = Decimal(0)
             logging.info(
-                "Added discount_net to booking {0}".format(item.attrs['uid'])
+                u"Added discount_net to booking {0}".format(item.attrs['uid'])
             )
     if need_rebuild:
         bookings_soup.rebuild()
@@ -215,7 +217,7 @@ def fix_shipping_attrs(ctx=None):
         except KeyError:
             item.attrs['shipping_method'] = 'unknown'
             logging.info(
-                "Added shipping_method {0} to booking {1}".format(
+                u"Added shipping_method {0} to booking {1}".format(
                     'unknown', item.attrs['uid']
                 )
             )
@@ -224,7 +226,7 @@ def fix_shipping_attrs(ctx=None):
         except KeyError:
             item.attrs['shipping_label'] = _('unknown', default=u'Unknown')
             logging.info(
-                "Added shipping_label {0} to booking {1}".format(
+                u"Added shipping_label {0} to booking {1}".format(
                     'unknown', item.attrs['uid']
                 )
             )
@@ -234,7 +236,7 @@ def fix_shipping_attrs(ctx=None):
             item.attrs['shipping_description'] = \
                 _('unknown', default=u'Unknown')
             logging.info(
-                "Added shipping_description {0} to booking {1}".format(
+                u"Added shipping_description {0} to booking {1}".format(
                     'unknown', item.attrs['uid']
                 )
             )
@@ -243,7 +245,7 @@ def fix_shipping_attrs(ctx=None):
         except KeyError:
             item.attrs['shipping_net'] = item.attrs['shipping']
             logging.info(
-                "Added shipping_net {0} to booking {1}".format(
+                u"Added shipping_net {0} to booking {1}".format(
                     item.attrs['shipping'], item.attrs['uid']
                 )
             )
@@ -252,7 +254,7 @@ def fix_shipping_attrs(ctx=None):
         except KeyError:
             item.attrs['shipping_vat'] = Decimal(0)
             logging.info(
-                "Added shipping_vat {0} to booking {1}".format(
+                u"Added shipping_vat {0} to booking {1}".format(
                     Decimal(0), item.attrs['uid']
                 )
             )
@@ -277,13 +279,13 @@ def fix_payment_attrs(ctx=None):
                 payment_label = _('unknown', default=u'Unknown')
             item.attrs['payment_method'] = payment_method
             logging.info(
-                "Added payment_method {0} to booking {1}".format(
+                u"Added payment_method {0} to booking {1}".format(
                     payment_method, item.attrs['uid']
                 )
             )
             item.attrs['payment_label'] = payment_label
             logging.info(
-                "Added payment_label {0} to booking {1}".format(
+                u"Added payment_label {0} to booking {1}".format(
                     payment_label, item.attrs['uid']
                 )
             )
@@ -305,7 +307,7 @@ def fix_bookings_shippable(ctx=None):
             booking.attrs['shippable'] = shippable
             need_rebuild = True
             logging.info(
-                "Added shippable {0} to booking {1}".format(
+                u"Added shippable {0} to booking {1}".format(
                     shippable, booking.attrs['uid']
                 )
             )
@@ -335,13 +337,13 @@ def fix_bookings_trading(ctx=None):
             need_rebuild = True
             booking.attrs['item_number'] = item_number
             logging.info(
-                "Added item_number {0} to booking {1}".format(
+                u"Added item_number {0} to booking {1}".format(
                     item_number, booking.attrs['uid']
                 )
             )
             booking.attrs['gtin'] = gtin
             logging.info(
-                "Added gtin {0} to booking {1}".format(
+                u"Added gtin {0} to booking {1}".format(
                     gtin, booking.attrs['uid']
                 )
             )
@@ -359,14 +361,14 @@ def reset_records(ctx=None):
     for order in data.values():
         reset_odict(order.attrs.storage, ignore_key=ignore_key)
         logging.info(
-            "Reset attributes storage on order {0}".format(order.attrs['uid'],)
+            u"Reset attributes storage on order {0}".format(order.attrs['uid'],)
         )
     soup = get_bookings_soup(portal)
     data = soup.storage.data
     for booking in data.values():
         reset_odict(booking.attrs.storage, ignore_key=ignore_key)
         logging.info(
-            "Reset attributes storage on booking {0}".format(
+            u"Reset attributes storage on booking {0}".format(
                 booking.attrs['uid']
             )
         )
@@ -394,7 +396,7 @@ def fix_bookings_email(ctx=None):
         item.attrs['email'] = email
         need_rebuild = True
         logging.info(
-            "Added email to booking {0}".format(item.attrs['uid'])
+            u"Added email to booking {0}".format(item.attrs['uid'])
         )
     if need_rebuild:
         soup.rebuild()
@@ -421,8 +423,22 @@ def fix_contacts_email(ctx=None):
         item.attrs['email'] = email
         need_rebuild = True
         logging.info(
-            "Added email to contact {0}".format(item.attrs['uid'])
+            u"Added email to contact {0}".format(item.attrs['uid'])
         )
     if need_rebuild:
         soup.rebuild()
         logging.info("Rebuilt contacts catalog")
+
+
+def fix_order_state_and_salaried(ctx=None):
+    """Re-add state and salaried on order, needed for sorting in orders table
+    """
+    portal = getSite()
+    soup = get_orders_soup(portal)
+    data = soup.storage.data
+    for order in data.values():
+        order_data = OrderData(portal, uid=order.attrs['uid'])
+        bookings = order_data.bookings
+        order.attrs['state'] = calculate_order_state(bookings)
+        order.attrs['salaried'] = calculate_order_salaried(bookings)
+    soup.rebuild()

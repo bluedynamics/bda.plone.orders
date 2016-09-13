@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
+from bda.plone.cart.interfaces import ICartItem
 from bda.plone.checkout.interfaces import ICheckoutExtensionLayer
 from bda.plone.discount.interfaces import IDiscountSettingsEnabled
-from bda.plone.cart.interfaces import ICartItem
 from zope.interface import Attribute
 from zope.interface import Interface
 
@@ -13,10 +13,10 @@ STATE_NEW = 'new'
 STATE_PROCESSING = 'processing'
 STATE_RESERVED = 'reserved'
 
-STATE_TRANSITION_RENEW = 'renew'
-STATE_TRANSITION_PROCESS = 'process'
-STATE_TRANSITION_FINISH = 'finish'
 STATE_TRANSITION_CANCEL = 'cancel'
+STATE_TRANSITION_FINISH = 'finish'
+STATE_TRANSITION_PROCESS = 'process'
+STATE_TRANSITION_RENEW = 'renew'
 
 SALARIED_YES = 'yes'
 SALARIED_NO = 'no'
@@ -124,7 +124,31 @@ class IDynamicMailTemplateLibraryStorage(IDynamicMailTemplateLibrary):
         """
 
 
+class IOrderSuccessfulEvent(Interface):
+    """Checkout related event.
+    """
+    context = Attribute(u"Context in which this event was triggered.")
+
+    request = Attribute(u"Current request.")
+
+    order_uid = Attribute(u"UUID of Order")
+
+    booking_attrs = Attribute(u"Dict of attributes of the cancelled booking.")
+
+
 class IBookingCancelledEvent(Interface):
+    """Checkout related event.
+    """
+    context = Attribute(u"Context in which this event was triggered.")
+
+    request = Attribute(u"Current request.")
+
+    order_uid = Attribute(u"UUID of Order")
+
+    booking_attrs = Attribute(u"Dict of attributes of the cancelled booking.")
+
+
+class IBookingReservedToOrderedEvent(Interface):
     """Checkout related event.
     """
     context = Attribute(u"Context in which this event was triggered.")
@@ -145,6 +169,5 @@ class IStockThresholdReached(Interface):
 
     order_uid = Attribute(u"UUID of Order")
 
-    items_stock_threshold_reached = Attribute(u"List of items that are getting out of stock.")
-
-
+    stock_threshold_reached_items = Attribute(u"List of items that are "
+                                              u"getting out of stock.")
