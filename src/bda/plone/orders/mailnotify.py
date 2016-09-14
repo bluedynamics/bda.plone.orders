@@ -96,7 +96,7 @@ def create_mail_listing(
         title = safe_unicode(booking.attrs['title'])
         # fetch item_number
         item_number = u''
-        if 'item_number' in booking.attrs:
+        if 'item_number' in booking.attrs and booking.attrs['item_number']:
             item_number = u' ({0})'.format(
                 safe_unicode(booking.attrs['item_number']))
         # fetch buyable comment
