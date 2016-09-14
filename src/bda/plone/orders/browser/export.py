@@ -37,9 +37,7 @@ import csv
 import datetime
 import plone.api
 import uuid
-import yafowil.loader  # loads registry
-
-yafowil.loader  # make flake 8 happy :/
+import yafowil.loader  # noqa
 
 
 class DialectExcelWithColons(csv.excel):
