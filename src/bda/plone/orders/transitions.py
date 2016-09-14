@@ -4,6 +4,7 @@ from bda.plone.orders import interfaces
 from bda.plone.orders.common import BookingData
 from zope.event import notify
 
+
 """
 State transitions and stock change
 

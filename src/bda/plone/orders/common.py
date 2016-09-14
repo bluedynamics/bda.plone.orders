@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from Acquisition import aq_inner
 from Acquisition import aq_parent
-from Products.CMFPlone.interfaces import IPloneSiteRoot
 from bda.plone.cart import extractitems
 from bda.plone.cart import get_catalog_brain
 from bda.plone.cart import get_data_provider
@@ -12,9 +11,9 @@ from bda.plone.cart import get_object_by_uid
 from bda.plone.cart import readcookie
 from bda.plone.checkout import CheckoutAdapter
 from bda.plone.checkout import CheckoutError
-from bda.plone.orders import events
 from bda.plone.orders import interfaces as ifaces
 from bda.plone.orders import message_factory as _
+from bda.plone.orders import events
 from bda.plone.orders import permissions
 from bda.plone.orders import safe_encode
 from bda.plone.orders.interfaces import IBuyable
@@ -27,6 +26,7 @@ from decimal import Decimal
 from node.ext.zodb import OOBTNode
 from node.utils import instance_property
 from plone.uuid.interfaces import IUUID
+from Products.CMFPlone.interfaces import IPloneSiteRoot
 from repoze.catalog.catalog import Catalog
 from repoze.catalog.indexes.field import CatalogFieldIndex
 from repoze.catalog.indexes.keyword import CatalogKeywordIndex
@@ -34,13 +34,14 @@ from repoze.catalog.indexes.text import CatalogTextIndex
 from repoze.catalog.query import Any
 from repoze.catalog.query import Eq
 from souper.interfaces import ICatalogFactory
+from souper.soup import get_soup
 from souper.soup import NodeAttributeIndexer
 from souper.soup import NodeTextIndexer
 from souper.soup import Record
-from souper.soup import get_soup
 from zope.component import queryAdapter
 from zope.event import notify
 from zope.interface import implementer
+
 import datetime
 import logging
 import plone.api

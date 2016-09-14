@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from Products.CMFCore.permissions import setDefaultRoles
 
+
 # view individual order
 ViewOrderDirectly = 'bda.plone.orders: View Order Directly'
 setDefaultRoles(ViewOrderDirectly,

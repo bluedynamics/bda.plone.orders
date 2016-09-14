@@ -1,11 +1,6 @@
 # -*- coding: utf-8 -*-
-from Acquisition import aq_parent
 from AccessControl import Unauthorized
-from Products.CMFPlone.utils import getToolByName
-from Products.CMFPlone.utils import safe_unicode
-from Products.Five import BrowserView
-from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from StringIO import StringIO
+from Acquisition import aq_parent
 from bda.plone.cart import get_item_stock
 from bda.plone.cart import get_object_by_uid
 from bda.plone.orders import message_factory as _
@@ -15,23 +10,29 @@ from bda.plone.orders import safe_filename
 from bda.plone.orders.browser.views import customers_form_vocab
 from bda.plone.orders.browser.views import vendors_form_vocab
 from bda.plone.orders.common import DT_FORMAT
-from bda.plone.orders.common import OrderData
 from bda.plone.orders.common import get_bookings_soup
 from bda.plone.orders.common import get_order
 from bda.plone.orders.common import get_orders_soup
 from bda.plone.orders.common import get_vendor_uids_for
 from bda.plone.orders.common import get_vendors_for
+from bda.plone.orders.common import OrderData
 from bda.plone.orders.interfaces import IBuyable
 from decimal import Decimal
 from odict import odict
 from plone.uuid.interfaces import IUUID
+from Products.CMFPlone.utils import getToolByName
+from Products.CMFPlone.utils import safe_unicode
+from Products.Five import BrowserView
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from repoze.catalog.query import Any
 from repoze.catalog.query import Eq
 from repoze.catalog.query import Ge
 from repoze.catalog.query import Le
+from StringIO import StringIO
 from yafowil.base import ExtractionError
 from yafowil.controller import Controller
 from yafowil.plone.form import YAMLForm
+
 import csv
 import datetime
 import plone.api
