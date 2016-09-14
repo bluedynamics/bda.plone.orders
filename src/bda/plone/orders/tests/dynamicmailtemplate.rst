@@ -81,7 +81,7 @@ required keys must be in data::
     >>> dmt(tpl, wrong_data)
     Traceback (most recent call last):
     ...
-    KeyError: 'Required key uid is missing.'
+    KeyError: u'Required key uid is missing.'
 
 finally a working set::
 

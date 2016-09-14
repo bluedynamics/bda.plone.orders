@@ -25,5 +25,5 @@ include/
 lib/
 local/
 .coverage
-
+buildout.cfg
 node_modules
