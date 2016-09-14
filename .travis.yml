@@ -17,7 +17,7 @@ before_install:
   - echo "download-cache = $HOME/buildout-cache/downloads" >> $HOME/.buildout/default.cfg
   - echo "eggs-directory = $HOME/buildout-cache/eggs" >> $HOME/.buildout/default.cfg
 install:
-  - sed -ie "s#plone-4.3.x.cfg#plone-$PLONE_VERSION.cfg#" buildout.cfg
+  - sed -ie "s#plone-4.3.x.cfg#plone-$PLONE_VERSION.cfg#" travis.cfg
   - pip install -U zc.buildout setuptools pip
   - buildout -c travis.cfg annotate
   - buildout -t 10 -Nc travis.cfg
