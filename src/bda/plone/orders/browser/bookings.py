@@ -350,15 +350,15 @@ class BookingsTable(BrowserView):
             'billing_address.street',
             record,
         ))
-        city   = safe_unicode(self._get_ordervalue(
+        city = safe_unicode(self._get_ordervalue(
             'billing_address.city',
             record,
         ))
-        phone  = safe_unicode(self._get_ordervalue(
+        phone = safe_unicode(self._get_ordervalue(
             'personal_data.phone',
             record,
         ))
-        email  = safe_unicode(record.attrs.get('email', ''))
+        email = safe_unicode(record.attrs.get('email', ''))
 
         return u"{0} {1}<br/>{2}: {3}<br/>{4}: {5}".format(
             street,

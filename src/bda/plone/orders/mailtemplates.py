@@ -232,7 +232,7 @@ Bestellnummer: %(ordernumber)s
 Bestellter Artikel: %(booking_reserved_to_ordered_title)s
 
 Details zur Bestellung: %(portal_url)s/@@showorder?ordernumber=%(ordernumber)s
-"""
+"""  # noqa
 
 ###############################################################################
 # fr

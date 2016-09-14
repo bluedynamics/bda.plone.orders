@@ -56,6 +56,7 @@ class ContactsCatalogFactory(object):
         catalog[u'text'] = CatalogTextIndex(text_indexer)
         return catalog
 
+
 # attributes for extracting contacts
 CONTACT_ATTRIBUTES = [
     'personal_data.company',
@@ -110,10 +111,12 @@ def lookup_contact(context, contact):
     if inexistent.
     """
     soup = get_contacts_soup(context)
-    query = Eq('firstname', contact['personal_data.firstname'].lower()) & \
-            Eq('lastname', contact['personal_data.lastname'].lower()) & \
-            Eq('zip', contact['billing_address.zip'].lower()) & \
-            Eq('street', contact['billing_address.street'].lower())
+    query = (
+        Eq('firstname', contact['personal_data.firstname'].lower()) &
+        Eq('lastname', contact['personal_data.lastname'].lower()) &
+        Eq('zip', contact['billing_address.zip'].lower()) &
+        Eq('street', contact['billing_address.street'].lower())
+    )
     res = soup.query(query)
     record = None
     for rec in res:

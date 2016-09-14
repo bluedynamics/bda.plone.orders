@@ -355,14 +355,19 @@ def fix_bookings_trading(ctx=None):
 
 
 def reset_records(ctx=None):
-    ignore_key = lambda x: x.startswith('____')
+
+    def ignore_key(key):
+        return key.startswith('____')
+
     portal = getSite()
     soup = get_orders_soup(portal)
     data = soup.storage.data
     for order in data.values():
         reset_odict(order.attrs.storage, ignore_key=ignore_key)
         logging.info(
-            u"Reset attributes storage on order {0}".format(order.attrs['uid'],)
+            u'Reset attributes storage on order {0}'.format(
+                order.attrs['uid'],
+            )
         )
     soup = get_bookings_soup(portal)
     data = soup.storage.data

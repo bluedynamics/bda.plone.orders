@@ -10,7 +10,9 @@ from zope.i18nmessageid import Message
 
 import json
 import plone.api
-import yafowil.loader  # loads registry  # nopep8
+import yafowil.loader  # loads registry
+
+yafowil.loader  # make flake 8 happy :/
 
 
 class Translate(object):

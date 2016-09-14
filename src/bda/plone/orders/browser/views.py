@@ -761,8 +761,10 @@ class OrderViewBase(BrowserView):
 
     @property
     def can_cancel_booking(self):
-        return self.can_modify_order \
-               and self.order_data.state != ifaces.STATE_CANCELLED
+        return (
+            self.can_modify_order and
+            self.order_data.state != ifaces.STATE_CANCELLED
+        )
 
     @property
     def gender(self):
