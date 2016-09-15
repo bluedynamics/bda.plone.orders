@@ -374,7 +374,11 @@ class OrderCheckoutAdapter(CheckoutAdapter):
                 booking.attrs['buyable_uid']
             )
             item_stock = get_item_stock(buyable)
-            stock_warning_threshold = item_stock.stock_warning_threshold
+            # no stock applied
+            if item_stock is None:
+                stock_warning_threshold = None
+            else:
+                stock_warning_threshold = item_stock.stock_warning_threshold
             if stock_warning_threshold:
                 remaining = booking.attrs['remaining_stock_available']
                 # stock threshold has been reached
@@ -413,12 +417,17 @@ class OrderCheckoutAdapter(CheckoutAdapter):
             logger.warning(msg)
             raise CheckoutError(msg)
         item_stock = get_item_stock(buyable)
-        if item_stock.available is not None:
-            # TODO: ATTENTION: here might get removed more than available..?
-            item_stock.available -= float(count)
-        available = item_stock.available
-        state = ifaces.STATE_NEW if available is None or available >= 0.0\
-            else ifaces.STATE_RESERVED
+        # stock not applied, state new
+        if item_stock is None:
+            available = None
+            state = ifaces.STATE_NEW
+        # calculate state from stock
+        else:
+            if item_stock.available is not None:
+                item_stock.available -= float(count)
+            available = item_stock.available
+            state = ifaces.STATE_NEW if available is None or available >= 0.0\
+                else ifaces.STATE_RESERVED
         item_data = get_item_data_provider(buyable)
         vendor = acquire_vendor_or_shop_root(buyable)
         booking = OOBTNode()
