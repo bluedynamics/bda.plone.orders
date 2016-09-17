@@ -1,3 +1,14 @@
+.clearfix() {
+  &:before,
+  &:after {
+    content: " "; // 1
+    display: table; // 2
+  }
+  &:after {
+    clear: both;
+  }
+}
+
 #exposeMask {
     z-index: 0 !important; /* render exposeMask BEHIND the overlay */
 }
@@ -45,6 +56,12 @@
 #orders_wrapper .filter,
 #bookings_wrapper .filter {
     padding:0.3em;
+    .clearfix();
+}
+#orders_wrapper .filter > div,
+#bookings_wrapper .filter > div {
+    float: left;
+    margin-right: 1em;
 }
 #orders_wrapper .filter label,
 #bookings_wrapper .filter label {
@@ -55,7 +72,10 @@
 #orders_wrapper .filter select,
 #bookings_wrapper .filter select {
     margin-right:0.5em;
+    width: unset;
+    display: unset;
 }
+
 
 /* orders */
 #bdaploneorders_wrapper {
@@ -65,9 +85,15 @@
 #bdaploneorders_length {
     margin-bottom:0.8em;
 }
+
 #bdaploneorders_length select,
 #bdaploneorders_filter input {
     font-size:90%;
+    width: unset;
+    display: unset;
+}
+#bdaploneorders_filter {
+    margin-top: 0.25em;
 }
 #bdaploneorders {
     margin-bottom:1em;

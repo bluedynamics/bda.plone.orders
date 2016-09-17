@@ -40,17 +40,38 @@
 .dropdown_header {
   cursor: pointer;
 }
-/* orders filter */
-#orders_wrapper .filter {
+/* orders filter and bookings filter */
+#orders_wrapper .filter,
+#bookings_wrapper .filter {
   padding: 0.3em;
 }
-#orders_wrapper .filter label {
+#orders_wrapper .filter:before,
+#bookings_wrapper .filter:before,
+#orders_wrapper .filter:after,
+#bookings_wrapper .filter:after {
+  content: " ";
+  display: table;
+}
+#orders_wrapper .filter:after,
+#bookings_wrapper .filter:after {
+  clear: both;
+}
+#orders_wrapper .filter > div,
+#bookings_wrapper .filter > div {
+  float: left;
+  margin-right: 1em;
+}
+#orders_wrapper .filter label,
+#bookings_wrapper .filter label {
   margin-right: 0.5em;
   padding-top: 3px;
   display: inline-block;
 }
-#orders_wrapper .filter select {
+#orders_wrapper .filter select,
+#bookings_wrapper .filter select {
   margin-right: 0.5em;
+  width: unset;
+  display: unset;
 }
 /* orders */
 #bdaploneorders_wrapper {
@@ -63,6 +84,11 @@
 #bdaploneorders_length select,
 #bdaploneorders_filter input {
   font-size: 90%;
+  width: unset;
+  display: unset;
+}
+#bdaploneorders_filter {
+  margin-top: 0.25em;
 }
 #bdaploneorders {
   margin-bottom: 1em;
@@ -107,16 +133,6 @@ a.notify_customers {
 #form-ordersfilter select,
 #form-ordersfilter input {
   margin-right: 1em;
-}
-/* start rules for bookingstable */
-/* bookings filter */
-#bookings_wrapper .filter label {
-  margin-right: 0.5em;
-  display: inline-block;
-  margin-left: 10em;
-}
-#bookings_wrapper .filter select {
-  margin-right: 0.5em;
 }
 /* bookings */
 #bdaplonebookings_wrapper {
