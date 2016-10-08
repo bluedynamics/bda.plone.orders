@@ -5,6 +5,9 @@ Changelog
 0.10.dev0
 ---------
 
+- use MwSt. instead of Ust. in german
+  [agitator]
+
 - Added item_number to order mails
   [agitator]
 
