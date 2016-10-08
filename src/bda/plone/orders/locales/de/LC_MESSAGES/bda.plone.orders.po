@@ -124,7 +124,7 @@ msgstr "Titel"
 #. Default: "vat"
 #: ./browser/order.pt:176
 msgid "booking_vat"
-msgstr "USt"
+msgstr "MwSt."
 
 #. Default: "Bookings"
 #: ./browser/bookings.pt:22
@@ -453,7 +453,7 @@ msgstr "Rabatt Netto:"
 #. Default: "Discount VAT:"
 #: ./browser/order.pt:101
 msgid "order_discount_vat"
-msgstr "Rabatt USt.:"
+msgstr "Rabatt MwSt.:"
 
 #. Default: "Order Done"
 #: ./browser/views.py:1283
@@ -563,7 +563,7 @@ msgstr "Gesamt: ${value} ${currency}"
 #. Default: "VAT: ${value} ${currency}"
 #: ./mailnotify.py:151
 msgid "order_summary_cart_vat"
-msgstr "Ust: ${value} ${currency}"
+msgstr "MwSt.: ${value} ${currency}"
 
 #. Default: "Discount Net: ${value} ${currency}"
 #: ./mailnotify.py:163
@@ -578,7 +578,7 @@ msgstr "Rabatt Gesamt: ${value} ${currency}"
 #. Default: "Discount VAT: ${value} ${currency}"
 #: ./mailnotify.py:173
 msgid "order_summary_discount_vat"
-msgstr "Rabatt Ust: ${value} ${currency}"
+msgstr "Rabatt MwSt.: ${value} ${currency}"
 
 #. Default: "Summary:"
 #: ./mailnotify.py:245
@@ -603,7 +603,7 @@ msgstr "Versand Gesamt: ${value} ${currency}"
 #. Default: "Shipping VAT: ${value} ${currency}"
 #: ./mailnotify.py:217
 msgid "order_summary_shipping_vat"
-msgstr "Versand Ust: ${value} ${currency}"
+msgstr "Versand MwSt.: ${value} ${currency}"
 
 #. Default: "Thanks for your Order."
 #: ./browser/views.py:1300
@@ -623,7 +623,7 @@ msgstr "UID Bestellung:"
 #. Default: "VAT:"
 #: ./browser/order.pt:95
 msgid "order_vat"
-msgstr "USt:"
+msgstr "MWst.""
 
 #. Default: "ZIP/City:"
 #: ./browser/order.pt:47
