@@ -38,7 +38,6 @@ setup(
         'bda.plone.cart',
         'bda.plone.checkout',
         'bda.plone.discount',
-        'bda.plone.shop',
         'collective.js.datatables',
         'collective.js.jqueryui',
         'plone.api',
