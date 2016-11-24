@@ -5,6 +5,9 @@ Changelog
 0.10.dev0
 ---------
 
+- Fix export if stock behavior not applied on buyable
+  [rnix]
+
 - use MwSt. instead of Ust. in german
   [agitator]
 
