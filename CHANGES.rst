@@ -2,8 +2,14 @@
 Changelog
 =========
 
-0.10.dev0
----------
+1.0a1 (unreleased)
+------------------
+
+- Display Toolbar contents in Plone 5 on order related content views.
+  [rnix]
+
+- Fix export orders form.
+  [rnix]
 
 - Fix export if stock behavior not applied on buyable
   [rnix]

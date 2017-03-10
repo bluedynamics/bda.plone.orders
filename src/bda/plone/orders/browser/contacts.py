@@ -1,13 +1,12 @@
 # -*- coding: utf-8 -*-
 from bda.plone.orders import message_factory as _
+from bda.plone.orders.browser.views import OrdersContentView
 from bda.plone.orders.contacts import get_contacts_soup
-from Products.Five import BrowserView
 from repoze.catalog.query import Contains
 from repoze.catalog.query import Gt
 from yafowil.utils import Tag
 from zope.i18n import translate
 from zope.i18nmessageid import Message
-
 import json
 import plone.api
 import yafowil.loader  # noqa
@@ -24,7 +23,7 @@ class Translate(object):
         return translate(msg, context=self.request)
 
 
-class ContactsTable(BrowserView):
+class ContactsTable(OrdersContentView):
     table_id = 'bdaplonecontacts'
     data_view_name = '@@contactsdata'
 

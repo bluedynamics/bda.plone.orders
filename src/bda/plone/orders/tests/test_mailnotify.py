@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from bda.plone.orders import mailnotify as MN
-
 import unittest
 
 

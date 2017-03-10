@@ -1,16 +1,20 @@
 # -*- coding: utf-8 -*-
 from AccessControl import Unauthorized
-from bda.intellidatetime import convert
+from Products.CMFPlone.utils import safe_unicode
+from Products.Five import BrowserView
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bda.intellidatetime import DateTimeConversionError
+from bda.intellidatetime import convert
 from bda.plone.orders import interfaces as ifaces
 from bda.plone.orders import message_factory as _
-from bda.plone.orders import vocabularies as vocabs
 from bda.plone.orders import permissions
+from bda.plone.orders import vocabularies as vocabs
 from bda.plone.orders.browser.dropdown import BaseDropdown
+from bda.plone.orders.browser.views import OrdersContentView
+from bda.plone.orders.browser.views import Transition
 from bda.plone.orders.browser.views import customers_form_vocab
 from bda.plone.orders.browser.views import salaried_form_vocab
 from bda.plone.orders.browser.views import states_form_vocab
-from bda.plone.orders.browser.views import Transition
 from bda.plone.orders.browser.views import vendors_form_vocab
 from bda.plone.orders.common import BookingData
 from bda.plone.orders.common import DT_FORMAT
@@ -25,9 +29,6 @@ from bda.plone.orders.transitions import transitions_of_main_state
 from bda.plone.orders.transitions import transitions_of_salaried_state
 from decimal import Decimal
 from odict import odict
-from Products.CMFPlone.utils import safe_unicode
-from Products.Five import BrowserView
-from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from repoze.catalog.query import Contains
 from repoze.catalog.query import Eq
 from repoze.catalog.query import Ge
@@ -36,7 +37,6 @@ from repoze.catalog.query import Le
 from yafowil.base import factory
 from zExceptions import InternalError
 from zope.i18n import translate
-
 import datetime
 import json
 import plone.api
@@ -119,7 +119,7 @@ class BookingSalariedTransition(BookingTransition):
     dropdown = BookingSalariedDropdown
 
 
-class BookingsView(BrowserView):
+class BookingsView(OrdersContentView):
     table_view_name = '@@bookingstable'
 
     def bookings_table(self):

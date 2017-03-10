@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from Products.CMFPlone.utils import safe_unicode
 from zope.i18nmessageid import MessageFactory
-
 import gettext
 import pycountry
 import unicodedata

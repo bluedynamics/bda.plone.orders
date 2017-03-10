@@ -1,36 +1,36 @@
 # -*- coding: utf-8 -*-
 from AccessControl import Unauthorized
+from Products.CMFPlone.interfaces import IPloneSiteRoot
+from Products.Five import BrowserView
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from Products.statusmessages.interfaces import IStatusMessage
 from bda.plone.cart import ascur
 from bda.plone.cart import get_object_by_uid
 from bda.plone.checkout import message_factory as _co
 from bda.plone.checkout.vocabularies import get_pycountry_name
 from bda.plone.orders import interfaces as ifaces
 from bda.plone.orders import message_factory as _
-from bda.plone.orders import vocabularies as vocabs
 from bda.plone.orders import permissions
+from bda.plone.orders import vocabularies as vocabs
 from bda.plone.orders.browser.dropdown import BaseDropdown
-from bda.plone.orders.common import booking_update_comment
 from bda.plone.orders.common import BookingData
 from bda.plone.orders.common import DT_FORMAT
+from bda.plone.orders.common import OrderData
+from bda.plone.orders.common import booking_update_comment
 from bda.plone.orders.common import get_orders_soup
 from bda.plone.orders.common import get_vendor_by_uid
 from bda.plone.orders.common import get_vendor_uids_for
 from bda.plone.orders.common import get_vendors_for
-from bda.plone.orders.common import OrderData
 from bda.plone.orders.interfaces import IBuyable
 from bda.plone.orders.transitions import do_transition_for
 from bda.plone.orders.transitions import transitions_of_main_state
 from bda.plone.orders.transitions import transitions_of_salaried_state
 from plone.memoize import view
-from Products.CMFPlone.interfaces import IPloneSiteRoot
-from Products.Five import BrowserView
-from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from Products.statusmessages.interfaces import IStatusMessage
 from repoze.catalog.query import Any
 from repoze.catalog.query import Contains
 from repoze.catalog.query import Eq
-from souper.soup import get_soup
 from souper.soup import LazyRecord
+from souper.soup import get_soup
 from yafowil.base import factory
 from yafowil.controller import Controller
 from yafowil.utils import Tag
@@ -39,11 +39,27 @@ from zExceptions import Redirect
 from zope.i18n import translate
 from zope.i18nmessageid import Message
 from zope.security import checkPermission
-
 import json
+import pkg_resources
 import plone.api
 import urllib
 import uuid
+
+
+IS_P4 = pkg_resources.require("Products.CMFPlone")[0].version[0] == '4'
+
+
+class OrdersContentView(BrowserView):
+
+    def disable_border(self):
+        if IS_P4:
+            self.request.set('disable_border', True)
+
+    def disable_left_column(self):
+        self.request.set('disable_plone.leftcolumn', True)
+
+    def disable_right_column(self):
+        self.request.set('disable_plone.rightcolumn', True)
 
 
 class Translate(object):
@@ -248,7 +264,7 @@ class TableData(BrowserView):
         return json.dumps(data)
 
 
-class OrdersViewBase(BrowserView):
+class OrdersViewBase(OrdersContentView):
     table_view_name = '@@orderstable'
 
     def orders_table(self):

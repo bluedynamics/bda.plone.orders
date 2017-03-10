@@ -1,38 +1,38 @@
 # -*- coding: utf-8 -*-
 from AccessControl import Unauthorized
 from Acquisition import aq_parent
+from Products.CMFPlone.utils import getToolByName
+from Products.CMFPlone.utils import safe_unicode
+from Products.Five import BrowserView
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from StringIO import StringIO
 from bda.plone.cart import get_item_stock
 from bda.plone.cart import get_object_by_uid
 from bda.plone.orders import message_factory as _
 from bda.plone.orders import permissions
 from bda.plone.orders import safe_encode
 from bda.plone.orders import safe_filename
+from bda.plone.orders.browser.views import OrdersContentView
 from bda.plone.orders.browser.views import customers_form_vocab
 from bda.plone.orders.browser.views import vendors_form_vocab
 from bda.plone.orders.common import DT_FORMAT
+from bda.plone.orders.common import OrderData
 from bda.plone.orders.common import get_bookings_soup
 from bda.plone.orders.common import get_order
 from bda.plone.orders.common import get_orders_soup
 from bda.plone.orders.common import get_vendor_uids_for
 from bda.plone.orders.common import get_vendors_for
-from bda.plone.orders.common import OrderData
 from bda.plone.orders.interfaces import IBuyable
 from decimal import Decimal
 from odict import odict
 from plone.uuid.interfaces import IUUID
-from Products.CMFPlone.utils import getToolByName
-from Products.CMFPlone.utils import safe_unicode
-from Products.Five import BrowserView
-from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from repoze.catalog.query import Any
 from repoze.catalog.query import Eq
 from repoze.catalog.query import Ge
 from repoze.catalog.query import Le
-from StringIO import StringIO
 from yafowil.base import ExtractionError
 from yafowil.controller import Controller
 from yafowil.plone.form import YAMLForm
-
 import csv
 import datetime
 import plone.api
@@ -136,7 +136,7 @@ def cleanup_for_csv(value):
     return safe_encode(value)
 
 
-class ExportOrdersForm(YAMLForm):
+class ExportOrdersForm(YAMLForm, OrdersContentView):
     browser_template = ViewPageTemplateFile('export.pt')
     form_template = 'bda.plone.orders.browser:forms/orders_export.yaml'
     message_factory = _
@@ -171,7 +171,7 @@ class ExportOrdersForm(YAMLForm):
         if to_date <= from_date:
             raise ExtractionError(_('from_date_before_to_date',
                                     default=u'From-date after to-date'))
-        return data.extracted
+        return to_date
 
     def export(self, widget, data):
         self.vendor = self.request.form.get('exportorders.vendor')
