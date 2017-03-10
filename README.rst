@@ -206,7 +206,13 @@ In your Generic Setup's profile, add to ``rolemap.xml``::
       <role name="Customer" />
       <role name="Anonymous"/>
     </permission>
-    <permission name="bda.plone.shop: Buy Items" acquire="True">
+    <permission name="bda.plone.shop: Modify Cart" acquire="True">
+      <role name="Manager" />
+      <role name="Site Administrator" />
+      <role name="Customer" />
+      <role name="Anonymous"/>
+    </permission>
+    <permission name="bda.plone.checkout: Perform Checkout" acquire="True">
       <role name="Manager" />
       <role name="Site Administrator" />
       <role name="Customer" />
