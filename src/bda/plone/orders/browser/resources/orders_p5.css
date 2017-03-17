@@ -257,6 +257,13 @@ a.notify_customers {
 .booking_comment_spinner {
   display: none;
 }
+input[type="text"].booking_comment_edit {
+  display: inline-block;
+  width: 10em;
+  height: unset;
+  font-size: unset;
+  padding: 0 0.5em;
+}
 .order_bookings {
   padding: 0 0.4em 0.4em 0.4em;
 }
