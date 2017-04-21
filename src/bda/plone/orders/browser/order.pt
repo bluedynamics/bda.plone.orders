@@ -214,7 +214,7 @@
                      class="booking_comment_spinner"
                      src="#"
                      alt="spinner icon"
-                     tal:attributes="src string:${context/absolute_url}/spinner.gif"/>
+                     tal:attributes="src string:${context/absolute_url}/++resource++bda.plone.orders/spinner.gif"/>
 
                 <a tal:condition="python:view.can_modify_order"
                     class="booking_comment_edit booking_comment_save_action"
