@@ -150,9 +150,10 @@ class MailNotify(object):
             return
         purl = getToolByName(self.context, 'portal_url')
         mailfrom = purl.getPortalObject().email_from_address
-        mailfrom_name = purl.getPortalObject().email_from_name
-        if mailfrom_name:
-            mailfrom = u"%s <%s>" % (safe_unicode(mailfrom_name), mailfrom)
+        # disable mailfrom name because of wrong encoding
+        # mailfrom_name = purl.getPortalObject().email_from_name
+        # if mailfrom_name:
+        #     mailfrom = u"%s <%s>" % (safe_unicode(mailfrom_name), mailfrom)
         mailhost = getToolByName(self.context, 'MailHost')
         subject = subject.encode('utf-8')
         subject = Header(subject, 'utf-8')
