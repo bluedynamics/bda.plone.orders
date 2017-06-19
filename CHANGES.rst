@@ -5,6 +5,9 @@ Changelog
 1.0a1 (unreleased)
 ------------------
 
+- Don't fail in ``@@contacts`` view when searching for non-ascii characters.
+  [thet]
+
 - Display Toolbar contents in Plone 5 on order related content views.
   [rnix]
 
