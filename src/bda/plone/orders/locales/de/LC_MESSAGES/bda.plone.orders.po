@@ -851,4 +851,4 @@ msgstr "Ja"
 #. Default: "Your Order number"
 #: browser/order_done.pt:24
 msgid "your_order_order_id"
-msgstr "Ihre Bestellnummer: ${number}"
+msgstr "Ihre Bestellnummer"
