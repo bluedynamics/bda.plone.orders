@@ -2,11 +2,13 @@
 from bda.plone.orders import message_factory as _
 from bda.plone.orders.browser.views import OrdersContentView
 from bda.plone.orders.contacts import get_contacts_soup
+from Products.CMFPlone.utils import safe_unicode
 from repoze.catalog.query import Contains
 from repoze.catalog.query import Gt
 from yafowil.utils import Tag
 from zope.i18n import translate
 from zope.i18nmessageid import Message
+
 import json
 import plone.api
 import yafowil.loader  # noqa
@@ -142,7 +144,7 @@ class ContactsTable(OrdersContentView):
     def query(self, soup):
         # always get all contacts
         query = Gt('uid', 1)
-        req_text = self.request.get('search[value]', '')
+        req_text = safe_unicode(self.request.get('search[value]', ''))
         text_query = self._text_checker(req_text)
         # take fulltext search into account
         if text_query:
