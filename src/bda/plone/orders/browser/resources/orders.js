@@ -10,6 +10,7 @@
             orders_bookings_datatable_binder: orders.bookings_datatable_binder,
             orders_contacts_datatable_binder: orders.contacts_datatable_binder,
             orders_dropdown_menus: orders.dropdown_binder,
+            orders_notification_binder: orders.notification_binder,
             orders_notification_form_binder: orders.notification_form_binder,
             orders_qr_code_binder: orders.qr_code_binder,
             cancel_confirm_binder: orders.cancel_confirm_binder,
