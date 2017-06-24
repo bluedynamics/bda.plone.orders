@@ -5,6 +5,9 @@ Changelog
 1.0a1 (unreleased)
 ------------------
 
+- @@orders: rebind notification binder also after datatable has been updated.
+  [thet]
+
 - Don't fail in ``@@contacts`` view when searching for non-ascii characters.
   [thet]
 
