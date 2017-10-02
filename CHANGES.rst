@@ -5,6 +5,11 @@ Changelog
 1.0a1 (unreleased)
 ------------------
 
+- Also handle transaction id and payment state for ``bda.plone.stripe``
+  payment in ``bda.plone.common.payment_success`` and
+  ``bda.plone.common.payment_failed`` event subscribers.
+  [rnix]
+
 - @@orders: rebind notification binder also after datatable has been updated.
   [thet]
 

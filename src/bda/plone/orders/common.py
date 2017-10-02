@@ -932,18 +932,30 @@ class PaymentData(object):
 
 def payment_success(event):
     # XXX: move concrete payment specific changes to bda.plone.payment and
-    #      use ZCA for calling
+    #      use ZCA for calling. Maybe use named adapter for event by
+    #      payment name
     if event.payment.pid == 'six_payment':
         data = event.data
         order = OrderData(event.context, uid=event.order_uid)
         order.salaried = ifaces.SALARIED_YES
         order.tid = data['tid']
+    if event.payment.pid == 'stripe_payment':
+        data = event.data
+        order = OrderData(event.context, uid=event.order_uid)
+        order.salaried = ifaces.SALARIED_YES
+        order.tid = data['charge_id']
 
 
 def payment_failed(event):
     # XXX: move concrete payment specific changes to bda.plone.payment and
-    #      use ZCA for calling
+    #      use ZCA for calling. Maybe use named adapter for event by
+    #      payment name
     if event.payment.pid == 'six_payment':
+        data = event.data
+        order = OrderData(event.context, uid=event.order_uid)
+        order.salaried = ifaces.SALARIED_FAILED
+        order.tid = data['tid']
+    if event.payment.pid == 'stripe_payment':
         data = event.data
         order = OrderData(event.context, uid=event.order_uid)
         order.salaried = ifaces.SALARIED_FAILED
