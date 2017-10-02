@@ -33,7 +33,9 @@ Please follow the instructions in `Customizing the shop` in the
 
 .. _`bda.plone.shop`: https://github.com/bluedynamics/bda.plone.shop
 
- After that you can start customizing the order process::
+ After that you can start customizing the order process:
+
+ .. code-block:: python
 
     def patchShop():
         patchMailTemplates()
@@ -50,7 +52,7 @@ and ``RESERVATION_TEMPLATES``. Its a nested dict. On the first level is the
 langugae code, the second level is ``subject``, ``body`` and
 ``delivery_address``. Change them i.e. like this:
 
-::
+.. code-block:: python
 
     from bda.plone.orders.mailtemplates import ORDER_TEMPLATES
     from bda.plone.orders.mailtemplates import RESERVATION_TEMPLATES
@@ -70,7 +72,7 @@ own very custom. To do provide your own two functions similar to
 ``bda.plone.orders.mailnotify.notify_checkout_success`` and
 ``bda.plone.orders.mailnotify.notify_payment_success``. Then
 
-::
+.. code-block:: python
 
     from bda.plone.orders.mailnotify import NOTIFICATIONS
 
@@ -91,7 +93,9 @@ To make a new field show up in the export, just add it to the
 list ``ORDER_EXPORT_ATTRS``.
 
 In this example we include the company uid we added in the example for
-customizing ``bda.plone.checkout`` right after the company name::
+customizing ``bda.plone.checkout`` right after the company name:
+
+.. code-block:: python
 
     from bda.plone.orders.browser.views import ORDER_EXPORT_ATTRS
 
@@ -106,7 +110,9 @@ Order details
 To show the data of the new field in the detail view of the order
 customize ``bda/plone/orders/browser/order.pt`` using
 `z3c.jbot <https://pypi.python.org/pypi/z3c.jbot>`_ or by registering
-the page for your policy package's browserlayer or themelayer::
+the page for your policy package's browserlayer or themelayer:
+
+.. code-block:: xml
 
     <browser:page
       for="zope.component.interfaces.ISite"
@@ -189,7 +195,9 @@ TODO: document
 How To allow anonymous users to buy items
 =========================================
 
-In your Generic Setup's profile, add to ``rolemap.xml``::
+In your Generic Setup's profile, add to ``rolemap.xml``:
+
+.. code-block:: xml
 
     <!-- Allow Anonymous to buy items -->
     <permission name="bda.plone.orders: View Order Directly" acquire="True">
