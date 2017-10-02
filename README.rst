@@ -33,7 +33,7 @@ Please follow the instructions in `Customizing the shop` in the
 
 .. _`bda.plone.shop`: https://github.com/bluedynamics/bda.plone.shop
 
- After that you can start customizing the order process:
+After that you can start customizing the order process:
 
 .. code-block:: python
 
