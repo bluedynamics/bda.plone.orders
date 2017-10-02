@@ -959,7 +959,7 @@ def payment_failed(event):
         data = event.data
         order = OrderData(event.context, uid=event.order_uid)
         order.salaried = ifaces.SALARIED_FAILED
-        order.tid = data['tid']
+        order.tid = data['charge_id']
 
 
 def booking_update_comment(context, booking_uid, comment):
