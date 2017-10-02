@@ -35,7 +35,7 @@ Please follow the instructions in `Customizing the shop` in the
 
  After that you can start customizing the order process:
 
- .. code-block:: python
+.. code-block:: python
 
     def patchShop():
         patchMailTemplates()
