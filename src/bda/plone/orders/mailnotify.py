@@ -19,6 +19,8 @@ from bda.plone.orders.mailtemplates import get_booking_reserved_to_ordered_templ
 from bda.plone.orders.mailtemplates import get_order_templates
 from bda.plone.orders.mailtemplates import get_reservation_templates
 from bda.plone.orders.mailtemplates import get_stock_threshold_reached_templates  # noqa
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 from email.utils import formataddr
 from plone import api
 from zope.component.hooks import getSite
@@ -324,26 +326,37 @@ def create_mail_body(templates, context, order_data):
     )
     arguments['portal_url'] = getSite().absolute_url()
     arguments['date'] = attrs['created'].strftime(DT_FORMAT)
-    salutation = translate(attrs['personal_data.gender'],
-                           domain='bda.plone.checkout',
-                           target_language=lang)
+    salutation = translate(
+        attrs['personal_data.gender'],
+        domain='bda.plone.checkout',
+        target_language=lang
+    )
     arguments['salutation'] = salutation
 
     # Change country code to translated country name
     if arguments.get('billing_address.country', None):
-        arguments['billing_address.country'] = get_country_name(arguments['billing_address.country'], lang=lang)  # noqa
+        arguments['billing_address.country'] = \
+            get_country_name(
+                arguments['billing_address.country'],
+                lang=lang
+            )
 
     if arguments.get('delivery_address.country', None):
-        arguments['delivery_address.country'] = get_country_name(arguments['delivery_address.country'], lang=lang)  # noqa
+        arguments['delivery_address.country'] = \
+            get_country_name(
+                arguments['delivery_address.country'],
+                lang=lang
+            )
 
-    # todo: next should be a cb
+    # XXX: next should be a cb
     arguments['delivery_address'] = ''
     if attrs['delivery_address.alternative_delivery']:
         delivery_address_template = templates.get('delivery_address', None)
         if delivery_address_template:
             # If no template is defined, it might not be useful in this context
             # (e.g. cancelling bookings)
-            arguments['delivery_address'] = delivery_address_template % arguments  # noqa
+            arguments['delivery_address'] = \
+                delivery_address_template % arguments
 
     for name in POSSIBLE_TEMPLATE_CALLBACKS:
         _process_template_cb(
@@ -366,7 +379,18 @@ class MailNotify(object):
         self.context = context
         self.settings = INotificationSettings(self.context)
 
-    def send(self, subject, message, receiver):
+    def create_multipart_message(subject, from_, to, text, html):
+        message = MIMEMultipart('alternative')
+        message['Subject'] = subject
+        message['From'] = from_
+        message['To'] = to
+        # According to RFC 2046, the last part of a multipart message, in this case
+        # the HTML message, is best and preferred.
+        message.attach(MIMEText(text, 'plain'))
+        message.attach(MIMEText(html, 'html'))
+        return message
+
+    def send(self, subject, receiver, text, html=None):
         shop_manager_address = self.settings.admin_email
         if not shop_manager_address:
             raise ValueError('Shop manager address is missing in settings.')
@@ -376,6 +400,16 @@ class MailNotify(object):
             mailfrom = formataddr((from_name, shop_manager_address))
         else:
             mailfrom = shop_manager_address
+        if html is None:
+            message = text
+        else:
+            message = self.create_multipart_message(
+                subject,
+                mailfrom,
+                receiver,
+                text,
+                html
+            )
         api.portal.send_email(
             recipient=receiver,
             sender=mailfrom,
@@ -387,10 +421,13 @@ class MailNotify(object):
 def do_notify(context, order_data, templates, receiver):
     attrs = order_data.order.attrs
     subject = templates['subject'] % attrs['ordernumber']
-    message = create_mail_body(templates, context, order_data)
+    text = create_mail_body(templates, context, order_data)
+    html = None
+    # XXX
+    # html = create_html_mail_body(templates, context, order_data)
     mail_notify = MailNotify(context)
     try:
-        mail_notify.send(subject, message, receiver)
+        mail_notify.send(subject, receiver, text, html=html)
     except Exception:
         msg = translate(
             _('email_sending_failed',
