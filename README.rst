@@ -85,6 +85,13 @@ own very custom. To do provide your own two functions similar to
     NOTIFICATIONS['checkout_success'] = [my_notify_checkout_success]
     NOTIFICATIONS['payment_success'] = [my_notify_payment_success]
 
+.. warning::
+
+    As of ``bda.plone.orders`` 1.0a1, signatue of
+    ``bda.plone.orders.MailNotify.send`` changed. It accepts now
+    ``subject``, ``receiver`` and ``text`` as positional arguments and an
+    optional ``html`` argument.
+
 
 Order Export
 ------------
