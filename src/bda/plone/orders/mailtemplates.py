@@ -676,7 +676,9 @@ ORDER_TEMPLATES = {
     'en': {
         'subject': ORDER_SUBJECT_EN,
         'body': ORDER_BODY_EN,
-        'delivery_address': DELIVERY_ADDRESS_EN},
+        'body_html': ORDER_BODY_HTML_EN,
+        'delivery_address': DELIVERY_ADDRESS_EN,
+        'delivery_address_html': DELIVERY_ADDRESS_HTML_EN},
     'de': {
         'subject': ORDER_SUBJECT_DE,
         'body': ORDER_BODY_DE,
@@ -699,7 +701,9 @@ RESERVATION_TEMPLATES = {
     'en': {
         'subject': RESERVATION_SUBJECT_EN,
         'body': RESERVATION_BODY_EN,
-        'delivery_address': DELIVERY_ADDRESS_EN},
+        'body_html': RESERVATION_BODY_HTML_EN,
+        'delivery_address': DELIVERY_ADDRESS_EN,
+        'delivery_address_html': DELIVERY_ADDRESS_HTML_EN},
     'de': {
         'subject': RESERVATION_SUBJECT_DE,
         'body': RESERVATION_BODY_DE,
@@ -721,7 +725,8 @@ RESERVATION_TEMPLATES = {
 CANCELLED_BOOKING_TEMPLATES = {
     'en': {
         'subject': CANCELLED_BOOKING_SUBJECT_EN,
-        'body': CANCELLED_BOOKING_BODY_EN},
+        'body': CANCELLED_BOOKING_BODY_EN,
+        'body_html': CANCELLED_BOOKING_BODY_HTML_EN},
     'de': {
         'subject': CANCELLED_BOOKING_SUBJECT_DE,
         'body': CANCELLED_BOOKING_BODY_DE},
@@ -739,7 +744,8 @@ CANCELLED_BOOKING_TEMPLATES = {
 BOOKING_RESERVED_TO_ORDERED_TEMPLATES = {
     'en': {
         'subject': BOOKING_RESERVED_TO_ORDERED_SUBJECT_EN,
-        'body': BOOKING_RESERVED_TO_ORDERED_BODY_EN},
+        'body': BOOKING_RESERVED_TO_ORDERED_BODY_EN,
+        'body_html': BOOKING_RESERVED_TO_ORDERED_BODY_HTML_EN},
     'de': {
         'subject': BOOKING_RESERVED_TO_ORDERED_SUBJECT_DE,
         'body': BOOKING_RESERVED_TO_ORDERED_BODY_DE}
@@ -748,7 +754,8 @@ BOOKING_RESERVED_TO_ORDERED_TEMPLATES = {
 STOCK_THRESHOLD_REACHED_TEMPLATES = {
     'en': {
         'subject': STOCK_THRESHOLD_REACHED_SUBJECT_EN,
-        'body': STOCK_THRESHOLD_REACHED_BODY_EN}
+        'body': STOCK_THRESHOLD_REACHED_BODY_EN,
+        'body_html': STOCK_THRESHOLD_REACHED_BODY_HTML_EN}
 }
 
 
