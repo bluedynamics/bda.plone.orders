@@ -76,32 +76,26 @@ def _process_template_cb(name, tpls, args, context, order_data):
         args[name] = tpls[cb_name](context, order_data)
 
 
-def mail_listing_item(context, booking):
-    brain = get_catalog_brain(context, booking.attrs['buyable_uid'])
-    # fetch buyable
-    buyable = brain.getObject()
-    # fetch buyable title
-    title = safe_unicode(booking.attrs['title'])
-    # fetch item_number
+def mail_listing_item_data(buyable, booking, state):
+    data = dict()
+    data['title'] = safe_unicode(booking.attrs['title'])
     item_number = u''
     if booking.attrs['item_number']:
         item_number = u' ({0})'.format(
             safe_unicode(booking.attrs['item_number']))
-    # fetch buyable comment
-    comment = safe_unicode(booking.attrs['buyable_comment'])
-    # fetch currency
-    currency = safe_unicode(booking.attrs['currency'])
-    # fetch net
-    net = booking.attrs['net']
-    # build price
-    # XXX: discount
-    return {
-        'title': title,
-        'item_number': item_number,
-        'comment': comment,
-        'currency': currency,
-        'net': net
-    }
+    data['item_number'] = item_number
+    data['comment'] = safe_unicode(booking.attrs['buyable_comment'])
+    data['currency'] = safe_unicode(booking.attrs['currency'])
+    data['net'] = booking.attrs['net']
+    data['discount_net'] = booking.attrs['discount_net']
+    notificationtext = IItemNotificationText(buyable)
+    text = None
+    if state == ifaces.STATE_RESERVED:
+        text = notificationtext.overbook_text
+    elif state == ifaces.STATE_NEW:
+        text = notificationtext.order_text
+    data['text'] = text
+    return data
 
 
 def create_mail_listing(
@@ -119,41 +113,39 @@ def create_mail_listing(
         state = safe_unicode(booking.attrs.get('state'))
         if state not in include_booking_states:
             continue
-        item = mail_listing_item(context, booking)
-        title = item['title']
-        item_number = item['item_number']
-        comment = item['comment']
-        currency = item['currency']
-        net = item['net']
-        # extend title by comment
+        # fetch buyable
+        brain = get_catalog_brain(context, booking.attrs['buyable_uid'])
+        buyable = brain.getObject()
+        # extract mail listing item data
+        item_data = mail_listing_item_data(buyable, booking, state)
+        # build title
+        title = item_data['title']
+        comment = item_data['comment']
         if comment:
             title = u'{0} ({1})'.format(title, comment)
         # build price
+        currency = item_data['currency']
+        net = item_data['net']
+        # XXX
+        # discount_net = item_data['discount_net']
         price = u'{currency} {net: 0.2f}'.format(
             currency=currency,
             net=net
         )
-        # XXX: discount
+        # build state text
         state_text = u''
         if state == ifaces.STATE_RESERVED:
             state_text = u' ({0})'.format(vocabs.state_vocab()[state])
-        line = u'{count: 4f} {title}{item_number} {state} {price}'.format(
+        # build listing entry
+        lines.append(u'{count: 4f} {title} {item_number} {state} {price}'.format(
             count=booking.attrs['buyable_count'],
             title=title,
-            item_number=item_number,
+            item_number=item_data['item_number'],
             state=state_text,
             price=price,
-        )
-        lines.append(line)
-        if comment:
-            lines.append(_indent(u'({0})'.format(comment)))
-        notificationtext = IItemNotificationText(buyable)
-        if state == ifaces.STATE_RESERVED:
-            text = notificationtext.overbook_text
-        elif state == ifaces.STATE_NEW:
-            text = notificationtext.order_text
-        else:
-            text = None
+        ))
+        # add additional text if present
+        text = item_data['text']
         if text:
             lines.append(_indent(text))
     return u'\n'.join(lines)
