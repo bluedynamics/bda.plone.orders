@@ -77,6 +77,8 @@ def _process_template_cb(name, tpls, args, context, order_data):
 
 
 def mail_listing_item_data(buyable, booking, state):
+    """Extract listing item data.
+    """
     data = dict()
     data['title'] = safe_unicode(booking.attrs['title'])
     item_number = u''
@@ -98,6 +100,44 @@ def mail_listing_item_data(buyable, booking, state):
     return data
 
 
+def create_mail_listing_item(buyable, booking, state):
+    """Create text mail listing item.
+    """
+    item_data = mail_listing_item_data(buyable, booking, state)
+    # count
+    text = u'{:4f}'.format(booking.attrs['buyable_count'])
+    # title
+    title = item_data['title']
+    comment = item_data['comment']
+    if comment:
+        title = u'{} ({})'.format(title, comment)
+    text = u'{} {}'.format(text, title)
+    # item number
+    item_number = item_data['item_number']
+    if item_number:
+        text = u'{} {}'.format(text, item_number)
+    # state
+    state_text = u''
+    if state == ifaces.STATE_RESERVED:
+        state_text = u'({})'.format(vocabs.state_vocab()[state])
+    if state_text:
+        text = u'{} {}'.format(text, state_text)
+    # price
+    currency = item_data['currency']
+    net = item_data['net']
+    discount_net = item_data['discount_net']
+    if discount_net:
+        price = u'{} {:0.2f} (-{:0.2f})'.format(currency, net, discount_net)
+    else:
+        price = u'{} {:0.2f}'.format(currency, net)
+    text = u'{} {}'.format(text, price)
+    # additional text
+    additional = item_data['text']
+    if additional:
+        return u'\n'.join([text, additional])
+    return text
+
+
 def create_mail_listing(
     context,
     order_data,
@@ -106,52 +146,26 @@ def create_mail_listing(
         ifaces.STATE_NEW,
         ifaces.STATE_PROCESSING
     )):
-    """Create item listing for notification mail.
+    """Create text item listing for notification mail.
     """
-    lines = []
+    items = []
     for booking in order_data.bookings:
         state = safe_unicode(booking.attrs.get('state'))
+        # ignore if not in include states
         if state not in include_booking_states:
             continue
-        # fetch buyable
+        # get buyable
         brain = get_catalog_brain(context, booking.attrs['buyable_uid'])
         buyable = brain.getObject()
-        # extract mail listing item data
-        item_data = mail_listing_item_data(buyable, booking, state)
-        # build title
-        title = item_data['title']
-        comment = item_data['comment']
-        if comment:
-            title = u'{0} ({1})'.format(title, comment)
-        # build price
-        currency = item_data['currency']
-        net = item_data['net']
-        # XXX
-        # discount_net = item_data['discount_net']
-        price = u'{currency} {net: 0.2f}'.format(
-            currency=currency,
-            net=net
-        )
-        # build state text
-        state_text = u''
-        if state == ifaces.STATE_RESERVED:
-            state_text = u' ({0})'.format(vocabs.state_vocab()[state])
-        # build listing entry
-        lines.append(u'{count: 4f} {title} {item_number} {state} {price}'.format(
-            count=booking.attrs['buyable_count'],
-            title=title,
-            item_number=item_data['item_number'],
-            state=state_text,
-            price=price,
-        ))
-        # add additional text if present
-        text = item_data['text']
-        if text:
-            lines.append(_indent(text))
-    return u'\n'.join(lines)
+        # add item
+        items.append(create_mail_listing_item(buyable, booking, state))
+    return u'\n'.join(items)
 
 
 def create_reserved_item_listing(context, order_data):
+    """Create text item listing for notification mail containing reserved items
+    from this order.
+    """
     return create_mail_listing(
         context,
         order_data,
