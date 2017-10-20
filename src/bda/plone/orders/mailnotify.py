@@ -47,8 +47,9 @@ POSSIBLE_TEMPLATE_CALLBACKS = [
     'stock_threshold_reached_text',
 ]
 
-
-# MAIL NOTIFICATION UTILITIES
+###############################################################################
+# mail notification utilities
+###############################################################################
 
 def get_order_uid(event):
     uid = None
@@ -75,6 +76,34 @@ def _process_template_cb(name, tpls, args, context, order_data):
         args[name] = tpls[cb_name](context, order_data)
 
 
+def mail_listing_item(context, booking):
+    brain = get_catalog_brain(context, booking.attrs['buyable_uid'])
+    # fetch buyable
+    buyable = brain.getObject()
+    # fetch buyable title
+    title = safe_unicode(booking.attrs['title'])
+    # fetch item_number
+    item_number = u''
+    if booking.attrs['item_number']:
+        item_number = u' ({0})'.format(
+            safe_unicode(booking.attrs['item_number']))
+    # fetch buyable comment
+    comment = safe_unicode(booking.attrs['buyable_comment'])
+    # fetch currency
+    currency = safe_unicode(booking.attrs['currency'])
+    # fetch net
+    net = booking.attrs['net']
+    # build price
+    # XXX: discount
+    return {
+        'title': title,
+        'item_number': item_number,
+        'comment': comment,
+        'currency': currency,
+        'net': net
+    }
+
+
 def create_mail_listing(
     context,
     order_data,
@@ -82,8 +111,7 @@ def create_mail_listing(
         ifaces.STATE_FINISHED,
         ifaces.STATE_NEW,
         ifaces.STATE_PROCESSING
-    )
-):
+    )):
     """Create item listing for notification mail.
     """
     lines = []
@@ -91,24 +119,15 @@ def create_mail_listing(
         state = safe_unicode(booking.attrs.get('state'))
         if state not in include_booking_states:
             continue
-        brain = get_catalog_brain(context, booking.attrs['buyable_uid'])
-        # fetch buyable
-        buyable = brain.getObject()
-        # fetch buyable title
-        title = safe_unicode(booking.attrs['title'])
-        # fetch item_number
-        item_number = u''
-        if booking.attrs['item_number']:
-            item_number = u' ({0})'.format(
-                safe_unicode(booking.attrs['item_number']))
-        # fetch buyable comment
-        comment = safe_unicode(booking.attrs['buyable_comment'])
+        item = mail_listing_item(context, booking)
+        title = item['title']
+        item_number = item['item_number']
+        comment = item['comment']
+        currency = item['currency']
+        net = item['net']
+        # extend title by comment
         if comment:
             title = u'{0} ({1})'.format(title, comment)
-        # fetch currency
-        currency = safe_unicode(booking.attrs['currency'])
-        # fetch net
-        net = booking.attrs['net']
         # build price
         price = u'{currency} {net: 0.2f}'.format(
             currency=currency,
@@ -369,7 +388,9 @@ def create_mail_body(templates, context, order_data):
     return templates['body'] % arguments
 
 
-# DO NOTIFY
+###############################################################################
+# mail notification
+###############################################################################
 
 class MailNotify(object):
     """Mail notifyer.
@@ -447,8 +468,9 @@ def do_notify_shopmanager(context, order_data, templates):
     do_notify(context, order_data, templates, shop_manager_address)
 
 
-# ORDER SUCCSESS
-
+###############################################################################
+# order success
+###############################################################################
 
 def dispatch_notify_order_success(event):
     for func in NOTIFICATIONS['order_success']:
@@ -493,7 +515,9 @@ NOTIFICATIONS['order_success'].append(notify_order_success_customer)
 NOTIFICATIONS['order_success'].append(notify_order_success_shopmanager)
 
 
-# CHECKOUT SUCCSESS
+###############################################################################
+# checkout success
+###############################################################################
 
 def dispatch_notify_checkout_success(event):
     for func in NOTIFICATIONS['checkout_success']:
@@ -523,8 +547,9 @@ NOTIFICATIONS['checkout_success'].append(notify_checkout_success_customer)
 NOTIFICATIONS['checkout_success'].append(notify_checkout_success_shopmanager)
 
 
-# PAYMENT SUCCESS
-
+###############################################################################
+# payment success
+###############################################################################
 
 def dispatch_notify_payment_success(event):
     for func in NOTIFICATIONS['payment_success']:
@@ -548,7 +573,9 @@ NOTIFICATIONS['payment_success'].append(notify_payment_success_customer)
 NOTIFICATIONS['payment_success'].append(notify_payment_success_shopmanager)
 
 
-# BOOKING CANCELLED
+###############################################################################
+# booking cancelled
+###############################################################################
 
 BOOKING_CANCELLED_TITLE_ATTRIBUTE = 'title'
 
@@ -597,8 +624,9 @@ NOTIFICATIONS['booking_cancelled'].append(notify_booking_cancelled_customer)
 NOTIFICATIONS['booking_cancelled'].append(notify_booking_cancelled_shopmanager)
 
 
-# BOOKING RESERVED TO ORDERED
-
+###############################################################################
+# booking reserved to ordered
+###############################################################################
 
 def dispatch_notify_booking_reserved_to_ordered(event):
     for func in NOTIFICATIONS['booking_reserved_to_ordered']:
@@ -638,7 +666,9 @@ NOTIFICATIONS['booking_reserved_to_ordered'].append(notify_booking_reserved_to_o
 NOTIFICATIONS['booking_reserved_to_ordered'].append(notify_booking_reserved_to_ordered_shopmanager)  # noqa
 
 
-# STOCK THRESHOLD REACHED
+###############################################################################
+# stock threshold reached
+###############################################################################
 
 def dispatch_notify_stock_threshold_reached(event):
     for func in NOTIFICATIONS['stock_threshold_reached']:
