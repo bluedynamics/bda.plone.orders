@@ -669,7 +669,7 @@ Order details: %(portal_url)s/@@showorder?ordernumber=%(ordernumber)s
 
 
 ###############################################################################
-# language templates
+# template registry
 ###############################################################################
 
 ORDER_TEMPLATES = {

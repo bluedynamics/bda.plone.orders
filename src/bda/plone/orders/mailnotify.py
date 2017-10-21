@@ -45,6 +45,7 @@ POSSIBLE_TEMPLATE_CALLBACKS = [
     'order_summary',
     'payment_text',
     'stock_threshold_reached_text',
+    'delivery_address',
 ]
 
 
@@ -69,6 +70,10 @@ def _indent(text, ind=5, width=80):
 
 
 def _process_template_cb(name, tpls, args, context, order_data):
+    """Process template callback.
+
+    The result of the template callback gets written to args.
+    """
     cb_name = u'{0:s}_cb'.format(name)
     if cb_name in tpls:
         args[name] = tpls[cb_name](context, order_data)
@@ -222,7 +227,7 @@ def create_order_listing_item(buyable, booking, state):
     # notification text
     notification = item_data['notification']
     if notification:
-        return u'\n'.join([text, notification])
+        return u'\n'.join([text, _indent(notification)])
     return text
 
 
@@ -382,36 +387,13 @@ def create_payment_text(context, order_data):
     return u''
 
 
-def create_mail_body(templates, context, order_data):
-    """Creates a rendered mail body
-
-    templates
-        Dict with a bunch of cbs and the body template itself.
-
-    context
-        Some object in Plone which can be used as a context to acquire from
-
-    order_data
-        Order-data instance.
-    """
-    arguments = mail_body_data(context, order_data)
-    arguments['delivery_address'] = ''
+def create_delivery_address(context, order_data):
     if order_data.order.attrs['delivery_address.alternative_delivery']:
-        delivery_address_template = templates.get('delivery_address', None)
-        if delivery_address_template:
-            # If no template is defined, it might not be useful in this context
-            # (e.g. cancelling bookings)
-            arguments['delivery_address'] = \
-                delivery_address_template % arguments
-    for name in POSSIBLE_TEMPLATE_CALLBACKS:
-        _process_template_cb(
-            name,
-            templates,
-            arguments,
-            context,
-            order_data
-        )
-    return templates['body'] % arguments
+        templates = get_order_templates(context)
+        delivery_address_template = templates['delivery_address']
+        arguments = mail_body_data(context, order_data)
+        return delivery_address_template % arguments
+    return u''
 
 
 ###############################################################################
@@ -465,10 +447,34 @@ class MailNotify(object):
         )
 
 
+def create_text_mail_body(templates, context, order_data):
+    """Creates a rendered mail body
+
+    templates
+        Dict with a bunch of cbs and the body template itself.
+
+    context
+        Some object in Plone which can be used as a context to acquire from
+
+    order_data
+        Order-data instance.
+    """
+    arguments = mail_body_data(context, order_data)
+    for name in POSSIBLE_TEMPLATE_CALLBACKS:
+        _process_template_cb(
+            name,
+            templates,
+            arguments,
+            context,
+            order_data
+        )
+    return templates['body'] % arguments
+
+
 def do_notify(context, order_data, templates, receiver):
     attrs = order_data.order.attrs
     subject = templates['subject'] % attrs['ordernumber']
-    text = create_mail_body(templates, context, order_data)
+    text = create_text_mail_body(templates, context, order_data)
     html = None
     # XXX
     # html = create_html_mail_body(templates, context, order_data)
@@ -522,6 +528,7 @@ def notify_order_success(event, who=None):
     templates['order_summary_cb'] = create_order_summary
     templates['global_text_cb'] = create_global_text
     templates['payment_text_cb'] = create_payment_text
+    templates['delivery_address_cb'] = create_delivery_address
     if who == "customer":
         do_notify_customer(event.context, order_data, templates)
     else:
