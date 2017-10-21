@@ -80,7 +80,7 @@ def _process_template_cb(name, tpls, args, context, order_data):
 
 
 ###############################################################################
-# mail notification related data
+# mail notification related data exraction
 ###############################################################################
 
 def order_item_data(context, booking):
@@ -214,8 +214,127 @@ def mail_body_data(context, order_data):
 
 
 ###############################################################################
-# order mail template callbacks and helpers
+# mail notification
 ###############################################################################
+
+class MailNotify(object):
+    """Mail notifyer.
+    """
+
+    def __init__(self, context):
+        self.context = context
+        self.settings = INotificationSettings(self.context)
+
+    def create_multipart_message(subject, from_, to, text, html):
+        message = MIMEMultipart('alternative')
+        message['Subject'] = subject
+        message['From'] = from_
+        message['To'] = to
+        # According to RFC 2046, the last part of a multipart message, in this case
+        # the HTML message, is best and preferred.
+        message.attach(MIMEText(text, 'plain'))
+        message.attach(MIMEText(html, 'html'))
+        return message
+
+    def send(self, subject, receiver, text, html=None):
+        shop_manager_address = self.settings.admin_email
+        if not shop_manager_address:
+            raise ValueError('Shop manager address is missing in settings.')
+        shop_manager_name = self.settings.admin_name
+        if shop_manager_name:
+            from_name = shop_manager_name
+            mailfrom = formataddr((from_name, shop_manager_address))
+        else:
+            mailfrom = shop_manager_address
+        if html is None:
+            message = text
+        else:
+            message = self.create_multipart_message(
+                subject,
+                mailfrom,
+                receiver,
+                text,
+                html
+            )
+        api.portal.send_email(
+            recipient=receiver,
+            sender=mailfrom,
+            subject=subject,
+            body=message,
+        )
+
+
+def create_text_mail_body(templates, context, order_data):
+    """Creates a rendered mail body
+
+    templates
+        Dict with a bunch of cbs and the body template itself.
+
+    context
+        Some object in Plone which can be used as a context to acquire from.
+
+    order_data
+        Order-data instance.
+    """
+    arguments = mail_body_data(context, order_data)
+    for name in POSSIBLE_TEMPLATE_CALLBACKS:
+        _process_template_cb(
+            name,
+            templates,
+            arguments,
+            context,
+            order_data
+        )
+    return templates['body'] % arguments
+
+
+def create_html_mail_body(template, context, order_data):
+    """Creates a rendered mail body
+
+    template
+        HTML template name as string.
+
+    context
+        Some object in Plone which can be used as a context to acquire from.
+
+    order_data
+        Order-data instance.
+    """
+    return None
+
+
+def do_notify(context, order_data, template, templates, receiver):
+    attrs = order_data.order.attrs
+    subject = templates['subject'] % attrs['ordernumber']
+    text = create_text_mail_body(templates, context, order_data)
+    html = create_html_mail_body(template, context, order_data)
+    mail_notify = MailNotify(context)
+    try:
+        mail_notify.send(subject, receiver, text, html=html)
+    except Exception:
+        msg = translate(
+            _('email_sending_failed',
+              default=u'Failed to send notification to ${receiver}',
+              mapping={'receiver': receiver}))
+        api.portal.show_message(message=msg, request=context.REQUEST)
+        logger.exception("Email could not be sent.")
+
+
+def do_notify_customer(context, order_data, template, templates):
+    customer_address = order_data.order.attrs['personal_data.email']
+    do_notify(context, order_data, template, templates, customer_address)
+
+
+def do_notify_shopmanager(context, order_data, template, templates):
+    shop_manager_address = INotificationSettings(context).admin_email
+    do_notify(context, order_data, template, templates, shop_manager_address)
+
+
+###############################################################################
+# order success
+###############################################################################
+
+# template callbacks and helpers ##############################################
 
 def create_order_listing_item(item_data):
     """Create text for one item in order.
@@ -407,132 +526,13 @@ def create_delivery_address(context, order_data):
         return delivery_address_template % arguments
     return u''
 
-
-###############################################################################
-# mail notification
-###############################################################################
-
-class MailNotify(object):
-    """Mail notifyer.
-    """
-
-    def __init__(self, context):
-        self.context = context
-        self.settings = INotificationSettings(self.context)
-
-    def create_multipart_message(subject, from_, to, text, html):
-        message = MIMEMultipart('alternative')
-        message['Subject'] = subject
-        message['From'] = from_
-        message['To'] = to
-        # According to RFC 2046, the last part of a multipart message, in this case
-        # the HTML message, is best and preferred.
-        message.attach(MIMEText(text, 'plain'))
-        message.attach(MIMEText(html, 'html'))
-        return message
-
-    def send(self, subject, receiver, text, html=None):
-        shop_manager_address = self.settings.admin_email
-        if not shop_manager_address:
-            raise ValueError('Shop manager address is missing in settings.')
-        shop_manager_name = self.settings.admin_name
-        if shop_manager_name:
-            from_name = shop_manager_name
-            mailfrom = formataddr((from_name, shop_manager_address))
-        else:
-            mailfrom = shop_manager_address
-        if html is None:
-            message = text
-        else:
-            message = self.create_multipart_message(
-                subject,
-                mailfrom,
-                receiver,
-                text,
-                html
-            )
-        api.portal.send_email(
-            recipient=receiver,
-            sender=mailfrom,
-            subject=subject,
-            body=message,
-        )
-
-
-def create_text_mail_body(templates, context, order_data):
-    """Creates a rendered mail body
-
-    templates
-        Dict with a bunch of cbs and the body template itself.
-
-    context
-        Some object in Plone which can be used as a context to acquire from.
-
-    order_data
-        Order-data instance.
-    """
-    arguments = mail_body_data(context, order_data)
-    for name in POSSIBLE_TEMPLATE_CALLBACKS:
-        _process_template_cb(
-            name,
-            templates,
-            arguments,
-            context,
-            order_data
-        )
-    return templates['body'] % arguments
-
-
-def create_html_mail_body(template, context, order_data):
-    """Creates a rendered mail body
-
-    template
-        HTML template name as string.
-
-    context
-        Some object in Plone which can be used as a context to acquire from.
-
-    order_data
-        Order-data instance.
-    """
-    return None
-
-
-def do_notify(context, order_data, template, templates, receiver):
-    attrs = order_data.order.attrs
-    subject = templates['subject'] % attrs['ordernumber']
-    text = create_text_mail_body(templates, context, order_data)
-    html = create_html_mail_body(template, context, order_data)
-    mail_notify = MailNotify(context)
-    try:
-        mail_notify.send(subject, receiver, text, html=html)
-    except Exception:
-        msg = translate(
-            _('email_sending_failed',
-              default=u'Failed to send notification to ${receiver}',
-              mapping={'receiver': receiver}))
-        api.portal.show_message(message=msg, request=context.REQUEST)
-        logger.exception("Email could not be sent.")
-
-
-def do_notify_customer(context, order_data, template, templates):
-    customer_address = order_data.order.attrs['personal_data.email']
-    do_notify(context, order_data, template, templates, customer_address)
-
-
-def do_notify_shopmanager(context, order_data, template, templates):
-    shop_manager_address = INotificationSettings(context).admin_email
-    do_notify(context, order_data, template, templates, shop_manager_address)
-
-
-###############################################################################
-# order success
-###############################################################################
+# event handling ##############################################################
 
 def dispatch_notify_order_success(event):
     for func in NOTIFICATIONS['order_success']:
         func(event)
 
+# notification ##############################################################
 
 def notify_order_success(event, who=None):
     """Send notification mail after order succeeded.
