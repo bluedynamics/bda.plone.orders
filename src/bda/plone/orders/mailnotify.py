@@ -40,8 +40,8 @@ POSSIBLE_TEMPLATE_CALLBACKS = [
     'booking_cancelled_title',
     'booking_reserved_to_ordered_title',
     'global_text',
-    'order_listing',
-    'reserved_order_listing',
+    'item_listing',
+    'reserved_item_listing',
     'order_summary',
     'payment_text',
     'stock_threshold_reached_text',
@@ -217,10 +217,8 @@ def create_order_listing_item(buyable, booking, state):
     net = item_data['net']
     discount_net = item_data['discount_net']
     if discount_net:
-        price = u'{} {:0.2f} (-{:0.2f})'.format(currency, net, discount_net)
-    else:
-        price = u'{} {:0.2f}'.format(currency, net)
-    text = u'{} {}'.format(text, price)
+        net = net - float(discount_net)
+    text = u'{} {} {:0.2f}'.format(text, currency, net)
     # notification text
     notification = item_data['notification']
     if notification:
@@ -398,7 +396,7 @@ def create_mail_body(templates, context, order_data):
     """
     arguments = mail_body_data(context, order_data)
     arguments['delivery_address'] = ''
-    if attrs['delivery_address.alternative_delivery']:
+    if order_data.order.attrs['delivery_address.alternative_delivery']:
         delivery_address_template = templates.get('delivery_address', None)
         if delivery_address_template:
             # If no template is defined, it might not be useful in this context
@@ -517,10 +515,10 @@ def notify_order_success(event, who=None):
     state = order_data.state
     if state in (ifaces.STATE_RESERVED, ifaces.STATE_MIXED):
         templates.update(get_reservation_templates(event.context))
-        templates['reserved_order_listing_cb'] = create_reserved_order_listing
+        templates['reserved_item_listing_cb'] = create_reserved_order_listing
     else:
         templates.update(get_order_templates(event.context))
-    templates['order_listing_cb'] = create_order_listing
+    templates['item_listing_cb'] = create_order_listing
     templates['order_summary_cb'] = create_order_summary
     templates['global_text_cb'] = create_global_text
     templates['payment_text_cb'] = create_payment_text
