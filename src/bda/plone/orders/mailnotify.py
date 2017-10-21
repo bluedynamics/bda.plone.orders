@@ -76,8 +76,12 @@ def _process_template_cb(name, tpls, args, context, order_data):
         args[name] = tpls[cb_name](context, order_data)
 
 
-def mail_listing_item_data(buyable, booking, state):
-    """Extract listing item data.
+###############################################################################
+# mail notification related data
+###############################################################################
+
+def order_item_data(buyable, booking, state):
+    """Extract data for one listing item.
     """
     data = dict()
     data['title'] = safe_unicode(booking.attrs['title'])
@@ -100,10 +104,43 @@ def mail_listing_item_data(buyable, booking, state):
     return data
 
 
-def create_mail_listing_item(buyable, booking, state):
-    """Create text mail listing item.
+def order_summary_data(order_data):
+    """Extract data for order summary.
     """
-    item_data = mail_listing_item_data(buyable, booking, state)
+    data = dict()
+    data['currency'] = order_data.currency
+    cart_net = order_data.net
+    data['cart_net'] = cart_net
+    cart_vat = order_data.vat
+    data['cart_vat'] = cart_vat
+    discount_net = order_data.discount_net
+    data['discount_net'] = discount_net
+    discount_vat = order_data.discount_vat
+    data['discount_vat'] = discount_vat
+    discount_total = discount_net + discount_vat
+    data['discount_total'] = discount_total
+    attrs = order_data.order.attrs
+    data['shipping_label'] = attrs['shipping_label']
+    data['shipping_description'] = attrs['shipping_description']
+    shipping_net = order_data.shipping_net
+    data['shipping_net'] = shipping_net
+    shipping_vat = order_data.shipping_vat
+    data['shipping_vat'] = shipping_vat
+    shipping_total = shipping_net + shipping_vat
+    data['shipping_total'] = shipping_total
+    cart_total = order_data.total
+    data['cart_total'] = cart_total
+    return data
+
+
+###############################################################################
+# text mail helpers
+###############################################################################
+
+def create_mail_listing_item(buyable, booking, state):
+    """Create text for one item in mail listing.
+    """
+    item_data = order_item_data(buyable, booking, state)
     # count
     text = u'{:4f}'.format(booking.attrs['buyable_count'])
     # title
@@ -146,7 +183,7 @@ def create_mail_listing(
         ifaces.STATE_NEW,
         ifaces.STATE_PROCESSING
     )):
-    """Create text item listing for notification mail.
+    """Create item listing text for notification mail.
     """
     items = []
     for booking in order_data.bookings:
@@ -163,8 +200,8 @@ def create_mail_listing(
 
 
 def create_reserved_item_listing(context, order_data):
-    """Create text item listing for notification mail containing reserved items
-    from this order.
+    """Create item listing text for notification mail containing reserved items
+    of this order.
     """
     return create_mail_listing(
         context,
@@ -174,124 +211,103 @@ def create_reserved_item_listing(context, order_data):
 
 
 def create_order_summary(context, order_data):
-    """Create summary for notification mail.
+    """Create cart summary text for notification mail.
     """
-    attrs = order_data.order.attrs
-    cart_total = order_data.total
     # no costs at all
-    if not cart_total:
+    if not order_data.total:
         return u''
     lines = []
     request = getRequest()
-    # currency
-    currency = order_data.currency
+    summary_data = order_summary_data(order_data)
     # cart net and vat
-    cart_net = order_data.net
-    if cart_net:
+    if summary_data['cart_net']:
         # cart net
-        order_summary_cart_net = _(
+        lines.append(translate(_(
             'order_summary_cart_net',
             default=u'Net: ${value} ${currency}',
             mapping={
-                'value': ascur(cart_net),
-                'currency': currency,
-            })
-        lines.append(translate(order_summary_cart_net, context=request))
+                'value': ascur(summary_data['cart_net']),
+                'currency': summary_data['currency'],
+            }), context=request))
         # cart vat
-        cart_vat = order_data.vat
-        order_summary_cart_vat = _(
+        lines.append(translate(_(
             'order_summary_cart_vat',
             default=u'VAT: ${value} ${currency}',
             mapping={
-                'value': ascur(cart_vat),
-                'currency': currency,
-            })
-        lines.append(translate(order_summary_cart_vat, context=request))
+                'value': ascur(summary_data['cart_vat']),
+                'currency': summary_data['currency'],
+            }), context=request))
     # cart discount
-    discount_net = order_data.discount_net
-    if discount_net:
+    if summary_data['discount_net']:
         # discount net
-        order_summary_discount_net = _(
+        lines.append(translate(_(
             'order_summary_discount_net',
             default=u'Discount Net: ${value} ${currency}',
             mapping={
-                'value': ascur(discount_net),
-                'currency': currency,
-            })
-        lines.append(translate(order_summary_discount_net, context=request))
+                'value': ascur(summary_data['discount_net']),
+                'currency': summary_data['currency'],
+            }), context=request))
         # discount vat
-        discount_vat = order_data.discount_vat
-        order_summary_discount_vat = _(
+        lines.append(translate(_(
             'order_summary_discount_vat',
             default=u'Discount VAT: ${value} ${currency}',
             mapping={
-                'value': ascur(discount_vat),
-                'currency': currency,
-            })
-        lines.append(translate(order_summary_discount_vat, context=request))
+                'value': ascur(summary_data['discount_vat']),
+                'currency': summary_data['currency'],
+            }), context=request))
         # discount total
-        discount_total = discount_net + discount_vat
-        order_summary_discount_total = _(
+        lines.append(translate(_(
             'order_summary_discount_total',
             default=u'Discount Total: ${value} ${currency}',
             mapping={
-                'value': ascur(discount_total),
-                'currency': currency,
-            })
-        lines.append(translate(order_summary_discount_total, context=request))
+                'value': ascur(summary_data['discount_total']),
+                'currency': summary_data['currency'],
+            }), context=request))
     # shipping costs
-    shipping_net = order_data.shipping_net
-    if shipping_net:
+    if summary_data['shipping_net']:
         # shiping label
-        shipping_label = attrs['shipping_label']
-        order_summary_shipping_label = _(
+        lines.append(translate(_(
             'order_summary_shipping_label',
             default=u'Shipping: ${label}',
             mapping={
-                'label': translate(shipping_label, context=request),
-            })
-        lines.append(translate(order_summary_shipping_label, context=request))
+                'label': translate(
+                    summary_data['shipping_label'], context=request),
+            }), context=request))
         # shiping description
-        shipping_description = attrs['shipping_description']
-        lines.append(translate(shipping_description, context=request))
+        lines.append(translate(
+            summary_data['shipping_description'], context=request))
         # shiping net
-        order_summary_shipping_net = _(
+        lines.append(translate(_(
             'order_summary_shipping_net',
             default=u'Shipping Net: ${value} ${currency}',
             mapping={
-                'value': ascur(shipping_net),
-                'currency': currency,
-            })
-        lines.append(translate(order_summary_shipping_net, context=request))
+                'value': ascur(summary_data['shipping_net']),
+                'currency': summary_data['currency'],
+            }), context=request))
         # shiping vat
-        shipping_vat = order_data.shipping_vat
-        order_summary_shipping_vat = _(
+        lines.append(translate(_(
             'order_summary_shipping_vat',
             default=u'Shipping VAT: ${value} ${currency}',
             mapping={
-                'value': ascur(shipping_vat),
-                'currency': currency,
-            })
-        lines.append(translate(order_summary_shipping_vat, context=request))
+                'value': ascur(summary_data['shipping_vat']),
+                'currency': summary_data['currency'],
+            }), context=request))
         # shiping total
-        shipping_total = shipping_net + shipping_vat
-        order_summary_shipping_total = _(
+        lines.append(translate(_(
             'order_summary_shipping_total',
             default=u'Shipping Total: ${value} ${currency}',
             mapping={
-                'value': ascur(shipping_total),
-                'currency': currency,
-            })
-        lines.append(translate(order_summary_shipping_total, context=request))
+                'value': ascur(summary_data['shipping_total']),
+                'currency': summary_data['currency'],
+            }), context=request))
     # cart total
-    order_summary_cart_total = _(
+    lines.append(translate(_(
         'order_summary_cart_total',
         default=u'Total: ${value} ${currency}',
         mapping={
-            'value': ascur(cart_total),
-            'currency': currency,
-        })
-    lines.append(translate(order_summary_cart_total, context=request))
+            'value': ascur(summary_data['cart_total']),
+            'currency': summary_data['currency'],
+        }), context=request))
     summary_title = translate(
         _('order_summary_label', default=u'Summary:'), context=request)
     summary_text = u'\n'.join(lines)

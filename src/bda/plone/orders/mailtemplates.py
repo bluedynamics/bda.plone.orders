@@ -380,7 +380,6 @@ Stornierter Artikel: %(booking_cancelled_title)s
 Details zur Bestellung: %(portal_url)s/@@showorder?ordernumber=%(ordernumber)s
 """
 
-
 BOOKING_RESERVED_TO_ORDERED_SUBJECT_DE = u"Reservierung %s ist nun verfügbar."
 
 BOOKING_RESERVED_TO_ORDERED_BODY_DE = u"""
@@ -668,6 +667,7 @@ Cancelled item: %(booking_cancelled_title)s
 Order details: %(portal_url)s/@@showorder?ordernumber=%(ordernumber)s
 """
 
+
 ###############################################################################
 # language templates
 ###############################################################################
@@ -783,6 +783,10 @@ def get_booking_reserved_to_ordered_templates(context):
 def get_stock_threshold_reached_templates(context):
     return _get_templates(context, STOCK_THRESHOLD_REACHED_TEMPLATES)
 
+
+###############################################################################
+# dynamic mail templates
+###############################################################################
 
 # list of template attributes which are required. by default, no attributes are
 # required.
