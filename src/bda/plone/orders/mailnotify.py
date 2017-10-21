@@ -264,17 +264,17 @@ class MailNotify(object):
         )
 
 
-def create_text_mail_body(templates, context, order_data):
+def create_text_mail_body(context, order_data, templates):
     """Creates a rendered mail body
-
-    templates
-        Dict with a bunch of cbs and the body template itself.
 
     context
         Some object in Plone which can be used as a context to acquire from.
 
     order_data
         Order-data instance.
+
+    templates
+        Dict with a bunch of cbs and the body template itself.
     """
     arguments = mail_body_data(context, order_data)
     for name in POSSIBLE_TEMPLATE_CALLBACKS:
@@ -288,26 +288,29 @@ def create_text_mail_body(templates, context, order_data):
     return templates['body'] % arguments
 
 
-def create_html_mail_body(template, context, order_data):
+def create_html_mail_body(context, template_name, template_data):
     """Creates a rendered mail body
-
-    template
-        HTML template name as string.
 
     context
         Some object in Plone which can be used as a context to acquire from.
 
-    order_data
-        Order-data instance.
+    template_name
+        HTML template name as string.
+
+    template_data
+        Dict containing data passed to template.
     """
     return None
 
 
-def do_notify(context, order_data, template, templates, receiver):
+def do_notify(context, order_data, receiver,
+              templates, template_name, template_data):
+    """Do mail notification.
+    """
     attrs = order_data.order.attrs
     subject = templates['subject'] % attrs['ordernumber']
-    text = create_text_mail_body(templates, context, order_data)
-    html = create_html_mail_body(template, context, order_data)
+    text = create_text_mail_body(context, order_data, templates)
+    html = create_html_mail_body(context, template_name, template_data)
     mail_notify = MailNotify(context)
     try:
         mail_notify.send(subject, receiver, text, html=html)
@@ -320,14 +323,30 @@ def do_notify(context, order_data, template, templates, receiver):
         logger.exception("Email could not be sent.")
 
 
-def do_notify_customer(context, order_data, template, templates):
+def do_notify_customer(context, order_data, templates,
+                       template_name, template_data):
     customer_address = order_data.order.attrs['personal_data.email']
-    do_notify(context, order_data, template, templates, customer_address)
+    do_notify(
+        context,
+        order_data,
+        customer_address,
+        templates,
+        template_name,
+        template_data
+    )
 
 
-def do_notify_shopmanager(context, order_data, template, templates):
+def do_notify_shopmanager(context, order_data, templates,
+                          template_name, template_data):
     shop_manager_address = INotificationSettings(context).admin_email
-    do_notify(context, order_data, template, templates, shop_manager_address)
+    do_notify(
+        context,
+        order_data,
+        shop_manager_address,
+        templates,
+        template_name,
+        template_data
+    )
 
 
 ###############################################################################
@@ -554,10 +573,23 @@ def notify_order_success(event, who=None):
     templates['global_text_cb'] = create_global_text
     templates['payment_text_cb'] = create_payment_text
     templates['delivery_address_cb'] = create_delivery_address
+    template_data = dict()
     if who == "customer":
-        do_notify_customer(event.context, order_data, 'order_success', templates)
+        do_notify_customer(
+            event.context,
+            order_data,
+            templates,
+            'order_success',
+            template_data
+        )
     else:
-        do_notify_shopmanager(event.context, order_data, 'order_success', templates)
+        do_notify_shopmanager(
+            event.context,
+            order_data,
+            templates,
+            'order_success',
+            template_data
+        )
 
 
 def notify_order_success_customer(event):
@@ -659,10 +691,23 @@ def notify_booking_cancelled(event, who=None):
     templates = dict()
     templates.update(get_booking_cancelled_templates(event.context))
     templates['booking_cancelled_title_cb'] = BookingCancelledTitleCB(event)
+    template_data = dict()
     if who == "customer":
-        do_notify_customer(event.context, order_data, 'booking_cancelled', templates)
+        do_notify_customer(
+            event.context,
+            order_data,
+            templates,
+            'booking_cancelled',
+            template_data
+        )
     elif who == 'shopmanager':
-        do_notify_shopmanager(event.context, order_data, 'booking_cancelled', templates)
+        do_notify_shopmanager(
+            event.context,
+            order_data,
+            templates,
+            'booking_cancelled',
+            template_data
+        )
     else:
         raise ValueError(
             'kw "who" mus be one out of ("customer", "shopmanager")'
@@ -701,10 +746,23 @@ def notify_booking_reserved_to_ordered(event, who=None):
     templates = dict()
     templates.update(get_booking_reserved_to_ordered_templates(event.context))
     templates['booking_reserved_to_ordered_title_cb'] = BookingReservedToOrderedTitleCB(event)  # noqa
+    template_data = dict()
     if who == "customer":
-        do_notify_customer(event.context, order_data, 'booking_reserved_to_ordered', templates)
+        do_notify_customer(
+            event.context,
+            order_data,
+            templates,
+            'booking_reserved_to_ordered',
+            template_data
+        )
     elif who == 'shopmanager':
-        do_notify_shopmanager(event.context, order_data, 'booking_reserved_to_ordered', templates)
+        do_notify_shopmanager(
+            event.context,
+            order_data,
+            templates,
+            'booking_reserved_to_ordered',
+            template_data
+        )
     else:
         raise ValueError(
             'kw "who" mus be one out of ("customer", "shopmanager")'
@@ -759,7 +817,14 @@ def notify_stock_threshold_reached(event):
     templates.update(get_stock_threshold_reached_templates(event.context))
     templates['stock_threshold_reached_text_cb'] = \
         StockThresholdReachedCB(event)
-    do_notify_shopmanager(event.context, order_data, 'stock_threshold_reached', templates)
+    template_data = dict()
+    do_notify_shopmanager(
+        event.context,
+        order_data,
+        templates,
+        'stock_threshold_reached',
+        template_data
+    )
 
 
 NOTIFICATIONS['stock_threshold_reached'] = []
