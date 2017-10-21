@@ -40,16 +40,13 @@ POSSIBLE_TEMPLATE_CALLBACKS = [
     'booking_cancelled_title',
     'booking_reserved_to_ordered_title',
     'global_text',
-    'item_listing',
-    'reserved_item_listing',
+    'order_listing',
+    'reserved_order_listing',
     'order_summary',
     'payment_text',
     'stock_threshold_reached_text',
 ]
 
-###############################################################################
-# mail notification utilities
-###############################################################################
 
 def get_order_uid(event):
     uid = None
@@ -61,7 +58,8 @@ def get_order_uid(event):
 
 
 def _indent(text, ind=5, width=80):
-    """helper indents text"""
+    """Helper indents text.
+    """
     wrapped = textwrap.fill(
         safe_unicode(text),
         width,
@@ -100,7 +98,7 @@ def order_item_data(buyable, booking, state):
         text = notificationtext.overbook_text
     elif state == ifaces.STATE_NEW:
         text = notificationtext.order_text
-    data['text'] = text
+    data['notification'] = text
     return data
 
 
@@ -133,12 +131,67 @@ def order_summary_data(order_data):
     return data
 
 
+def order_payment_data(order_data):
+    data = dict()
+    data['payment_method'] = payment = order_data.order.attrs['payment_method']
+    data['payment_text'] = IPaymentText(getSite()).payment_text(payment)
+    return data
+
+
+def order_notifications(context, order_data):
+    order_state = order_data.state
+    notifications = set()
+    for booking in order_data.bookings:
+        brain = get_catalog_brain(context, booking.attrs['buyable_uid'])
+        buyable = brain.getObject()
+        notificationtext = IGlobalNotificationText(buyable)
+        if order_state in (ifaces.STATE_RESERVED, ifaces.STATE_MIXED):
+            # XXX: might need custom text for MIXED state
+            text = notificationtext.global_overbook_text
+            if text:
+                notifications.add(text)
+        elif order_state == ifaces.STATE_NEW:
+            text = notificationtext.global_order_text
+            if text:
+                notifications.add(text)
+    return list(notifications)
+
+
+def mail_body_data(context, order_data):
+    lang = context.restrictedTraverse('@@plone_portal_state').language()
+    attrs = order_data.order.attrs
+    data = dict(
+        (safe_unicode(key), safe_unicode(value))
+        for (key, value) in attrs.items()
+    )
+    data['portal_url'] = getSite().absolute_url()
+    data['date'] = attrs['created'].strftime(DT_FORMAT)
+    data['salutation'] = translate(
+        attrs['personal_data.gender'],
+        domain='bda.plone.checkout',
+        target_language=lang
+    )
+    if data.get('billing_address.country', None):
+        data['billing_address.country'] = \
+            get_country_name(
+                data['billing_address.country'],
+                lang=lang
+            )
+    if data.get('delivery_address.country', None):
+        data['delivery_address.country'] = \
+            get_country_name(
+                data['delivery_address.country'],
+                lang=lang
+            )
+    return data
+
+
 ###############################################################################
-# text mail helpers
+# order mail template callbacks and helpers
 ###############################################################################
 
-def create_mail_listing_item(buyable, booking, state):
-    """Create text for one item in mail listing.
+def create_order_listing_item(buyable, booking, state):
+    """Create text for one item in order.
     """
     item_data = order_item_data(buyable, booking, state)
     # count
@@ -168,14 +221,14 @@ def create_mail_listing_item(buyable, booking, state):
     else:
         price = u'{} {:0.2f}'.format(currency, net)
     text = u'{} {}'.format(text, price)
-    # additional text
-    additional = item_data['text']
-    if additional:
-        return u'\n'.join([text, additional])
+    # notification text
+    notification = item_data['notification']
+    if notification:
+        return u'\n'.join([text, notification])
     return text
 
 
-def create_mail_listing(
+def create_order_listing(
     context,
     order_data,
     include_booking_states=(
@@ -195,15 +248,15 @@ def create_mail_listing(
         brain = get_catalog_brain(context, booking.attrs['buyable_uid'])
         buyable = brain.getObject()
         # add item
-        items.append(create_mail_listing_item(buyable, booking, state))
+        items.append(create_order_listing_item(buyable, booking, state))
     return u'\n'.join(items)
 
 
-def create_reserved_item_listing(context, order_data):
+def create_reserved_order_listing(context, order_data):
     """Create item listing text for notification mail containing reserved items
     of this order.
     """
-    return create_mail_listing(
+    return create_order_listing(
         context,
         order_data,
         include_booking_states=(ifaces.STATE_RESERVED)
@@ -318,30 +371,14 @@ def create_order_summary(context, order_data):
 
 
 def create_global_text(context, order_data):
-    order_state = order_data.state
-    notifications = set()
-    for booking in order_data.bookings:
-        brain = get_catalog_brain(context, booking.attrs['buyable_uid'])
-        buyable = brain.getObject()
-        notificationtext = IGlobalNotificationText(buyable)
-        if order_state in (ifaces.STATE_RESERVED, ifaces.STATE_MIXED):
-            # XXX: might need custom text for MIXED state
-            text = notificationtext.global_overbook_text
-            if text:
-                notifications.add(text)
-        elif order_state == ifaces.STATE_NEW:
-            text = notificationtext.global_order_text
-            if text:
-                notifications.add(text)
-    global_text = u'\n\n'.join(notifications)
+    global_text = u'\n\n'.join(order_notifications(context, order_data))
     if global_text.strip():
         return u'\n\n{global_text}\n'.format(global_text=global_text.strip())
     return u''
 
 
 def create_payment_text(context, order_data):
-    payment = order_data.order.attrs['payment_method']
-    payment_text = IPaymentText(getSite()).payment_text(payment)
+    payment_text = order_payment_data(order_data)['payment_text']
     if payment_text.strip():
         return u'\n\n{payment_text}\n'.format(payment_text=payment_text.strip())  # noqa
     return u''
@@ -359,37 +396,7 @@ def create_mail_body(templates, context, order_data):
     order_data
         Order-data instance.
     """
-    lang = context.restrictedTraverse('@@plone_portal_state').language()
-    attrs = order_data.order.attrs
-    arguments = dict(
-        (safe_unicode(key), safe_unicode(value))
-        for (key, value) in attrs.items()
-    )
-    arguments['portal_url'] = getSite().absolute_url()
-    arguments['date'] = attrs['created'].strftime(DT_FORMAT)
-    salutation = translate(
-        attrs['personal_data.gender'],
-        domain='bda.plone.checkout',
-        target_language=lang
-    )
-    arguments['salutation'] = salutation
-
-    # Change country code to translated country name
-    if arguments.get('billing_address.country', None):
-        arguments['billing_address.country'] = \
-            get_country_name(
-                arguments['billing_address.country'],
-                lang=lang
-            )
-
-    if arguments.get('delivery_address.country', None):
-        arguments['delivery_address.country'] = \
-            get_country_name(
-                arguments['delivery_address.country'],
-                lang=lang
-            )
-
-    # XXX: next should be a cb
+    arguments = mail_body_data(context, order_data)
     arguments['delivery_address'] = ''
     if attrs['delivery_address.alternative_delivery']:
         delivery_address_template = templates.get('delivery_address', None)
@@ -398,7 +405,6 @@ def create_mail_body(templates, context, order_data):
             # (e.g. cancelling bookings)
             arguments['delivery_address'] = \
                 delivery_address_template % arguments
-
     for name in POSSIBLE_TEMPLATE_CALLBACKS:
         _process_template_cb(
             name,
@@ -511,10 +517,10 @@ def notify_order_success(event, who=None):
     state = order_data.state
     if state in (ifaces.STATE_RESERVED, ifaces.STATE_MIXED):
         templates.update(get_reservation_templates(event.context))
-        templates['reserved_item_listing_cb'] = create_reserved_item_listing
+        templates['reserved_order_listing_cb'] = create_reserved_order_listing
     else:
         templates.update(get_order_templates(event.context))
-    templates['item_listing_cb'] = create_mail_listing
+    templates['order_listing_cb'] = create_order_listing
     templates['order_summary_cb'] = create_order_summary
     templates['global_text_cb'] = create_global_text
     templates['payment_text_cb'] = create_payment_text
