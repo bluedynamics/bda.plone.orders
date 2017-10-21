@@ -83,7 +83,7 @@ def _process_template_cb(name, tpls, args, context, order_data):
 # mail notification related data
 ###############################################################################
 
-def order_item_data(buyable, booking, state):
+def order_item_data(context, booking):
     """Extract data for one listing item.
     """
     data = dict()
@@ -95,8 +95,12 @@ def order_item_data(buyable, booking, state):
     data['item_number'] = item_number
     data['comment'] = safe_unicode(booking.attrs['buyable_comment'])
     data['currency'] = safe_unicode(booking.attrs['currency'])
+    data['buyable_count'] = booking.attrs['buyable_count']
     data['net'] = booking.attrs['net']
     data['discount_net'] = booking.attrs['discount_net']
+    data['state'] = state = safe_unicode(booking.attrs.get('state'))
+    brain = get_catalog_brain(context, booking.attrs['buyable_uid'])
+    buyable = brain.getObject()
     notificationtext = IItemNotificationText(buyable)
     text = None
     if state == ifaces.STATE_RESERVED:
@@ -104,6 +108,24 @@ def order_item_data(buyable, booking, state):
     elif state == ifaces.STATE_NEW:
         text = notificationtext.order_text
     data['notification'] = text
+    return data
+
+
+default_include_booking_states=(
+    ifaces.STATE_FINISHED,
+    ifaces.STATE_NEW,
+    ifaces.STATE_PROCESSING
+)
+
+def order_items_data(context, order_data,
+                     include_booking_states=default_include_booking_states):
+    """Extract item listing data.
+    """
+    data = list()
+    for booking in order_data.bookings:
+        if booking.attrs.get('state') not in include_booking_states:
+            continue
+        data.append(order_item_data(context, booking))
     return data
 
 
@@ -195,12 +217,11 @@ def mail_body_data(context, order_data):
 # order mail template callbacks and helpers
 ###############################################################################
 
-def create_order_listing_item(buyable, booking, state):
+def create_order_listing_item(item_data):
     """Create text for one item in order.
     """
-    item_data = order_item_data(buyable, booking, state)
     # count
-    text = u'{:4f}'.format(booking.attrs['buyable_count'])
+    text = u'{:4f}'.format(item_data['buyable_count'])
     # title
     title = item_data['title']
     comment = item_data['comment']
@@ -213,8 +234,8 @@ def create_order_listing_item(buyable, booking, state):
         text = u'{} {}'.format(text, item_number)
     # state
     state_text = u''
-    if state == ifaces.STATE_RESERVED:
-        state_text = u'({})'.format(vocabs.state_vocab()[state])
+    if item_data['state'] == ifaces.STATE_RESERVED:
+        state_text = u'({})'.format(vocabs.state_vocab()[item_data['state']])
     if state_text:
         text = u'{} {}'.format(text, state_text)
     # price
@@ -231,27 +252,18 @@ def create_order_listing_item(buyable, booking, state):
     return text
 
 
-def create_order_listing(
-    context,
-    order_data,
-    include_booking_states=(
-        ifaces.STATE_FINISHED,
-        ifaces.STATE_NEW,
-        ifaces.STATE_PROCESSING
-    )):
+def create_order_listing(context, order_data,
+                         include_booking_states=default_include_booking_states):
     """Create item listing text for notification mail.
     """
     items = []
-    for booking in order_data.bookings:
-        state = safe_unicode(booking.attrs.get('state'))
-        # ignore if not in include states
-        if state not in include_booking_states:
-            continue
-        # get buyable
-        brain = get_catalog_brain(context, booking.attrs['buyable_uid'])
-        buyable = brain.getObject()
-        # add item
-        items.append(create_order_listing_item(buyable, booking, state))
+    items_data = order_items_data(
+        context,
+        order_data,
+        include_booking_states=include_booking_states
+    )
+    for item_data in items_data:
+        items.append(create_order_listing_item(item_data))
     return u'\n'.join(items)
 
 
@@ -454,7 +466,7 @@ def create_text_mail_body(templates, context, order_data):
         Dict with a bunch of cbs and the body template itself.
 
     context
-        Some object in Plone which can be used as a context to acquire from
+        Some object in Plone which can be used as a context to acquire from.
 
     order_data
         Order-data instance.
@@ -471,13 +483,26 @@ def create_text_mail_body(templates, context, order_data):
     return templates['body'] % arguments
 
 
-def do_notify(context, order_data, templates, receiver):
+def create_html_mail_body(template, context, order_data):
+    """Creates a rendered mail body
+
+    template
+        HTML template name as string.
+
+    context
+        Some object in Plone which can be used as a context to acquire from.
+
+    order_data
+        Order-data instance.
+    """
+    return None
+
+
+def do_notify(context, order_data, template, templates, receiver):
     attrs = order_data.order.attrs
     subject = templates['subject'] % attrs['ordernumber']
     text = create_text_mail_body(templates, context, order_data)
-    html = None
-    # XXX
-    # html = create_html_mail_body(templates, context, order_data)
+    html = create_html_mail_body(template, context, order_data)
     mail_notify = MailNotify(context)
     try:
         mail_notify.send(subject, receiver, text, html=html)
@@ -490,14 +515,14 @@ def do_notify(context, order_data, templates, receiver):
         logger.exception("Email could not be sent.")
 
 
-def do_notify_customer(context, order_data, templates):
+def do_notify_customer(context, order_data, template, templates):
     customer_address = order_data.order.attrs['personal_data.email']
-    do_notify(context, order_data, templates, customer_address)
+    do_notify(context, order_data, template, templates, customer_address)
 
 
-def do_notify_shopmanager(context, order_data, templates):
+def do_notify_shopmanager(context, order_data, template, templates):
     shop_manager_address = INotificationSettings(context).admin_email
-    do_notify(context, order_data, templates, shop_manager_address)
+    do_notify(context, order_data, template, templates, shop_manager_address)
 
 
 ###############################################################################
@@ -530,9 +555,9 @@ def notify_order_success(event, who=None):
     templates['payment_text_cb'] = create_payment_text
     templates['delivery_address_cb'] = create_delivery_address
     if who == "customer":
-        do_notify_customer(event.context, order_data, templates)
+        do_notify_customer(event.context, order_data, 'order_success', templates)
     else:
-        do_notify_shopmanager(event.context, order_data, templates)
+        do_notify_shopmanager(event.context, order_data, 'order_success', templates)
 
 
 def notify_order_success_customer(event):
@@ -635,9 +660,9 @@ def notify_booking_cancelled(event, who=None):
     templates.update(get_booking_cancelled_templates(event.context))
     templates['booking_cancelled_title_cb'] = BookingCancelledTitleCB(event)
     if who == "customer":
-        do_notify_customer(event.context, order_data, templates)
+        do_notify_customer(event.context, order_data, 'booking_cancelled', templates)
     elif who == 'shopmanager':
-        do_notify_shopmanager(event.context, order_data, templates)
+        do_notify_shopmanager(event.context, order_data, 'booking_cancelled', templates)
     else:
         raise ValueError(
             'kw "who" mus be one out of ("customer", "shopmanager")'
@@ -677,9 +702,9 @@ def notify_booking_reserved_to_ordered(event, who=None):
     templates.update(get_booking_reserved_to_ordered_templates(event.context))
     templates['booking_reserved_to_ordered_title_cb'] = BookingReservedToOrderedTitleCB(event)  # noqa
     if who == "customer":
-        do_notify_customer(event.context, order_data, templates)
+        do_notify_customer(event.context, order_data, 'booking_reserved_to_ordered', templates)
     elif who == 'shopmanager':
-        do_notify_shopmanager(event.context, order_data, templates)
+        do_notify_shopmanager(event.context, order_data, 'booking_reserved_to_ordered', templates)
     else:
         raise ValueError(
             'kw "who" mus be one out of ("customer", "shopmanager")'
@@ -734,7 +759,7 @@ def notify_stock_threshold_reached(event):
     templates.update(get_stock_threshold_reached_templates(event.context))
     templates['stock_threshold_reached_text_cb'] = \
         StockThresholdReachedCB(event)
-    do_notify_shopmanager(event.context, order_data, templates)
+    do_notify_shopmanager(event.context, order_data, 'stock_threshold_reached', templates)
 
 
 NOTIFICATIONS['stock_threshold_reached'] = []
