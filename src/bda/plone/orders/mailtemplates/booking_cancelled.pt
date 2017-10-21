@@ -1,0 +1,22 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      i18n:domain="bda.plone.orders">
+
+  <head></head>
+
+  <body>
+    <h1>One of your bookings was cancelled</h1>
+
+    <strong>Date</strong>: %(date)s
+    <br />
+    <strong>Ordernumber</strong>: %(ordernumber)s
+    <br />
+    <strong>Cancelled item</strong>: %(booking_cancelled_title)s
+    <br />
+    <strong>Order details</strong>:
+    <a href="%(portal_url)s/@@showorder?ordernumber=%(ordernumber)s">
+      Click here
+    </a>
+  </body>
+</html>

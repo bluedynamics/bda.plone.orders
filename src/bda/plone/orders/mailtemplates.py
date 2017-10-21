@@ -45,55 +45,6 @@ Ordered items:
 %(order_summary)s%(global_text)s%(payment_text)s
 """
 
-ORDER_BODY_HTML_EN = u"""
-<html>
-  <head></head>
-  <body>
-    <h1>Thank you for your order</h1>
-
-    <strong>Date</strong>: %(date)s
-    <br />
-    <strong>Ordernumber</strong>: %(ordernumber)s
-    <br />
-    <strong>Order details</strong>:
-    <a href="%(portal_url)s/@@showorder?ordernumber=%(ordernumber)s">
-      Click here
-    </a>
-    <br />
-
-    <h2>Personal Data</h2>
-    <strong>Name</strong>: %(personal_data.firstname)s %(personal_data.lastname)s
-    <br />
-    <strong>Company</strong>: %(personal_data.company)s
-    <br />
-    <strong>Phone</strong>: %(personal_data.phone)s
-    <br />
-    <strong>Email</strong>: %(personal_data.email)s
-    <br />
-
-    <h2>Address</h2>
-    <strong>Street</strong>: %(billing_address.street)s
-    <br />
-    <strong>ZIP</strong>: %(billing_address.zip)s
-    <br />
-    <strong>City</strong>: %(billing_address.city)s
-    <br />
-    <strong>Country</strong>: %(billing_address.country)s
-    <br />
-
-    %(delivery_address)s
-
-    <h4>Comment</h4>
-    <p>%(order_comment.comment)s</p>
-
-    <h3>Ordered items</h3>
-    <div>%(item_listing)s</div>
-
-    <div>%(order_summary)s%(global_text)s%(payment_text)s</div>
-  </body>
-</html>
-"""
-
 RESERVATION_SUBJECT_EN = u'Reservation %s received.'
 
 RESERVATION_BODY_EN = u"""
@@ -128,56 +79,6 @@ Reserved items:
 %(order_summary)s%(global_text)s%(payment_text)s
 """
 
-RESERVATION_BODY_HTML_EN = u"""
-<html>
-  <head></head>
-  <body>
-    <h1>Thank you for your reservation</h1>
-
-    <strong>Date</strong>: %(date)s
-    <br />
-    <strong>Ordernumber</strong>: %(ordernumber)s
-    <br />
-    <strong>Reservation details</strong>:
-    <a href="%(portal_url)s/@@showorder?ordernumber=%(ordernumber)s">
-      Click here
-    </a>
-    <br />
-
-    <h2>Personal Data<h2>
-    <strong>Name</strong>: %(personal_data.firstname)s %(personal_data.lastname)s
-    <br />
-    <strong>Company</strong>: %(personal_data.company)s
-    <br />
-    <strong>Phone</strong>: %(personal_data.phone)s
-    <br />
-    <strong>Email</strong>: %(personal_data.email)s
-
-    <h2>Address</h2>
-    <strong>Street</strong>: %(billing_address.street)s
-    <br />
-    <strong>ZIP</strong>: %(billing_address.zip)s
-    <br />
-    <strong>City</strong>: %(billing_address.city)s
-    <br />
-    <strong>Country</strong>: %(billing_address.country)s
-
-    %(delivery_address)s
-
-    <h4>Comment</h4>
-    <p>%(order_comment.comment)s</p>
-
-    <h3>Ordered items</h3>
-    <div>%(item_listing)s</div>
-
-    <h3>Reserved items</h3>
-    <div>%(reserved_item_listing)s</div>
-
-    <div>%(order_summary)s%(global_text)s%(payment_text)s</div>
-  </body>
-</html>
-"""
-
 DELIVERY_ADDRESS_EN = u"""
 Delivery Address:
 Name: %(delivery_address.firstname)s %(delivery_address.lastname)s
@@ -186,21 +87,6 @@ Street: %(delivery_address.street)s
 ZIP: %(delivery_address.zip)s
 City: %(delivery_address.city)s
 Country: %(delivery_address.country)s
-"""
-
-DELIVERY_ADDRESS_HTML_EN = u"""
-<h2>Delivery Address</h2>
-<strong>Name</strong>: %(delivery_address.firstname)s %(delivery_address.lastname)s
-<br />
-<strong>Company</strong>: %(delivery_address.company)s
-<br />
-<strong>Street</strong>: %(delivery_address.street)s
-<br />
-<strong>ZIP</strong>: %(delivery_address.zip)s
-<br />
-<strong>City</strong>: %(delivery_address.city)s
-<br />
-<strong>Country</strong>: %(delivery_address.country)s
 """
 
 CANCELLED_BOOKING_SUBJECT_EN = u"Cancelled one booking of Order %s."
@@ -216,26 +102,6 @@ Cancelled item: %(booking_cancelled_title)s
 Order details: %(portal_url)s/@@showorder?ordernumber=%(ordernumber)s
 """
 
-CANCELLED_BOOKING_BODY_HTML_EN = u"""
-<html>
-  <head></head>
-  <body>
-    <h1>One of your bookings was cancelled</h1>
-
-    <strong>Date</strong>: %(date)s
-    <br />
-    <strong>Ordernumber</strong>: %(ordernumber)s
-    <br />
-    <strong>Cancelled item</strong>: %(booking_cancelled_title)s
-    <br />
-    <strong>Order details</strong>:
-    <a href="%(portal_url)s/@@showorder?ordernumber=%(ordernumber)s">
-      Click here
-    </a>
-  </body>
-</html>
-"""
-
 BOOKING_RESERVED_TO_ORDERED_SUBJECT_EN = u"Reservation of %s is now available."
 
 BOOKING_RESERVED_TO_ORDERED_BODY_EN = u"""
@@ -249,26 +115,6 @@ Booked item: %(booking_reserved_to_ordered_title)s
 Order details: %(portal_url)s/@@showorder?ordernumber=%(ordernumber)s
 """
 
-BOOKING_RESERVED_TO_ORDERED_BODY_HTML_EN = u"""
-<html>
-  <head></head>
-  <body>
-    <h1>Your reserved item is now available and our order is being processed</h1>
-
-    <strong>Date</strong>: %(date)s
-    <br />
-    <strong>Ordernumber</strong>: %(ordernumber)s
-    <br />
-    <strong>Booked item</strong>: %(booking_reserved_to_ordered_title)s
-    <br />
-    <strong>Order details</strong>:
-    <a href="%(portal_url)s/@@showorder?ordernumber=%(ordernumber)s">
-      Click here
-    </a>
-  </body>
-</html>
-"""
-
 STOCK_THRESHOLD_REACHED_SUBJECT_EN = u"Order %s has products that are getting out of stock."  # noqa
 
 STOCK_THRESHOLD_REACHED_BODY_EN = u"""
@@ -276,18 +122,6 @@ Date: %(date)s
 
 Products getting out of stock:
 %(stock_threshold_reached_text)s
-"""
-
-STOCK_THRESHOLD_REACHED_BODY_HTML_EN = u"""
-<html>
-  <head></head>
-  <body>
-    <h1>Products getting out of stock</h1>
-
-    <strong>Date</strong>: %(date)s
-    <p>%(stock_threshold_reached_text)s</p>
-  </body>
-</html>
 """
 
 # DE ##########################################################################

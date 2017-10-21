@@ -19,6 +19,7 @@ from bda.plone.orders.mailtemplates import get_booking_reserved_to_ordered_templ
 from bda.plone.orders.mailtemplates import get_order_templates
 from bda.plone.orders.mailtemplates import get_reservation_templates
 from bda.plone.orders.mailtemplates import get_stock_threshold_reached_templates  # noqa
+from chameleon import PageTemplateLoader
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.utils import formataddr
@@ -27,6 +28,7 @@ from zope.component.hooks import getSite
 from zope.globalrequest import getRequest
 from zope.i18n import translate
 import logging
+import os
 import textwrap
 
 
@@ -225,15 +227,15 @@ class MailNotify(object):
         self.context = context
         self.settings = INotificationSettings(self.context)
 
-    def create_multipart_message(subject, from_, to, text, html):
+    def create_multipart_message(self, subject, from_, to, text, html):
         message = MIMEMultipart('alternative')
         message['Subject'] = subject
         message['From'] = from_
         message['To'] = to
         # According to RFC 2046, the last part of a multipart message, in this case
         # the HTML message, is best and preferred.
-        message.attach(MIMEText(text, 'plain'))
-        message.attach(MIMEText(html, 'html'))
+        message.attach(MIMEText(text, 'plain', 'utf-8'))
+        message.attach(MIMEText(html, 'html', 'utf-8'))
         return message
 
     def send(self, subject, receiver, text, html=None):
@@ -300,7 +302,12 @@ def create_html_mail_body(context, template_name, template_data):
     template_data
         Dict containing data passed to template.
     """
-    return None
+    templates_path = os.path.join(os.path.dirname(__file__), 'mailtemplates')
+    templates = PageTemplateLoader(templates_path)
+    template = templates['{}.pt'.format(template_name)]
+    if not template:
+        return None
+    return template(**template_data)
 
 
 def do_notify(context, order_data, receiver,

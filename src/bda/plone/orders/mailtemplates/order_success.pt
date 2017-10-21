@@ -1,0 +1,78 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      i18n:domain="bda.plone.orders">
+
+  <head></head>
+
+  <body>
+
+    <tal:order condition="not reserved_items">
+      <h1 i18n:translate="order_received_heading">
+        Thank you for your order!
+      </h1>
+    </tal:order>
+
+    <tal:reservation condition="reserved_items">
+      <h1 i18n:translate="reservation_received_heading">
+        Thank you for your reservation!
+      </h1>
+    </tal:reservation>
+
+    <strong i18n:translate="date">Date</strong>:
+    <tal:date replace="order['date']" />
+    <br />
+
+    <strong i18n:translate="ordernumber">Ordernumber</strong>:
+    <tal:ordernumber replace="order['ordernumber']" />
+    <br />
+
+    <strong>Reservation details</strong>:
+    <a href="%(portal_url)s/@@showorder?ordernumber=%(ordernumber)s">
+      Click here
+    </a>
+    <br />
+
+    <h2>Personal Data</h2>
+    <strong>Name</strong>: %(personal_data.firstname)s %(personal_data.lastname)s
+    <br />
+    <strong>Company</strong>: %(personal_data.company)s
+    <br />
+    <strong>Phone</strong>: %(personal_data.phone)s
+    <br />
+    <strong>Email</strong>: %(personal_data.email)s
+
+    <h2>Address</h2>
+    <strong>Street</strong>: %(billing_address.street)s
+    <br />
+    <strong>ZIP</strong>: %(billing_address.zip)s
+    <br />
+    <strong>City</strong>: %(billing_address.city)s
+    <br />
+    <strong>Country</strong>: %(billing_address.country)s
+
+    <h2>Delivery Address</h2>
+    <strong>Name</strong>: %(delivery_address.firstname)s %(delivery_address.lastname)s
+    <br />
+    <strong>Company</strong>: %(delivery_address.company)s
+    <br />
+    <strong>Street</strong>: %(delivery_address.street)s
+    <br />
+    <strong>ZIP</strong>: %(delivery_address.zip)s
+    <br />
+    <strong>City</strong>: %(delivery_address.city)s
+    <br />
+    <strong>Country</strong>: %(delivery_address.country)s
+
+    <h4>Comment</h4>
+    <p>%(order_comment.comment)s</p>
+
+    <h3>Ordered items</h3>
+    <div>%(item_listing)s</div>
+
+    <h3>Reserved items</h3>
+    <div>%(reserved_item_listing)s</div>
+
+    <div>%(order_summary)s%(global_text)s%(payment_text)s</div>
+  </body>
+</html>

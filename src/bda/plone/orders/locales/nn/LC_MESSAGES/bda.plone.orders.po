@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: bda.plone.orders\n"
-"POT-Creation-Date: 2016-10-11 07:22+0000\n"
+"POT-Creation-Date: 2017-10-21 13:32+0000\n"
 "PO-Revision-Date: 2017-02-06 15:38+0100\n"
 "Last-Translator: Espen Moe-Nilssen <espen@medialog.no>\n"
 "Language-Team: espen@medialog.no\n"
@@ -16,190 +16,192 @@ msgstr ""
 "Language: nn_NO\n"
 "X-Generator: Poedit 1.5.7\n"
 
-#: browser/views.py:1017
+#: ./browser/views.py:1049
 msgid "Booking cancelled."
 msgstr "Handling avbroten"
 
 #. Default: "Item"
-#: browser/bookings.py:407
+#: ./browser/bookings.py:407
 msgid "Item"
 msgstr "Produkt"
 
 #. Default: "Actions"
-#: browser/contacts.py:68 browser/views.py:317
+#: ./browser/contacts.py:69
+#: ./browser/views.py:333
 msgid "actions"
 msgstr "Handlingar"
 
 #. Default: "Address"
-#: browser/bookings.py:426
+#: ./browser/bookings.py:426
 msgid "address"
 msgstr "adresse"
 
 #. Default: "All"
-#: browser/views.py:349
+#: ./browser/views.py:365
 msgid "all"
 msgstr "alt"
 
 #. Default: "Please provide the email adress you used for submitting the order."
-#: browser/views.py:938
+#: ./browser/views.py:954
 msgid "anon_auth_err_email"
 msgstr ""
 
 #. Default: "No order could be found for the given credentials"
-#: browser/views.py:947
+#: ./browser/views.py:963
 msgid "anon_auth_err_order"
 msgstr ""
 
 #. Default: "Please provide the ordernumber"
-#: browser/views.py:943
+#: ./browser/views.py:959
 msgid "anon_auth_err_ordernumber"
 msgstr ""
 
 #. Default: "Email"
-#: browser/views.py:903
+#: ./browser/views.py:919
 msgid "anon_auth_label_email"
 msgstr ""
 
 #. Default: "Ordernumber"
-#: browser/views.py:894
+#: ./browser/views.py:910
 msgid "anon_auth_label_ordernumber"
 msgstr ""
 
 #. Default: "Submit"
-#: browser/views.py:910
+#: ./browser/views.py:926
 msgid "anon_auth_label_submit"
 msgstr ""
 
-#: profiles.zcml:14
+#: ./profiles.zcml:14
 msgid "bda.plone.orders"
 msgstr ""
 
-#: profiles.zcml:29
+#: ./profiles.zcml:29
 msgid "bda.plone.orders base"
 msgstr ""
 
 #. Default: "Billing Address:"
-#: browser/order.pt:43
+#: ./browser/order.pt:43
 msgid "billing_address"
 msgstr "Faktura adresse"
 
 #. Default: "<img src=\"${DYNAMIC_CONTENT}\" title=\"cancel booking\" alt=\"cancel booking icon\" />"
-#: browser/order.pt:242
+#: ./browser/order.pt:242
 msgid "booking_cancel"
 msgstr "bestelling avbroten"
 
 #. Default: "comment"
-#: browser/bookings.py:412 browser/order.pt:178
+#: ./browser/bookings.py:412
+#: ./browser/order.pt:178
 msgid "booking_comment"
 msgstr "Kommentar"
 
 #. Default: "count"
-#: browser/order.pt:171
+#: ./browser/order.pt:171
 msgid "booking_count"
 msgstr "Antall:"
 
 #. Default: "currency"
-#: browser/order.pt:173
+#: ./browser/order.pt:173
 msgid "booking_currency"
 msgstr "Valuta:"
 
 #. Default: "Bookingdate"
-#: browser/bookings.py:401
+#: ./browser/bookings.py:401
 msgid "booking_date"
 msgstr "bestelling dato"
 
 #. Default: "discount net"
-#: browser/order.pt:175
+#: ./browser/order.pt:175
 msgid "booking_discount_net"
 msgstr ""
 
 #. Default: "exported"
-#: browser/order.pt:177
+#: ./browser/order.pt:177
 msgid "booking_exported"
 msgstr "Eksportert:"
 
 #. Default: "net"
-#: browser/order.pt:174
+#: ./browser/order.pt:174
 msgid "booking_net"
 msgstr "Netto"
 
 #. Default: "quantity unit"
-#: browser/order.pt:172
+#: ./browser/order.pt:172
 msgid "booking_quantity_unit"
 msgstr "Booking eining"
 
 #. Default: "salaried"
-#: browser/order.pt:180
+#: ./browser/order.pt:180
 msgid "booking_salaried"
 msgstr ""
 
 #. Default: "state"
-#: browser/order.pt:179
+#: ./browser/order.pt:179
 msgid "booking_state"
 msgstr ""
 
 #. Default: "title"
-#: browser/order.pt:170
+#: ./browser/order.pt:170
 msgid "booking_title"
 msgstr "Tittel"
 
 #. Default: "vat"
-#: browser/order.pt:176
+#: ./browser/order.pt:176
 msgid "booking_vat"
 msgstr "Moms"
 
 #. Default: "Bookings"
-#: browser/bookings.pt:8
+#: ./browser/bookings.pt:8
 msgid "bookings"
 msgstr "Bestellingar"
 
 #. Default: "Bookings quantity"
-#: browser/bookings.py:264
+#: ./browser/bookings.py:264
 msgid "bookings_quantity"
 msgstr "bestelling antal"
 
 #. Default: "Bookings total sum"
-#: browser/bookings.py:270
+#: ./browser/bookings.py:270
 msgid "bookings_total_sum"
 msgstr "bestelling total sum"
 
 #. Default: "Buyable"
-#: vocabularies.py:64
+#: ./vocabularies.py:63
 msgid "buyable"
 msgstr ""
 
 #. Default: "Buyable Uid"
-#: browser/bookings.py:390
+#: ./browser/bookings.py:390
 msgid "buyable_uid"
 msgstr ""
 
 #. Default: "Cancel"
-#: vocabularies.py:33
+#: ./vocabularies.py:32
 msgid "cancel"
 msgstr "Avbryt"
 
 #. Default: "Cancelled"
-#: vocabularies.py:21
+#: ./vocabularies.py:20
 msgid "cancelled"
 msgstr "Avbrutt"
 
 #. Default: "City"
-#: browser/views.py:335
+#: ./browser/views.py:351
 msgid "city"
 msgstr "Postadresse"
 
 #. Default: "Contacts"
-#: browser/contacts.pt:22
+#: ./browser/contacts.pt:26
 msgid "contacts"
 msgstr "kontaktar"
 
 #. Default: "Count"
-#: browser/bookings.py:438
+#: ./browser/bookings.py:438
 msgid "count"
 msgstr ""
 
 #. Default: "Currency:"
-#: browser/order.pt:79
+#: ./browser/order.pt:79
 msgid "currency"
 msgstr "Valuta"
 
@@ -208,27 +210,30 @@ msgid "customer_filter"
 msgstr ""
 
 #. Default: "Mail to customers sent"
-#: browser/notify_customers.py:124
+#: ./browser/notify_customers.py:123
 msgid "customers_notified_success"
 msgstr ""
 
 #. Default: "Date"
-#: browser/views.py:322
+#: ./browser/views.py:338
+#: ./mailtemplates/order_success.pt:22
 msgid "date"
 msgstr "Dato:"
 
 #. Default: "Delivery Address:"
-#: browser/order.pt:121
+#: ./browser/order.pt:121
 msgid "delivery_address"
 msgstr "Leveringsadresse:"
 
 #. Default: "Email"
-#: browser/bookings.py:368 browser/contacts.py:73 browser/views.py:332
+#: ./browser/bookings.py:368
+#: ./browser/contacts.py:74
+#: ./browser/views.py:348
 msgid "email"
 msgstr "epost"
 
 #. Default: "Failed to send notification to ${receiver}"
-#: mailnotify.py:397
+#: ./mailnotify.py:326
 msgid "email_sending_failed"
 msgstr "Epost ti  ${receiver} kunne ikke sendes."
 
@@ -237,62 +242,68 @@ msgid "export"
 msgstr "Eksporter"
 
 #. Default: "Export Orders"
-#: browser/export.pt:20
+#: ./browser/export.pt:23
 msgid "export_orders"
 msgstr "Eksporter bestellingar"
 
 #. Default: "Export recent orders as CSV (excel optimized)"
-#: browser/export.pt:25
+#: ./browser/export.pt:28
 msgid "export_recent_orders"
 msgstr "Eksporter nyaste ordrar som CSV"
 
 #. Default: "Failed"
-#: vocabularies.py:42
+#: ./vocabularies.py:41
 msgid "failed"
 msgstr "Avbrote"
 
 #. Default: "Filter for customers"
-#: browser/bookings.py:174 browser/views.py:396
+#: ./browser/bookings.py:174
+#: ./browser/views.py:412
 msgid "filter_for_customers"
 msgstr ""
 
 #. Default: "Filter for salaried state"
-#: browser/bookings.py:200 browser/views.py:420
+#: ./browser/bookings.py:200
+#: ./browser/views.py:436
 msgid "filter_for_salaried"
 msgstr ""
 
 #. Default: "Filter for states"
-#: browser/bookings.py:187 browser/views.py:408
+#: ./browser/bookings.py:187
+#: ./browser/views.py:424
 msgid "filter_for_state"
 msgstr ""
 
 #. Default: "Filter for vendors"
-#: browser/bookings.py:157 browser/views.py:381
+#: ./browser/bookings.py:157
+#: ./browser/views.py:397
 msgid "filter_for_vendors"
 msgstr ""
 
 #. Default: "Filter from date"
-#: browser/bookings.py:213
+#: ./browser/bookings.py:213
 msgid "filter_from_date"
 msgstr ""
 
 #. Default: "Filter to date"
-#: browser/bookings.py:226
+#: ./browser/bookings.py:226
 msgid "filter_to_date"
 msgstr ""
 
 #. Default: "Finish"
-#: vocabularies.py:32
+#: ./vocabularies.py:31
 msgid "finish"
 msgstr "Fullfør"
 
 #. Default: "Finished"
-#: vocabularies.py:20
+#: ./vocabularies.py:19
 msgid "finished"
 msgstr "Fullført"
 
 #. Default: "First Name"
-#: browser/bookings.py:418 browser/contacts.py:81 browser/views.py:329
+#: ./browser/bookings.py:418
+#: ./browser/contacts.py:82
+#: ./browser/views.py:345
 msgid "firstname"
 msgstr "Fornavn"
 
@@ -302,7 +313,7 @@ msgid "from_date"
 msgstr "Fra"
 
 #. Default: "From-date after to-date"
-#: browser/export.py:168
+#: ./browser/export.py:172
 msgid "from_date_before_to_date"
 msgstr "Fra dato til dato"
 
@@ -311,42 +322,42 @@ msgid "from_date_required"
 msgstr "Fra Dato kreves"
 
 #. Default: "Group orders by"
-#: browser/bookings.py:241
+#: ./browser/bookings.py:241
 msgid "group_orders_by"
 msgstr ""
 
 #. Default: "Available placeholders:"
-#: browser/mailtemplates_view.pt:46
+#: ./browser/mailtemplates_view.pt:50
 msgid "heading_mailtemplatelib_available"
 msgstr ""
 
 #. Default: "In templates named placeholders can be used. A placeholder is inserted by inserting the name of the placeholder in curly braces, like so: ${example}"
-#: browser/mailtemplates_view.pt:30
+#: ./browser/mailtemplates_view.pt:33
 msgid "heading_mailtemplatelib_example"
 msgstr ""
 
 #. Default: "Edit"
-#: browser/mailtemplates_view.pt:33
+#: ./browser/mailtemplates_view.pt:36
 msgid "heading_mailtemplatelib_library"
 msgstr ""
 
 #. Default: "Mailtemplates for Order Notifications"
-#: browser/mailtemplates_view.pt:20
+#: ./browser/mailtemplates_view.pt:23
 msgid "heading_mailtemplatelib_main"
 msgstr ""
 
 #. Default: "Preview"
-#: browser/mailtemplates_view.pt:38
+#: ./browser/mailtemplates_view.pt:42
 msgid "heading_mailtemplatelib_preview"
 msgstr ""
 
 #. Default: "Using placeholder:"
-#: browser/mailtemplates_view.pt:25
+#: ./browser/mailtemplates_view.pt:28
 msgid "heading_mailtemplatelib_using"
 msgstr ""
 
 #. Default: "Found inconsistent Currencies on order related bookings. This should not happen at all!"
-#: browser/order.pt:85
+#: ./browser/order.pt:85
 msgid "inconsistent_currencies"
 msgstr "Inkonsekvent valuta for denne ordren. "
 
@@ -367,77 +378,81 @@ msgid "label_mailtemplatelib_title"
 msgstr ""
 
 #. Default: "Last Name"
-#: browser/bookings.py:419 browser/contacts.py:77 browser/views.py:326
+#: ./browser/bookings.py:419
+#: ./browser/contacts.py:78
+#: ./browser/views.py:342
 msgid "lastname"
 msgstr "Etternavn"
 
 #. Default: "Loading Data, please wait..."
-#: browser/contacts.pt:46 browser/table.pt:31
+#: ./browser/contacts.pt:50
+#: ./browser/table.pt:31
 msgid "loading_please_wait"
 msgstr "Lasting av data, vennligst vent ..."
 
 #. Default: "Mark outstanding"
-#: vocabularies.py:52
+#: ./vocabularies.py:51
 msgid "mark_outstanding"
 msgstr "Marker som ubetalt"
 
 #. Default: "Mark salaried"
-#: vocabularies.py:50
+#: ./vocabularies.py:49
 msgid "mark_salaried"
 msgstr "Merk som betalt"
 
 #. Default: "Misses"
-#: browser/notify_customers.py:28
+#: ./browser/notify_customers.py:27
 msgid "misses"
 msgstr "frk"
 
 #. Default: "Mister"
-#: browser/notify_customers.py:27
+#: ./browser/notify_customers.py:26
 msgid "mister"
 msgstr "hr."
 
 #. Default: "Mister/Misses"
-#: browser/notify_customers.py:26
+#: ./browser/notify_customers.py:25
 msgid "mister_misses"
 msgstr "hr frk"
 
 #. Default: "Mixed"
-#: vocabularies.py:23
+#: ./vocabularies.py:22
 msgid "mixed"
 msgstr "blanda"
 
 #. Default: "New"
-#: vocabularies.py:18
+#: ./vocabularies.py:17
 msgid "new"
 msgstr "Ny"
 
 #. Default: "No"
-#: browser/views.py:812 vocabularies.py:41
+#: ./browser/views.py:828
+#: ./vocabularies.py:40
 msgid "no"
 msgstr "Nei"
 
 #. Default: "No Payment"
-#: common.py:306
+#: ./common.py:305
 msgid "no_payment"
 msgstr "ikkje betalt"
 
 #. Default: "No Shipping"
-#: common.py:331
+#: ./common.py:330
 msgid "no_shipping"
 msgstr "ikkje sendt"
 
 #. Default: "No template selected"
-#: browser/notify_customers.py:63
+#: ./browser/notify_customers.py:62
 msgid "no_template_selected"
 msgstr ""
 
 #. Default: "None"
-#: browser/views.py:795
+#: ./browser/views.py:811
 msgid "none"
 msgstr "Ingen:"
 
 #. Default: "Notify customers of selected orders"
-#: browser/views.py:452
+#: ./browser/views.py:468
 msgid "notify_customers"
 msgstr "kundeinfo"
 
@@ -446,282 +461,294 @@ msgid "notify_customers_heading"
 msgstr ""
 
 #. Default: "Order Bookings:"
-#: browser/order.pt:162
+#: ./browser/order.pt:162
 msgid "order_bookings"
 msgstr "Bestelling:"
 
 #. Default: "Order Comment:"
-#: browser/order.pt:151
+#: ./browser/order.pt:151
 msgid "order_comment"
 msgstr "Kommentar:"
 
 #. Default: "Company:"
-#: browser/order.pt:35
+#: ./browser/order.pt:35
 msgid "order_company"
 msgstr "Firma:"
 
 #. Default: "Country:"
-#: browser/order.pt:51
+#: ./browser/order.pt:51
 msgid "order_country"
 msgstr "Land:"
 
 #. Default: "Created:"
-#: browser/order.pt:61
+#: ./browser/order.pt:61
 msgid "order_created"
 msgstr "Opprettet:"
 
 #. Default: "Order Details"
-#: browser/order.pt:8
+#: ./browser/order.pt:8
 msgid "order_details"
 msgstr "Bestillingsdetaljer:"
 
 #. Default: "Discount Net:"
-#: browser/order.pt:98
+#: ./browser/order.pt:98
 msgid "order_discount_net"
 msgstr ""
 
 #. Default: "Discount VAT:"
-#: browser/order.pt:101
+#: ./browser/order.pt:101
 msgid "order_discount_vat"
 msgstr ""
 
 #. Default: "Order Done"
-#: browser/views.py:974
+#: ./browser/views.py:1006
 msgid "order_done"
 msgstr "kjøpt"
 
 #. Default: "continue"
-#: browser/order_done.pt:30
+#: ./browser/order_done.pt:30
 msgid "order_done_continue"
 msgstr ""
 
 #. Default: "Email:"
-#: browser/order.pt:32
+#: ./browser/order.pt:32
 msgid "order_email"
 msgstr "E-post:"
 
 #. Default: "Gender:"
-#: browser/order.pt:25
+#: ./browser/order.pt:25
 msgid "order_gender"
 msgstr "Kjønn"
 
 #. Default: "Name:"
-#: browser/order.pt:28
+#: ./browser/order.pt:28
 msgid "order_name"
 msgstr "Navn:"
 
 #. Default: "Net:"
-#: browser/order.pt:92
+#: ./browser/order.pt:92
 msgid "order_net"
 msgstr "Netto:"
 
 #. Default: "No Comment"
-#: browser/order.pt:154
+#: ./browser/order.pt:154
 msgid "order_no_comment"
 msgstr "Ingen kommentar"
 
 #. Default: "No delivery Address defined"
-#: browser/order.pt:145
+#: ./browser/order.pt:145
 msgid "order_no_delivery_address"
 msgstr "Ingen leveringsadresse er oppgitt:"
 
 #. Default: "Ordernumber:"
-#: browser/order.pt:19
+#: ./browser/order.pt:19
 msgid "order_number"
 msgstr "Bestillingsnummer:"
 
 #. Default: "Payment:"
-#: browser/order.pt:64
+#: ./browser/order.pt:64
 msgid "order_payment"
 msgstr "Zahlungsart:"
 
 #. Default: "Phone:"
-#: browser/order.pt:38
+#: ./browser/order.pt:38
 msgid "order_phone"
 msgstr "Telefon:"
 
+#. Default: "Thank you for your order!"
+#: ./mailtemplates/order_success.pt:11
+msgid "order_received_heading"
+msgstr ""
+
 #. Default: "Salaried:"
-#: browser/order.pt:67
+#: ./browser/order.pt:67
 msgid "order_salaried"
 msgstr "Betalt:"
 
 #. Default: "Shipping Net:"
-#: browser/order.pt:107
+#: ./browser/order.pt:107
 msgid "order_shipping_costs_net"
 msgstr "ordre fraktkostnader netto"
 
 #. Default: "Shipping VAT:"
-#: browser/order.pt:110
+#: ./browser/order.pt:110
 msgid "order_shipping_costs_vat"
 msgstr "ordre fraktkostnader mva"
 
 #. Default: "Shipping:"
-#: browser/order.pt:104
+#: ./browser/order.pt:104
 msgid "order_shipping_title"
 msgstr "ordre frakt tittel"
 
 #. Default: "State:"
-#: browser/order.pt:73
+#: ./browser/order.pt:73
 msgid "order_state"
 msgstr "Status:"
 
 #. Default: "Order State:"
-#: browser/order.pt:60
+#: ./browser/order.pt:60
 msgid "order_state_heading"
 msgstr "Ordrestatus"
 
 #. Default: "Street:"
-#: browser/order.pt:44
+#: ./browser/order.pt:44
 msgid "order_street"
 msgstr "Gataadresse:"
 
 #. Default: "Order Summary:"
-#: browser/order.pt:78
+#: ./browser/order.pt:78
 msgid "order_summary"
 msgstr "Ordresammendrag:"
 
 #. Default: "Net: ${value} ${currency}"
-#: mailnotify.py:166
+#: ./mailnotify.py:438
 msgid "order_summary_cart_net"
 msgstr ""
 
 #. Default: "Total: ${value} ${currency}"
-#: mailnotify.py:261
+#: ./mailnotify.py:517
 msgid "order_summary_cart_total"
 msgstr ""
 
 #. Default: "VAT: ${value} ${currency}"
-#: mailnotify.py:176
+#: ./mailnotify.py:446
 msgid "order_summary_cart_vat"
 msgstr ""
 
 #. Default: "Discount Net: ${value} ${currency}"
-#: mailnotify.py:188
+#: ./mailnotify.py:456
 msgid "order_summary_discount_net"
 msgstr ""
 
 #. Default: "Discount Total: ${value} ${currency}"
-#: mailnotify.py:208
+#: ./mailnotify.py:472
 msgid "order_summary_discount_total"
 msgstr ""
 
 #. Default: "Discount VAT: ${value} ${currency}"
-#: mailnotify.py:198
+#: ./mailnotify.py:464
 msgid "order_summary_discount_vat"
 msgstr ""
 
 #. Default: "Summary:"
-#: mailnotify.py:270
+#: ./mailnotify.py:525
 msgid "order_summary_label"
 msgstr ""
 
 #. Default: "Shipping: ${label}"
-#: mailnotify.py:221
+#: ./mailnotify.py:482
 msgid "order_summary_shipping_label"
 msgstr ""
 
 #. Default: "Shipping Net: ${value} ${currency}"
-#: mailnotify.py:232
+#: ./mailnotify.py:493
 msgid "order_summary_shipping_net"
 msgstr ""
 
 #. Default: "Shipping Total: ${value} ${currency}"
-#: mailnotify.py:252
+#: ./mailnotify.py:509
 msgid "order_summary_shipping_total"
 msgstr ""
 
 #. Default: "Shipping VAT: ${value} ${currency}"
-#: mailnotify.py:242
+#: ./mailnotify.py:501
 msgid "order_summary_shipping_vat"
 msgstr ""
 
 #. Default: "Thanks for your Order."
-#: browser/views.py:991
+#: ./browser/views.py:1023
 msgid "order_text"
 msgstr "ordre tekst"
 
 #. Default: "Total:"
-#: browser/order.pt:113
+#: ./browser/order.pt:113
 msgid "order_total"
 msgstr "Totalt: "
 
 #. Default: "Order UID:"
-#: browser/order.pt:15
+#: ./browser/order.pt:15
 msgid "order_uid"
 msgstr "BestillingsUID:"
 
 #. Default: "VAT:"
-#: browser/order.pt:95
+#: ./browser/order.pt:95
 msgid "order_vat"
 msgstr "Moms:"
 
 #. Default: "ZIP/City:"
-#: browser/order.pt:47
+#: ./browser/order.pt:47
 msgid "order_zip_city"
 msgstr "Postnr/postadresse:"
 
 #. Default: "Ordernumber"
-#: browser/bookings.py:396
+#: ./browser/bookings.py:396
+#: ./mailtemplates/order_success.pt:26
 msgid "ordernumber"
 msgstr "ordrenr."
 
 #. Default: "Orders"
-#: browser/orders.pt:8
+#: ./browser/orders.pt:8
 msgid "orders"
 msgstr "Bestillinger"
 
 #. Default: "Personal Data:"
-#: browser/order.pt:24
+#: ./browser/order.pt:24
 msgid "personal_data"
 msgstr "Personlige data:"
 
 #. Default: "Phone"
-#: browser/bookings.py:366
+#: ./browser/bookings.py:366
 msgid "phone"
 msgstr "telefon"
 
 #. Default: "Price per unit"
-#: browser/bookings.py:432
+#: ./browser/bookings.py:432
 msgid "price_per_unit"
 msgstr "pris pr stk"
 
 #. Default: "Process"
-#: vocabularies.py:31
+#: ./vocabularies.py:30
 msgid "process"
 msgstr ""
 
 #. Default: "Processing"
-#: vocabularies.py:19
+#: ./vocabularies.py:18
 msgid "processing"
 msgstr "i arbeid"
 
 #. Default: "Renew"
-#: vocabularies.py:30
+#: ./vocabularies.py:29
 msgid "renew"
 msgstr "Definer som ny"
 
 #. Default: "Reservation Done"
-#: browser/views.py:973
+#: ./browser/views.py:1005
 msgid "reservation_done"
 msgstr "Reservert"
 
+#. Default: "Thank you for your reservation!"
+#: ./mailtemplates/order_success.pt:17
+msgid "reservation_received_heading"
+msgstr ""
+
 #. Default: "Thanks for your Reservation."
-#: browser/views.py:989
+#: ./browser/views.py:1021
 msgid "reservation_text"
 msgstr "Takkk for din bestilling"
 
 #. Default: "Reserved"
-#: vocabularies.py:22
+#: ./vocabularies.py:21
 msgid "reserved"
 msgstr "Reservert"
 
 #. Default: "Salaried"
-#: browser/bookings.py:465 browser/views.py:338
+#: ./browser/bookings.py:465
+#: ./browser/views.py:354
 msgid "salaried"
 msgstr "Betalt"
 
 #. Default: "Select all visible orders"
-#: browser/views.py:443
+#: ./browser/views.py:459
 msgid "select_all_orders"
 msgstr "marker alle ordrer"
 
@@ -730,12 +757,13 @@ msgid "send"
 msgstr "send"
 
 #. Default: "State"
-#: browser/bookings.py:471 browser/views.py:342
+#: ./browser/bookings.py:471
+#: ./browser/views.py:358
 msgid "state"
 msgstr "Status"
 
 #. Default: "Cannot show order information because no order uid was given."
-#: browser/views.py:672
+#: ./browser/views.py:688
 msgid "statusmessage_err_no_order_uid_given"
 msgstr ""
 
@@ -748,7 +776,7 @@ msgid "subject_required"
 msgstr "emne påkrevd"
 
 #. Default: "Sum"
-#: browser/bookings.py:444
+#: ./browser/bookings.py:444
 msgid "sum"
 msgstr ""
 
@@ -769,22 +797,22 @@ msgid "text_required"
 msgstr "tekst påkrevd"
 
 #. Default: "Example Value"
-#: browser/mailtemplates_view.pt:54
+#: ./browser/mailtemplates_view.pt:58
 msgid "th_mailtemplatelib_example"
 msgstr ""
 
 #. Default: "Placeholder"
-#: browser/mailtemplates_view.pt:53
+#: ./browser/mailtemplates_view.pt:57
 msgid "th_mailtemplatelib_placeholder"
 msgstr ""
 
 #. Default: "Can Buy"
-#: localroles.py:18
+#: ./localroles.py:18
 msgid "title_customer_role"
 msgstr ""
 
 #. Default: "Can Sell"
-#: localroles.py:11
+#: ./localroles.py:11
 msgid "title_vendor_role"
 msgstr ""
 
@@ -798,22 +826,24 @@ msgid "to_date_required"
 msgstr "Til dato er påkrevd"
 
 #. Default: "Transaction ID:"
-#: browser/order.pt:70
+#: ./browser/order.pt:70
 msgid "transaction_id"
 msgstr "Transaksjons ID:"
 
 #. Default: "Unknown"
-#: browser/views.py:805 common.py:302 upgrades.py:228
+#: ./browser/views.py:821
+#: ./common.py:301
+#: ./upgrades.py:227
 msgid "unknown"
 msgstr "Ukjent"
 
 #. Default: "Unknown Order"
-#: browser/views.py:976
+#: ./browser/views.py:1008
 msgid "unknown_order"
 msgstr "ukjent ordre"
 
 #. Default: "Sorry, this order does not exist."
-#: browser/views.py:993
+#: ./browser/views.py:1025
 msgid "unknown_order_text"
 msgstr "ukjent ordre tekst"
 
@@ -822,26 +852,27 @@ msgid "vendor_filter"
 msgstr ""
 
 #. Default: "View Bookings"
-#: browser/contacts.py:53
+#: ./browser/contacts.py:54
 msgid "view_bookings"
 msgstr "vis bestellingar"
 
 #. Default: "View Order"
-#: browser/views.py:476
+#: ./browser/views.py:492
 msgid "view_order"
 msgstr "Sjekk bestillinger"
 
 #. Default: "View Orders"
-#: browser/contacts.py:42
+#: ./browser/contacts.py:43
 msgid "view_orders"
 msgstr "vis ordrer"
 
 #. Default: "Yes"
-#: browser/views.py:812 vocabularies.py:40
+#: ./browser/views.py:828
+#: ./vocabularies.py:39
 msgid "yes"
 msgstr "Ja"
 
 #. Default: "Your Order number"
-#: browser/order_done.pt:24
+#: ./browser/order_done.pt:24
 msgid "your_order_order_id"
 msgstr "din ordre id"
