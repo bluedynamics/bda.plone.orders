@@ -802,6 +802,16 @@ def dispatch_notify_stock_threshold_reached(event):
         func(event)
 
 
+def stock_threshold_reached_items_data(items):
+    ret = list()
+    for item in items:
+        ret.append({
+            'title': safe_unicode(item['title']),
+            'remaining_stock_available': item['remaining_stock_available']
+        })
+    return ret
+
+
 class StockThresholdReachedCB(object):
 
     def __init__(self, event):
@@ -809,10 +819,11 @@ class StockThresholdReachedCB(object):
 
     def __call__(self, *args):
         text = ''
-        items = self.event.stock_threshold_reached_items
-        for item_attrs in items:
-            title = item_attrs['title']
-            remaining = item_attrs['remaining_stock_available']
+        items = stock_threshold_reached_items_data(
+            self.event.stock_threshold_reached_items)
+        for item in items:
+            title = safe_unicode(item['title'])
+            remaining = item['remaining_stock_available']
             text += u'{0} (Remaining stock: {1})\n'.format(title, remaining)
         return text
 
@@ -831,7 +842,8 @@ def notify_stock_threshold_reached(event):
     template_name = STOCK_THRESHOLD_REACHED_TEMPLATE
     template_data = dict()
     template_data['order'] = general_order_data(event.context, order_data)
-    template_data['items'] = event.stock_threshold_reached_items
+    template_data['items'] = stock_threshold_reached_items_data(
+        event.stock_threshold_reached_items)
     do_notify_shopmanager(
         event.context, order_data, templates, template_name, template_data)
 

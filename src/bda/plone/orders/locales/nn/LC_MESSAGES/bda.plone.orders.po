@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: bda.plone.orders\n"
-"POT-Creation-Date: 2017-10-22 12:34+0000\n"
+"POT-Creation-Date: 2017-10-22 15:35+0000\n"
 "PO-Revision-Date: 2017-02-06 15:38+0100\n"
 "Last-Translator: Espen Moe-Nilssen <espen@medialog.no>\n"
 "Language-Team: espen@medialog.no\n"
@@ -672,6 +672,11 @@ msgstr ""
 msgid "order_mail_phone"
 msgstr ""
 
+#. Default: "Remaining Stock"
+#: ./mailtemplates/stock_threshold_reached.pt:21
+msgid "order_mail_remaining_stock"
+msgstr ""
+
 #. Default: "Reservation details"
 #: ./mailtemplates/order_success.pt:32
 msgid "order_mail_reservation_details"
@@ -705,6 +710,11 @@ msgstr ""
 #. Default: "Shipping VAT"
 #: ./mailtemplates/order_success.pt:270
 msgid "order_mail_shipping_vat"
+msgstr ""
+
+#. Default: "Products getting out of stock"
+#: ./mailtemplates/stock_threshold_reached.pt:9
+msgid "order_mail_stock_threshold_reached_heading"
 msgstr ""
 
 #. Default: "Street"
