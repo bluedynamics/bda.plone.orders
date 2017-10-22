@@ -973,6 +973,22 @@ class DirectOrderView(OrderViewBase):
         return self.order_auth_template(self)
 
 
+class InvoiceViewBase(OrderViewBase):
+    pass
+
+
+class InvoiceView(InvoiceViewBase):
+    pass
+
+
+class MyInvoiceView(InvoiceViewBase):
+    pass
+
+
+class DirectInvoiceView(InvoiceViewBase):
+    pass
+
+
 class OrderDone(BrowserView):
     # XXX: provide different headings and texts for states reservation and
     #      mixed
