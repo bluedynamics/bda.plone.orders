@@ -26,6 +26,7 @@ from bda.plone.orders.transitions import do_transition_for
 from bda.plone.orders.transitions import transitions_of_main_state
 from bda.plone.orders.transitions import transitions_of_salaried_state
 from plone.memoize import view
+from plone.protect.utils import addTokenToUrl
 from repoze.catalog.query import Any
 from repoze.catalog.query import Contains
 from repoze.catalog.query import Eq
@@ -750,15 +751,22 @@ class OrderViewBase(BrowserView):
     @property
     def listing(self):
         # XXX: discount
+        can_cancel_booking = self.can_cancel_booking
         ret = list()
         for booking in self.order_data.bookings:
             obj = get_object_by_uid(self.context, booking.attrs['buyable_uid'])
             state = vocabs.state_vocab()[booking.attrs.get('state')]
             salaried = vocabs.salaried_vocab()[booking.attrs.get('salaried')]
+            cancel_url = None
+            if can_cancel_booking:
+                cancel_url = addTokenToUrl('{}/@@booking_cancel?uid={}'.format(
+                    self.context.absolute_url(),
+                    booking.attrs['uid']))
             ret.append({
                 'uid': booking.attrs['uid'],
                 'title': booking.attrs['title'],
                 'url': obj.absolute_url(),
+                'cancel_url': cancel_url,
                 'count': booking.attrs['buyable_count'],
                 'net': ascur(booking.attrs.get('net', 0.0)),
                 'discount_net': ascur(float(booking.attrs['discount_net'])),

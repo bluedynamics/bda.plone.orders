@@ -235,11 +235,14 @@
             </td>
             <td>
                 <span tal:content="row/state">state</span>
-                <a tal:condition="python:view.can_cancel_booking"
-                   tal:attributes="href string:${context/absolute_url}/@@booking_cancel?uid=${row/uid}"
-                   i18n:translate="booking_cancel"
+                <a tal:condition="row/cancel_url"
+                   tal:attributes="href row/cancel_url"
                    class="booking-cancel-link discreet"
-                   href="#"><img src="#" title="cancel booking" alt="cancel booking icon" tal:attributes="src string:${context/absolute_url}/++resource++bda.plone.orders/delete.png"/></a>
+                   href="#"><img
+                       src="#"
+                       title="cancel booking"
+                       alt="cancel booking"
+                       tal:attributes="src string:${context/absolute_url}/++resource++bda.plone.orders/delete.png" /></a>
             </td>
             <td tal:content="row/salaried">salaried</td>
           </tr>

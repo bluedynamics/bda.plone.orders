@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: bda.plone.orders\n"
-"POT-Creation-Date: 2017-10-22 11:18+0000\n"
+"POT-Creation-Date: 2017-10-22 11:37+0000\n"
 "PO-Revision-Date: 2017-02-06 15:38+0100\n"
 "Last-Translator: Espen Moe-Nilssen <espen@medialog.no>\n"
 "Language-Team: espen@medialog.no\n"
@@ -88,6 +88,36 @@ msgstr "Faktura adresse"
 #: ./browser/order.pt:242
 msgid "booking_cancel"
 msgstr "bestelling avbroten"
+
+#. Default: "Click here"
+#: ./mailtemplates/booking_cancelled.pt:26
+msgid "booking_cancelled_mail_click_here"
+msgstr ""
+
+#. Default: "Date"
+#: ./mailtemplates/booking_cancelled.pt:13
+msgid "booking_cancelled_mail_date"
+msgstr ""
+
+#. Default: "One of your bookings was cancelled"
+#: ./mailtemplates/booking_cancelled.pt:9
+msgid "booking_cancelled_mail_heading"
+msgstr ""
+
+#. Default: "Cancelled item"
+#: ./mailtemplates/booking_cancelled.pt:21
+msgid "booking_cancelled_mail_item"
+msgstr ""
+
+#. Default: "Order details"
+#: ./mailtemplates/booking_cancelled.pt:25
+msgid "booking_cancelled_mail_order_details"
+msgstr ""
+
+#. Default: "Ordernumber"
+#: ./mailtemplates/booking_cancelled.pt:17
+msgid "booking_cancelled_mail_ordernumber"
+msgstr ""
 
 #. Default: "Comment"
 #: ./browser/bookings.py:412

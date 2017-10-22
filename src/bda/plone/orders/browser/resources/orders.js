@@ -87,16 +87,16 @@
         },
 
         cancel_confirm_binder: function(context) {
-            $('.booking-cancel-link')
-            .unbind('click')
-            .bind('click', orders.cancel_confirm);
-        },
-
-        cancel_confirm: function(event) {
-            var result = window.confirm('Are you sure?');
-            if (!result) {
-                event.preventDefault();
-            }
+            $('.booking-cancel-link', context).bind('click', function(evt) {
+                evt.preventDefault();
+                var options = {
+                    message: 'Are you sure?',
+                    url: $(this).attr('href')
+                };
+                bdajax.dialog(options, function(options) {
+                    window.location.href = options.url;
+                });
+            });
         },
 
         comment_edit_binder: function(event) {

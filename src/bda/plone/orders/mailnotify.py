@@ -698,7 +698,9 @@ class BookingCancelledTitleCB(object):
         self.event = event
 
     def __call__(self, *args):
-        return self.event.booking_attrs[BOOKING_CANCELLED_TITLE_ATTRIBUTE]
+        return safe_unicode(
+            self.event.booking_attrs[BOOKING_CANCELLED_TITLE_ATTRIBUTE]
+        )
 
 
 BOOKING_CANCELLED_TEMPLATE = 'booking_cancelled'
@@ -710,13 +712,12 @@ def notify_booking_cancelled(event, who=None):
     order_data = OrderData(event.context, uid=get_order_uid(event))
     templates = dict()
     templates.update(get_booking_cancelled_templates(event.context))
-    booking_cancelled_title = BookingCancelledTitleCB(event)
-    templates['booking_cancelled_title_cb'] = booking_cancelled_title
+    templates['booking_cancelled_title_cb'] = BookingCancelledTitleCB(event)
     template_name = BOOKING_CANCELLED_TEMPLATE
     template_data = dict()
     template_data['order'] = general_order_data(event.context, order_data)
     template_data['booking'] = dict()
-    template_data['booking']['title'] = booking_cancelled_title
+    template_data['booking']['title'] = BookingCancelledTitleCB(event)()
     if who == "customer":
         do_notify_customer(
             event.context, order_data, templates, template_name, template_data)

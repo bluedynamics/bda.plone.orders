@@ -6,16 +6,25 @@
   <head></head>
 
   <body>
-    <h1>One of your bookings was cancelled</h1>
+    <h1 i18n:translate="booking_cancelled_mail_heading">
+      One of your bookings was cancelled
+    </h1>
 
-    <strong>Date</strong>: %(date)s
+    <strong i18n:translate="booking_cancelled_mail_date">Date</strong>:
+    <tal:date replace="order['date']" />
     <br />
-    <strong>Ordernumber</strong>: %(ordernumber)s
+
+    <strong i18n:translate="booking_cancelled_mail_ordernumber">Ordernumber</strong>:
+    <tal:ordernumber replace="order['ordernumber']" />
     <br />
-    <strong>Cancelled item</strong>: %(booking_cancelled_title)s
+
+    <strong i18n:translate="booking_cancelled_mail_item">Cancelled item</strong>:
+    <tal:cancelled_item replace="booking['title']" />
     <br />
-    <strong>Order details</strong>:
-    <a href="%(portal_url)s/@@showorder?ordernumber=%(ordernumber)s">
+
+    <strong i18n:translate="booking_cancelled_mail_order_details">Order details</strong>:
+    <a href="${order['portal_url'] + '/@@showorder?ordernumber=' + order['ordernumber']}"
+       i18n:translate="booking_cancelled_mail_click_here">
       Click here
     </a>
   </body>

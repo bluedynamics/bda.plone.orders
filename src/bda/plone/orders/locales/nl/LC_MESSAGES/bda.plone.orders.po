@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: bda.plone.orders\n"
-"POT-Creation-Date: 2017-10-22 11:18+0000\n"
+"POT-Creation-Date: 2017-10-22 11:37+0000\n"
 "PO-Revision-Date: 2015-01-28 15:13+0100\n"
 "Last-Translator: INTK <info@intk.com>\n"
 "Language-Team: \n"
@@ -87,6 +87,36 @@ msgstr "Factuuradres"
 #. Default: "<img src=\"${DYNAMIC_CONTENT}\" title=\"cancel booking\" alt=\"cancel booking icon\" />"
 #: ./browser/order.pt:242
 msgid "booking_cancel"
+msgstr ""
+
+#. Default: "Click here"
+#: ./mailtemplates/booking_cancelled.pt:26
+msgid "booking_cancelled_mail_click_here"
+msgstr ""
+
+#. Default: "Date"
+#: ./mailtemplates/booking_cancelled.pt:13
+msgid "booking_cancelled_mail_date"
+msgstr ""
+
+#. Default: "One of your bookings was cancelled"
+#: ./mailtemplates/booking_cancelled.pt:9
+msgid "booking_cancelled_mail_heading"
+msgstr ""
+
+#. Default: "Cancelled item"
+#: ./mailtemplates/booking_cancelled.pt:21
+msgid "booking_cancelled_mail_item"
+msgstr ""
+
+#. Default: "Order details"
+#: ./mailtemplates/booking_cancelled.pt:25
+msgid "booking_cancelled_mail_order_details"
+msgstr ""
+
+#. Default: "Ordernumber"
+#: ./mailtemplates/booking_cancelled.pt:17
+msgid "booking_cancelled_mail_ordernumber"
 msgstr ""
 
 #. Default: "Comment"
