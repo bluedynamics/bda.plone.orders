@@ -85,6 +85,35 @@ def _process_template_cb(name, tpls, args, context, order_data):
 # mail notification related data exraction
 ###############################################################################
 
+def general_order_data(context, order_data):
+    lang = context.restrictedTraverse('@@plone_portal_state').language()
+    attrs = order_data.order.attrs
+    data = dict(
+        (safe_unicode(key), safe_unicode(value))
+        for (key, value) in attrs.items()
+    )
+    data['portal_url'] = getSite().absolute_url()
+    data['date'] = attrs['created'].strftime(DT_FORMAT)
+    data['salutation'] = translate(
+        attrs['personal_data.gender'],
+        domain='bda.plone.checkout',
+        target_language=lang
+    )
+    if data.get('billing_address.country', None):
+        data['billing_address.country'] = \
+            get_country_name(
+                data['billing_address.country'],
+                lang=lang
+            )
+    if data.get('delivery_address.country', None):
+        data['delivery_address.country'] = \
+            get_country_name(
+                data['delivery_address.country'],
+                lang=lang
+            )
+    return data
+
+
 def order_item_data(context, booking):
     """Extract data for one listing item.
     """
@@ -159,7 +188,7 @@ def order_summary_data(order_data):
 def order_payment_data(order_data):
     data = dict()
     data['payment_method'] = payment = order_data.order.attrs['payment_method']
-    data['payment_text'] = IPaymentText(getSite()).payment_text(payment)
+    data['payment_text'] = IPaymentText(getSite()).payment_text(payment).strip()
     return data
 
 
@@ -172,43 +201,14 @@ def order_notifications(context, order_data):
         notificationtext = IGlobalNotificationText(buyable)
         if order_state in (ifaces.STATE_RESERVED, ifaces.STATE_MIXED):
             # XXX: might need custom text for MIXED state
-            text = notificationtext.global_overbook_text
+            text = notificationtext.global_overbook_text.strip()
             if text:
                 notifications.add(text)
         elif order_state == ifaces.STATE_NEW:
-            text = notificationtext.global_order_text
+            text = notificationtext.global_order_text.strip()
             if text:
                 notifications.add(text)
     return list(notifications)
-
-
-def general_order_data(context, order_data):
-    lang = context.restrictedTraverse('@@plone_portal_state').language()
-    attrs = order_data.order.attrs
-    data = dict(
-        (safe_unicode(key), safe_unicode(value))
-        for (key, value) in attrs.items()
-    )
-    data['portal_url'] = getSite().absolute_url()
-    data['date'] = attrs['created'].strftime(DT_FORMAT)
-    data['salutation'] = translate(
-        attrs['personal_data.gender'],
-        domain='bda.plone.checkout',
-        target_language=lang
-    )
-    if data.get('billing_address.country', None):
-        data['billing_address.country'] = \
-            get_country_name(
-                data['billing_address.country'],
-                lang=lang
-            )
-    if data.get('delivery_address.country', None):
-        data['delivery_address.country'] = \
-            get_country_name(
-                data['delivery_address.country'],
-                lang=lang
-            )
-    return data
 
 
 ###############################################################################
@@ -537,16 +537,17 @@ def create_order_summary(context, order_data):
 
 
 def create_global_text(context, order_data):
-    global_text = u'\n\n'.join(order_notifications(context, order_data))
-    if global_text.strip():
-        return u'\n\n{global_text}\n'.format(global_text=global_text.strip())
+    notifications = order_notifications(context, order_data)
+    if notifications:
+        global_text = u'\n\n'.join(notifications)
+        return u'\n\n{global_text}\n'.format(global_text=global_text)
     return u''
 
 
 def create_payment_text(context, order_data):
     payment_text = order_payment_data(order_data)['payment_text']
-    if payment_text.strip():
-        return u'\n\n{payment_text}\n'.format(payment_text=payment_text.strip())  # noqa
+    if payment_text:
+        return u'\n\n{payment_text}\n'.format(payment_text=payment_text)  # noqa
     return u''
 
 

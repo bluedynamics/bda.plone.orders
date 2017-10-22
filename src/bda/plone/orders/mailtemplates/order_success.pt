@@ -196,6 +196,101 @@
       </ul>
     </tal:reserved_items>
 
-    <div>%(order_summary)s%(global_text)s%(payment_text)s</div>
+    <tal:notifications condition="notifications">
+      <h3 i18n:translate="order_mail_notifications">Notifications</h3>
+
+      <tal:notification repeat="notification notifications">
+        <p tal:content="notification">
+          Notification Text
+        </p>
+      </tal:notification>
+    </tal:notifications>
+
+    <tal:payment condition="payment['payment_text']">
+      <h3 i18n:translate="order_mail_payment">Payment</h3>
+
+      <p tal:content="payment['payment_text']">
+        Payment Text
+      </p>
+    </tal:payment>
+
+    <div tal:condition="summary['cart_total']">
+      <h3 i18n:translate="order_mail_summary">Summary</h3>
+
+      <tal:cart condition="summary['cart_net']">
+        <span i18n:translate="order_mail_cart_net">Net</span>:
+        <span tal:replace="ascur(summary['cart_net'])" />
+        <span tal:replace="summary['currency']" />
+        <br />
+
+        <span i18n:translate="order_mail_cart_vat">VAT</span>:
+        <span tal:replace="ascur(summary['cart_vat'])" />
+        <span tal:replace="summary['currency']" />
+        <br />
+
+        <hr size="1" />
+      </tal:cart>
+
+      <tal:discount condition="summary['discount_net']">
+        <span i18n:translate="order_mail_discount_net">Discount Net</span>:
+        <span style="color:red;">
+          -<span tal:replace="ascur(summary['discount_net'])" />
+          <span tal:replace="summary['currency']" />
+        </span>
+        <br />
+
+        <span i18n:translate="order_mail_discount_vat">Discount VAT</span>:
+        <span style="color:red;">
+          -<span tal:replace="ascur(summary['discount_vat'])" />
+          <span tal:replace="summary['currency']" />
+        </span>
+        <br />
+
+        <strong i18n:translate="order_mail_discount_total">Discount Total</strong>:
+        <strong style="color:red;">
+          -<span tal:replace="ascur(summary['discount_total'])" />
+          <span tal:replace="summary['currency']" />
+        </strong>
+        <br />
+
+        <hr size="1" />
+      </tal:discount>
+
+      <tal:shipping condition="summary['shipping_net']">
+        <strong i18n:translate="order_mail_shipping_label">Shipping</strong>:
+        <span tal:replace="summary['shipping_label']" />
+        (<span tal:replace="summary['shipping_description']" />)
+        <br />
+
+        <span i18n:translate="order_mail_shipping_net">Shipping Net</span>:
+        <span tal:replace="ascur(summary['shipping_net'])" />
+        <span tal:replace="summary['currency']" />
+        <br />
+
+        <span i18n:translate="order_mail_shipping_vat">Shipping VAT</span>:
+        <span tal:replace="ascur(summary['shipping_vat'])" />
+        <span tal:replace="summary['currency']" />
+        <br />
+
+        <strong i18n:translate="order_mail_shipping_total">Shipping Total</strong>:
+        <strong>
+          <span tal:replace="ascur(summary['shipping_total'])" />
+          <span tal:replace="summary['currency']" />
+        </strong>
+        <br />
+
+        <hr size="1" />
+      </tal:shipping>
+
+      <strong i18n:translate="order_mail_cart_total">Total</strong>:
+      <strong>
+        <span tal:replace="ascur(summary['cart_total'])" />
+        <span tal:replace="summary['currency']" />
+      </strong>
+      <br />
+
+      <hr size="1" />
+    </div>
+
   </body>
 </html>

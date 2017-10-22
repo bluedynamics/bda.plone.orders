@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2017-10-22 10:12+0000\n"
+"POT-Creation-Date: 2017-10-22 11:18+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -230,7 +230,7 @@ msgid "email"
 msgstr ""
 
 #. Default: "Failed to send notification to ${receiver}"
-#: ./mailnotify.py:333
+#: ./mailnotify.py:332
 msgid "email_sending_failed"
 msgstr ""
 
@@ -521,6 +521,21 @@ msgstr ""
 msgid "order_mail_address"
 msgstr ""
 
+#. Default: "Net"
+#: ./mailtemplates/order_success.pt:221
+msgid "order_mail_cart_net"
+msgstr ""
+
+#. Default: "Total"
+#: ./mailtemplates/order_success.pt:285
+msgid "order_mail_cart_total"
+msgstr ""
+
+#. Default: "VAT"
+#: ./mailtemplates/order_success.pt:226
+msgid "order_mail_cart_vat"
+msgstr ""
+
 #. Default: "City"
 #: ./mailtemplates/order_success.pt:69
 msgid "order_mail_city"
@@ -556,6 +571,21 @@ msgstr ""
 msgid "order_mail_delivery_address"
 msgstr ""
 
+#. Default: "Discount Net"
+#: ./mailtemplates/order_success.pt:235
+msgid "order_mail_discount_net"
+msgstr ""
+
+#. Default: "Discount Total"
+#: ./mailtemplates/order_success.pt:249
+msgid "order_mail_discount_total"
+msgstr ""
+
+#. Default: "Discount VAT"
+#: ./mailtemplates/order_success.pt:242
+msgid "order_mail_discount_vat"
+msgstr ""
+
 #. Default: "Email"
 #: ./mailtemplates/order_success.pt:56
 msgid "order_mail_email"
@@ -576,6 +606,11 @@ msgstr ""
 msgid "order_mail_item_price"
 msgstr ""
 
+#. Default: "Notifications"
+#: ./mailtemplates/order_success.pt:200
+msgid "order_mail_notifications"
+msgstr ""
+
 #. Default: "Order details"
 #: ./mailtemplates/order_success.pt:29
 msgid "order_mail_order_details"
@@ -594,6 +629,11 @@ msgstr ""
 #. Default: "Ordernumber"
 #: ./mailtemplates/order_success.pt:25
 msgid "order_mail_ordernumber"
+msgstr ""
+
+#. Default: "Payment"
+#: ./mailtemplates/order_success.pt:210
+msgid "order_mail_payment"
 msgstr ""
 
 #. Default: "Personal Data"
@@ -621,9 +661,34 @@ msgstr ""
 msgid "order_mail_reserved_items"
 msgstr ""
 
+#. Default: "Shipping"
+#: ./mailtemplates/order_success.pt:260
+msgid "order_mail_shipping_label"
+msgstr ""
+
+#. Default: "Shipping Net"
+#: ./mailtemplates/order_success.pt:265
+msgid "order_mail_shipping_net"
+msgstr ""
+
+#. Default: "Shipping Total"
+#: ./mailtemplates/order_success.pt:275
+msgid "order_mail_shipping_total"
+msgstr ""
+
+#. Default: "Shipping VAT"
+#: ./mailtemplates/order_success.pt:270
+msgid "order_mail_shipping_vat"
+msgstr ""
+
 #. Default: "Street"
 #: ./mailtemplates/order_success.pt:61
 msgid "order_mail_street"
+msgstr ""
+
+#. Default: "Summary"
+#: ./mailtemplates/order_success.pt:218
+msgid "order_mail_summary"
 msgstr ""
 
 #. Default: "ZIP"
@@ -707,57 +772,57 @@ msgid "order_summary"
 msgstr ""
 
 #. Default: "Net: ${value} ${currency}"
-#: ./mailnotify.py:445
+#: ./mailnotify.py:444
 msgid "order_summary_cart_net"
 msgstr ""
 
 #. Default: "Total: ${value} ${currency}"
-#: ./mailnotify.py:524
+#: ./mailnotify.py:523
 msgid "order_summary_cart_total"
 msgstr ""
 
 #. Default: "VAT: ${value} ${currency}"
-#: ./mailnotify.py:453
+#: ./mailnotify.py:452
 msgid "order_summary_cart_vat"
 msgstr ""
 
 #. Default: "Discount Net: ${value} ${currency}"
-#: ./mailnotify.py:463
+#: ./mailnotify.py:462
 msgid "order_summary_discount_net"
 msgstr ""
 
 #. Default: "Discount Total: ${value} ${currency}"
-#: ./mailnotify.py:479
+#: ./mailnotify.py:478
 msgid "order_summary_discount_total"
 msgstr ""
 
 #. Default: "Discount VAT: ${value} ${currency}"
-#: ./mailnotify.py:471
+#: ./mailnotify.py:470
 msgid "order_summary_discount_vat"
 msgstr ""
 
 #. Default: "Summary:"
-#: ./mailnotify.py:532
+#: ./mailnotify.py:531
 msgid "order_summary_label"
 msgstr ""
 
 #. Default: "Shipping: ${label}"
-#: ./mailnotify.py:489
+#: ./mailnotify.py:488
 msgid "order_summary_shipping_label"
 msgstr ""
 
 #. Default: "Shipping Net: ${value} ${currency}"
-#: ./mailnotify.py:500
+#: ./mailnotify.py:499
 msgid "order_summary_shipping_net"
 msgstr ""
 
 #. Default: "Shipping Total: ${value} ${currency}"
-#: ./mailnotify.py:516
+#: ./mailnotify.py:515
 msgid "order_summary_shipping_total"
 msgstr ""
 
 #. Default: "Shipping VAT: ${value} ${currency}"
-#: ./mailnotify.py:508
+#: ./mailnotify.py:507
 msgid "order_summary_shipping_vat"
 msgstr ""
 
