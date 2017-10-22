@@ -279,6 +279,10 @@ Create translations
 TODO
 ====
 
+- Adopt text notification mail generation to mako templates and move existing
+  text mail generation to legacy module, with flag to switch between old and
+  new style text generation.
+
 - @@orders in lineage subsites should only list orders in that path.
 
 - Consider vendor UID's and booking based state in mail notification
