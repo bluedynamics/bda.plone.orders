@@ -517,220 +517,220 @@ msgstr "Anrede:"
 #. Default: "Address"
 #: ./mailtemplates/order_success.pt:68
 msgid "order_mail_address"
-msgstr ""
+msgstr "Adresse"
 
 #. Default: "Booked item"
 #: ./mailtemplates/booking_reserved_to_ordered.pt:21
 msgid "order_mail_booked_item"
-msgstr ""
+msgstr "Bestellter Artikel"
 
 #. Default: "One of your bookings was cancelled"
 #: ./mailtemplates/booking_cancelled.pt:9
 msgid "order_mail_booking_cancelled_heading"
-msgstr ""
+msgstr "Eine Ihrer bestellten Artikel wurde storniert"
 
 #. Default: "Your reserved item is now available and our order is being processed"
 #: ./mailtemplates/booking_reserved_to_ordered.pt:9
 msgid "order_mail_booking_reserved_to_ordered_heading"
-msgstr ""
+msgstr "Ihr reservierter Artikel ist verfügbar geworden und Ihre Bestellung wird nun bearbeitet"
 
 #. Default: "Cancelled item"
 #: ./mailtemplates/booking_cancelled.pt:21
 msgid "order_mail_cancelled_item"
-msgstr ""
+msgstr "Stornierter Artikel"
 
 #. Default: "Net"
 #: ./mailtemplates/order_success.pt:240
 msgid "order_mail_cart_net"
-msgstr ""
+msgstr "Netto"
 
 #. Default: "Total"
 #: ./mailtemplates/order_success.pt:304
 msgid "order_mail_cart_total"
-msgstr ""
+msgstr "Gesamt"
 
 #. Default: "VAT"
 #: ./mailtemplates/order_success.pt:245
 msgid "order_mail_cart_vat"
-msgstr ""
+msgstr "UST"
 
 #. Default: "City"
 #: ./mailtemplates/order_success.pt:78
 msgid "order_mail_city"
-msgstr ""
+msgstr "Stadt"
 
 #. Default: "Click here"
 #: ./mailtemplates/booking_cancelled.pt:26
 #: ./mailtemplates/booking_reserved_to_ordered.pt:26
 #: ./mailtemplates/order_success.pt:44
 msgid "order_mail_click_here"
-msgstr ""
+msgstr "Hier klicken"
 
 #. Default: "Comment"
 #: ./mailtemplates/order_success.pt:114
 msgid "order_mail_comment"
-msgstr ""
+msgstr "Kommentar"
 
 #. Default: "Company"
 #: ./mailtemplates/order_success.pt:57
 msgid "order_mail_company"
-msgstr ""
+msgstr "Firma"
 
 #. Default: "Country"
 #: ./mailtemplates/order_success.pt:82
 msgid "order_mail_country"
-msgstr ""
+msgstr "Land"
 
 #. Default: "Date"
 #: ./mailtemplates/booking_cancelled.pt:13
 #: ./mailtemplates/booking_reserved_to_ordered.pt:13
 #: ./mailtemplates/order_success.pt:30
 msgid "order_mail_date"
-msgstr ""
+msgstr "Datum"
 
 #. Default: "Delivery Address"
 #: ./mailtemplates/order_success.pt:86
 msgid "order_mail_delivery_address"
-msgstr ""
+msgstr "Lieferadresse"
 
 #. Default: "Discount Net"
 #: ./mailtemplates/order_success.pt:254
 msgid "order_mail_discount_net"
-msgstr ""
+msgstr "Rabatt Netto"
 
 #. Default: "Discount Total"
 #: ./mailtemplates/order_success.pt:268
 msgid "order_mail_discount_total"
-msgstr ""
+msgstr "Rabatt Gesamt"
 
 #. Default: "Discount VAT"
 #: ./mailtemplates/order_success.pt:261
 msgid "order_mail_discount_vat"
-msgstr ""
+msgstr "Rabatt UST"
 
 #. Default: "Email"
 #: ./mailtemplates/order_success.pt:65
 msgid "order_mail_email"
-msgstr ""
+msgstr "E-Mail"
 
 #. Default: "Name"
 #: ./mailtemplates/order_success.pt:52
 msgid "order_mail_fullname"
-msgstr ""
+msgstr "Name"
 
 #. Default: "Item Number"
 #: ./mailtemplates/order_success.pt:138
 msgid "order_mail_item_number"
-msgstr ""
+msgstr "Artikelnummer"
 
 #. Default: "Price"
 #: ./mailtemplates/order_success.pt:144
 msgid "order_mail_item_price"
-msgstr ""
+msgstr "Preis"
 
 #. Default: "Notifications"
 #: ./mailtemplates/order_success.pt:219
 msgid "order_mail_notifications"
-msgstr ""
+msgstr "Anmerkungen"
 
 #. Default: "Order details"
 #: ./mailtemplates/booking_cancelled.pt:25
 #: ./mailtemplates/booking_reserved_to_ordered.pt:25
 #: ./mailtemplates/order_success.pt:38
 msgid "order_mail_order_details"
-msgstr ""
+msgstr "Details zur Bestellung"
 
 #. Default: "Thank you for your order!"
 #: ./mailtemplates/order_success.pt:20
 msgid "order_mail_order_heading"
-msgstr ""
+msgstr "Besten Dank für Ihre Bestellung!"
 
 #. Default: "Ordered items"
 #: ./mailtemplates/order_success.pt:119
 msgid "order_mail_ordered_items"
-msgstr ""
+msgstr "Bestellte Artikel"
 
 #. Default: "Ordernumber"
 #: ./mailtemplates/booking_cancelled.pt:17
 #: ./mailtemplates/booking_reserved_to_ordered.pt:17
 #: ./mailtemplates/order_success.pt:34
 msgid "order_mail_ordernumber"
-msgstr ""
+msgstr "Bestellungsnummer"
 
 #. Default: "Payment"
 #: ./mailtemplates/order_success.pt:229
 msgid "order_mail_payment"
-msgstr ""
+msgstr "Bezahlung"
 
 #. Default: "Personal Data"
 #: ./mailtemplates/order_success.pt:50
 msgid "order_mail_personal_data"
-msgstr ""
+msgstr "Persönliche Angaben"
 
 #. Default: "Phone"
 #: ./mailtemplates/order_success.pt:61
 msgid "order_mail_phone"
-msgstr ""
+msgstr "Telefon"
 
 #. Default: "Remaining Stock"
 #: ./mailtemplates/stock_threshold_reached.pt:21
 msgid "order_mail_remaining_stock"
-msgstr ""
+msgstr "Verfügbarer Lagerbestand"
 
 #. Default: "Reservation details"
 #: ./mailtemplates/order_success.pt:41
 msgid "order_mail_reservation_details"
-msgstr ""
+msgstr "Details zur Reservierung"
 
 #. Default: "Thank you for your reservation!"
 #: ./mailtemplates/order_success.pt:25
 msgid "order_mail_reservation_heading"
-msgstr ""
+msgstr "Besten Dank für Ihre Reservierung!"
 
 #. Default: "Reserved items"
 #: ./mailtemplates/order_success.pt:169
 msgid "order_mail_reserved_items"
-msgstr ""
+msgstr "Reservierte Artikel"
 
 #. Default: "Shipping"
 #: ./mailtemplates/order_success.pt:279
 msgid "order_mail_shipping_label"
-msgstr ""
+msgstr "Versand"
 
 #. Default: "Shipping Net"
 #: ./mailtemplates/order_success.pt:284
 msgid "order_mail_shipping_net"
-msgstr ""
+msgstr "Versand Netto"
 
 #. Default: "Shipping Total"
 #: ./mailtemplates/order_success.pt:294
 msgid "order_mail_shipping_total"
-msgstr ""
+msgstr "Versand Gesamt"
 
 #. Default: "Shipping VAT"
 #: ./mailtemplates/order_success.pt:289
 msgid "order_mail_shipping_vat"
-msgstr ""
+msgstr "Versand UST"
 
 #. Default: "Products getting out of stock"
 #: ./mailtemplates/stock_threshold_reached.pt:9
 msgid "order_mail_stock_threshold_reached_heading"
-msgstr ""
+msgstr "Artikel erreichen niedrigen Lagerbestand"
 
 #. Default: "Street"
 #: ./mailtemplates/order_success.pt:70
 msgid "order_mail_street"
-msgstr ""
+msgstr "Straße"
 
 #. Default: "Summary"
 #: ./mailtemplates/order_success.pt:237
 msgid "order_mail_summary"
-msgstr ""
+msgstr "Zusammenfassung"
 
 #. Default: "ZIP"
 #: ./mailtemplates/order_success.pt:74
 msgid "order_mail_zip"
-msgstr ""
+msgstr "PLZ"
 
 #. Default: "Name:"
 #: ./browser/order.pt:28
