@@ -290,6 +290,17 @@ def create_text_mail_body(context, order_data, templates):
     return templates['body'] % arguments
 
 
+class ZPTTranslator(object):
+
+    def __init__(self):
+        self.request = getRequest()
+
+    def __call__(self, msgid, domain=None, mapping=None,
+                 default=None, context=None):
+        return translate(msgid, domain=domain, mapping=mapping,
+                         default=default, context=self.request)
+
+
 def create_html_mail_body(context, template_name, template_data):
     """Creates a rendered mail body
 
@@ -303,10 +314,8 @@ def create_html_mail_body(context, template_name, template_data):
         Dict containing data passed to template.
     """
     templates_path = os.path.join(os.path.dirname(__file__), 'mailtemplates')
-    templates = PageTemplateLoader(templates_path)
+    templates = PageTemplateLoader(templates_path, translate=ZPTTranslator())
     template = templates['{}.pt'.format(template_name)]
-    if not template:
-        return None
     return template(**template_data)
 
 
@@ -560,6 +569,9 @@ def dispatch_notify_order_success(event):
 
 # notification ##############################################################
 
+NOTIFY_ORDER_SUCCESS_TEMPLATE = 'order_success'
+
+
 def notify_order_success(event, who=None):
     """Send notification mail after order succeeded.
     """
@@ -580,7 +592,7 @@ def notify_order_success(event, who=None):
     templates['global_text_cb'] = create_global_text
     templates['payment_text_cb'] = create_payment_text
     templates['delivery_address_cb'] = create_delivery_address
-    template_name = 'order_success'
+    template_name = NOTIFY_ORDER_SUCCESS_TEMPLATE
     template_data = dict()
     template_data['order'] = general_order_data(event.context, order_data)
     template_data['items'] = order_items_data(event.context, order_data)
@@ -691,6 +703,9 @@ class BookingCancelledTitleCB(object):
         return self.event.booking_attrs[BOOKING_CANCELLED_TITLE_ATTRIBUTE]
 
 
+BOOKING_CANCELLED_TEMPLATE = 'booking_cancelled'
+
+
 def notify_booking_cancelled(event, who=None):
     """Send notification mail after booking was cancelled.
     """
@@ -699,7 +714,7 @@ def notify_booking_cancelled(event, who=None):
     templates.update(get_booking_cancelled_templates(event.context))
     booking_cancelled_title = BookingCancelledTitleCB(event)
     templates['booking_cancelled_title_cb'] = booking_cancelled_title
-    template_name = 'booking_cancelled'
+    template_name = BOOKING_CANCELLED_TEMPLATE
     template_data = dict()
     template_data['order'] = general_order_data(event.context, order_data)
     template_data['booking'] = dict()
@@ -739,6 +754,7 @@ def dispatch_notify_booking_reserved_to_ordered(event):
 
 
 BookingReservedToOrderedTitleCB = BookingCancelledTitleCB
+BOOKING_RESERVED_TO_ORDERED_TEMPLATE = 'booking_reserved_to_ordered'
 
 
 def notify_booking_reserved_to_ordered(event, who=None):
@@ -749,7 +765,7 @@ def notify_booking_reserved_to_ordered(event, who=None):
     templates.update(get_booking_reserved_to_ordered_templates(event.context))
     booking_reserved_to_ordered_title = BookingReservedToOrderedTitleCB(event)
     templates['booking_reserved_to_ordered_title_cb'] = booking_reserved_to_ordered_title  # noqa
-    template_name = 'booking_reserved_to_ordered'
+    template_name = BOOKING_RESERVED_TO_ORDERED_TEMPLATE
     template_data = dict()
     template_data['order'] = general_order_data(event.context, order_data)
     template_data['booking'] = dict()
@@ -803,6 +819,9 @@ class StockThresholdReachedCB(object):
         return text
 
 
+STOCK_THRESHOLD_REACHED_TEMPLATE = 'stock_threshold_reached'
+
+
 def notify_stock_threshold_reached(event):
     """Send notification mail when item is getting out of stock.
     """
@@ -811,7 +830,7 @@ def notify_stock_threshold_reached(event):
     templates.update(get_stock_threshold_reached_templates(event.context))
     templates['stock_threshold_reached_text_cb'] = \
         StockThresholdReachedCB(event)
-    template_name = 'stock_threshold_reached'
+    template_name = STOCK_THRESHOLD_REACHED_TEMPLATE
     template_data = dict()
     template_data['order'] = general_order_data(event.context, order_data)
     template_data['items'] = event.stock_threshold_reached_items

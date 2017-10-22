@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: bda.plone.orders\n"
-"POT-Creation-Date: 2017-10-21 13:32+0000\n"
+"POT-Creation-Date: 2017-10-22 08:57+0000\n"
 "PO-Revision-Date: 2017-02-06 15:38+0100\n"
 "Last-Translator: Espen Moe-Nilssen <espen@medialog.no>\n"
 "Language-Team: espen@medialog.no\n"
@@ -216,7 +216,6 @@ msgstr ""
 
 #. Default: "Date"
 #: ./browser/views.py:338
-#: ./mailtemplates/order_success.pt:22
 msgid "date"
 msgstr "Dato:"
 
@@ -233,7 +232,7 @@ msgid "email"
 msgstr "epost"
 
 #. Default: "Failed to send notification to ${receiver}"
-#: ./mailnotify.py:326
+#: ./mailnotify.py:335
 msgid "email_sending_failed"
 msgstr "Epost ti  ${receiver} kunne ikke sendes."
 
@@ -520,6 +519,111 @@ msgstr "E-post:"
 msgid "order_gender"
 msgstr "Kjønn"
 
+#. Default: "Address"
+#: ./mailtemplates/order_success.pt:59
+msgid "order_mail_address"
+msgstr ""
+
+#. Default: "City"
+#: ./mailtemplates/order_success.pt:69
+msgid "order_mail_city"
+msgstr ""
+
+#. Default: "Click here"
+#: ./mailtemplates/order_success.pt:35
+msgid "order_mail_click_here"
+msgstr ""
+
+#. Default: "Comment"
+#: ./mailtemplates/order_success.pt:104
+msgid "order_mail_comment"
+msgstr ""
+
+#. Default: "Company"
+#: ./mailtemplates/order_success.pt:48
+msgid "order_mail_company"
+msgstr ""
+
+#. Default: "Country"
+#: ./mailtemplates/order_success.pt:73
+msgid "order_mail_country"
+msgstr ""
+
+#. Default: "Date"
+#: ./mailtemplates/order_success.pt:21
+msgid "order_mail_date"
+msgstr ""
+
+#. Default: "Delivery Address"
+#: ./mailtemplates/order_success.pt:77
+msgid "order_mail_delivery_address"
+msgstr ""
+
+#. Default: "Email"
+#: ./mailtemplates/order_success.pt:56
+msgid "order_mail_email"
+msgstr ""
+
+#. Default: "Name"
+#: ./mailtemplates/order_success.pt:43
+msgid "order_mail_fullname"
+msgstr ""
+
+#. Default: "Order details"
+#: ./mailtemplates/order_success.pt:29
+msgid "order_mail_order_details"
+msgstr ""
+
+#. Default: "Thank you for your order!"
+#: ./mailtemplates/order_success.pt:11
+msgid "order_mail_order_heading"
+msgstr ""
+
+#. Default: "Ordered items"
+#: ./mailtemplates/order_success.pt:107
+msgid "order_mail_ordered_items"
+msgstr ""
+
+#. Default: "Ordernumber"
+#: ./mailtemplates/order_success.pt:25
+msgid "order_mail_ordernumber"
+msgstr ""
+
+#. Default: "Personal Data"
+#: ./mailtemplates/order_success.pt:41
+msgid "order_mail_personal_data"
+msgstr ""
+
+#. Default: "Phone"
+#: ./mailtemplates/order_success.pt:52
+msgid "order_mail_phone"
+msgstr ""
+
+#. Default: "Reservation details"
+#: ./mailtemplates/order_success.pt:32
+msgid "order_mail_reservation_details"
+msgstr ""
+
+#. Default: "Thank you for your reservation!"
+#: ./mailtemplates/order_success.pt:16
+msgid "order_mail_reservation_heading"
+msgstr ""
+
+#. Default: "Reserved items"
+#: ./mailtemplates/order_success.pt:111
+msgid "order_mail_reserved_items"
+msgstr ""
+
+#. Default: "Street"
+#: ./mailtemplates/order_success.pt:61
+msgid "order_mail_street"
+msgstr ""
+
+#. Default: "ZIP"
+#: ./mailtemplates/order_success.pt:65
+msgid "order_mail_zip"
+msgstr ""
+
 #. Default: "Name:"
 #: ./browser/order.pt:28
 msgid "order_name"
@@ -554,11 +658,6 @@ msgstr "Zahlungsart:"
 #: ./browser/order.pt:38
 msgid "order_phone"
 msgstr "Telefon:"
-
-#. Default: "Thank you for your order!"
-#: ./mailtemplates/order_success.pt:11
-msgid "order_received_heading"
-msgstr ""
 
 #. Default: "Salaried:"
 #: ./browser/order.pt:67
@@ -601,57 +700,57 @@ msgid "order_summary"
 msgstr "Ordresammendrag:"
 
 #. Default: "Net: ${value} ${currency}"
-#: ./mailnotify.py:438
+#: ./mailnotify.py:447
 msgid "order_summary_cart_net"
 msgstr ""
 
 #. Default: "Total: ${value} ${currency}"
-#: ./mailnotify.py:517
+#: ./mailnotify.py:526
 msgid "order_summary_cart_total"
 msgstr ""
 
 #. Default: "VAT: ${value} ${currency}"
-#: ./mailnotify.py:446
+#: ./mailnotify.py:455
 msgid "order_summary_cart_vat"
 msgstr ""
 
 #. Default: "Discount Net: ${value} ${currency}"
-#: ./mailnotify.py:456
+#: ./mailnotify.py:465
 msgid "order_summary_discount_net"
 msgstr ""
 
 #. Default: "Discount Total: ${value} ${currency}"
-#: ./mailnotify.py:472
+#: ./mailnotify.py:481
 msgid "order_summary_discount_total"
 msgstr ""
 
 #. Default: "Discount VAT: ${value} ${currency}"
-#: ./mailnotify.py:464
+#: ./mailnotify.py:473
 msgid "order_summary_discount_vat"
 msgstr ""
 
 #. Default: "Summary:"
-#: ./mailnotify.py:525
+#: ./mailnotify.py:534
 msgid "order_summary_label"
 msgstr ""
 
 #. Default: "Shipping: ${label}"
-#: ./mailnotify.py:482
+#: ./mailnotify.py:491
 msgid "order_summary_shipping_label"
 msgstr ""
 
 #. Default: "Shipping Net: ${value} ${currency}"
-#: ./mailnotify.py:493
+#: ./mailnotify.py:502
 msgid "order_summary_shipping_net"
 msgstr ""
 
 #. Default: "Shipping Total: ${value} ${currency}"
-#: ./mailnotify.py:509
+#: ./mailnotify.py:518
 msgid "order_summary_shipping_total"
 msgstr ""
 
 #. Default: "Shipping VAT: ${value} ${currency}"
-#: ./mailnotify.py:501
+#: ./mailnotify.py:510
 msgid "order_summary_shipping_vat"
 msgstr ""
 
@@ -682,7 +781,6 @@ msgstr "Postnr/postadresse:"
 
 #. Default: "Ordernumber"
 #: ./browser/bookings.py:396
-#: ./mailtemplates/order_success.pt:26
 msgid "ordernumber"
 msgstr "ordrenr."
 
@@ -725,11 +823,6 @@ msgstr "Definer som ny"
 #: ./browser/views.py:1005
 msgid "reservation_done"
 msgstr "Reservert"
-
-#. Default: "Thank you for your reservation!"
-#: ./mailtemplates/order_success.pt:17
-msgid "reservation_received_heading"
-msgstr ""
 
 #. Default: "Thanks for your Reservation."
 #: ./browser/views.py:1021
