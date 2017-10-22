@@ -211,6 +211,16 @@ def order_notifications(context, order_data):
     return list(notifications)
 
 
+def stock_threshold_reached_items_data(items):
+    ret = list()
+    for item in items:
+        ret.append({
+            'title': safe_unicode(item['title']),
+            'remaining_stock_available': item['remaining_stock_available']
+        })
+    return ret
+
+
 ###############################################################################
 # mail notification
 ###############################################################################
@@ -297,6 +307,12 @@ class ZPTTranslator(object):
                          default=default, context=self.request)
 
 
+MAIL_TEMPLATES_DIRECTORY = os.path.join(
+    os.path.dirname(__file__),
+    'mailtemplates'
+)
+
+
 def create_html_mail_body(context, template_name, template_data):
     """Creates a rendered mail body
 
@@ -309,8 +325,10 @@ def create_html_mail_body(context, template_name, template_data):
     template_data
         Dict containing data passed to template.
     """
-    templates_path = os.path.join(os.path.dirname(__file__), 'mailtemplates')
-    templates = PageTemplateLoader(templates_path, translate=ZPTTranslator())
+    templates = PageTemplateLoader(
+        MAIL_TEMPLATES_DIRECTORY,
+        translate=ZPTTranslator()
+    )
     template = templates['{}.pt'.format(template_name)]
     template_data['ascur'] = ascur
     return template(**template_data)
@@ -800,16 +818,6 @@ NOTIFICATIONS['booking_reserved_to_ordered'].append(notify_booking_reserved_to_o
 def dispatch_notify_stock_threshold_reached(event):
     for func in NOTIFICATIONS['stock_threshold_reached']:
         func(event)
-
-
-def stock_threshold_reached_items_data(items):
-    ret = list()
-    for item in items:
-        ret.append({
-            'title': safe_unicode(item['title']),
-            'remaining_stock_available': item['remaining_stock_available']
-        })
-    return ret
 
 
 class StockThresholdReachedCB(object):
