@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2017-10-22 11:37+0000\n"
+"POT-Creation-Date: 2017-10-22 12:34+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -14,7 +14,7 @@ msgstr ""
 "Preferred-Encodings: utf-8 latin1\n"
 "Domain: DOMAIN\n"
 
-#: ./browser/views.py:1049
+#: ./browser/views.py:1057
 msgid "Booking cancelled."
 msgstr ""
 
@@ -25,7 +25,7 @@ msgstr ""
 
 #. Default: "Actions"
 #: ./browser/contacts.py:69
-#: ./browser/views.py:333
+#: ./browser/views.py:334
 msgid "actions"
 msgstr ""
 
@@ -35,37 +35,37 @@ msgid "address"
 msgstr ""
 
 #. Default: "All"
-#: ./browser/views.py:365
+#: ./browser/views.py:366
 msgid "all"
 msgstr ""
 
 #. Default: "Please provide the email adress you used for submitting the order."
-#: ./browser/views.py:954
+#: ./browser/views.py:962
 msgid "anon_auth_err_email"
 msgstr ""
 
 #. Default: "No order could be found for the given credentials"
-#: ./browser/views.py:963
+#: ./browser/views.py:971
 msgid "anon_auth_err_order"
 msgstr ""
 
 #. Default: "Please provide the ordernumber"
-#: ./browser/views.py:959
+#: ./browser/views.py:967
 msgid "anon_auth_err_ordernumber"
 msgstr ""
 
 #. Default: "Email"
-#: ./browser/views.py:919
+#: ./browser/views.py:927
 msgid "anon_auth_label_email"
 msgstr ""
 
 #. Default: "Ordernumber"
-#: ./browser/views.py:910
+#: ./browser/views.py:918
 msgid "anon_auth_label_ordernumber"
 msgstr ""
 
 #. Default: "Submit"
-#: ./browser/views.py:926
+#: ./browser/views.py:934
 msgid "anon_auth_label_submit"
 msgstr ""
 
@@ -80,41 +80,6 @@ msgstr ""
 #. Default: "Billing Address:"
 #: ./browser/order.pt:43
 msgid "billing_address"
-msgstr ""
-
-#. Default: "<img src=\"${DYNAMIC_CONTENT}\" title=\"cancel booking\" alt=\"cancel booking icon\" />"
-#: ./browser/order.pt:242
-msgid "booking_cancel"
-msgstr ""
-
-#. Default: "Click here"
-#: ./mailtemplates/booking_cancelled.pt:26
-msgid "booking_cancelled_mail_click_here"
-msgstr ""
-
-#. Default: "Date"
-#: ./mailtemplates/booking_cancelled.pt:13
-msgid "booking_cancelled_mail_date"
-msgstr ""
-
-#. Default: "One of your bookings was cancelled"
-#: ./mailtemplates/booking_cancelled.pt:9
-msgid "booking_cancelled_mail_heading"
-msgstr ""
-
-#. Default: "Cancelled item"
-#: ./mailtemplates/booking_cancelled.pt:21
-msgid "booking_cancelled_mail_item"
-msgstr ""
-
-#. Default: "Order details"
-#: ./mailtemplates/booking_cancelled.pt:25
-msgid "booking_cancelled_mail_order_details"
-msgstr ""
-
-#. Default: "Ordernumber"
-#: ./mailtemplates/booking_cancelled.pt:17
-msgid "booking_cancelled_mail_ordernumber"
 msgstr ""
 
 #. Default: "Comment"
@@ -214,7 +179,7 @@ msgid "cancelled"
 msgstr ""
 
 #. Default: "City"
-#: ./browser/views.py:351
+#: ./browser/views.py:352
 msgid "city"
 msgstr ""
 
@@ -243,7 +208,7 @@ msgid "customers_notified_success"
 msgstr ""
 
 #. Default: "Date"
-#: ./browser/views.py:338
+#: ./browser/views.py:339
 msgid "date"
 msgstr ""
 
@@ -255,7 +220,7 @@ msgstr ""
 #. Default: "Email"
 #: ./browser/bookings.py:368
 #: ./browser/contacts.py:74
-#: ./browser/views.py:348
+#: ./browser/views.py:349
 msgid "email"
 msgstr ""
 
@@ -285,25 +250,25 @@ msgstr ""
 
 #. Default: "Filter for customers"
 #: ./browser/bookings.py:174
-#: ./browser/views.py:412
+#: ./browser/views.py:413
 msgid "filter_for_customers"
 msgstr ""
 
 #. Default: "Filter for salaried state"
 #: ./browser/bookings.py:200
-#: ./browser/views.py:436
+#: ./browser/views.py:437
 msgid "filter_for_salaried"
 msgstr ""
 
 #. Default: "Filter for states"
 #: ./browser/bookings.py:187
-#: ./browser/views.py:424
+#: ./browser/views.py:425
 msgid "filter_for_state"
 msgstr ""
 
 #. Default: "Filter for vendors"
 #: ./browser/bookings.py:157
-#: ./browser/views.py:397
+#: ./browser/views.py:398
 msgid "filter_for_vendors"
 msgstr ""
 
@@ -330,7 +295,7 @@ msgstr ""
 #. Default: "First Name"
 #: ./browser/bookings.py:418
 #: ./browser/contacts.py:82
-#: ./browser/views.py:345
+#: ./browser/views.py:346
 msgid "firstname"
 msgstr ""
 
@@ -406,7 +371,7 @@ msgstr ""
 #. Default: "Last Name"
 #: ./browser/bookings.py:419
 #: ./browser/contacts.py:78
-#: ./browser/views.py:342
+#: ./browser/views.py:343
 msgid "lastname"
 msgstr ""
 
@@ -452,7 +417,7 @@ msgid "new"
 msgstr ""
 
 #. Default: "No"
-#: ./browser/views.py:828
+#: ./browser/views.py:836
 #: ./vocabularies.py:40
 msgid "no"
 msgstr ""
@@ -473,12 +438,12 @@ msgid "no_template_selected"
 msgstr ""
 
 #. Default: "None"
-#: ./browser/views.py:811
+#: ./browser/views.py:819
 msgid "none"
 msgstr ""
 
 #. Default: "Notify customers of selected orders"
-#: ./browser/views.py:468
+#: ./browser/views.py:469
 msgid "notify_customers"
 msgstr ""
 
@@ -527,7 +492,7 @@ msgid "order_discount_vat"
 msgstr ""
 
 #. Default: "Order Done"
-#: ./browser/views.py:1006
+#: ./browser/views.py:1014
 msgid "order_done"
 msgstr ""
 
@@ -551,6 +516,26 @@ msgstr ""
 msgid "order_mail_address"
 msgstr ""
 
+#. Default: "Booked item"
+#: ./mailtemplates/booking_reserved_to_ordered.pt:21
+msgid "order_mail_booked_item"
+msgstr ""
+
+#. Default: "One of your bookings was cancelled"
+#: ./mailtemplates/booking_cancelled.pt:9
+msgid "order_mail_booking_cancelled_heading"
+msgstr ""
+
+#. Default: "Your reserved item is now available and our order is being processed"
+#: ./mailtemplates/booking_reserved_to_ordered.pt:9
+msgid "order_mail_booking_reserved_to_ordered_heading"
+msgstr ""
+
+#. Default: "Cancelled item"
+#: ./mailtemplates/booking_cancelled.pt:21
+msgid "order_mail_cancelled_item"
+msgstr ""
+
 #. Default: "Net"
 #: ./mailtemplates/order_success.pt:221
 msgid "order_mail_cart_net"
@@ -572,6 +557,8 @@ msgid "order_mail_city"
 msgstr ""
 
 #. Default: "Click here"
+#: ./mailtemplates/booking_cancelled.pt:26
+#: ./mailtemplates/booking_reserved_to_ordered.pt:26
 #: ./mailtemplates/order_success.pt:35
 msgid "order_mail_click_here"
 msgstr ""
@@ -592,6 +579,8 @@ msgid "order_mail_country"
 msgstr ""
 
 #. Default: "Date"
+#: ./mailtemplates/booking_cancelled.pt:13
+#: ./mailtemplates/booking_reserved_to_ordered.pt:13
 #: ./mailtemplates/order_success.pt:21
 msgid "order_mail_date"
 msgstr ""
@@ -642,6 +631,8 @@ msgid "order_mail_notifications"
 msgstr ""
 
 #. Default: "Order details"
+#: ./mailtemplates/booking_cancelled.pt:25
+#: ./mailtemplates/booking_reserved_to_ordered.pt:25
 #: ./mailtemplates/order_success.pt:29
 msgid "order_mail_order_details"
 msgstr ""
@@ -657,6 +648,8 @@ msgid "order_mail_ordered_items"
 msgstr ""
 
 #. Default: "Ordernumber"
+#: ./mailtemplates/booking_cancelled.pt:17
+#: ./mailtemplates/booking_reserved_to_ordered.pt:17
 #: ./mailtemplates/order_success.pt:25
 msgid "order_mail_ordernumber"
 msgstr ""
@@ -857,7 +850,7 @@ msgid "order_summary_shipping_vat"
 msgstr ""
 
 #. Default: "Thanks for your Order."
-#: ./browser/views.py:1023
+#: ./browser/views.py:1031
 msgid "order_text"
 msgstr ""
 
@@ -922,12 +915,12 @@ msgid "renew"
 msgstr ""
 
 #. Default: "Reservation Done"
-#: ./browser/views.py:1005
+#: ./browser/views.py:1013
 msgid "reservation_done"
 msgstr ""
 
 #. Default: "Thanks for your Reservation."
-#: ./browser/views.py:1021
+#: ./browser/views.py:1029
 msgid "reservation_text"
 msgstr ""
 
@@ -938,12 +931,12 @@ msgstr ""
 
 #. Default: "Salaried"
 #: ./browser/bookings.py:465
-#: ./browser/views.py:354
+#: ./browser/views.py:355
 msgid "salaried"
 msgstr ""
 
 #. Default: "Select all visible orders"
-#: ./browser/views.py:459
+#: ./browser/views.py:460
 msgid "select_all_orders"
 msgstr ""
 
@@ -953,12 +946,12 @@ msgstr ""
 
 #. Default: "State"
 #: ./browser/bookings.py:471
-#: ./browser/views.py:358
+#: ./browser/views.py:359
 msgid "state"
 msgstr ""
 
 #. Default: "Cannot show order information because no order uid was given."
-#: ./browser/views.py:688
+#: ./browser/views.py:689
 msgid "statusmessage_err_no_order_uid_given"
 msgstr ""
 
@@ -1025,19 +1018,19 @@ msgid "transaction_id"
 msgstr ""
 
 #. Default: "Unknown"
-#: ./browser/views.py:821
+#: ./browser/views.py:829
 #: ./common.py:301
 #: ./upgrades.py:227
 msgid "unknown"
 msgstr ""
 
 #. Default: "Unknown Order"
-#: ./browser/views.py:1008
+#: ./browser/views.py:1016
 msgid "unknown_order"
 msgstr ""
 
 #. Default: "Sorry, this order does not exist."
-#: ./browser/views.py:1025
+#: ./browser/views.py:1033
 msgid "unknown_order_text"
 msgstr ""
 
@@ -1051,7 +1044,7 @@ msgid "view_bookings"
 msgstr ""
 
 #. Default: "View Order"
-#: ./browser/views.py:492
+#: ./browser/views.py:493
 msgid "view_order"
 msgstr ""
 
@@ -1061,7 +1054,7 @@ msgid "view_orders"
 msgstr ""
 
 #. Default: "Yes"
-#: ./browser/views.py:828
+#: ./browser/views.py:836
 #: ./vocabularies.py:39
 msgid "yes"
 msgstr ""

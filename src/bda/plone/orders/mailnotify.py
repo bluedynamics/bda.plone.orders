@@ -762,13 +762,12 @@ def notify_booking_reserved_to_ordered(event, who=None):
     order_data = OrderData(event.context, uid=get_order_uid(event))
     templates = dict()
     templates.update(get_booking_reserved_to_ordered_templates(event.context))
-    booking_reserved_to_ordered_title = BookingReservedToOrderedTitleCB(event)
-    templates['booking_reserved_to_ordered_title_cb'] = booking_reserved_to_ordered_title  # noqa
+    templates['booking_reserved_to_ordered_title_cb'] = BookingReservedToOrderedTitleCB(event)  # noqa
     template_name = BOOKING_RESERVED_TO_ORDERED_TEMPLATE
     template_data = dict()
     template_data['order'] = general_order_data(event.context, order_data)
     template_data['booking'] = dict()
-    template_data['booking']['title'] = booking_reserved_to_ordered_title
+    template_data['booking']['title'] = BookingReservedToOrderedTitleCB(event)()
     if who == "customer":
         do_notify_customer(
             event.context, order_data, templates, template_name, template_data)

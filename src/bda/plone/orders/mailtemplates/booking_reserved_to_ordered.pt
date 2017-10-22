@@ -6,16 +6,25 @@
   <head></head>
 
   <body>
-    <h1>Your reserved item is now available and our order is being processed</h1>
+    <h1 i18n:translate="order_mail_booking_reserved_to_ordered_heading">
+      Your reserved item is now available and our order is being processed
+    </h1>
 
-    <strong>Date</strong>: %(date)s
+    <strong i18n:translate="order_mail_date">Date</strong>:
+    <tal:date replace="order['date']" />
     <br />
-    <strong>Ordernumber</strong>: %(ordernumber)s
+
+    <strong i18n:translate="order_mail_ordernumber">Ordernumber</strong>:
+    <tal:ordernumber replace="order['ordernumber']" />
     <br />
-    <strong>Booked item</strong>: %(booking_reserved_to_ordered_title)s
+
+    <strong i18n:translate="order_mail_booked_item">Booked item</strong>:
+    <tal:cancelled_item replace="booking['title']" />
     <br />
-    <strong>Order details</strong>:
-    <a href="%(portal_url)s/@@showorder?ordernumber=%(ordernumber)s">
+
+    <strong i18n:translate="order_mail_order_details">Order details</strong>:
+    <a href="${order['portal_url'] + '/@@showorder?ordernumber=' + order['ordernumber']}"
+       i18n:translate="order_mail_click_here">
       Click here
     </a>
   </body>
