@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2017-10-22 08:57+0000\n"
+"POT-Creation-Date: 2017-10-22 10:12+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -87,18 +87,18 @@ msgstr ""
 msgid "booking_cancel"
 msgstr ""
 
-#. Default: "comment"
+#. Default: "Comment"
 #: ./browser/bookings.py:412
 #: ./browser/order.pt:178
 msgid "booking_comment"
 msgstr ""
 
-#. Default: "count"
+#. Default: "Count"
 #: ./browser/order.pt:171
 msgid "booking_count"
 msgstr ""
 
-#. Default: "currency"
+#. Default: "Currency"
 #: ./browser/order.pt:173
 msgid "booking_currency"
 msgstr ""
@@ -108,42 +108,42 @@ msgstr ""
 msgid "booking_date"
 msgstr ""
 
-#. Default: "discount net"
+#. Default: "Discount net"
 #: ./browser/order.pt:175
 msgid "booking_discount_net"
 msgstr ""
 
-#. Default: "exported"
+#. Default: "Exported"
 #: ./browser/order.pt:177
 msgid "booking_exported"
 msgstr ""
 
-#. Default: "net"
+#. Default: "Net"
 #: ./browser/order.pt:174
 msgid "booking_net"
 msgstr ""
 
-#. Default: "quantity unit"
+#. Default: "Quantity"
 #: ./browser/order.pt:172
 msgid "booking_quantity_unit"
 msgstr ""
 
-#. Default: "salaried"
+#. Default: "Salaried"
 #: ./browser/order.pt:180
 msgid "booking_salaried"
 msgstr ""
 
-#. Default: "state"
+#. Default: "State"
 #: ./browser/order.pt:179
 msgid "booking_state"
 msgstr ""
 
-#. Default: "title"
+#. Default: "Title"
 #: ./browser/order.pt:170
 msgid "booking_title"
 msgstr ""
 
-#. Default: "vat"
+#. Default: "Vat"
 #: ./browser/order.pt:176
 msgid "booking_vat"
 msgstr ""
@@ -230,7 +230,7 @@ msgid "email"
 msgstr ""
 
 #. Default: "Failed to send notification to ${receiver}"
-#: ./mailnotify.py:335
+#: ./mailnotify.py:333
 msgid "email_sending_failed"
 msgstr ""
 
@@ -532,7 +532,7 @@ msgid "order_mail_click_here"
 msgstr ""
 
 #. Default: "Comment"
-#: ./mailtemplates/order_success.pt:104
+#: ./mailtemplates/order_success.pt:105
 msgid "order_mail_comment"
 msgstr ""
 
@@ -566,6 +566,16 @@ msgstr ""
 msgid "order_mail_fullname"
 msgstr ""
 
+#. Default: "Item Number"
+#: ./mailtemplates/order_success.pt:128
+msgid "order_mail_item_number"
+msgstr ""
+
+#. Default: "Price"
+#: ./mailtemplates/order_success.pt:134
+msgid "order_mail_item_price"
+msgstr ""
+
 #. Default: "Order details"
 #: ./mailtemplates/order_success.pt:29
 msgid "order_mail_order_details"
@@ -577,7 +587,7 @@ msgid "order_mail_order_heading"
 msgstr ""
 
 #. Default: "Ordered items"
-#: ./mailtemplates/order_success.pt:107
+#: ./mailtemplates/order_success.pt:109
 msgid "order_mail_ordered_items"
 msgstr ""
 
@@ -607,7 +617,7 @@ msgid "order_mail_reservation_heading"
 msgstr ""
 
 #. Default: "Reserved items"
-#: ./mailtemplates/order_success.pt:111
+#: ./mailtemplates/order_success.pt:154
 msgid "order_mail_reserved_items"
 msgstr ""
 
@@ -697,57 +707,57 @@ msgid "order_summary"
 msgstr ""
 
 #. Default: "Net: ${value} ${currency}"
-#: ./mailnotify.py:447
+#: ./mailnotify.py:445
 msgid "order_summary_cart_net"
 msgstr ""
 
 #. Default: "Total: ${value} ${currency}"
-#: ./mailnotify.py:526
+#: ./mailnotify.py:524
 msgid "order_summary_cart_total"
 msgstr ""
 
 #. Default: "VAT: ${value} ${currency}"
-#: ./mailnotify.py:455
+#: ./mailnotify.py:453
 msgid "order_summary_cart_vat"
 msgstr ""
 
 #. Default: "Discount Net: ${value} ${currency}"
-#: ./mailnotify.py:465
+#: ./mailnotify.py:463
 msgid "order_summary_discount_net"
 msgstr ""
 
 #. Default: "Discount Total: ${value} ${currency}"
-#: ./mailnotify.py:481
+#: ./mailnotify.py:479
 msgid "order_summary_discount_total"
 msgstr ""
 
 #. Default: "Discount VAT: ${value} ${currency}"
-#: ./mailnotify.py:473
+#: ./mailnotify.py:471
 msgid "order_summary_discount_vat"
 msgstr ""
 
 #. Default: "Summary:"
-#: ./mailnotify.py:534
+#: ./mailnotify.py:532
 msgid "order_summary_label"
 msgstr ""
 
 #. Default: "Shipping: ${label}"
-#: ./mailnotify.py:491
+#: ./mailnotify.py:489
 msgid "order_summary_shipping_label"
 msgstr ""
 
 #. Default: "Shipping Net: ${value} ${currency}"
-#: ./mailnotify.py:502
+#: ./mailnotify.py:500
 msgid "order_summary_shipping_net"
 msgstr ""
 
 #. Default: "Shipping Total: ${value} ${currency}"
-#: ./mailnotify.py:518
+#: ./mailnotify.py:516
 msgid "order_summary_shipping_total"
 msgstr ""
 
 #. Default: "Shipping VAT: ${value} ${currency}"
-#: ./mailnotify.py:510
+#: ./mailnotify.py:508
 msgid "order_summary_shipping_vat"
 msgstr ""
 

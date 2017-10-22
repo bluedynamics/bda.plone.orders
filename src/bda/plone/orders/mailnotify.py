@@ -90,11 +90,7 @@ def order_item_data(context, booking):
     """
     data = dict()
     data['title'] = safe_unicode(booking.attrs['title'])
-    item_number = u''
-    if booking.attrs['item_number']:
-        item_number = u' ({0})'.format(
-            safe_unicode(booking.attrs['item_number']))
-    data['item_number'] = item_number
+    data['item_number'] = safe_unicode(booking.attrs['item_number'])
     data['comment'] = safe_unicode(booking.attrs['buyable_comment'])
     data['currency'] = safe_unicode(booking.attrs['currency'])
     data['buyable_count'] = booking.attrs['buyable_count']
@@ -316,6 +312,7 @@ def create_html_mail_body(context, template_name, template_data):
     templates_path = os.path.join(os.path.dirname(__file__), 'mailtemplates')
     templates = PageTemplateLoader(templates_path, translate=ZPTTranslator())
     template = templates['{}.pt'.format(template_name)]
+    template_data['ascur'] = ascur
     return template(**template_data)
 
 
@@ -385,7 +382,7 @@ def create_order_listing_item(item_data):
     # item number
     item_number = item_data['item_number']
     if item_number:
-        text = u'{} {}'.format(text, item_number)
+        text = u'{} ({})'.format(text, item_number)
     # state
     state_text = u''
     if item_data['state'] == ifaces.STATE_RESERVED:
