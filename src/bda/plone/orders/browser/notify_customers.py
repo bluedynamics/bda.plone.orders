@@ -102,7 +102,7 @@ class NotifyCustomers(YAMLBaseForm):
             if key in order.attrs:
                 data[key] = order.attrs[key]
         body = TEMPLATE(tpl, data).encode('utf-8')
-        notifier.send(subject, body, order.attrs['personal_data.email'])
+        notifier.send(subject, order.attrs['personal_data.email'], body)
 
     def send(self, widget, data):
         tpl = data['text'].extracted.decode('utf8')

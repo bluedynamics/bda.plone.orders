@@ -5,6 +5,14 @@ Changelog
 1.0a1 (unreleased)
 ------------------
 
+- Add HTML support for order related notification mails.
+  [rnix]
+
+- Change signature of ``bda.plone.orders.MailNotify.send``. Accepts now
+  ``subject``, ``receiver`` and ``text`` as positional arguments and an
+  optional ``html`` argument.
+  [rnix]
+
 - Also handle transaction id and payment state for ``bda.plone.stripe``
   payment in ``bda.plone.common.payment_success`` and
   ``bda.plone.common.payment_failed`` event subscribers.

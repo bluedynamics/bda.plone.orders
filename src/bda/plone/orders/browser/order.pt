@@ -167,17 +167,17 @@
                          show_exported python:'exported' in row">
 
           <tr tal:condition="start">
-            <th i18n:translate="booking_title">title</th>
-            <th i18n:translate="booking_count">count</th>
-            <th i18n:translate="booking_quantity_unit">quantity unit</th>
-            <th i18n:translate="booking_currency">currency</th>
-            <th i18n:translate="booking_net">net</th>
-            <th i18n:translate="booking_discount_net">discount net</th>
-            <th i18n:translate="booking_vat">vat</th>
-            <th tal:condition="show_exported" i18n:translate="booking_exported">exported</th>
-            <th i18n:translate="booking_comment">comment</th>
-            <th i18n:translate="booking_state">state</th>
-            <th i18n:translate="booking_salaried">salaried</th>
+            <th i18n:translate="booking_title">Title</th>
+            <th i18n:translate="booking_count">Count</th>
+            <th i18n:translate="booking_quantity_unit">Quantity</th>
+            <th i18n:translate="booking_currency">Currency</th>
+            <th i18n:translate="booking_net">Net</th>
+            <th i18n:translate="booking_discount_net">Discount net</th>
+            <th i18n:translate="booking_vat">Vat</th>
+            <th tal:condition="show_exported" i18n:translate="booking_exported">Exported</th>
+            <th i18n:translate="booking_comment">Comment</th>
+            <th i18n:translate="booking_state">State</th>
+            <th i18n:translate="booking_salaried">Salaried</th>
           </tr>
 
           <tr tal:attributes="class python:even and 'even' or 'odd'">
@@ -235,11 +235,14 @@
             </td>
             <td>
                 <span tal:content="row/state">state</span>
-                <a tal:condition="python:view.can_cancel_booking"
-                   tal:attributes="href string:${context/absolute_url}/@@booking_cancel?uid=${row/uid}"
-                   i18n:translate="booking_cancel"
+                <a tal:condition="row/cancel_url"
+                   tal:attributes="href row/cancel_url"
                    class="booking-cancel-link discreet"
-                   href="#"><img src="#" title="cancel booking" alt="cancel booking icon" tal:attributes="src string:${context/absolute_url}/++resource++bda.plone.orders/delete.png"/></a>
+                   href="#"><img
+                       src="#"
+                       title="cancel booking"
+                       alt="cancel booking"
+                       tal:attributes="src string:${context/absolute_url}/++resource++bda.plone.orders/delete.png" /></a>
             </td>
             <td tal:content="row/salaried">salaried</td>
           </tr>

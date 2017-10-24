@@ -38,6 +38,7 @@ setup(
         'bda.plone.cart',
         'bda.plone.checkout',
         'bda.plone.discount',
+        'Chameleon',
         'collective.js.datatables',
         'collective.js.jqueryui',
         'plone.api',
