@@ -20,12 +20,12 @@
           i18n:translate="your_invoice">Your Invoice</h1>
 
       <div class="invoice_sender">
-        <strong tal:content="sender/title">title</strong>
+        <strong tal:content="sender/company">company</strong>
         <br />
-        <tal:subtitle condition="sender/subtitle">
-          <span tal:replace="sender/subtitle">subtitle</span>
+        <tal:companyadd condition="sender/companyadd">
+          <span tal:replace="sender/companyadd">company additional</span>
           <br />
-        </tal:subtitle>
+        </tal:companyadd>
         <br />
         <span tal:replace="sender/firstname">first name</span>
         <span tal:replace="sender/lastname">last name</span>
@@ -272,10 +272,10 @@
         <span tal:replace="sender/lastname">last name</span>
         <br />
         <br />
-        <strong tal:content="sender/title">title</strong>
-        <tal:subtitle condition="sender/subtitle">
-          - <strong tal:content="sender/subtitle">subtitle</strong>
-        </tal:subtitle>
+        <strong tal:content="sender/company">company</strong>
+        <tal:companyadd condition="sender/companyadd">
+          - <strong tal:content="sender/companyadd">company additional</strong>
+        </tal:companyadd>
       </div>
 
     </div>

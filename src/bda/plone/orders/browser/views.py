@@ -24,6 +24,7 @@ from bda.plone.orders.common import get_vendor_by_uid
 from bda.plone.orders.common import get_vendor_uids_for
 from bda.plone.orders.common import get_vendors_for
 from bda.plone.orders.interfaces import IBuyable
+from bda.plone.orders.interfaces import IInvoiceSender
 from bda.plone.orders.transitions import do_transition_for
 from bda.plone.orders.transitions import transitions_of_main_state
 from bda.plone.orders.transitions import transitions_of_salaried_state
@@ -1018,7 +1019,7 @@ class DirectOrderView(OrderViewBase):
         return self.order_auth_template(self)
 
 
-class InvoiceViewBase(OrderDataView):
+class InvoiceView(OrderDataView):
     invoice_prefix = u'INV'
 
     @property
@@ -1031,20 +1032,21 @@ class InvoiceViewBase(OrderDataView):
         #      point even if there are multiple vendors for one order the
         #      global sender address is used (which is actually the current
         #      and only behavior).
+        sender = IInvoiceSender(self.context)
         return {
-            'title': u'Vendor name',
-            'subtitle': u'Vendor description',
-            'firstname': u'Max',
-            'lastname': u'Mustermann',
-            'street': u'Musterstrasse 1',
-            'zip': u'1234',
-            'city': u'Musterort',
-            'country': u'040',
-            'phone': u'+43 123 123 123 123',
-            'email': u'max.mustermann@example.com',
-            'web': u'www.example.com',
-            'iban': u'AT00 0000 0000 0000 0000',
-            'bic': u'XXXXXXXX',
+            'company': sender.company,
+            'companyadd': sender.companyadd,
+            'firstname': sender.firstname,
+            'lastname': sender.lastname,
+            'street': sender.street,
+            'zip': sender.zip,
+            'city': sender.city,
+            'country': sender.country,
+            'phone': sender.phone,
+            'email': sender.email,
+            'web': sender.web,
+            'iban': sender.iban,
+            'bic': sender.bic
         }
 
     @property
@@ -1103,15 +1105,7 @@ class InvoiceViewBase(OrderDataView):
         return ascur(val)
 
 
-class InvoiceView(InvoiceViewBase):
-    pass
-
-
-class MyInvoiceView(InvoiceViewBase):
-    pass
-
-
-class DirectInvoiceView(InvoiceViewBase):
+class DirectInvoiceView(InvoiceView):
     pass
 
 
