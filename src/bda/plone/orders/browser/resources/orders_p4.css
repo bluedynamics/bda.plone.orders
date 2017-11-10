@@ -378,3 +378,9 @@ a.notify_customers {
 .invoice .invoice_summary .red {
     color: red;
 }
+.invoice .invoice_bank_connection {
+    clear:both;
+}
+.invoice .invoice_footer {
+    margin-top:2em;
+}

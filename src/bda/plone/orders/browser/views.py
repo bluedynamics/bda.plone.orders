@@ -1042,7 +1042,9 @@ class InvoiceViewBase(OrderDataView):
             'country': u'040',
             'phone': u'+43 123 123 123 123',
             'email': u'max.mustermann@example.com',
-            'web': u'www.example.com'
+            'web': u'www.example.com',
+            'iban': u'AT00 0000 0000 0000 0000',
+            'bic': u'XXXXXXXX',
         }
 
     @property
