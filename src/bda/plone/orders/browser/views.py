@@ -974,7 +974,27 @@ class DirectOrderView(OrderViewBase):
 
 
 class InvoiceViewBase(OrderViewBase):
-    pass
+    invoice_prefix = u'INV'
+
+    @property
+    def vendor(self):
+        return {
+            'title': u'Vendor name',
+            'subtitle': u'Vendor description',
+            'firstname': u'Max',
+            'lastname': u'Mustermann',
+            'street': u'Musterstrasse 1',
+            'zip': u'1234',
+            'city': u'Musterort',
+            'country': u'at',
+            'phone': u'+43 123 123 123 123',
+            'email': u'max.mustermann@example.com',
+            'web': u'www.example.com'
+        }
+
+    @property
+    def invoice_number(self):
+        return '{}{}'.format(self.invoice_prefix, self.order['ordernumber'])
 
 
 class InvoiceView(InvoiceViewBase):

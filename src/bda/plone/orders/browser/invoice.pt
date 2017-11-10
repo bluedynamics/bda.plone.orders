@@ -1,0 +1,80 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      lang="en"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="bda.plone.orders">
+
+<body>
+
+<metal:main fill-slot="main">
+  <tal:main-macro metal:define-macro="main">
+
+    <div class="invoice"
+         tal:define="vendor view/vendor;
+                     order view/order">
+
+      <div class="invoice_vendor">
+        <strong tal:content="vendor/title">title</strong>
+        <br />
+        <span tal:replace="vendor/subtitle">subtitle</span>
+        <br />
+        <br />
+        <span tal:replace="vendor/firstname">first name</span>
+        <span tal:replace="vendor/lastname">last name</span>
+        <br />
+        <span tal:replace="vendor/street">street</span>
+        <br />
+        <span tal:replace="vendor/zip">zip</span>
+        <span tal:replace="vendor/city">city</span>
+        <br />
+        <span tal:replace="python:view.country(vendor['country'])">
+          country
+        </span>
+        <br />
+        <span i18n:translate="invoice_tel">Phone:</span>
+        <span tal:replace="vendor/phone">phone</span>
+        <br />
+        <span i18n:translate="invoice_email">Email:</span>
+        <span tal:replace="vendor/email">email</span>
+        <br />
+        <span i18n:translate="invoice_web">Web:</span>
+        <span tal:replace="vendor/web">web</span>
+        <br />
+      </div>
+
+      <div class="invoice_receiver">
+        <span tal:replace="view/gender">gender</span>
+        <span tal:replace="order/personal_data.firstname">first name</span>
+        <span tal:replace="order/personal_data.lastname">last name</span>
+        <br />
+        <span tal:replace="order/personal_data.company">company</span>
+        <br />
+        <span tal:replace="order/billing_address.street">street</span>
+        <br />
+        <span tal:replace="order/billing_address.zip">zip</span>
+        <span tal:replace="order/billing_address.city">city</span>
+        <br />
+        <span tal:replace="python:view.country(order['billing_address.country'])">
+          country
+        </span>
+      </div>
+
+      <h1 class="invoice_title">
+        <span i18n:translate="invoice">Invoice</span>
+        <span tal:replace="view/invoice_number">INV12345<span>
+      </h1>
+
+      <span class="invoice_date">
+        <span tal:replace="vendor/city">city</span>,
+        <span tal:replace="python:view.format_date(order['created'])">date</span>
+      </span>
+
+    </div>
+
+  </tal:main-macro>
+</metal:main>
+
+</body>
+</html>
