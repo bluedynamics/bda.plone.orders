@@ -1073,6 +1073,30 @@ class InvoiceViewBase(OrderDataView):
             ret.append(data)
         return ret
 
+    def summary(self):
+        order_data = self.order_data
+        data = dict()
+        data['currency'] = order_data.currency
+        cart_net = order_data.net
+        data['cart_net'] = cart_net
+        cart_vat = order_data.vat
+        data['cart_vat'] = cart_vat
+        discount_net = order_data.discount_net
+        data['discount_net'] = discount_net
+        discount_vat = order_data.discount_vat
+        data['discount_vat'] = discount_vat
+        discount_total = discount_net + discount_vat
+        data['discount_total'] = discount_total
+        shipping_net = order_data.shipping_net
+        data['shipping_net'] = shipping_net
+        shipping_vat = order_data.shipping_vat
+        data['shipping_vat'] = shipping_vat
+        shipping_total = shipping_net + shipping_vat
+        data['shipping_total'] = shipping_total
+        cart_total = order_data.total
+        data['cart_total'] = cart_total
+        return data
+
     def ascur(self, val):
         return ascur(val)
 
