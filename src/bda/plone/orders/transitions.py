@@ -76,7 +76,6 @@ def do_transition_for(order_state, transition, context=None, request=None):
 
     This mixes main state and salaried!
     """
-
     def _set_state(data, state_value, state_attr='state',
                    event_class=None, event_emit_on_last=False):
         #

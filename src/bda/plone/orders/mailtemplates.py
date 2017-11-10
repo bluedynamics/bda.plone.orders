@@ -9,8 +9,10 @@ from zope.interface import implementer
 
 
 ###############################################################################
-# en
+# text templates
 ###############################################################################
+
+# EN ##########################################################################
 
 ORDER_SUBJECT_EN = u'Order %s received.'
 
@@ -42,7 +44,6 @@ Ordered items:
 
 %(order_summary)s%(global_text)s%(payment_text)s
 """
-
 
 RESERVATION_SUBJECT_EN = u'Reservation %s received.'
 
@@ -88,7 +89,6 @@ City: %(delivery_address.city)s
 Country: %(delivery_address.country)s
 """
 
-
 CANCELLED_BOOKING_SUBJECT_EN = u"Cancelled one booking of Order %s."
 
 CANCELLED_BOOKING_BODY_EN = u"""
@@ -101,7 +101,6 @@ Cancelled item: %(booking_cancelled_title)s
 
 Order details: %(portal_url)s/@@showorder?ordernumber=%(ordernumber)s
 """
-
 
 BOOKING_RESERVED_TO_ORDERED_SUBJECT_EN = u"Reservation of %s is now available."
 
@@ -116,7 +115,6 @@ Booked item: %(booking_reserved_to_ordered_title)s
 Order details: %(portal_url)s/@@showorder?ordernumber=%(ordernumber)s
 """
 
-
 STOCK_THRESHOLD_REACHED_SUBJECT_EN = u"Order %s has products that are getting out of stock."  # noqa
 
 STOCK_THRESHOLD_REACHED_BODY_EN = u"""
@@ -124,13 +122,9 @@ Date: %(date)s
 
 Products getting out of stock:
 %(stock_threshold_reached_text)s
-
 """
 
-
-###############################################################################
-# de
-###############################################################################
+# DE ##########################################################################
 
 ORDER_SUBJECT_DE = u'Bestellung %s erhalten.'
 
@@ -220,7 +214,6 @@ Stornierter Artikel: %(booking_cancelled_title)s
 Details zur Bestellung: %(portal_url)s/@@showorder?ordernumber=%(ordernumber)s
 """
 
-
 BOOKING_RESERVED_TO_ORDERED_SUBJECT_DE = u"Reservierung %s ist nun verfügbar."
 
 BOOKING_RESERVED_TO_ORDERED_BODY_DE = u"""
@@ -234,9 +227,7 @@ Bestellter Artikel: %(booking_reserved_to_ordered_title)s
 Details zur Bestellung: %(portal_url)s/@@showorder?ordernumber=%(ordernumber)s
 """  # noqa
 
-###############################################################################
-# fr
-###############################################################################
+# FR ##########################################################################
 
 ORDER_SUBJECT_FR = u'votre commande %s.'
 
@@ -326,9 +317,7 @@ Cancelled item: %(booking_cancelled_title)s
 Order details: %(portal_url)s/@@showorder?ordernumber=%(ordernumber)s
 """
 
-###############################################################################
-# it
-###############################################################################
+# IT ##########################################################################
 
 ORDER_SUBJECT_IT = u'Il tuo ordine %s.'
 
@@ -416,9 +405,7 @@ Cancelled item: %(booking_cancelled_title)s
 Order details: %(portal_url)s/@@showorder?ordernumber=%(ordernumber)s
 """
 
-###############################################################################
-# no
-###############################################################################
+# NO ##########################################################################
 
 ORDER_SUBJECT_NO = u'Bestilling %s mottatt.'
 
@@ -508,8 +495,9 @@ Cancelled item: %(booking_cancelled_title)s
 Order details: %(portal_url)s/@@showorder?ordernumber=%(ordernumber)s
 """
 
+
 ###############################################################################
-# language templates
+# text template registry
 ###############################################################################
 
 ORDER_TEMPLATES = {
@@ -616,6 +604,10 @@ def get_booking_reserved_to_ordered_templates(context):
 def get_stock_threshold_reached_templates(context):
     return _get_templates(context, STOCK_THRESHOLD_REACHED_TEMPLATES)
 
+
+###############################################################################
+# dynamic mail templates
+###############################################################################
 
 # list of template attributes which are required. by default, no attributes are
 # required.

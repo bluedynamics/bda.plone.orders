@@ -45,6 +45,41 @@ After that you can start customizing the order process:
 Mail notifications
 ------------------
 
+Order related notification is done by sending multipart mails containing a
+text and a HTML version of the notification payload.
+
+When customizing mail notification, both text and HTML templates needs to be
+customized.
+
+.. warning::
+
+    As of ``bda.plone.orders`` 1.0a1, signatue of
+    ``bda.plone.orders.MailNotify.send`` changed. It accepts now
+    ``subject``, ``receiver`` and ``text`` as positional arguments and an
+    optional ``html`` argument.
+
+
+HTML Templates
+~~~~~~~~~~~~~~
+
+Default HTML templates are located at ``bda.plone.orders:mailtemplates``.
+To customize them, copy the entire template folder to your integration package
+and patch ``bda.plone.orders.mailnotify.MAIL_TEMPLATES_DIRECTORY`` like so:
+
+.. code-block:: python
+
+    from bda.plone.orders import mailnotify
+    import os
+
+    mailnotify.MAIL_TEMPLATES_DIRECTORY = os.path.join(
+        os.path.dirname(__file__),
+        'mailtemplates'
+    )
+
+
+Text Templates
+~~~~~~~~~~~~~~
+
 Copy the messages you need to customize from
 ``bda.plone.orders.mailtemplates`` and change the text to your needs.
 There are two dictionaries containing all the strings, ``ORDER_TEMPLATES``
@@ -66,6 +101,10 @@ When updating ``bda.plone.order`` to a new version, make sure to keep them
 in sync with the original templates and check if all stock variables
 (such as ``global_text`` or the ``@@showorder`` link which have been
 added in version 0.4 are present.)
+
+
+Customize notification mechanism
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Alternativly you add/replace the notification methods and implement your
 own very custom. To do provide your own two functions similar to
@@ -239,6 +278,10 @@ Create translations
 
 TODO
 ====
+
+- Adopt text notification mail generation to mako templates and move existing
+  text mail generation to legacy module, with flag to switch between old and
+  new style text generation.
 
 - @@orders in lineage subsites should only list orders in that path.
 

@@ -1,0 +1,31 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      i18n:domain="bda.plone.orders">
+
+  <head></head>
+
+  <body>
+    <h1 i18n:translate="order_mail_booking_cancelled_heading">
+      One of your bookings was cancelled
+    </h1>
+
+    <strong i18n:translate="order_mail_date">Date</strong>:
+    <tal:date replace="order['date']" />
+    <br />
+
+    <strong i18n:translate="order_mail_ordernumber">Ordernumber</strong>:
+    <tal:ordernumber replace="order['ordernumber']" />
+    <br />
+
+    <strong i18n:translate="order_mail_cancelled_item">Cancelled item</strong>:
+    <tal:cancelled_item replace="booking['title']" />
+    <br />
+
+    <strong i18n:translate="order_mail_order_details">Order details</strong>:
+    <a href="${order['portal_url'] + '/@@showorder?ordernumber=' + order['ordernumber']}"
+       i18n:translate="order_mail_click_here">
+      Click here
+    </a>
+  </body>
+</html>
