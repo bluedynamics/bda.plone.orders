@@ -312,6 +312,28 @@ input[type="text"].booking_comment_edit {
 .order.wrapper form div.submit input {
   float: right;
 }
+
+/* invoice */
+.invoice .invoice_title {
+  text-align:center;
+}
+.invoice .invoice_sender {
+  width:30%;
+  float:right;
+}
+.invoice .invoice_receiver {
+  clear:both;
+  padding-top:2em;
+  padding-bottom:2em;
+}
+.invoice .invoice_number {
+  float:left;
+}
+.invoice .invoice_date {
+  float:right;
+  margin-top:2.5em;
+}
+
 /* print styles */
 @media print {
   /* rules for bookingstable  print preview */

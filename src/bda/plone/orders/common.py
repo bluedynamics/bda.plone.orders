@@ -52,6 +52,7 @@ logger = logging.getLogger('bda.plone.checkout')
 
 
 DT_FORMAT = '%d.%m.%Y %H:%M'
+DT_FORMAT_SHORT = '%d.%m.%Y'
 
 
 def create_ordernumber():

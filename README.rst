@@ -279,9 +279,17 @@ Create translations
 TODO
 ====
 
+- Add vendor support to invoices.
+
+- Add a flag ``charge_if_backorder`` to ``IStockBehavior``, so we have control
+  per buyable item, and a control panel setting with the default of this value
+  for all buyables (Issue #45).
+
 - Adopt text notification mail generation to mako templates and move existing
   text mail generation to legacy module, with flag to switch between old and
-  new style text generation.
+  new style text generation. As fallback add transformation of HTML mail to
+  plain text version.
+  (https://github.com/collective/Products.EasyNewsletter/blob/master/Products/EasyNewsletter/utils/mail.py#L112)
 
 - @@orders in lineage subsites should only list orders in that path.
 

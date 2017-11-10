@@ -120,52 +120,42 @@ a.notify_customers {
     margin-top: 1em;
     margin-bottom: 2.2em;
 }
-
 #bdaplonebookings_length {
     margin-bottom: 0.8em;
 }
-
 #bdaplonebookings_length select,
 #bdaplonebookings_filter input {
     font-size: 90%;
 }
-
 #bdaplonebookings {
     margin-bottom: 1em;
     border: #ddd 1px solid;
 }
-
 #bdaplonebookings_wrapper div.group_filter {
     margin-left: 3em;
 }
-
 #bdaplonebookings_wrapper div.group_filter,
 #bdaplonebookings_wrapper div.date_from_filter,
 #bdaplonebookings_wrapper div.date_to_filter {
     float: left;
     margin-right: 3em;
 }
-
 #bdaplonebookings thead {
     background-color: #fafafa;
 }
-
 #bdaplonebookings th {
     border-right: #ddd 1px solid;
     border-bottom: #ddd 1px solid;
 }
-
 #bdaplonebookings th.datarow-actions {
     width: 120px;
 }
-
 #bdaplonebookings tr.group_email,
 #bdaplonebookings tr.group_email:hover,
 #bdaplonebookings tr.group_buyable,
 #bdaplonebookings tr.group_buyable:hover {
     background-color: #ddd !important;
 }
-
 #bdaplonebookings tr.group_email td p ,
 #bdaplonebookings tr.group_buyable td p{
     margin-bottom: 0;
@@ -173,7 +163,6 @@ a.notify_customers {
     min-width: 18em;
     width: 18em;
 }
-
 #bdaplonebookings tr.group_email span,
 #bdaplonebookings tr.group_buyable span {
     min-width: 18em;
@@ -181,23 +170,18 @@ a.notify_customers {
     float: left;
     margin-left: 7em;
 }
-
 #bdaplonebookings td {
     padding: 1px 3px 1px 10px;
     border-right: #ddd 1px solid;
 }
-
 #bdaplonebookings a.contenttype-document {
     border: none !important;
 }
-
 #bdaplonebookings_paginate a:hover {
     color: #fff !important;
 }
 
 /* end rules for new bookingstable */
-
-
 
 /* export form */
 #field-exportorders-from,
@@ -308,4 +292,25 @@ a.notify_customers {
 }
 .order.wrapper form div.submit input {
     float: right;
+}
+
+/* invoice */
+.invoice .invoice_title {
+    text-align:center;
+}
+.invoice .invoice_sender {
+    width:30%;
+    float:right;
+}
+.invoice .invoice_receiver {
+    clear:both;
+    padding-top:2em;
+    padding-bottom:2em;
+}
+.invoice .invoice_number {
+    float:left;
+}
+.invoice .invoice_date {
+    float:right;
+    margin-top:2.5em;
 }

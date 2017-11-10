@@ -12,40 +12,47 @@
   <tal:main-macro metal:define-macro="main">
 
     <div class="invoice"
-         tal:define="vendor view/vendor;
+         tal:define="sender view/sender;
                      order view/order">
 
-      <div class="invoice_vendor">
-        <strong tal:content="vendor/title">title</strong>
+      <h1 class="invoice_title"
+          i18n:translate="your_invoice">Your Invoice</h1>
+
+      <div class="invoice_sender">
+        <strong tal:content="sender/title">title</strong>
         <br />
-        <span tal:replace="vendor/subtitle">subtitle</span>
+        <tal:subtitle condition="sender/subtitle">
+          <span tal:replace="sender/subtitle">subtitle</span>
+          <br />
+        </tal:subtitle>
         <br />
+        <span tal:replace="sender/firstname">first name</span>
+        <span tal:replace="sender/lastname">last name</span>
         <br />
-        <span tal:replace="vendor/firstname">first name</span>
-        <span tal:replace="vendor/lastname">last name</span>
+        <span tal:replace="sender/street">street</span>
         <br />
-        <span tal:replace="vendor/street">street</span>
+        <span tal:replace="sender/zip">zip</span>
+        <span tal:replace="sender/city">city</span>
         <br />
-        <span tal:replace="vendor/zip">zip</span>
-        <span tal:replace="vendor/city">city</span>
-        <br />
-        <span tal:replace="python:view.country(vendor['country'])">
+        <span tal:replace="python:view.country(sender['country'])">
           country
         </span>
         <br />
-        <span i18n:translate="invoice_tel">Phone:</span>
-        <span tal:replace="vendor/phone">phone</span>
-        <br />
-        <span i18n:translate="invoice_email">Email:</span>
-        <span tal:replace="vendor/email">email</span>
-        <br />
-        <span i18n:translate="invoice_web">Web:</span>
-        <span tal:replace="vendor/web">web</span>
-        <br />
+        <tal:phone condition="sender/phone">
+          <span tal:replace="sender/phone">phone</span>
+          <br />
+        </tal:phone>
+        <tal:email condition="sender/email">
+          <span tal:replace="sender/email">email</span>
+          <br />
+        </tal:email>
+        <tal:web condition="sender/web">
+          <span tal:replace="sender/web">web</span>
+          <br />
+        </tal:web>
       </div>
 
       <div class="invoice_receiver">
-        <span tal:replace="view/gender">gender</span>
         <span tal:replace="order/personal_data.firstname">first name</span>
         <span tal:replace="order/personal_data.lastname">last name</span>
         <br />
@@ -61,14 +68,14 @@
         </span>
       </div>
 
-      <h1 class="invoice_title">
+      <h2 class="invoice_number">
         <span i18n:translate="invoice">Invoice</span>
-        <span tal:replace="view/invoice_number">INV12345<span>
-      </h1>
+        <span tal:replace="view/invoice_number">INV12345</span>
+      </h2>
 
       <span class="invoice_date">
-        <span tal:replace="vendor/city">city</span>,
-        <span tal:replace="python:view.format_date(order['created'])">date</span>
+        <span tal:replace="sender/city">city</span>,
+        <span tal:replace="view/created">date</span>
       </span>
 
     </div>

@@ -15,6 +15,7 @@ from bda.plone.orders import vocabularies as vocabs
 from bda.plone.orders.browser.dropdown import BaseDropdown
 from bda.plone.orders.common import BookingData
 from bda.plone.orders.common import DT_FORMAT
+from bda.plone.orders.common import DT_FORMAT_SHORT
 from bda.plone.orders.common import OrderData
 from bda.plone.orders.common import booking_update_comment
 from bda.plone.orders.common import get_orders_soup
@@ -475,6 +476,8 @@ class OrdersTable(OrdersTableBase):
     def render_order_actions(self, colname, record):
         tag = Tag(Translate(self.request))
         vendor_uid = self.request.form.get('vendor', '')
+
+        # view order
         if vendor_uid:
             view_order_target = '%s?uid=%s&vendor=%s' % (
                 self.context.absolute_url(),
@@ -493,6 +496,19 @@ class OrdersTable(OrdersTableBase):
             'title': _('view_order', default=u'View Order'),
         }
         view_order = tag('a', '&nbsp;', **view_order_attrs)
+
+        # view invoice
+        view_invoice_target = '%s/@@invoice?uid=%s' % (
+            self.context.absolute_url(),
+            str(record.attrs['uid']))
+        view_invoice_attrs = {
+            'class_': 'contenttype-document',
+            'href': view_invoice_target,
+            'title': _('view_invoice', default=u'View Invoice'),
+        }
+        view_invoice = tag('a', '&nbsp;', **view_invoice_attrs)
+
+        # select order
         select_order_attrs = {
             'name': 'select_order',
             'type': 'checkbox',
@@ -500,7 +516,9 @@ class OrdersTable(OrdersTableBase):
             'class_': 'select_order',
         }
         select_order = tag('input', **select_order_attrs)
-        return select_order + view_order
+
+        # return joined actions
+        return select_order + view_order + view_invoice
 
     def check_modify_order(self, order):
         vendor_uid = self.request.form.get('vendor', '')
@@ -569,6 +587,8 @@ class MyOrdersTable(OrdersTableBase):
 
     def render_order_actions(self, colname, record):
         tag = Tag(Translate(self.request))
+
+        # view order
         view_order_target = '%s?uid=%s' % (
             self.context.absolute_url(), str(record.attrs['uid']))
         view_order_attrs = {
@@ -580,7 +600,20 @@ class MyOrdersTable(OrdersTableBase):
             'title': _('view_order', default=u'View Order'),
         }
         view_order = tag('a', '&nbsp;', **view_order_attrs)
-        return view_order
+
+        # view invoice
+        view_invoice_target = '%s/@@invoice?uid=%s' % (
+            self.context.absolute_url(),
+            str(record.attrs['uid']))
+        view_invoice_attrs = {
+            'class_': 'contenttype-document',
+            'href': view_invoice_target,
+            'title': _('view_invoice', default=u'View Invoice'),
+        }
+        view_invoice = tag('a', '&nbsp;', **view_invoice_attrs)
+
+        # return joined actions
+        return view_order + view_invoice
 
     def __call__(self):
         # disable diazo theming if ajax call
@@ -985,7 +1018,15 @@ class InvoiceViewBase(OrderViewBase):
     invoice_prefix = u'INV'
 
     @property
-    def vendor(self):
+    def sender(self):
+        # XXX: right now we provide a global sender for invoices. in order to
+        #      provide vendors there's more to do. there need to be an option
+        #      whether the invoice gets splitted to specific vendors and if so
+        #      multiple invoices need to be available for one order. this also
+        #      needs to be reflected in order emails. if there is one billing
+        #      point even if there are multiple vendors for one order the
+        #      global sender address is used (which is actually the current
+        #      and only behavior).
         return {
             'title': u'Vendor name',
             'subtitle': u'Vendor description',
@@ -994,7 +1035,7 @@ class InvoiceViewBase(OrderViewBase):
             'street': u'Musterstrasse 1',
             'zip': u'1234',
             'city': u'Musterort',
-            'country': u'at',
+            'country': u'040',
             'phone': u'+43 123 123 123 123',
             'email': u'max.mustermann@example.com',
             'web': u'www.example.com'
@@ -1003,6 +1044,13 @@ class InvoiceViewBase(OrderViewBase):
     @property
     def invoice_number(self):
         return '{}{}'.format(self.invoice_prefix, self.order['ordernumber'])
+
+    @property
+    def created(self):
+        value = self.order.get('created', _('unknown', default=u'Unknown'))
+        if value:
+            value = value.strftime(DT_FORMAT_SHORT)
+        return value
 
 
 class InvoiceView(InvoiceViewBase):
