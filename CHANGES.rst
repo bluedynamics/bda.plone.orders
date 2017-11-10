@@ -5,6 +5,10 @@ Changelog
 1.0a1 (unreleased)
 ------------------
 
+- Introduce ``OrderDataView`` base class for views dealing with single order
+  data.
+  [rnix]
+
 - Add HTML support for order related notification mails.
   [rnix]
 

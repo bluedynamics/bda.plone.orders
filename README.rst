@@ -279,6 +279,11 @@ Create translations
 TODO
 ====
 
+- Overhaul order view. Display discounted item price, etc.
+
+- Think about adding notification text to booking data in checkout adapter if
+  we want to display related text in invoice.
+
 - Add vendor support to invoices.
 
 - Add a flag ``charge_if_backorder`` to ``IStockBehavior``, so we have control

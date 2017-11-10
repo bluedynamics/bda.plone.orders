@@ -56,8 +56,10 @@
         <span tal:replace="order/personal_data.firstname">first name</span>
         <span tal:replace="order/personal_data.lastname">last name</span>
         <br />
-        <span tal:replace="order/personal_data.company">company</span>
-        <br />
+        <tal:company condition="order/personal_data.company">
+          <span tal:replace="order/personal_data.company">company</span>
+          <br />
+        </tal:company>
         <span tal:replace="order/billing_address.street">street</span>
         <br />
         <span tal:replace="order/billing_address.zip">zip</span>
@@ -73,10 +75,56 @@
         <span tal:replace="view/invoice_number">INV12345</span>
       </h2>
 
-      <span class="invoice_date">
+      <h3 class="invoice_date">
         <span tal:replace="sender/city">city</span>,
         <span tal:replace="view/created">date</span>
-      </span>
+      </h3>
+
+      <div class="invoice_listing">
+        <div class="invoice_listing_head">
+          <div class="invoice_listing_amount">
+            <strong i18n:translate="invoice_listing_amount">Amount</strong>
+          </div>
+          <div class="invoice_listing_position">
+            <strong i18n:translate="invoice_listing_position">Position</strong>
+          </div>
+          <div class="invoice_listing_price">
+            <strong i18n:translate="invoice_listing_price">Price</strong>
+          </div>
+        </div>
+
+        <tal:item repeat="item view/listing">
+          <div class="invoice_listing_item">
+            <div class="invoice_listing_amount">
+              <span tal:replace="item/count">count</span>
+              <span tal:replace="item/quantity_unit">quantity</span>
+            </div>
+
+            <div class="invoice_listing_position">
+              <span tal:replace="item/title">title</span>
+              <tal:comment condition="item/comment">
+                (<span tal:replace="item/comment">comment</span>)
+              </tal:comment>
+            </div>
+
+            <div class="invoice_listing_price">
+              <tal:without_discount condition="not:item/discount_net">
+                <tal:price replace="python:view.ascur(item['net'])" />
+                <tal:currency replace="item/currency" />
+              </tal:without_discount>
+
+              <tal:with_discount condition="item/discount_net">
+                <span class="original_price">
+                  <tal:price replace="python:view.ascur(item['net'])" />
+                  <tal:currency replace="item/currency" />
+                </span>
+                <tal:price replace="python:view.ascur(item['net'] - item['discount_net'])" />
+                <tal:currency replace="item/currency" />
+              </tal:with_discount>
+            </div>
+          </div>
+        </tal:item>
+      </div>
 
     </div>
 

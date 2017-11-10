@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from AccessControl import Unauthorized
 from Products.CMFPlone.interfaces import IPloneSiteRoot
+from Products.CMFPlone.utils import safe_unicode
 from Products.Five import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from Products.statusmessages.interfaces import IStatusMessage
@@ -705,7 +706,7 @@ class MyOrdersData(MyOrdersTable, TableData):
         return length, res
 
 
-class OrderViewBase(BrowserView):
+class OrderDataView(BrowserView):
 
     @property
     @view.memoize
@@ -726,6 +727,16 @@ class OrderViewBase(BrowserView):
             IStatusMessage(self.request).addStatusMessage(err, 'error')
             raise Redirect(self.context.absolute_url())
         return dict(self.order_data.order.attrs)
+
+    def country(self, country_id):
+        # return value if no id not available i.e. if no dropdown in use
+        try:
+            return get_pycountry_name(country_id)
+        except:
+            return country_id
+
+
+class OrderViewBase(OrderDataView):
 
     @property
     def net(self):
@@ -868,13 +879,6 @@ class OrderViewBase(BrowserView):
         return item['exported'] \
             and _('yes', default=u'Yes') or _('no', default=u'No')
 
-    def country(self, country_id):
-        # return value if no id not available i.e. if no dropdown in use
-        try:
-            return get_pycountry_name(country_id)
-        except:
-            return country_id
-
 
 class OrderView(OrderViewBase):
 
@@ -1014,7 +1018,7 @@ class DirectOrderView(OrderViewBase):
         return self.order_auth_template(self)
 
 
-class InvoiceViewBase(OrderViewBase):
+class InvoiceViewBase(OrderDataView):
     invoice_prefix = u'INV'
 
     @property
@@ -1051,6 +1055,26 @@ class InvoiceViewBase(OrderViewBase):
         if value:
             value = value.strftime(DT_FORMAT_SHORT)
         return value
+
+    @property
+    def listing(self):
+        ret = list()
+        for booking in self.order_data.bookings:
+            data = dict()
+            data['title'] = safe_unicode(booking.attrs['title'])
+            data['item_number'] = safe_unicode(booking.attrs['item_number'])
+            data['comment'] = safe_unicode(booking.attrs['buyable_comment'])
+            data['currency'] = safe_unicode(booking.attrs['currency'])
+            data['count'] = booking.attrs['buyable_count']
+            data['net'] = booking.attrs.get('net', 0.0)
+            data['vat'] = booking.attrs.get('vat', 0.0)
+            data['discount_net'] = float(booking.attrs['discount_net'])
+            data['quantity_unit'] = booking.attrs.get('quantity_unit')
+            ret.append(data)
+        return ret
+
+    def ascur(self, val):
+        return ascur(val)
 
 
 class InvoiceView(InvoiceViewBase):
