@@ -27,6 +27,9 @@ Changelog
   and ``DirectInvoiceView``.
   [rnix]
 
+- Add invoice view.
+  [rnix]
+
 - Remove duplicate ``Translate`` class from
   ``bda.plone.orders.browser.contacts``.
   [rnix]
