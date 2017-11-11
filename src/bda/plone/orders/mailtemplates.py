@@ -24,6 +24,8 @@ Thank you for your order:
 Ordernumber: %(ordernumber)s
 Order details: %(portal_url)s/@@showorder?ordernumber=%(ordernumber)s
 
+Invoice: %(portal_url)s/@@showinvoice?ordernumber=%(ordernumber)s
+
 Personal Data:
 Name: %(personal_data.firstname)s %(personal_data.lastname)s
 Company: %(personal_data.company)s
@@ -54,6 +56,8 @@ Thank you for your reservation:
 
 Ordernumber: %(ordernumber)s
 Reservation details: %(portal_url)s/@@showorder?ordernumber=%(ordernumber)s
+
+Invoice: %(portal_url)s/@@showinvoice?ordernumber=%(ordernumber)s
 
 Personal Data:
 Name: %(personal_data.firstname)s %(personal_data.lastname)s
@@ -138,6 +142,8 @@ Besten Dank für Ihre Bestellung:
 Bestellnummer: %(ordernumber)s
 Details zur Bestellung: %(portal_url)s/@@showorder?ordernumber=%(ordernumber)s
 
+Rechnung: %(portal_url)s/@@showinvoice?ordernumber=%(ordernumber)s
+
 Persönliche Angaben:
 Name: %(personal_data.firstname)s %(personal_data.lastname)s
 Firma: %(personal_data.company)s
@@ -166,6 +172,8 @@ Besten Dank für Ihre Reservierung:
 
 Bestellnummer: %(ordernumber)s
 Details zur Reservierung: %(portal_url)s/@@showorder?ordernumber=%(ordernumber)s
+
+Rechnung: %(portal_url)s/@@showinvoice?ordernumber=%(ordernumber)s
 
 Persönliche Angaben:
 Name: %(personal_data.firstname)s %(personal_data.lastname)s
@@ -241,6 +249,8 @@ Nous vous remercions pour votre commande:
 No. de commande: %(ordernumber)s
 %(portal_url)s/@@showorder?ordernumber=%(ordernumber)s
 
+Le calcul: %(portal_url)s/@@showinvoice?ordernumber=%(ordernumber)s
+
 Données personnelles:
 Nom: %(personal_data.firstname)s %(personal_data.lastname)s
 Entreprise: %(personal_data.company)s
@@ -269,6 +279,8 @@ Nous vous remercions pour votre réservation:
 
 No. de commande: %(ordernumber)s
 %(portal_url)s/@@showorder?ordernumber=%(ordernumber)s
+
+Le calcul: %(portal_url)s/@@showinvoice?ordernumber=%(ordernumber)s
 
 Données personnelles:
 Nom: %(personal_data.firstname)s %(personal_data.lastname)s
@@ -331,6 +343,8 @@ Grazie per l'ordine effettuato:
 Numero d'ordine: %(ordernumber)s
 %(portal_url)s/@@showorder?ordernumber=%(ordernumber)s
 
+La fattura: %(portal_url)s/@@showinvoice?ordernumber=%(ordernumber)s
+
 Dati personali:
 Nome: %(personal_data.firstname)s %(personal_data.lastname)s
 Ditta: %(personal_data.company)s
@@ -358,6 +372,8 @@ Grazie per l'prenotazione effettuato:
 
 Numero d'ordine: %(ordernumber)s
 %(portal_url)s/@@showorder?ordernumber=%(ordernumber)s
+
+La fattura: %(portal_url)s/@@showinvoice?ordernumber=%(ordernumber)s
 
 Dati personali:
 Nome: %(personal_data.firstname)s %(personal_data.lastname)s
@@ -419,6 +435,8 @@ Takk for din bestilling:
 Ordernummer: %(ordernumber)s
 %(portal_url)s/@@showorder?ordernumber=%(ordernumber)s
 
+Regning: %(portal_url)s/@@showinvoice?ordernumber=%(ordernumber)s
+
 Personlig info:
 Navn: %(personal_data.firstname)s %(personal_data.lastname)s
 Firma: %(personal_data.company)s
@@ -447,6 +465,8 @@ Takk for din bestilling:
 
 Ordernummer: %(ordernumber)s
 %(portal_url)s/@@showorder?ordernumber=%(ordernumber)s
+
+Regning: %(portal_url)s/@@showinvoice?ordernumber=%(ordernumber)s
 
 Personlig info:
 Navn: %(personal_data.firstname)s %(personal_data.lastname)s

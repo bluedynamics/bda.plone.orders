@@ -3,8 +3,6 @@
            xmlns:browser="http://namespaces.zope.org/browser"
            xmlns:zcml="http://namespaces.zope.org/zcml">
 
-  <!-- ORDERS -->
-
   <!-- orders view -->
   <browser:page
     for="*"
@@ -39,9 +37,6 @@
     permission="bda.plone.orders.ViewOwnOrders"
     layer="..interfaces.IOrdersExtensionLayer" />
 
-
-  <!-- BOOKINGS -->
-
   <!-- bookings view -->
   <browser:page
     for="*"
@@ -68,9 +63,6 @@
     class=".bookings.BookingsTable"
     permission="bda.plone.orders.ViewOrders"
     layer="..interfaces.IOrdersExtensionLayer" />
-
-
-  <!-- OTHER -->
 
   <!-- contacts view -->
   <browser:page
@@ -240,6 +232,22 @@
     template="order_done.pt"
     class=".views.OrderDone"
     permission="zope2.View"
+    layer="..interfaces.IOrdersExtensionLayer" />
+
+  <!-- invoice view -->
+  <browser:page
+    for="*"
+    name="invoice"
+    template="invoice_view.pt"
+    class=".views.InvoiceView"
+    permission="bda.plone.orders.ViewOrders"
+    layer="..interfaces.IOrdersExtensionLayer" />
+
+  <browser:page
+    for="zope.component.interfaces.ISite"
+    name="showinvoice"
+    class=".views.DirectInvoiceView"
+    permission="bda.plone.orders.ViewOrderDirectly"
     layer="..interfaces.IOrdersExtensionLayer" />
 
   <!-- global mail templates -->

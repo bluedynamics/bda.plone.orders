@@ -13,7 +13,6 @@
             orders_notification_binder: orders.notification_binder,
             orders_notification_form_binder: orders.notification_form_binder,
             orders_qr_code_binder: orders.qr_code_binder,
-            cancel_confirm_binder: orders.cancel_confirm_binder,
             comment_edit_binder: orders.comment_edit_binder
         });
         orders.datatable_binder(document);
@@ -23,7 +22,6 @@
         orders.order_select_binder(document);
         orders.notification_binder(document);
         orders.qr_code_binder(document);
-        orders.cancel_confirm_binder(document);
         orders.comment_edit_binder(document);
     });
 
@@ -86,36 +84,25 @@
                                 .bind('change', orders.filter_orders);
         },
 
-        cancel_confirm_binder: function(context) {
-            $('.booking-cancel-link', context).bind('click', function(evt) {
-                evt.preventDefault();
-                var options = {
-                    message: 'Are you sure?',
-                    url: $(this).attr('href')
-                };
-                bdajax.dialog(options, function(options) {
-                    window.location.href = options.url;
-                });
-            });
-        },
-
-        comment_edit_binder: function(event) {
-            $('.booking_comment_edit_action')
+        comment_edit_binder: function(context) {
+            $('.booking_comment_edit', context).hide();
+            $('.booking_comment_edit_action', context)
                 .unbind('click')
                 .bind('click', orders.comment_edit_start);
-            $('.booking_comment_save_action')
+            $('.booking_comment_save_action', context)
                 .unbind('click')
                 .bind('click', orders.comment_edit_save);
-            $('.booking_comment_abort_action')
+            $('.booking_comment_abort_action', context)
                 .unbind('click')
                 .bind('click', orders.comment_edit_abort);
-
         },
+
         comment_edit_start: function(event) {
             event.preventDefault();
             $(this).parent().find('.booking_comment_display').hide();
             $(this).parent().find('.booking_comment_edit').show();
         },
+
         comment_edit_save: function(event) {
             event.preventDefault();
             var parent = $(this).parent();
@@ -142,12 +129,13 @@
                 parent.find('.booking_comment_display').show();
             });
         },
+
         comment_edit_abort: function(event) {
             event.preventDefault();
-            $(this).parent().find('.booking_comment_display').show();
-            $(this).parent().find('.booking_comment_edit').hide();
+            var parent = $(this).parent();
+            parent.find('.booking_comment_display').show();
+            parent.find('.booking_comment_edit').hide();
         },
-
 
         filter_orders: function(event) {
             event.preventDefault();
@@ -247,7 +235,7 @@
             });
         },
 
-        bookings_datatable_binder: function (context) {
+        bookings_datatable_binder: function(context) {
             var url = $('#bdaplonebookings', context).attr('data-ajaxurl');
             // if the table gets called with a hash (this happens on the contacts
             // site) then the table gets initialized via oSearch to only show orders
@@ -342,7 +330,7 @@
             });
         },
 
-        contacts_datatable_binder: function (context) {
+        contacts_datatable_binder: function(context) {
             var url = $('#bdaplonecontacts', context).attr('data-ajaxurl');
             var oTable;
             oTable = $('#bdaplonecontacts', context).DataTable({
@@ -370,7 +358,7 @@
             });
         },
 
-        dropdown_binder: function (context) {
+        dropdown_binder: function(context) {
             var options = {
                 menu: '.dropdown_items',
                 trigger: '.dropdown_header'

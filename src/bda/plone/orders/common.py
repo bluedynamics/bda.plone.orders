@@ -52,6 +52,7 @@ logger = logging.getLogger('bda.plone.checkout')
 
 
 DT_FORMAT = '%d.%m.%Y %H:%M'
+DT_FORMAT_SHORT = '%d.%m.%Y'
 
 
 def create_ordernumber():
@@ -351,6 +352,9 @@ class OrderCheckoutAdapter(CheckoutAdapter):
         order.attrs['buyable_uids'] = buyable_uids
         order.attrs['vendor_uids'] = list(vendor_uids)
         # cart discount related information
+        # XXX: in order to be able to reliably modify orders, cart discount
+        #      rules for this order must be stored instead of the actual
+        #      calculated discount.
         cart_discount = cart_data.discount(self.items)
         order.attrs['cart_discount_net'] = cart_discount['net']
         order.attrs['cart_discount_vat'] = cart_discount['vat']
@@ -443,6 +447,9 @@ class OrderCheckoutAdapter(CheckoutAdapter):
         booking.attrs['title'] = brain and brain.Title or 'unknown'
         booking.attrs['net'] = item_data.net
         booking.attrs['vat'] = item_data.vat
+        # XXX: in order to be able to reliably modify bookings, item discount
+        #      rules for this booking must be stored instead of the actual
+        #      calculated discount.
         booking.attrs['discount_net'] = item_data.discount_net(count)
         booking.attrs['currency'] = cart_data.currency
         booking.attrs['quantity_unit'] = item_data.quantity_unit
@@ -465,15 +472,39 @@ class OrderCheckoutAdapter(CheckoutAdapter):
         return booking
 
 
+# Patch this tuple with booking states which should be ignored at initial
+# billing.
+# WARNING: see notes in ``is_billable_booking`` docs.
+BOOKING_BILLABLE_IGNORE_STATES = tuple()
+
+
 def is_billable_booking(booking):
     """Return True, if booking is billable and should be included in order
     summary calculations.
-    To be used in Pythons filter function::
+
+    To be used in Pythons filter function:
+
         filter(is_billable_booking, bookings)
+
+    WARNING:
+
+    This function has been added for bda.plone.ticketshop to skip billing
+    sold out tickets. When selling tickets, a backorder is handled that
+    someone waits until a ticket order from another customer gets cancelled.
+
+    But this behavior does not apply to most shop implementations where goods
+    are sold. Here a backorder normally means a temporary unavailability of
+    buyable items and has effect to delivery time, not billing.
+
+    Since bda.plone.orders does not properly implement the full UI to handle
+    partly billed bookings (carry back unbilled backorders, incomplete order
+    and invoive views), this function is treated as hack, but is not removed
+    due to the needs of ticketshop unless the related usecase is properly
+    implemented.
+
+    See https://github.com/bluedynamics/bda.plone.orders/issues/45
     """
-    return booking.attrs['state'] not in (
-        ifaces.STATE_RESERVED, ifaces.STATE_CANCELLED
-    )
+    return booking.attrs['state'] not in BOOKING_BILLABLE_IGNORE_STATES
 
 
 def _calculate_order_attr_from_bookings(bookings, attr, mixed_value):

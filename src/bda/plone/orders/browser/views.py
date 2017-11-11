@@ -1,9 +1,12 @@
 # -*- coding: utf-8 -*-
 from AccessControl import Unauthorized
 from Products.CMFPlone.interfaces import IPloneSiteRoot
+from Products.CMFPlone.utils import safe_unicode
 from Products.Five import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from Products.statusmessages.interfaces import IStatusMessage
+from bda.plone.ajax import AjaxAction
+from bda.plone.ajax import ajax_continue
 from bda.plone.cart import ascur
 from bda.plone.cart import get_object_by_uid
 from bda.plone.checkout import message_factory as _co
@@ -15,6 +18,7 @@ from bda.plone.orders import vocabularies as vocabs
 from bda.plone.orders.browser.dropdown import BaseDropdown
 from bda.plone.orders.common import BookingData
 from bda.plone.orders.common import DT_FORMAT
+from bda.plone.orders.common import DT_FORMAT_SHORT
 from bda.plone.orders.common import OrderData
 from bda.plone.orders.common import booking_update_comment
 from bda.plone.orders.common import get_orders_soup
@@ -22,6 +26,7 @@ from bda.plone.orders.common import get_vendor_by_uid
 from bda.plone.orders.common import get_vendor_uids_for
 from bda.plone.orders.common import get_vendors_for
 from bda.plone.orders.interfaces import IBuyable
+from bda.plone.orders.interfaces import IInvoiceSender
 from bda.plone.orders.transitions import do_transition_for
 from bda.plone.orders.transitions import transitions_of_main_state
 from bda.plone.orders.transitions import transitions_of_salaried_state
@@ -50,18 +55,10 @@ import uuid
 IS_P4 = pkg_resources.require("Products.CMFPlone")[0].version[0] == '4'
 
 
-class OrdersContentView(BrowserView):
-
-    def disable_border(self):
-        if IS_P4:
-            self.request.set('disable_border', True)
-
-    def disable_left_column(self):
-        self.request.set('disable_plone.leftcolumn', True)
-
-    def disable_right_column(self):
-        self.request.set('disable_plone.rightcolumn', True)
-
+###############################################################################
+# helpers
+# XXX: move to utils.py
+###############################################################################
 
 class Translate(object):
 
@@ -73,6 +70,146 @@ class Translate(object):
             return msg
         return translate(msg, context=self.request)
 
+
+###############################################################################
+# content view base classes
+# XXX: move to common.py
+###############################################################################
+
+class ContentViewBase(BrowserView):
+    """Base view class for content views.
+    """
+    do_disable_border = True
+    do_disable_left_column = True
+    do_disable_right_column = True
+
+    def disable_border(self):
+        if IS_P4 and self.do_disable_border:
+            self.request.set('disable_border', True)
+
+    def disable_left_column(self):
+        if self.do_disable_left_column:
+            self.request.set('disable_plone.leftcolumn', True)
+
+    def disable_right_column(self):
+        if self.do_disable_right_column:
+            self.request.set('disable_plone.rightcolumn', True)
+
+
+# B/C
+OrdersContentView = ContentViewBase
+
+
+class ContentTemplateView(BrowserView):
+    """View mixin for rendering content from dedicated template.
+    """
+    content_template = None
+
+    def render_content(self):
+        return self.content_template(self)
+
+
+###############################################################################
+# orders table base
+# XXX: move to orders.py
+###############################################################################
+
+class TableData(BrowserView):
+    """Base view for displaying sour records in datatable.
+    """
+    soup_name = None
+    search_text_index = None
+
+    @property
+    def columns(self):
+        """Return list of dicts with column definitions:
+
+        [{
+            'id': 'colid',
+            'label': 'Col Label',
+            'head': callback,
+            'renderer': callback,
+        }]
+        """
+        raise NotImplementedError(u"Abstract DataTable does not implement "
+                                  u"``columns``.")
+
+    def query(self, soup):
+        """Return 2-tuple with result length and lazy record iterator.
+        """
+        raise NotImplementedError(u"Abstract DataTable does not implement "
+                                  u"``query``.")
+
+    def sort(self):
+        columns = self.columns
+        sortparams = dict()
+        sortcols_idx = int(self.request.form.get('iSortCol_0'))
+        sortparams['index'] = columns[sortcols_idx]['id']
+        sortparams['reverse'] = self.request.form.get('sSortDir_0') == 'desc'
+        return sortparams
+
+    def all(self, soup):
+        data = soup.storage.data
+        sort = self.sort()
+        sort_index = soup.catalog[sort['index']]
+        iids = sort_index.sort(data.keys(), reverse=sort['reverse'])
+
+        def lazyrecords():
+            for iid in iids:
+                yield LazyRecord(iid, soup)
+        return soup.storage.length.value, lazyrecords()
+
+    def slice(self, fullresult):
+        start = int(self.request.form['iDisplayStart'])
+        length = int(self.request.form['iDisplayLength'])
+        count = 0
+        for lr in fullresult:
+            if count >= start and count < (start + length):
+                yield lr
+            if count >= (start + length):
+                break
+            count += 1
+
+    def column_def(self, colname):
+        for column in self.columns:
+            if column['id'] == colname:
+                return column
+
+    def __call__(self):
+        soup = get_soup(self.soup_name, self.context)
+        aaData = list()
+        length, lazydata = self.query(soup)
+        columns = self.columns
+        colnames = [_['id'] for _ in columns]
+        # XXX: include JSON response header
+
+        def record2list(record):
+            result = list()
+            for colname in colnames:
+                coldef = self.column_def(colname)
+                renderer = coldef.get('renderer')
+                if renderer:
+                    value = renderer(colname, record)
+                else:
+                    value = record.attrs.get(colname, '')
+                result.append(value)
+            return result
+        for lazyrecord in self.slice(lazydata):
+            aaData.append(record2list(lazyrecord()))
+        data = {
+            "sEcho": int(self.request.form['sEcho']),
+            "iTotalRecords": soup.storage.length.value,
+            "iTotalDisplayRecords": length,
+            "aaData": aaData,
+        }
+        self.request.response.setHeader("Content-type", "application/json")
+        return json.dumps(data)
+
+
+###############################################################################
+# order related dropdowns and transitions
+# XXX: move to orders.py
+###############################################################################
 
 class OrderDropdown(BaseDropdown):
 
@@ -175,102 +312,17 @@ class OrderSalariedTransition(OrderTransition):
     dropdown = OrderSalariedDropdown
 
 
-class TableData(BrowserView):
-    soup_name = None
-    search_text_index = None
-
-    @property
-    def columns(self):
-        """Return list of dicts with column definitions:
-
-        [{
-            'id': 'colid',
-            'label': 'Col Label',
-            'head': callback,
-            'renderer': callback,
-        }]
-        """
-        raise NotImplementedError(u"Abstract DataTable does not implement "
-                                  u"``columns``.")
-
-    def query(self, soup):
-        """Return 2-tuple with result length and lazy record iterator.
-        """
-        raise NotImplementedError(u"Abstract DataTable does not implement "
-                                  u"``query``.")
-
-    def sort(self):
-        columns = self.columns
-        sortparams = dict()
-        sortcols_idx = int(self.request.form.get('iSortCol_0'))
-        sortparams['index'] = columns[sortcols_idx]['id']
-        sortparams['reverse'] = self.request.form.get('sSortDir_0') == 'desc'
-        return sortparams
-
-    def all(self, soup):
-        data = soup.storage.data
-        sort = self.sort()
-        sort_index = soup.catalog[sort['index']]
-        iids = sort_index.sort(data.keys(), reverse=sort['reverse'])
-
-        def lazyrecords():
-            for iid in iids:
-                yield LazyRecord(iid, soup)
-        return soup.storage.length.value, lazyrecords()
-
-    def slice(self, fullresult):
-        start = int(self.request.form['iDisplayStart'])
-        length = int(self.request.form['iDisplayLength'])
-        count = 0
-        for lr in fullresult:
-            if count >= start and count < (start + length):
-                yield lr
-            if count >= (start + length):
-                break
-            count += 1
-
-    def column_def(self, colname):
-        for column in self.columns:
-            if column['id'] == colname:
-                return column
-
-    def __call__(self):
-        soup = get_soup(self.soup_name, self.context)
-        aaData = list()
-        length, lazydata = self.query(soup)
-        columns = self.columns
-        colnames = [_['id'] for _ in columns]
-        # todo json response header einbaun
-
-        def record2list(record):
-            result = list()
-            for colname in colnames:
-                coldef = self.column_def(colname)
-                renderer = coldef.get('renderer')
-                if renderer:
-                    value = renderer(colname, record)
-                else:
-                    value = record.attrs.get(colname, '')
-                result.append(value)
-            return result
-        for lazyrecord in self.slice(lazydata):
-            aaData.append(record2list(lazyrecord()))
-        data = {
-            "sEcho": int(self.request.form['sEcho']),
-            "iTotalRecords": soup.storage.length.value,
-            "iTotalDisplayRecords": length,
-            "aaData": aaData,
-        }
-        self.request.response.setHeader("Content-type", "application/json")
-        return json.dumps(data)
-
-
-class OrdersViewBase(OrdersContentView):
+class OrdersViewBase(ContentViewBase):
     table_view_name = '@@orderstable'
 
     def orders_table(self):
         return self.context.restrictedTraverse(self.table_view_name)()
 
+
+###############################################################################
+# orders
+# XXX: move to orders.py
+###############################################################################
 
 class OrdersView(OrdersViewBase):
 
@@ -475,6 +527,8 @@ class OrdersTable(OrdersTableBase):
     def render_order_actions(self, colname, record):
         tag = Tag(Translate(self.request))
         vendor_uid = self.request.form.get('vendor', '')
+
+        # view order
         if vendor_uid:
             view_order_target = '%s?uid=%s&vendor=%s' % (
                 self.context.absolute_url(),
@@ -493,6 +547,19 @@ class OrdersTable(OrdersTableBase):
             'title': _('view_order', default=u'View Order'),
         }
         view_order = tag('a', '&nbsp;', **view_order_attrs)
+
+        # view invoice
+        view_invoice_target = '%s/@@invoice?uid=%s' % (
+            self.context.absolute_url(),
+            str(record.attrs['uid']))
+        view_invoice_attrs = {
+            'class_': 'contenttype-document',
+            'href': view_invoice_target,
+            'title': _('view_invoice', default=u'View Invoice'),
+        }
+        view_invoice = tag('a', '&nbsp;', **view_invoice_attrs)
+
+        # select order
         select_order_attrs = {
             'name': 'select_order',
             'type': 'checkbox',
@@ -500,7 +567,9 @@ class OrdersTable(OrdersTableBase):
             'class_': 'select_order',
         }
         select_order = tag('input', **select_order_attrs)
-        return select_order + view_order
+
+        # return joined actions
+        return select_order + view_order + view_invoice
 
     def check_modify_order(self, order):
         vendor_uid = self.request.form.get('vendor', '')
@@ -569,6 +638,8 @@ class MyOrdersTable(OrdersTableBase):
 
     def render_order_actions(self, colname, record):
         tag = Tag(Translate(self.request))
+
+        # view order
         view_order_target = '%s?uid=%s' % (
             self.context.absolute_url(), str(record.attrs['uid']))
         view_order_attrs = {
@@ -580,7 +651,20 @@ class MyOrdersTable(OrdersTableBase):
             'title': _('view_order', default=u'View Order'),
         }
         view_order = tag('a', '&nbsp;', **view_order_attrs)
-        return view_order
+
+        # view invoice
+        view_invoice_target = '%s/@@invoice?uid=%s' % (
+            self.context.absolute_url(),
+            str(record.attrs['uid']))
+        view_invoice_attrs = {
+            'class_': 'contenttype-document',
+            'href': view_invoice_target,
+            'title': _('view_invoice', default=u'View Invoice'),
+        }
+        view_invoice = tag('a', '&nbsp;', **view_invoice_attrs)
+
+        # return joined actions
+        return view_order + view_invoice
 
     def __call__(self):
         # disable diazo theming if ajax call
@@ -672,7 +756,14 @@ class MyOrdersData(MyOrdersTable, TableData):
         return length, res
 
 
-class OrderViewBase(BrowserView):
+###############################################################################
+# order related base classes
+# XXX: move to order.py
+###############################################################################
+
+class OrderDataView(BrowserView):
+    """Base view for displaying order related data.
+    """
 
     @property
     @view.memoize
@@ -681,7 +772,16 @@ class OrderViewBase(BrowserView):
 
     @property
     def uid(self):
-        return self.request.form.get('uid', None)
+        # case order uid has been set manually
+        try:
+            return self._uid
+        # fallback to lookup order uid on request
+        except AttributeError:
+            return self.request.form.get('uid', None)
+
+    @uid.setter
+    def uid(self, value):
+        self._uid = value
 
     @property
     def order(self):
@@ -693,6 +793,171 @@ class OrderViewBase(BrowserView):
             IStatusMessage(self.request).addStatusMessage(err, 'error')
             raise Redirect(self.context.absolute_url())
         return dict(self.order_data.order.attrs)
+
+    def country(self, country_id):
+        # return value if no id not available i.e. if no dropdown in use
+        try:
+            return get_pycountry_name(country_id)
+        except:
+            return country_id
+
+
+class ProtectedOrderDataView(ContentViewBase, ContentTemplateView):
+    """Protected order data view.
+
+    Expect ordernumber and email to grant access to view details.
+    """
+    view_template = ViewPageTemplateFile('protected_view.pt')
+    content_template = ViewPageTemplateFile('order.pt')
+    uid = None
+    ordernumber = ''
+    email = ''
+    wrapper_css = 'protected_order_data'
+
+    def _form_handler(self, widget, data):
+        self.ordernumber = data['ordernumber'].extracted
+        self.email = data['email'].extracted
+
+    def render_auth_form(self):
+        # Render the authentication form for anonymous users.
+        req = self.request
+        action = req.getURL()
+        ordernumber = self.ordernumber or req.form.get('ordernumber', '')
+        email = self.email or req.form.get('email', '')
+        form = factory(
+            'form',
+            name='content_auth_form',
+            props={'action': action})
+        form['ordernumber'] = factory(
+            'div:label:error:text',
+            value=ordernumber,
+            props={
+                'label': _('anon_auth_label_ordernumber',
+                           default=u'Ordernumber'),
+                'div.class': 'ordernumber',
+                'required': True,
+            })
+        form['email'] = factory(
+            'div:label:error:text',
+            value=email,
+            props={
+                'label': _('anon_auth_label_email', default=u'Email'),
+                'div.class': 'email',
+                'required': True,
+            })
+        form['submit'] = factory(
+            'div:label:submit',
+            props={
+                'label': _('anon_auth_label_submit', default=u'Submit'),
+                'div.class': 'submit',
+                'handler': self._form_handler,
+                'action': 'submit',
+            })
+        controller = Controller(form, req)
+        return controller.rendered
+
+    def __call__(self):
+        req = self.request
+        ordernumber = req.form.get('content_auth_form.ordernumber', None)
+        email = req.form.get('content_auth_form.email', None)
+        order = None
+        errs = []
+        if ordernumber and email:
+            orders_soup = get_orders_soup(self.context)
+            order = orders_soup.query(Eq('ordernumber', ordernumber))
+            try:
+                # generator should have only one item
+                order = order.next()
+                try:
+                    assert(order.attrs['personal_data.email'] == email)
+                except AssertionError:
+                    # Don't raise Unauthorized, as this allows to draw
+                    # conclusions on existing ordernumbers
+                    order = None
+            except StopIteration:
+                # order by ordernumber not exists
+                order = None
+        if not email:
+            err = _('anon_auth_err_email',
+                    default=u'Please provide the email adress you used for '
+                            u'submitting the order.')
+            errs.append(err)
+        if not ordernumber:
+            err = _('anon_auth_err_ordernumber',
+                    default=u'Please provide the ordernumber')
+            errs.append(err)
+        if email and ordernumber and not order:
+            err = _('anon_auth_err_order',
+                    default=u'No order could be found for the given '
+                            u'credentials')
+            errs.append(err)
+        if not ordernumber and not email:
+            # first call of this form
+            errs = []
+        for err in errs:
+            IStatusMessage(self.request).addStatusMessage(err, 'error')
+        self.uid = order.attrs['uid'] if order else None
+        return self.view_template(self)
+
+
+###############################################################################
+# order details
+# XXX: move to order.py
+###############################################################################
+
+class BookingCancel(BrowserView):
+    """Cancel booking action.
+    """
+
+    def __call__(self):
+        booking_uid = self.request.form.get('uid')
+        if not booking_uid:
+            raise BadRequest('value not given')
+        try:
+            booking_data = BookingData(self.context, uid=uuid.UUID(booking_uid))  # noqa
+            if booking_data.booking is None:
+                raise ValueError('invalid value (no booking found)')
+            do_transition_for(
+                booking_data,
+                transition=ifaces.STATE_TRANSITION_CANCEL,
+                context=self.context,
+                request=self.request
+            )
+        except ValueError:
+            raise BadRequest('something is wrong with the value')
+        order_uid = booking_data.booking.attrs['order_uid']
+        target = u'{}?uid={}'.format(self.context.absolute_url(), order_uid)
+        action = AjaxAction(
+            target=target,
+            name='order',
+            mode='replace',
+            selector='.order_details'
+        )
+        ajax_continue(self.request, action)
+
+
+class BookingUpdateComment(BrowserView):
+    """Update boking comment action.
+    """
+
+    def __call__(self):
+        booking_uid = self.request.form.get('uid')
+        if not booking_uid:
+            raise BadRequest('value not given')
+        booking_comment = self.request.form.get('comment')
+        try:
+            booking_update_comment(
+                self,
+                uuid.UUID(booking_uid),
+                booking_comment
+            )
+        except ValueError:
+            raise BadRequest('something is wrong with the value')
+
+
+class OrderViewBase(OrderDataView):
+    """Base view for displaying order details.
+    """
 
     @property
     def net(self):
@@ -757,16 +1022,17 @@ class OrderViewBase(BrowserView):
             obj = get_object_by_uid(self.context, booking.attrs['buyable_uid'])
             state = vocabs.state_vocab()[booking.attrs.get('state')]
             salaried = vocabs.salaried_vocab()[booking.attrs.get('salaried')]
-            cancel_url = None
-            if can_cancel_booking:
-                cancel_url = addTokenToUrl('{}/@@booking_cancel?uid={}'.format(
+            cancel_target = None
+            if can_cancel_booking and state != ifaces.STATE_CANCELLED:
+                cancel_target = addTokenToUrl('{}?uid={}'.format(
                     self.context.absolute_url(),
-                    booking.attrs['uid']))
+                    booking.attrs['uid'])
+                )
             ret.append({
                 'uid': booking.attrs['uid'],
                 'title': booking.attrs['title'],
-                'url': obj.absolute_url(),
-                'cancel_url': cancel_url,
+                'url': obj.absolute_url() if obj else None,
+                'cancel_target': cancel_target,
                 'count': booking.attrs['buyable_count'],
                 'net': ascur(booking.attrs.get('net', 0.0)),
                 'discount_net': ascur(float(booking.attrs['discount_net'])),
@@ -835,13 +1101,6 @@ class OrderViewBase(BrowserView):
         return item['exported'] \
             and _('yes', default=u'Yes') or _('no', default=u'No')
 
-    def country(self, country_id):
-        # return value if no id not available i.e. if no dropdown in use
-        try:
-            return get_pycountry_name(country_id)
-        except:
-            return country_id
-
 
 class OrderView(OrderViewBase):
 
@@ -886,102 +1145,123 @@ class MyOrderView(OrderViewBase):
         return self.order_data.order.attrs['ordernumber']
 
 
-class DirectOrderView(OrderViewBase):
-    """Direct Order view.
+class DirectOrderView(OrderViewBase, ProtectedOrderDataView):
+    do_disable_border = False
+    do_disable_left_column = False
+    do_disable_right_column = False
+    content_template = ViewPageTemplateFile('order.pt')
 
-    Expect ordernumber and email to grant access to the order details.
+
+###############################################################################
+# invoice
+# XXX: move to invoice.py
+###############################################################################
+
+class InvoiceViewBase(OrderDataView):
+    invoice_prefix = u'INV'
+
+    @property
+    def sender(self):
+        # XXX: right now we provide a global sender for invoices. in order to
+        #      provide vendors there's more to do. there need to be an option
+        #      whether the invoice gets splitted to specific vendors and if so
+        #      multiple invoices need to be available for one order. this also
+        #      needs to be reflected in order emails. if there is one billing
+        #      point even if there are multiple vendors for one order the
+        #      global sender address is used (which is actually the current
+        #      and only behavior).
+        sender = IInvoiceSender(self.context)
+        return {
+            'company': sender.company,
+            'companyadd': sender.companyadd,
+            'firstname': sender.firstname,
+            'lastname': sender.lastname,
+            'street': sender.street,
+            'zip': sender.zip,
+            'city': sender.city,
+            'country': sender.country,
+            'phone': sender.phone,
+            'email': sender.email,
+            'web': sender.web,
+            'iban': sender.iban,
+            'bic': sender.bic
+        }
+
+    @property
+    def invoice_number(self):
+        return '{}{}'.format(self.invoice_prefix, self.order['ordernumber'])
+
+    @property
+    def created(self):
+        value = self.order.get('created', _('unknown', default=u'Unknown'))
+        if value:
+            value = value.strftime(DT_FORMAT_SHORT)
+        return value
+
+    @property
+    def listing(self):
+        ret = list()
+        for booking in self.order_data.bookings:
+            data = dict()
+            data['title'] = safe_unicode(booking.attrs['title'])
+            data['item_number'] = safe_unicode(booking.attrs['item_number'])
+            data['comment'] = safe_unicode(booking.attrs['buyable_comment'])
+            data['currency'] = safe_unicode(booking.attrs['currency'])
+            data['count'] = booking.attrs['buyable_count']
+            data['net'] = booking.attrs.get('net', 0.0)
+            data['vat'] = booking.attrs.get('vat', 0.0)
+            data['discount_net'] = float(booking.attrs['discount_net'])
+            data['quantity_unit'] = booking.attrs.get('quantity_unit')
+            ret.append(data)
+        return ret
+
+    def summary(self):
+        order_data = self.order_data
+        data = dict()
+        data['currency'] = order_data.currency
+        cart_net = order_data.net
+        data['cart_net'] = cart_net
+        cart_vat = order_data.vat
+        data['cart_vat'] = cart_vat
+        discount_net = order_data.discount_net
+        data['discount_net'] = discount_net
+        discount_vat = order_data.discount_vat
+        data['discount_vat'] = discount_vat
+        discount_total = discount_net + discount_vat
+        data['discount_total'] = discount_total
+        shipping_net = order_data.shipping_net
+        data['shipping_net'] = shipping_net
+        shipping_vat = order_data.shipping_vat
+        data['shipping_vat'] = shipping_vat
+        shipping_total = shipping_net + shipping_vat
+        data['shipping_total'] = shipping_total
+        cart_total = order_data.total
+        data['cart_total'] = cart_total
+        return data
+
+    def ascur(self, val):
+        return ascur(val)
+
+
+class InvoiceView(InvoiceViewBase, ContentViewBase, ContentTemplateView):
+    """Invoice view.
     """
-    order_auth_template = ViewPageTemplateFile('order_show.pt')
-    order_template = ViewPageTemplateFile('order.pt')
-    uid = None
-    ordernumber = ''
-    email = ''
+    content_template = ViewPageTemplateFile('invoice.pt')
 
-    def _form_handler(self, widget, data):
-        self.ordernumber = data['ordernumber'].extracted
-        self.email = data['email'].extracted
 
-    def render_auth_form(self):
-        # Render the authentication form for anonymous users.
-        req = self.request
-        action = req.getURL()
-        ordernumber = self.ordernumber or req.form.get('ordernumber', '')
-        email = self.email or req.form.get('email', '')
-        form = factory(
-            'form',
-            name='order_auth_form',
-            props={'action': action})
-        form['ordernumber'] = factory(
-            'div:label:error:text',
-            value=ordernumber,
-            props={
-                'label': _('anon_auth_label_ordernumber',
-                           default=u'Ordernumber'),
-                'div.class': 'ordernumber',
-                'required': True,
-            })
-        form['email'] = factory(
-            'div:label:error:text',
-            value=email,
-            props={
-                'label': _('anon_auth_label_email', default=u'Email'),
-                'div.class': 'email',
-                'required': True,
-            })
-        form['submit'] = factory(
-            'div:label:submit',
-            props={
-                'label': _('anon_auth_label_submit', default=u'Submit'),
-                'div.class': 'submit',
-                'handler': self._form_handler,
-                'action': 'submit',
-            })
-        controller = Controller(form, req)
-        return controller.rendered
+class DirectInvoiceView(InvoiceViewBase, ProtectedOrderDataView):
+    """Direct Invoice view.
+    """
+    content_template = ViewPageTemplateFile('invoice.pt')
 
-    def render_order_template(self):
-        return self.order_template(self)
 
-    def __call__(self):
-        req = self.request
-        ordernumber = req.form.get('order_auth_form.ordernumber', None)
-        email = req.form.get('order_auth_form.email', None)
-        order = None
-        errs = []
-        if ordernumber and email:
-            orders_soup = get_orders_soup(self.context)
-            order = orders_soup.query(Eq('ordernumber', ordernumber))
-            order = order.next()  # generator should have only one item
-            try:
-                assert(order.attrs['personal_data.email'] == email)
-            except AssertionError:
-                # Don't raise Unauthorized, as this allows to draw conclusions
-                # on existing ordernumbers
-                order = None
-        if not email:
-            err = _('anon_auth_err_email',
-                    default=u'Please provide the email adress you used for '
-                            u'submitting the order.')
-            errs.append(err)
-        if not ordernumber:
-            err = _('anon_auth_err_ordernumber',
-                    default=u'Please provide the ordernumber')
-            errs.append(err)
-        if email and ordernumber and not order:
-            err = _('anon_auth_err_order',
-                    default=u'No order could be found for the given '
-                            u'credentials')
-            errs.append(err)
-        if not ordernumber and not email:
-            # first call of this form
-            errs = []
-        for err in errs:
-            IStatusMessage(self.request).addStatusMessage(err, 'error')
-        self.uid = order.attrs['uid'] if order else None
-        return self.order_auth_template(self)
-
+###############################################################################
+# views
+###############################################################################
 
 class OrderDone(BrowserView):
+    """Landing page after order has been done.
+    """
     # XXX: provide different headings and texts for states reservation and
     #      mixed
     reservation_states = (ifaces.STATE_RESERVED, ifaces.STATE_MIXED)
@@ -1016,49 +1296,3 @@ class OrderDone(BrowserView):
         except ValueError:
             return _('unknown_order_text',
                      default=u'Sorry, this order does not exist.')
-
-
-class BookingCancel(BrowserView):
-
-    def __call__(self):
-        booking_uid = self.request.form.get('uid')
-        if not booking_uid:
-            raise BadRequest('value not given')
-        try:
-            booking_data = BookingData(self.context, uid=uuid.UUID(booking_uid))  # noqa
-            if booking_data.booking is None:
-                raise ValueError('invalid value (no booking found)')
-            do_transition_for(
-                booking_data,
-                transition=ifaces.STATE_TRANSITION_CANCEL,
-                context=self.context,
-                request=self.request
-            )
-        except ValueError:
-            raise BadRequest('something is wrong with the value')
-
-        plone.api.portal.show_message(
-            message=_(u"Booking cancelled."),
-            request=self.request,
-            type='info'
-        )
-        self.request.response.redirect(
-            self.context.absolute_url() + '/@@orders'
-        )
-
-
-class BookingUpdateComment(BrowserView):
-
-    def __call__(self):
-        booking_uid = self.request.form.get('uid')
-        if not booking_uid:
-            raise BadRequest('value not given')
-        booking_comment = self.request.form.get('comment')
-        try:
-            booking_update_comment(
-                self,
-                uuid.UUID(booking_uid),
-                booking_comment
-            )
-        except ValueError:
-            raise BadRequest('something is wrong with the value')

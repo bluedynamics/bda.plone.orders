@@ -10,7 +10,7 @@ from bda.plone.orders import message_factory as _
 from bda.plone.orders import permissions
 from bda.plone.orders import vocabularies as vocabs
 from bda.plone.orders.browser.dropdown import BaseDropdown
-from bda.plone.orders.browser.views import OrdersContentView
+from bda.plone.orders.browser.views import ContentViewBase
 from bda.plone.orders.browser.views import Transition
 from bda.plone.orders.browser.views import customers_form_vocab
 from bda.plone.orders.browser.views import salaried_form_vocab
@@ -119,7 +119,7 @@ class BookingSalariedTransition(BookingTransition):
     dropdown = BookingSalariedDropdown
 
 
-class BookingsView(OrdersContentView):
+class BookingsView(ContentViewBase):
     table_view_name = '@@bookingstable'
 
     def bookings_table(self):
@@ -527,7 +527,6 @@ class BookingsTable(BrowserView):
         )
         return json.dumps(data)
 
-# helper methods
     def _get_price(self, record):
         """
         returns net + vat price

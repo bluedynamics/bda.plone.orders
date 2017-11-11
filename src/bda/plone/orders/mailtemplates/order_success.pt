@@ -47,6 +47,13 @@
     </a>
     <br />
 
+    <strong i18n:translate="order_mail_invoice">Invoice</strong>:
+    <a href="${order['portal_url'] + '/@@showinvoice?ordernumber=' + order['ordernumber']}"
+       i18n:translate="order_mail_click_here">
+      Click here
+    </a>
+    <br />
+
     <h2 i18n:translate="order_mail_personal_data">Personal Data</h2>
 
     <strong i18n:translate="order_mail_fullname">Name</strong>:

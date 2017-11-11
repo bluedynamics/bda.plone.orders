@@ -171,3 +171,34 @@ class IStockThresholdReached(Interface):
 
     stock_threshold_reached_items = Attribute(u"List of items that are "
                                               u"getting out of stock.")
+
+
+class IInvoiceSender(Interface):
+    """Interface for providing invoice sender.
+    """
+
+    company = Attribute(u"Sender company name")
+
+    companyadd = Attribute(u"Optional Company additional text line")
+
+    firstname = Attribute(u"Sender first name")
+
+    lastname = Attribute(u"Sender last name")
+
+    street = Attribute(u"Streetg")
+
+    zip = Attribute(u"ZIP")
+
+    city = Attribute(u"City")
+
+    country = Attribute(u"Country")
+
+    phone = Attribute(u"Optional phone number")
+
+    email = Attribute(u"Optional email address")
+
+    web = Attribute(u"Optional web address")
+
+    iban = Attribute(u"Banking connection IBAN")
+
+    bic = Attribute(u"Banking connection BIC")

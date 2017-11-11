@@ -5,6 +5,44 @@ Changelog
 1.0a1 (unreleased)
 ------------------
 
+- Ajaxify cancel bookings.
+  [rnix]
+
+- Fix comment editing in plone 5.
+  [rnix]
+
+- Only display cancel booking action if booking not already cancelled.
+  [rnix]
+
+- Fix error in the order detail if the product no longer exists (#20).
+  [rnix]
+
+- Do not exclude reserved bookings by default from billing. This resolves
+  inconsistenty introduced with
+  https://github.com/bluedynamics/bda.plone.orders/pull/39 and addressed at
+  https://github.com/bluedynamics/bda.plone.orders/issues/45.
+  [rnix]
+
+- Introduce ``ProtectedOrderDataView`` and use as base for ``DirectOrderView``
+  and ``DirectInvoiceView``.
+  [rnix]
+
+- Add invoice view.
+  [rnix]
+
+- Remove duplicate ``Translate`` class from
+  ``bda.plone.orders.browser.contacts``.
+  [rnix]
+
+- Rename ``OrdersContentView`` to ``ContentViewBase``. Provide B/C alias.
+  Introduce view configuration properties ``do_disable_border``,
+  ``do_disable_left_column`` and ``do_disable_right_column``.
+  [rnix]
+
+- Introduce ``OrderDataView`` base class for views dealing with single order
+  data.
+  [rnix]
+
 - Add HTML support for order related notification mails.
   [rnix]
 

@@ -6,20 +6,21 @@
       metal:use-macro="here/main_template/macros/master"
       i18n:domain="bda.plone.orders">
 
+<head>
+  <metal:override
+    fill-slot="top_slot"
+    tal:define="
+        border view/disable_border;
+        disable_left_column view/disable_left_column;
+        disable_right_column view/disable_right_column" />
+</head>
+
 <body>
 
 <metal:main fill-slot="main">
   <tal:main-macro metal:define-macro="main">
 
-    <div class="order wrapper">
-
-      <tal:template condition="not:view/uid"
-                    replace="structure view/render_auth_form" />
-
-      <tal:template condition="view/uid"
-                    replace="structure view/render_order_template" />
-
-    </div>
+    <tal:invoice replace="structure view/render_content" />
 
   </tal:main-macro>
 </metal:main>
