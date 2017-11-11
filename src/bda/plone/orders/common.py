@@ -352,6 +352,9 @@ class OrderCheckoutAdapter(CheckoutAdapter):
         order.attrs['buyable_uids'] = buyable_uids
         order.attrs['vendor_uids'] = list(vendor_uids)
         # cart discount related information
+        # XXX: in order to be able to reliably modify orders, cart discount
+        #      rules for this order must be stored instead of the actual
+        #      calculated discount.
         cart_discount = cart_data.discount(self.items)
         order.attrs['cart_discount_net'] = cart_discount['net']
         order.attrs['cart_discount_vat'] = cart_discount['vat']
@@ -444,6 +447,9 @@ class OrderCheckoutAdapter(CheckoutAdapter):
         booking.attrs['title'] = brain and brain.Title or 'unknown'
         booking.attrs['net'] = item_data.net
         booking.attrs['vat'] = item_data.vat
+        # XXX: in order to be able to reliably modify bookings, item discount
+        #      rules for this booking must be stored instead of the actual
+        #      calculated discount.
         booking.attrs['discount_net'] = item_data.discount_net(count)
         booking.attrs['currency'] = cart_data.currency
         booking.attrs['quantity_unit'] = item_data.quantity_unit

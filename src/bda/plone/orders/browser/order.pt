@@ -2,6 +2,7 @@
      xmlns="http://www.w3.org/1999/xhtml"
      xmlns:tal="http://xml.zope.org/namespaces/tal"
      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+     xmlns:ajax="http://namesspaces.bluedynamics.eu/ajax"
      i18n:domain="bda.plone.orders"
      tal:define="order view/order">
 
@@ -160,7 +161,7 @@
 
   <div class="order_bookings">
     <h3 i18n:translate="order_bookings">Order Bookings:</h3>
-    <table>
+    <table tal:define="resources_url string:${context/absolute_url}/++resource++bda.plone.orders">
       <tal:tr repeat="row view/listing">
         <tal:def define="even repeat/row/even;
                          start repeat/row/start;
@@ -181,7 +182,16 @@
           </tr>
 
           <tr tal:attributes="class python:even and 'even' or 'odd'">
-            <td><a href="row/url" target="_blank" tal:attributes="href row/url" tal:content="row/title">title</a></td>
+            <td>
+              <a href="#"
+                 target="_blank"
+                 tal:attributes="href row/url"
+                 tal:content="row/title"
+                 tal:condition="row/url">title</a>
+
+              <span tal:replace="row/title"
+                    tal:condition="not:row/url">title</span>
+            </td>
             <td tal:content="row/count">count</td>
             <td tal:content="row/quantity_unit">quantity</td>
             <td tal:content="row/currency">EUR</td>
@@ -192,57 +202,63 @@
             </td>
             <td tal:condition="show_exported" tal:content="python:view.exported(row)">No</td>
             <td>
-                <span class="booking_comment_display booking_comment_text"
-                      tal:content="row/comment">comment
-                </span>
-                <input tal:condition="python:view.can_modify_order"
-                       class="booking_comment_edit"
+              <span class="booking_comment_display booking_comment_text"
+                    tal:content="row/comment">comment</span>
+              <tal:edit condition="view/can_modify_order">
+                <input class="booking_comment_edit"
                        type="text"
                        tal:attributes="value row/comment;
                                        data-booking-uid row/uid;
                                        data-edit-url string:${context/absolute_url}/@@booking_update_comment"
                 />
-
-                <a tal:condition="python:view.can_modify_order"
-                    class="booking_comment_display booking_comment_edit_action"
-                    href="#"><img src="#"
-                        title="edit comment"
-                        alt="edit comment icon"
-                        tal:attributes="src string:${context/absolute_url}/++resource++bda.plone.orders/pencil.png"/></a>
-
-                <img tal:condition="python:view.can_modify_order"
-                     class="booking_comment_spinner"
+                <a href="#"
+                   class="booking_comment_display booking_comment_edit_action">
+                  <img src="#"
+                       title="edit comment"
+                       alt="edit comment icon"
+                       tal:attributes="src string:${resources_url}/pencil.png"
+                  />
+                </a>
+                <img class="booking_comment_spinner"
                      src="#"
                      alt="spinner icon"
-                     tal:attributes="src string:${context/absolute_url}/++resource++bda.plone.orders/spinner.gif"/>
-
-                <a tal:condition="python:view.can_modify_order"
-                    class="booking_comment_edit booking_comment_save_action"
-                    href="#"><img
-                        src="#"
-                        title="save comment"
-                        alt="save comment icon"
-                        tal:attributes="src string:${context/absolute_url}/++resource++bda.plone.orders/tick.png"/></a>
-
-                <a tal:condition="python:view.can_modify_order"
-                    class="booking_comment_edit booking_comment_abort_action"
-                    href="#"><img
-                        src="#"
-                        title="undo edit comment"
-                        alt="undo edit comment icon"
-                        tal:attributes="src string:${context/absolute_url}/++resource++bda.plone.orders/cross.png"/></a>
-
+                     tal:attributes="src string:${resources_url}/spinner.gif"
+                />
+                <a href="#"
+                   class="booking_comment_edit booking_comment_save_action">
+                  <img src="#"
+                       title="save comment"
+                       alt="save comment icon"
+                       tal:attributes="src string:${resources_url}/tick.png"
+                  />
+                </a>
+                <a href="#"
+                   class="booking_comment_edit booking_comment_abort_action">
+                  <img src="#"
+                       title="undo edit comment"
+                       alt="undo edit comment icon"
+                       tal:attributes="src string:${resources_url}/cross.png"
+                  />
+                </a>
+              </tal:edit>
             </td>
             <td>
-                <span tal:content="row/state">state</span>
-                <a tal:condition="row/cancel_url"
-                   tal:attributes="href row/cancel_url"
-                   class="booking-cancel-link discreet"
-                   href="#"><img
-                       src="#"
-                       title="cancel booking"
-                       alt="cancel booking"
-                       tal:attributes="src string:${context/absolute_url}/++resource++bda.plone.orders/delete.png" /></a>
+              <span tal:content="row/state">state</span>
+
+              <a href="#"
+                 class="booking-cancel-link discreet"
+                 ajax:bind="click"
+                 ajax:target="#"
+                 ajax:action="booking_cancel:NONE:NONE"
+                 ajax:confirm="Do you really want to cancel this booking?"
+                 tal:attributes="ajax:target row/cancel_target"
+                 tal:condition="row/cancel_target">
+                <img src="#"
+                     title="cancel booking"
+                     alt="cancel booking"
+                     tal:attributes="src string:${resources_url}/delete.png"
+                />
+              </a>
             </td>
             <td tal:content="row/salaried">salaried</td>
           </tr>

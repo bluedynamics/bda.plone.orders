@@ -5,6 +5,8 @@ from Products.CMFPlone.utils import safe_unicode
 from Products.Five import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from Products.statusmessages.interfaces import IStatusMessage
+from bda.plone.ajax import AjaxAction
+from bda.plone.ajax import ajax_continue
 from bda.plone.cart import ascur
 from bda.plone.cart import get_object_by_uid
 from bda.plone.checkout import message_factory as _co
@@ -923,15 +925,15 @@ class BookingCancel(BrowserView):
             )
         except ValueError:
             raise BadRequest('something is wrong with the value')
-
-        plone.api.portal.show_message(
-            message=_(u"Booking cancelled."),
-            request=self.request,
-            type='info'
+        order_uid = booking_data.booking.attrs['order_uid']
+        target = u'{}?uid={}'.format(self.context.absolute_url(), order_uid)
+        action = AjaxAction(
+            target=target,
+            name='order',
+            mode='replace',
+            selector='.order_details'
         )
-        self.request.response.redirect(
-            self.context.absolute_url() + '/@@orders'
-        )
+        ajax_continue(self.request, action)
 
 
 class BookingUpdateComment(BrowserView):
@@ -1020,16 +1022,17 @@ class OrderViewBase(OrderDataView):
             obj = get_object_by_uid(self.context, booking.attrs['buyable_uid'])
             state = vocabs.state_vocab()[booking.attrs.get('state')]
             salaried = vocabs.salaried_vocab()[booking.attrs.get('salaried')]
-            cancel_url = None
-            if can_cancel_booking:
-                cancel_url = addTokenToUrl('{}/@@booking_cancel?uid={}'.format(
+            cancel_target = None
+            if can_cancel_booking and state != ifaces.STATE_CANCELLED:
+                cancel_target = addTokenToUrl('{}?uid={}'.format(
                     self.context.absolute_url(),
-                    booking.attrs['uid']))
+                    booking.attrs['uid'])
+                )
             ret.append({
                 'uid': booking.attrs['uid'],
                 'title': booking.attrs['title'],
-                'url': obj.absolute_url(),
-                'cancel_url': cancel_url,
+                'url': obj.absolute_url() if obj else None,
+                'cancel_target': cancel_target,
                 'count': booking.attrs['buyable_count'],
                 'net': ascur(booking.attrs.get('net', 0.0)),
                 'discount_net': ascur(float(booking.attrs['discount_net'])),

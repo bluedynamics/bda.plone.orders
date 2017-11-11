@@ -279,7 +279,9 @@ Create translations
 TODO
 ====
 
-- Export orders bug.
+- Store cart and item discount rules in checkout adapter instead of actual
+  discount values in order to reliably modify orders while keeping invoice and
+  order summary views sane.
 
 - Rename salaried to paid all over the place.
 
