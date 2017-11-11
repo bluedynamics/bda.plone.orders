@@ -236,6 +236,27 @@ a.notify_customers {
 .salaried-value-failed {
   color: #e50000;
 }
+/* protected order data */
+.protected_order_data form {
+  display: table;
+  border-spacing: 1em;
+}
+.protected_order_data form > div {
+  display: table-row;
+}
+.protected_order_data form label {
+  display: table-cell;
+}
+.protected_order_data form div.error,
+.protected_order_data form input {
+  display: table-cell;
+}
+.protected_order_data form div.submit label {
+  color: transparent;
+}
+.protected_order_data form div.submit input {
+  float: right;
+}
 /* order */
 .order_details {
   padding: 1.2em;
@@ -292,27 +313,6 @@ input[type="text"].booking_comment_edit {
 .order_bookings tr.odd td {
   background-color: #fbfbfb;
 }
-.order.wrapper form {
-  display: table;
-  border-spacing: 1em;
-}
-.order.wrapper form > div {
-  display: table-row;
-}
-.order.wrapper form label {
-  display: table-cell;
-}
-.order.wrapper form div.error,
-.order.wrapper form input {
-  display: table-cell;
-}
-.order.wrapper form div.submit label {
-  color: transparent;
-}
-.order.wrapper form div.submit input {
-  float: right;
-}
-
 /* invoice */
 .invoice .invoice_title {
   text-align:center;
@@ -403,7 +403,6 @@ input[type="text"].booking_comment_edit {
 .invoice .invoice_footer {
   margin-top:2em;
 }
-
 /* print styles */
 @media print {
   /* rules for bookingstable  print preview */

@@ -770,7 +770,16 @@ class OrderDataView(BrowserView):
 
     @property
     def uid(self):
-        return self.request.form.get('uid', None)
+        # case order uid has been set manually
+        try:
+            return self._uid
+        # fallback to lookup order uid on request
+        except AttributeError:
+            return self.request.form.get('uid', None)
+
+    @uid.setter
+    def uid(self, value):
+        self._uid = value
 
     @property
     def order(self):
@@ -801,7 +810,7 @@ class ProtectedOrderDataView(ContentViewBase, ContentTemplateView):
     uid = None
     ordernumber = ''
     email = ''
-    wrapper_css = ''
+    wrapper_css = 'protected_order_data'
 
     def _form_handler(self, widget, data):
         self.ordernumber = data['ordernumber'].extracted
@@ -854,12 +863,17 @@ class ProtectedOrderDataView(ContentViewBase, ContentTemplateView):
         if ordernumber and email:
             orders_soup = get_orders_soup(self.context)
             order = orders_soup.query(Eq('ordernumber', ordernumber))
-            order = order.next()  # generator should have only one item
             try:
-                assert(order.attrs['personal_data.email'] == email)
-            except AssertionError:
-                # Don't raise Unauthorized, as this allows to draw conclusions
-                # on existing ordernumbers
+                # generator should have only one item
+                order = order.next()
+                try:
+                    assert(order.attrs['personal_data.email'] == email)
+                except AssertionError:
+                    # Don't raise Unauthorized, as this allows to draw
+                    # conclusions on existing ordernumbers
+                    order = None
+            except StopIteration:
+                # order by ordernumber not exists
                 order = None
         if not email:
             err = _('anon_auth_err_email',
@@ -1133,7 +1147,6 @@ class DirectOrderView(OrderViewBase, ProtectedOrderDataView):
     do_disable_left_column = False
     do_disable_right_column = False
     content_template = ViewPageTemplateFile('order.pt')
-    wrapper_css = 'order wrapper'
 
 
 ###############################################################################
@@ -1141,8 +1154,7 @@ class DirectOrderView(OrderViewBase, ProtectedOrderDataView):
 # XXX: move to invoice.py
 ###############################################################################
 
-class InvoiceViewBase(OrderDataView, ContentTemplateView):
-    content_template = ViewPageTemplateFile('invoice.pt')
+class InvoiceViewBase(OrderDataView):
     invoice_prefix = u'INV'
 
     @property
@@ -1228,14 +1240,16 @@ class InvoiceViewBase(OrderDataView, ContentTemplateView):
         return ascur(val)
 
 
-class InvoiceView(InvoiceViewBase, ContentViewBase):
+class InvoiceView(InvoiceViewBase, ContentViewBase, ContentTemplateView):
     """Invoice view.
     """
+    content_template = ViewPageTemplateFile('invoice.pt')
 
 
-class DirectInvoiceView(InvoiceView, ProtectedOrderDataView):
+class DirectInvoiceView(InvoiceViewBase, ProtectedOrderDataView):
     """Direct Invoice view.
     """
+    content_template = ViewPageTemplateFile('invoice.pt')
 
 
 ###############################################################################
