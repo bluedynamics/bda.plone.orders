@@ -5,6 +5,12 @@ Changelog
 1.0a1 (unreleased)
 ------------------
 
+- Do not exclude reserved bookings by default from billing. This resolves
+  inconsistenty introduced with
+  https://github.com/bluedynamics/bda.plone.orders/pull/39 and addressed at
+  https://github.com/bluedynamics/bda.plone.orders/issues/45.
+  [rnix]
+
 - Introduce ``ProtectedOrderDataView`` and use as base for ``DirectOrderView``
   and ``DirectInvoiceView``.
   [rnix]

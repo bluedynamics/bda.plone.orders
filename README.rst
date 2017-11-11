@@ -281,7 +281,9 @@ TODO
 
 - i18n
 
-- icons in orders view
+- icons in orders view actions
+
+- icons in contacts view actions
 
 - booking billable
 
