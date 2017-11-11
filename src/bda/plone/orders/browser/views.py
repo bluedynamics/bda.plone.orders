@@ -54,6 +54,8 @@ IS_P4 = pkg_resources.require("Products.CMFPlone")[0].version[0] == '4'
 
 
 class OrdersContentView(BrowserView):
+    """Base view class for content views.
+    """
 
     def disable_border(self):
         if IS_P4:
@@ -1019,7 +1021,8 @@ class DirectOrderView(OrderViewBase):
         return self.order_auth_template(self)
 
 
-class InvoiceView(OrderDataView):
+class InvoiceViewBase(OrderDataView):
+    invoice_template = ViewPageTemplateFile('invoice.pt')
     invoice_prefix = u'INV'
 
     @property
@@ -1104,9 +1107,21 @@ class InvoiceView(OrderDataView):
     def ascur(self, val):
         return ascur(val)
 
+    def render_invoice_template(self):
+        return self.invoice_template(self)
+
+
+class InvoiceView(InvoiceViewBase, OrdersContentView):
+    pass
+
 
 class DirectInvoiceView(InvoiceView):
     pass
+
+    # XXX: this view
+    # XXX: i18n
+    # XXX: icons in orders view
+    # XXX: booking billable
 
 
 class OrderDone(BrowserView):

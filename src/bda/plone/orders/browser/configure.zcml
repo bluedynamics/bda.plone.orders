@@ -238,7 +238,7 @@
   <browser:page
     for="*"
     name="invoice"
-    template="invoice.pt"
+    template="invoice_view.pt"
     class=".views.InvoiceView"
     permission="bda.plone.orders.ViewOrders"
     layer="..interfaces.IOrdersExtensionLayer" />

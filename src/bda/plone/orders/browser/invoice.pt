@@ -1,287 +1,272 @@
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
-      xmlns:tal="http://xml.zope.org/namespaces/tal"
-      xmlns:metal="http://xml.zope.org/namespaces/metal"
-      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
-      lang="en"
-      metal:use-macro="here/main_template/macros/master"
-      i18n:domain="bda.plone.orders">
+<div class="invoice"
+     xmlns="http://www.w3.org/1999/xhtml"
+     xmlns:tal="http://xml.zope.org/namespaces/tal"
+     xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+     i18n:domain="bda.plone.orders"
+     tal:define="sender view/sender;
+                 order view/order;
+                 summary view/summary">
 
-<body>
+  <h1 class="invoice_title"
+      i18n:translate="your_invoice">Your Invoice</h1>
 
-<metal:main fill-slot="main">
-  <tal:main-macro metal:define-macro="main">
+  <div class="invoice_sender">
+    <strong tal:content="sender/company">company</strong>
+    <br />
+    <tal:companyadd condition="sender/companyadd">
+      <span tal:replace="sender/companyadd">company additional</span>
+      <br />
+    </tal:companyadd>
+    <br />
+    <span tal:replace="sender/firstname">first name</span>
+    <span tal:replace="sender/lastname">last name</span>
+    <br />
+    <span tal:replace="sender/street">street</span>
+    <br />
+    <span tal:replace="sender/zip">zip</span>
+    <span tal:replace="sender/city">city</span>
+    <br />
+    <span tal:replace="python:view.country(sender['country'])">
+      country
+    </span>
+    <br />
+    <tal:phone condition="sender/phone">
+      <span tal:replace="sender/phone">phone</span>
+      <br />
+    </tal:phone>
+    <tal:email condition="sender/email">
+      <span tal:replace="sender/email">email</span>
+      <br />
+    </tal:email>
+    <tal:web condition="sender/web">
+      <span tal:replace="sender/web">web</span>
+      <br />
+    </tal:web>
+  </div>
 
-    <div class="invoice"
-         tal:define="sender view/sender;
-                     order view/order;
-                     summary view/summary">
+  <div class="invoice_receiver">
+    <span tal:replace="order/personal_data.firstname">first name</span>
+    <span tal:replace="order/personal_data.lastname">last name</span>
+    <br />
+    <tal:company condition="order/personal_data.company">
+      <span tal:replace="order/personal_data.company">company</span>
+      <br />
+    </tal:company>
+    <span tal:replace="order/billing_address.street">street</span>
+    <br />
+    <span tal:replace="order/billing_address.zip">zip</span>
+    <span tal:replace="order/billing_address.city">city</span>
+    <br />
+    <span tal:replace="python:view.country(order['billing_address.country'])">
+      country
+    </span>
+  </div>
 
-      <h1 class="invoice_title"
-          i18n:translate="your_invoice">Your Invoice</h1>
+  <h2 class="invoice_number">
+    <span i18n:translate="invoice">Invoice</span>
+    <span tal:replace="view/invoice_number">INV12345</span>
+  </h2>
 
-      <div class="invoice_sender">
-        <strong tal:content="sender/company">company</strong>
-        <br />
-        <tal:companyadd condition="sender/companyadd">
-          <span tal:replace="sender/companyadd">company additional</span>
-          <br />
-        </tal:companyadd>
-        <br />
-        <span tal:replace="sender/firstname">first name</span>
-        <span tal:replace="sender/lastname">last name</span>
-        <br />
-        <span tal:replace="sender/street">street</span>
-        <br />
-        <span tal:replace="sender/zip">zip</span>
-        <span tal:replace="sender/city">city</span>
-        <br />
-        <span tal:replace="python:view.country(sender['country'])">
-          country
-        </span>
-        <br />
-        <tal:phone condition="sender/phone">
-          <span tal:replace="sender/phone">phone</span>
-          <br />
-        </tal:phone>
-        <tal:email condition="sender/email">
-          <span tal:replace="sender/email">email</span>
-          <br />
-        </tal:email>
-        <tal:web condition="sender/web">
-          <span tal:replace="sender/web">web</span>
-          <br />
-        </tal:web>
+  <h3 class="invoice_date">
+    <span tal:replace="sender/city">city</span>,
+    <span tal:replace="view/created">date</span>
+  </h3>
+
+  <div class="invoice_listing">
+    <div class="invoice_listing_head">
+      <div class="invoice_listing_amount">
+        <strong i18n:translate="invoice_listing_amount">Amount</strong>
       </div>
-
-      <div class="invoice_receiver">
-        <span tal:replace="order/personal_data.firstname">first name</span>
-        <span tal:replace="order/personal_data.lastname">last name</span>
-        <br />
-        <tal:company condition="order/personal_data.company">
-          <span tal:replace="order/personal_data.company">company</span>
-          <br />
-        </tal:company>
-        <span tal:replace="order/billing_address.street">street</span>
-        <br />
-        <span tal:replace="order/billing_address.zip">zip</span>
-        <span tal:replace="order/billing_address.city">city</span>
-        <br />
-        <span tal:replace="python:view.country(order['billing_address.country'])">
-          country
-        </span>
+      <div class="invoice_listing_position">
+        <strong i18n:translate="invoice_listing_position">Position</strong>
       </div>
-
-      <h2 class="invoice_number">
-        <span i18n:translate="invoice">Invoice</span>
-        <span tal:replace="view/invoice_number">INV12345</span>
-      </h2>
-
-      <h3 class="invoice_date">
-        <span tal:replace="sender/city">city</span>,
-        <span tal:replace="view/created">date</span>
-      </h3>
-
-      <div class="invoice_listing">
-        <div class="invoice_listing_head">
-          <div class="invoice_listing_amount">
-            <strong i18n:translate="invoice_listing_amount">Amount</strong>
-          </div>
-          <div class="invoice_listing_position">
-            <strong i18n:translate="invoice_listing_position">Position</strong>
-          </div>
-          <div class="invoice_listing_price">
-            <strong i18n:translate="invoice_listing_price">Price</strong>
-          </div>
-        </div>
-
-        <tal:item repeat="item view/listing">
-          <div class="invoice_listing_item">
-            <div class="invoice_listing_amount">
-              <span tal:replace="item/count">count</span>
-              <span tal:replace="item/quantity_unit">quantity</span>
-            </div>
-
-            <div class="invoice_listing_position">
-              <span tal:replace="item/title">title</span>
-              <tal:comment condition="item/comment">
-                (<span tal:replace="item/comment">comment</span>)
-              </tal:comment>
-            </div>
-
-            <div class="invoice_listing_price">
-              <tal:without_discount condition="not:item/discount_net">
-                <tal:price replace="python:view.ascur(item['net'])" />
-                <tal:currency replace="item/currency" />
-              </tal:without_discount>
-
-              <tal:with_discount condition="item/discount_net">
-                <span class="original_price">
-                  <tal:price replace="python:view.ascur(item['net'])" />
-                  <tal:currency replace="item/currency" />
-                </span>
-                <tal:price replace="python:view.ascur(item['net'] - item['discount_net'])" />
-                <tal:currency replace="item/currency" />
-              </tal:with_discount>
-            </div>
-          </div>
-        </tal:item>
+      <div class="invoice_listing_price">
+        <strong i18n:translate="invoice_listing_price">Price</strong>
       </div>
+    </div>
 
-      <div class="invoice_summary">
-
-        <div class="invoice_summary_section"
-             tal:condition="summary/cart_net">
-
-          <div class="invoice_summary_row">
-            <div class="invoice_summary_label">
-              <span i18n:translate="invoice_cart_net">Net</span>
-            </div>
-            <div class="invoice_summary_value">
-              <span tal:replace="python:view.ascur(summary['cart_net'])" />
-              <span tal:replace="summary/currency" />
-            </div>
-          </div>
-
-          <div class="invoice_summary_row">
-            <div class="invoice_summary_label">
-              <span i18n:translate="invoice_cart_vat">VAT</span>
-            </div>
-            <div class="invoice_summary_value">
-              <span tal:replace="python:view.ascur(summary['cart_vat'])" />
-              <span tal:replace="summary/currency" />
-            </div>
-          </div>
-
+    <tal:item repeat="item view/listing">
+      <div class="invoice_listing_item">
+        <div class="invoice_listing_amount">
+          <span tal:replace="item/count">count</span>
+          <span tal:replace="item/quantity_unit">quantity</span>
         </div>
 
-        <div class="invoice_summary_section"
-             tal:condition="summary/discount_net">
-
-          <div class="invoice_summary_row">
-            <div class="invoice_summary_label">
-              <span i18n:translate="invoice_discount_net">Discount Net</span>
-            </div>
-            <div class="invoice_summary_value">
-              <span class="red">
-                -<span tal:replace="python:view.ascur(summary['discount_net'])" />
-                <span tal:replace="summary/currency" />
-              </span>
-            </div>
-          </div>
-
-          <div class="invoice_summary_row">
-            <div class="invoice_summary_label">
-              <span i18n:translate="invoice_discount_vat">Discount VAT</span>
-            </div>
-            <div class="invoice_summary_value">
-              <span class="red">
-                -<span tal:replace="python:view.ascur(summary['discount_vat'])" />
-                <span tal:replace="summary/currency" />
-              </span>
-            </div>
-          </div>
-
-          <div class="invoice_summary_row">
-            <div class="invoice_summary_label">
-              <strong i18n:translate="invoice_discount_total">Discount Total</strong>
-            </div>
-            <div class="invoice_summary_value">
-              <strong class="red">
-                -<span tal:replace="python:view.ascur(summary['discount_total'])" />
-                <span tal:replace="summary/currency" />
-              </strong>
-            </div>
-          </div>
-
+        <div class="invoice_listing_position">
+          <span tal:replace="item/title">title</span>
+          <tal:comment condition="item/comment">
+            (<span tal:replace="item/comment">comment</span>)
+          </tal:comment>
         </div>
 
-        <div class="invoice_summary_section"
-             tal:condition="summary/shipping_net">
+        <div class="invoice_listing_price">
+          <tal:without_discount condition="not:item/discount_net">
+            <tal:price replace="python:view.ascur(item['net'])" />
+            <tal:currency replace="item/currency" />
+          </tal:without_discount>
 
-          <div class="invoice_summary_row">
-            <div class="invoice_summary_label">
-              <span i18n:translate="invoice_shipping_net">Shipping Net</span>
-            </div>
-            <div class="invoice_summary_value">
-              <span tal:replace="python:view.ascur(summary['shipping_net'])" />
-              <span tal:replace="summary/currency" />
-            </div>
-          </div>
-
-          <div class="invoice_summary_row">
-            <div class="invoice_summary_label">
-              <span i18n:translate="invoice_shipping_vat">Shipping VAT</span>
-            </div>
-            <div class="invoice_summary_value">
-              <span tal:replace="python:view.ascur(summary['shipping_vat'])" />
-              <span tal:replace="summary/currency" />
-            </div>
-          </div>
-
-          <div class="invoice_summary_row">
-            <div class="invoice_summary_label">
-              <strong i18n:translate="invoice_shipping_total">Shipping Total</strong>
-            </div>
-            <div class="invoice_summary_value">
-              <strong>
-                <span tal:replace="python:view.ascur(summary['shipping_total'])" />
-                <span tal:replace="summary/currency" />
-              </strong>
-            </div>
-          </div>
-
+          <tal:with_discount condition="item/discount_net">
+            <span class="original_price">
+              <tal:price replace="python:view.ascur(item['net'])" />
+              <tal:currency replace="item/currency" />
+            </span>
+            <tal:price replace="python:view.ascur(item['net'] - item['discount_net'])" />
+            <tal:currency replace="item/currency" />
+          </tal:with_discount>
         </div>
+      </div>
+    </tal:item>
+  </div>
 
-        <div class="invoice_summary_section">
+  <div class="invoice_summary">
 
-          <div class="invoice_summary_row">
-            <div class="invoice_summary_label">
-              <strong i18n:translate="invoice_cart_total">Total</strong>
-            </div>
-            <div class="invoice_summary_value">
-              <strong>
-                <span tal:replace="python:view.ascur(summary['cart_total'])" />
-                <span tal:replace="summary/currency" />
-              </strong>
-            </div>
-          </div>
+    <div class="invoice_summary_section"
+         tal:condition="summary/cart_net">
 
+      <div class="invoice_summary_row">
+        <div class="invoice_summary_label">
+          <span i18n:translate="invoice_cart_net">Net</span>
+        </div>
+        <div class="invoice_summary_value">
+          <span tal:replace="python:view.ascur(summary['cart_net'])" />
+          <span tal:replace="summary/currency" />
         </div>
       </div>
 
-      <div class="invoice_bank_connection">
-        <strong>IBAN</strong>
-        <span tal:replace="sender/iban">
-        <br />
-
-        <strong>BIC</strong>
-        <span tal:replace="sender/bic">
-        <br />
-      </div>
-
-      <div class="invoice_footer">
-        <span i18n:translate="invoice_prices_in_currency">All prices in</span>
-        <span tal:replace="summary/currency">
-        <br />
-        <br />
-        <br />
-        <span i18n:translate="invoice_kind_regards">Kind regards</span>,
-        <br />
-        <br />
-        <span tal:replace="sender/firstname">first name</span>
-        <span tal:replace="sender/lastname">last name</span>
-        <br />
-        <br />
-        <strong tal:content="sender/company">company</strong>
-        <tal:companyadd condition="sender/companyadd">
-          - <strong tal:content="sender/companyadd">company additional</strong>
-        </tal:companyadd>
+      <div class="invoice_summary_row">
+        <div class="invoice_summary_label">
+          <span i18n:translate="invoice_cart_vat">VAT</span>
+        </div>
+        <div class="invoice_summary_value">
+          <span tal:replace="python:view.ascur(summary['cart_vat'])" />
+          <span tal:replace="summary/currency" />
+        </div>
       </div>
 
     </div>
 
-  </tal:main-macro>
-</metal:main>
+    <div class="invoice_summary_section"
+         tal:condition="summary/discount_net">
 
-</body>
-</html>
+      <div class="invoice_summary_row">
+        <div class="invoice_summary_label">
+          <span i18n:translate="invoice_discount_net">Discount Net</span>
+        </div>
+        <div class="invoice_summary_value">
+          <span class="red">
+            -<span tal:replace="python:view.ascur(summary['discount_net'])" />
+            <span tal:replace="summary/currency" />
+          </span>
+        </div>
+      </div>
+
+      <div class="invoice_summary_row">
+        <div class="invoice_summary_label">
+          <span i18n:translate="invoice_discount_vat">Discount VAT</span>
+        </div>
+        <div class="invoice_summary_value">
+          <span class="red">
+            -<span tal:replace="python:view.ascur(summary['discount_vat'])" />
+            <span tal:replace="summary/currency" />
+          </span>
+        </div>
+      </div>
+
+      <div class="invoice_summary_row">
+        <div class="invoice_summary_label">
+          <strong i18n:translate="invoice_discount_total">Discount Total</strong>
+        </div>
+        <div class="invoice_summary_value">
+          <strong class="red">
+            -<span tal:replace="python:view.ascur(summary['discount_total'])" />
+            <span tal:replace="summary/currency" />
+          </strong>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="invoice_summary_section"
+         tal:condition="summary/shipping_net">
+
+      <div class="invoice_summary_row">
+        <div class="invoice_summary_label">
+          <span i18n:translate="invoice_shipping_net">Shipping Net</span>
+        </div>
+        <div class="invoice_summary_value">
+          <span tal:replace="python:view.ascur(summary['shipping_net'])" />
+          <span tal:replace="summary/currency" />
+        </div>
+      </div>
+
+      <div class="invoice_summary_row">
+        <div class="invoice_summary_label">
+          <span i18n:translate="invoice_shipping_vat">Shipping VAT</span>
+        </div>
+        <div class="invoice_summary_value">
+          <span tal:replace="python:view.ascur(summary['shipping_vat'])" />
+          <span tal:replace="summary/currency" />
+        </div>
+      </div>
+
+      <div class="invoice_summary_row">
+        <div class="invoice_summary_label">
+          <strong i18n:translate="invoice_shipping_total">Shipping Total</strong>
+        </div>
+        <div class="invoice_summary_value">
+          <strong>
+            <span tal:replace="python:view.ascur(summary['shipping_total'])" />
+            <span tal:replace="summary/currency" />
+          </strong>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="invoice_summary_section">
+
+      <div class="invoice_summary_row">
+        <div class="invoice_summary_label">
+          <strong i18n:translate="invoice_cart_total">Total</strong>
+        </div>
+        <div class="invoice_summary_value">
+          <strong>
+            <span tal:replace="python:view.ascur(summary['cart_total'])" />
+            <span tal:replace="summary/currency" />
+          </strong>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="invoice_bank_connection">
+    <strong>IBAN</strong>
+    <span tal:replace="sender/iban">
+    <br />
+
+    <strong>BIC</strong>
+    <span tal:replace="sender/bic">
+    <br />
+  </div>
+
+  <div class="invoice_footer">
+    <span i18n:translate="invoice_prices_in_currency">All prices in</span>
+    <span tal:replace="summary/currency">
+    <br />
+    <br />
+    <br />
+    <span i18n:translate="invoice_kind_regards">Kind regards</span>,
+    <br />
+    <br />
+    <span tal:replace="sender/firstname">first name</span>
+    <span tal:replace="sender/lastname">last name</span>
+    <br />
+    <br />
+    <strong tal:content="sender/company">company</strong>
+    <tal:companyadd condition="sender/companyadd">
+      - <strong tal:content="sender/companyadd">company additional</strong>
+    </tal:companyadd>
+  </div>
+
+</div>
