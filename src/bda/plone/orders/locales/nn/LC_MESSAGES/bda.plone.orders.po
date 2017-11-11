@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: bda.plone.orders\n"
-"POT-Creation-Date: 2017-11-11 10:57+0000\n"
+"POT-Creation-Date: 2017-11-11 11:24+0000\n"
 "PO-Revision-Date: 2017-02-06 15:38+0100\n"
 "Last-Translator: Espen Moe-Nilssen <espen@medialog.no>\n"
 "Language-Team: espen@medialog.no\n"
@@ -590,7 +590,7 @@ msgid "order_gender"
 msgstr "Kjønn"
 
 #. Default: "Address"
-#: ./mailtemplates/order_success.pt:68
+#: ./mailtemplates/order_success.pt:75
 msgid "order_mail_address"
 msgstr ""
 
@@ -615,22 +615,22 @@ msgid "order_mail_cancelled_item"
 msgstr ""
 
 #. Default: "Net"
-#: ./mailtemplates/order_success.pt:240
+#: ./mailtemplates/order_success.pt:247
 msgid "order_mail_cart_net"
 msgstr ""
 
 #. Default: "Total"
-#: ./mailtemplates/order_success.pt:304
+#: ./mailtemplates/order_success.pt:311
 msgid "order_mail_cart_total"
 msgstr ""
 
 #. Default: "VAT"
-#: ./mailtemplates/order_success.pt:245
+#: ./mailtemplates/order_success.pt:252
 msgid "order_mail_cart_vat"
 msgstr ""
 
 #. Default: "City"
-#: ./mailtemplates/order_success.pt:78
+#: ./mailtemplates/order_success.pt:85
 msgid "order_mail_city"
 msgstr ""
 
@@ -642,17 +642,17 @@ msgid "order_mail_click_here"
 msgstr ""
 
 #. Default: "Comment"
-#: ./mailtemplates/order_success.pt:114
+#: ./mailtemplates/order_success.pt:121
 msgid "order_mail_comment"
 msgstr ""
 
 #. Default: "Company"
-#: ./mailtemplates/order_success.pt:57
+#: ./mailtemplates/order_success.pt:64
 msgid "order_mail_company"
 msgstr ""
 
 #. Default: "Country"
-#: ./mailtemplates/order_success.pt:82
+#: ./mailtemplates/order_success.pt:89
 msgid "order_mail_country"
 msgstr ""
 
@@ -664,47 +664,52 @@ msgid "order_mail_date"
 msgstr ""
 
 #. Default: "Delivery Address"
-#: ./mailtemplates/order_success.pt:86
+#: ./mailtemplates/order_success.pt:93
 msgid "order_mail_delivery_address"
 msgstr ""
 
 #. Default: "Discount Net"
-#: ./mailtemplates/order_success.pt:254
+#: ./mailtemplates/order_success.pt:261
 msgid "order_mail_discount_net"
 msgstr ""
 
 #. Default: "Discount Total"
-#: ./mailtemplates/order_success.pt:268
+#: ./mailtemplates/order_success.pt:275
 msgid "order_mail_discount_total"
 msgstr ""
 
 #. Default: "Discount VAT"
-#: ./mailtemplates/order_success.pt:261
+#: ./mailtemplates/order_success.pt:268
 msgid "order_mail_discount_vat"
 msgstr ""
 
 #. Default: "Email"
-#: ./mailtemplates/order_success.pt:65
+#: ./mailtemplates/order_success.pt:72
 msgid "order_mail_email"
 msgstr ""
 
 #. Default: "Name"
-#: ./mailtemplates/order_success.pt:52
+#: ./mailtemplates/order_success.pt:59
 msgid "order_mail_fullname"
 msgstr ""
 
+#. Default: "Invoice"
+#: ./mailtemplates/order_success.pt:50
+msgid "order_mail_invoice"
+msgstr ""
+
 #. Default: "Item Number"
-#: ./mailtemplates/order_success.pt:138
+#: ./mailtemplates/order_success.pt:145
 msgid "order_mail_item_number"
 msgstr ""
 
 #. Default: "Price"
-#: ./mailtemplates/order_success.pt:144
+#: ./mailtemplates/order_success.pt:151
 msgid "order_mail_item_price"
 msgstr ""
 
 #. Default: "Notifications"
-#: ./mailtemplates/order_success.pt:219
+#: ./mailtemplates/order_success.pt:226
 msgid "order_mail_notifications"
 msgstr ""
 
@@ -721,7 +726,7 @@ msgid "order_mail_order_heading"
 msgstr ""
 
 #. Default: "Ordered items"
-#: ./mailtemplates/order_success.pt:119
+#: ./mailtemplates/order_success.pt:126
 msgid "order_mail_ordered_items"
 msgstr ""
 
@@ -733,17 +738,17 @@ msgid "order_mail_ordernumber"
 msgstr ""
 
 #. Default: "Payment"
-#: ./mailtemplates/order_success.pt:229
+#: ./mailtemplates/order_success.pt:236
 msgid "order_mail_payment"
 msgstr ""
 
 #. Default: "Personal Data"
-#: ./mailtemplates/order_success.pt:50
+#: ./mailtemplates/order_success.pt:57
 msgid "order_mail_personal_data"
 msgstr ""
 
 #. Default: "Phone"
-#: ./mailtemplates/order_success.pt:61
+#: ./mailtemplates/order_success.pt:68
 msgid "order_mail_phone"
 msgstr ""
 
@@ -763,27 +768,27 @@ msgid "order_mail_reservation_heading"
 msgstr ""
 
 #. Default: "Reserved items"
-#: ./mailtemplates/order_success.pt:169
+#: ./mailtemplates/order_success.pt:176
 msgid "order_mail_reserved_items"
 msgstr ""
 
 #. Default: "Shipping"
-#: ./mailtemplates/order_success.pt:279
+#: ./mailtemplates/order_success.pt:286
 msgid "order_mail_shipping_label"
 msgstr ""
 
 #. Default: "Shipping Net"
-#: ./mailtemplates/order_success.pt:284
+#: ./mailtemplates/order_success.pt:291
 msgid "order_mail_shipping_net"
 msgstr ""
 
 #. Default: "Shipping Total"
-#: ./mailtemplates/order_success.pt:294
+#: ./mailtemplates/order_success.pt:301
 msgid "order_mail_shipping_total"
 msgstr ""
 
 #. Default: "Shipping VAT"
-#: ./mailtemplates/order_success.pt:289
+#: ./mailtemplates/order_success.pt:296
 msgid "order_mail_shipping_vat"
 msgstr ""
 
@@ -793,17 +798,17 @@ msgid "order_mail_stock_threshold_reached_heading"
 msgstr ""
 
 #. Default: "Street"
-#: ./mailtemplates/order_success.pt:70
+#: ./mailtemplates/order_success.pt:77
 msgid "order_mail_street"
 msgstr ""
 
 #. Default: "Summary"
-#: ./mailtemplates/order_success.pt:237
+#: ./mailtemplates/order_success.pt:244
 msgid "order_mail_summary"
 msgstr ""
 
 #. Default: "ZIP"
-#: ./mailtemplates/order_success.pt:74
+#: ./mailtemplates/order_success.pt:81
 msgid "order_mail_zip"
 msgstr ""
 
