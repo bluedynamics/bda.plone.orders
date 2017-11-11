@@ -1,31 +1,20 @@
 # -*- coding: utf-8 -*-
-from bda.plone.orders import message_factory as _
-from bda.plone.orders.browser.views import OrdersContentView
-from bda.plone.orders.contacts import get_contacts_soup
 from Products.CMFPlone.utils import safe_unicode
+from bda.plone.orders import message_factory as _
+from bda.plone.orders.browser.views import ContentViewBase
+from bda.plone.orders.contacts import get_contacts_soup
+from bda.plone.orders.views import Translate
 from repoze.catalog.query import Contains
 from repoze.catalog.query import Gt
 from yafowil.utils import Tag
 from zope.i18n import translate
 from zope.i18nmessageid import Message
-
 import json
 import plone.api
 import yafowil.loader  # noqa
 
 
-class Translate(object):
-
-    def __init__(self, request):
-        self.request = request
-
-    def __call__(self, msg):
-        if not isinstance(msg, Message):
-            return msg
-        return translate(msg, context=self.request)
-
-
-class ContactsTable(OrdersContentView):
+class ContactsTable(ContentViewBase):
     table_id = 'bdaplonecontacts'
     data_view_name = '@@contactsdata'
 

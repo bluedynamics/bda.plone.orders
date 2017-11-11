@@ -5,6 +5,19 @@ Changelog
 1.0a1 (unreleased)
 ------------------
 
+- Introduce ``ProtectedOrderDataView`` and use as base for ``DirectOrderView``
+  and ``DirectInvoiceView``.
+  [rnix]
+
+- Remove duplicate ``Translate`` class from
+  ``bda.plone.orders.browser.contacts``.
+  [rnix]
+
+- Rename ``OrdersContentView`` to ``ContentViewBase``. Provide B/C alias.
+  Introduce view configuration properties ``do_disable_border``,
+  ``do_disable_left_column`` and ``do_disable_right_column``.
+  [rnix]
+
 - Introduce ``OrderDataView`` base class for views dealing with single order
   data.
   [rnix]

@@ -279,6 +279,12 @@ Create translations
 TODO
 ====
 
+- i18n
+
+- icons in orders view
+
+- booking billable
+
 - Overhaul order view. Display discounted item price, etc.
 
 - Think about adding notification text to booking data in checkout adapter if

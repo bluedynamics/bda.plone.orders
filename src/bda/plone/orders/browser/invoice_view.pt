@@ -20,7 +20,7 @@
 <metal:main fill-slot="main">
   <tal:main-macro metal:define-macro="main">
 
-    <tal:invoice replace="structure view/render_invoice_template" />
+    <tal:invoice replace="structure view/render_content" />
 
   </tal:main-macro>
 </metal:main>
