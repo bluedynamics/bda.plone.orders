@@ -242,17 +242,17 @@
 
   <div class="invoice_bank_connection">
     <strong>IBAN</strong>
-    <span tal:replace="sender/iban">
+    <span tal:replace="sender/iban">IBAN</span>
     <br />
 
     <strong>BIC</strong>
-    <span tal:replace="sender/bic">
+    <span tal:replace="sender/bic">BIC</span>
     <br />
   </div>
 
   <div class="invoice_footer">
     <span i18n:translate="invoice_prices_in_currency">All prices in</span>
-    <span tal:replace="summary/currency">
+    <span tal:replace="summary/currency" />
     <br />
     <br />
     <br />

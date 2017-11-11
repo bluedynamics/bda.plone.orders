@@ -279,13 +279,13 @@ Create translations
 TODO
 ====
 
-- i18n
+- Rename salaried to paid all over the place.
 
-- icons in orders view actions
+- Split up bda.plone.orders.browser.views.
 
-- icons in contacts view actions
+- Icons in orders view actions
 
-- booking billable
+- Icons in contacts view actions
 
 - Overhaul order view. Display discounted item price, etc.
 
@@ -294,9 +294,11 @@ TODO
 
 - Add vendor support to invoices.
 
-- Add a flag ``charge_if_backorder`` to ``IStockBehavior``, so we have control
-  per buyable item, and a control panel setting with the default of this value
-  for all buyables (Issue #45).
+- Properly implement initially non-billable bookings. Add a flag
+  ``charge_if_backorder`` to ``IStockBehavior``, so we have control per buyable
+  item, and a control panel setting with the default of this value
+  for all buyables. Implement UI to carry back unbilled backorders. Adopt order
+  and invoive views (Issue #45).
 
 - Adopt text notification mail generation to mako templates and move existing
   text mail generation to legacy module, with flag to switch between old and
