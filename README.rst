@@ -51,7 +51,7 @@ text and a HTML version of the notification payload.
 When customizing mail notification, both text and HTML templates needs to be
 customized.
 
-.. warning::
+WARNING:
 
     As of ``bda.plone.orders`` 1.0a1, signatue of
     ``bda.plone.orders.MailNotify.send`` changed. It accepts now
@@ -161,10 +161,12 @@ the browser page for your policy package's browserlayer or themelayer:
       permission="bda.plone.orders.ViewOrders"
       layer="my.package.interfaces.IMyBrowserLayer"/>
 
-WARNING: as of ``bda.plone.orders`` 1.0a1 the template location changed from
-         browser package to templates folder in browser package. Please adopt
-         the location if you customized the template via ``z3c.jbot`` in your
-         integration package.
+WARNING:
+
+    as of ``bda.plone.orders`` 1.0a1 the template location changed from
+    browser package to templates folder in browser package. Please adopt
+    the location if you customized the template via ``z3c.jbot`` in your
+    integration package.
 
 
 Invoice view
