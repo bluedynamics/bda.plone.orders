@@ -30,6 +30,7 @@ from repoze.catalog.query import Eq
 from souper.soup import LazyRecord
 from souper.soup import get_soup
 from yafowil.base import factory
+from yafowil.utils import Tag
 from zope.i18n import translate
 from zope.security import checkPermission
 import json
