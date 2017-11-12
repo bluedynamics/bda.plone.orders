@@ -5,6 +5,26 @@ Changelog
 1.0a1 (unreleased)
 ------------------
 
+- Remove ``Authenticated`` role for ``bda.plone.orders: View Orders``
+  permission in ``rolmap.xml`` and add ``Vendor`` instead. We really do not
+  want all authenticated users to be able to see all orders.
+  [rnix]
+
+- Move page templates to dedicated folder.
+  [rnix]
+
+- Move invoice related views from ``views.py`` to ``invoice.py``.
+  [rnix]
+
+- Move order related views from ``views.py`` to ``order.py``.
+  [rnix]
+
+- Move orders related views from ``views.py`` to ``orders.py``.
+  [rnix]
+
+- Move general views from ``views.py`` to ``common.py``.
+  [rnix]
+
 - Ajaxify cancel bookings.
   [rnix]
 
@@ -34,7 +54,7 @@ Changelog
   ``bda.plone.orders.browser.contacts``.
   [rnix]
 
-- Rename ``OrdersContentView`` to ``ContentViewBase``. Provide B/C alias.
+- Rename ``OrdersContentView`` to ``ContentViewBase``.
   Introduce view configuration properties ``do_disable_border``,
   ``do_disable_left_column`` and ``do_disable_right_column``.
   [rnix]

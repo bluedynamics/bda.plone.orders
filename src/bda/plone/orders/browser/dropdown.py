@@ -6,7 +6,7 @@ import urllib
 class BaseDropdown(object):
     """Base class for order related dropdown menus.
     """
-    render = ViewPageTemplateFile('dropdown.pt')
+    render = ViewPageTemplateFile('templates/dropdown.pt')
     name = ''
     css = 'dropdown'
     action = ''
