@@ -147,9 +147,9 @@ Order details
 -------------
 
 To show the data of the new field in the detail view of the order
-customize ``bda/plone/orders/browser/order.pt`` using
+customize ``bda/plone/orders/browser/templates/order.pt`` using
 `z3c.jbot <https://pypi.python.org/pypi/z3c.jbot>`_ or by registering
-the page for your policy package's browserlayer or themelayer:
+the browser page for your policy package's browserlayer or themelayer:
 
 .. code-block:: xml
 
@@ -161,12 +161,76 @@ the page for your policy package's browserlayer or themelayer:
       permission="bda.plone.orders.ViewOrders"
       layer="my.package.interfaces.IMyBrowserLayer"/>
 
+WARNING: as of ``bda.plone.orders`` 1.0a1 the template location changed from
+         browser package to templates folder in browser package. Please adopt
+         the location if you customized the template via ``z3c.jbot`` in your
+         integration package.
+
+
+Invoice view
+------------
+
+The invoice template is ``bda/plone/orders/browser/templates/invoice.pt``.
+It can be customized via `z3c.jbot <https://pypi.python.org/pypi/z3c.jbot>`_.
+
+As alternative, the related view classes can be customized and registered
+for your policy package's browserlayer or themelayer.
+
+Provide Custom views:
+
+.. code-block:: python
+
+    from bda.plone.orders.browser.invoice import DirectInvoiceView
+    from bda.plone.orders.browser.invoice import InvoiceView
+
+    class MyInvoiceView(InvoiceView):
+        content_template = ViewPageTemplateFile('my-invoice.pt')
+
+    class MyDirectInvoiceView(DirectInvoiceView):
+        content_template = ViewPageTemplateFile('my-invoice.pt')
+
+Register views:
+
+.. code-block:: xml
+
+    <configure package="bda.plone.orders.browser">
+      <browser:page
+        for="*"
+        name="invoice"
+        template="templates/invoice_view.pt"
+        class="my.package.browser.MyInvoiceView"
+        permission="bda.plone.orders.ViewOrders"
+        layer="my.package.interfaces.IMyBrowserLayer" />
+
+      <browser:page
+        for="zope.component.interfaces.ISite"
+        name="showinvoice"
+        class="my.package.browser.MyDirectInvoiceView"
+        permission="bda.plone.orders.ViewOrderDirectly"
+        layer="my.package.interfaces.IMyBrowserLayer" />
+    </configure>
+
 
 Restrictions with souper.plone
 ==============================
 
 - Make sure you do not move orders or bookings soup away from portal root. This
   will end up in unexpected behavior and errors.
+
+
+Vendor support
+==============
+
+``bda.plone.orders`` supports the concept of vendors. A vendor is able to
+manage his products and view orders and booking related to this products.
+
+A vendor has his own area, which is a container somewhere in the portal.
+To enable vendor support for a container, navigate to it and apply
+``Enable vendor area`` action on it. Then navigate to local roles management
+view of this container and grant ``Vendor`` role to the desired users.
+
+The users granted the ``Vendor`` role is now able to see order related views
+and perform order related actions in the context of this container.
 
 
 Permissions
@@ -176,59 +240,129 @@ In general, custom shop deployments are likely to configure the permission and
 role settings according to their use cases.
 
 The Permissions ``bda.plone.orders.ViewOrderDirectly`` and
-``bda.plone.orders.ViewOrders`` are granted to default Plone roles rather
+``bda.plone.orders.ViewOwnOrders`` are granted to default Plone roles rather
 than Customer role, because the Customer role can be granted as a local role
-contextually, where the ``@@orders`` and ``@@showorder`` views should be
-callable on ``ISite`` root. So a possible customer might be no customer on the
-site root.
+contextually, where the ``@@orders`` and ``@@showorder`` and ``@@showinvoice``
+views should be callable on ``ISite`` root. So a possible customer might be no
+customer on the site root.
 
 
 Permission ``bda.plone.orders.ViewOrderDirectly``
 -------------------------------------------------
 
-TODO: document
+This permission is used to grant view access to single order data related views,
+which are protected by ordernumber and related email address.
+
+Currently order details and invoice are implemented as such views. A link to
+them is sent in the order confirmation mail after successful checkout.
+
+By default, this permission is set for roles:
+
+* Manager
+* Site Administrator
+* Authenticated
+
+In order to expose this views to all visitors by default, add ``Anonymous``
+role via generic setup's ``rolemap.xml`` of your integration package.
 
 
 Permission ``bda.plone.orders.ViewOwnOrders``
 ---------------------------------------------
 
-TODO: document
+This permission is used to grant permission to view orders made by the
+currently authenticated user.
+
+By default, this permission is set for roles:
+
+* Manager
+* Site Administrator
+* Authenticated
+
+To customize this, edit ``rolemap.xml`` in your integration package as needed.
 
 
 Permission ``bda.plone.orders.ViewOrders``
 ------------------------------------------
 
-TODO: document
+This permission is used to grant permission to view all orders in a given
+context or globally.
+
+By default, this permission is set for roles:
+
+* Manager
+* Site Administrator
+* Vendor
+
+To customize this, edit ``rolemap.xml`` in your integration package as needed.
 
 
 Permission ``bda.plone.orders.ModifyOrders``
 --------------------------------------------
 
-TODO: document
+This permission grants the user to modify orders. This includes to perform
+state transitions on orders and bookings, and to modify booking comments.
+
+By default, this permission is set for roles:
+
+* Manager
+* Site Administrator
+* Vendor
+
+To customize this, edit ``rolemap.xml`` in your integration package as needed.
 
 
 Permission ``bda.plone.orders.ExportOrders``
 --------------------------------------------
 
-TODO: document
+This permission grants the user to export orders in CSV format.
+
+By default, this permission is set for roles:
+
+* Manager
+* Site Administrator
+* Vendor
+
+To customize this, edit ``rolemap.xml`` in your integration package as needed.
 
 
 Permission ``bda.plone.orders.ManageTemplates``
 -----------------------------------------------
 
-TODO: document
+This permission grants the user to manage notification mail templates for
+existing orders.
+
+By default, this permission is set for roles:
+
+* Manager
+* Site Administrator
+* Vendor
+
+To customize this, edit ``rolemap.xml`` in your integration package as needed.
 
 
 Permission ``bda.plone.orders.DelegateCustomerRole``
 ----------------------------------------------------
 
-TODO: document
+This permission grants the user to grant the ``Customer`` role to other users
+via the localroles view.
+
+By default, this permission is set for roles:
+
+* Manager
+* Site Administrator
+
+To customize this, edit ``rolemap.xml`` in your integration package as needed.
 
 
 Permission ``bda.plone.orders.DelegateVendorRole``
 --------------------------------------------------
 
-TODO: document
+This permission grants the user to grant the ``Vendor`` role to other users
+via the localroles view.
+
+By default, this permission is set for no roles.
+
+To customize this, edit ``rolemap.xml`` in your integration package as needed.
 
 
 How To allow anonymous users to buy items
@@ -279,17 +413,17 @@ Create translations
 TODO
 ====
 
+- Fix bookings views filters.
+
 - Store cart and item discount rules in checkout adapter instead of actual
   discount values in order to reliably modify orders while keeping invoice and
   order summary views sane.
 
 - Rename salaried to paid all over the place.
 
-- Split up bda.plone.orders.browser.views.
+- Icons in orders view actions.
 
-- Icons in orders view actions
-
-- Icons in contacts view actions
+- Icons in contacts view actions.
 
 - Overhaul order view. Display discounted item price, etc.
 
@@ -312,43 +446,32 @@ TODO
 
 - @@orders in lineage subsites should only list orders in that path.
 
-- Consider vendor UID's and booking based state in mail notification
+- Consider vendor UID's and booking based state in mail notification.
 
-- add is_customer utility
+- Add ``is_customer`` utility.
 
-- improve customers vocabulary utility to be more cpu friendly
+- Improve customers vocabulary utility to be more cpu friendly.
 
-- search text in orders view needs to consider vendor and customer filter
+- Search text in orders view needs to consider vendor and customer filter.
 
-- Display Export orders link only for vendors and administrators
+- Display Export orders link only for vendors and administrators.
 
 - Work internally with unicode only.
 
+- Move IUUID adapter for ``IPloneSiteRoot`` to ``bda.plone.cart``, which is the
+  central package for the shop.
 
-TODO Future
-===========
+- ``cart_discount_net`` and ``cart_discount_vat`` values calculation for vendor
+  specific orders in order view and order export.
 
-- Move IUUID adapter for IPloneSiteRoot to bda.plone.cart, which is the central
-  package for the shop.
+- Warning-popup, if state is changed globally for all bookings in orders view.
 
-- cart_discount_net and cart_discount_vat values calculation for vendor specific
-  orders in order view and order export.
+- Move Customer role to ``bda.plone.cart``.
 
-- skip payment for individual bookings instead of whole order, if they are in
-  state reserved.
+- Fix dependency in bda.plone.payment.cash.__init__, which depends on
+  ``bda.plone.orders``.
 
-- warning-popup, if state is changed globally for all bookings in @@orders view
-
-- buyable_uid, buyable_count, buyable_comment -> should be named cartitem_*?
-
-- customer role -> move to bda.plone.cart
-
-- eventually create common.BookingTransitions and common.BookingData
-
-- fix dependency in bda.plone.payment.cash.__init__, which depends on b.p.orders
-
-- eventually create: or bda.shop, which defines the interfaces. every other
-  package can depend on, which eases the dependency chain
+- Move some interfaces to ``bda.plone.cart`` to avoid circular dependencies.
 
 
 Contributors
@@ -361,4 +484,6 @@ Contributors
 - Ezra Holder
 - Benjamin Stefaner (benniboy)
 
-Icons used are `Silk-Icons by FamFamFam <http://www.famfamfam.com/lab/icons/silk/>`_ under CC-BY 2.5 license.
+
+Icons used are `Silk-Icons by FamFamFam <http://www.famfamfam.com/lab/icons/silk/>`_
+under CC-BY 2.5 license.

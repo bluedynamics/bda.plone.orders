@@ -38,6 +38,7 @@ import uuid
 
 ###############################################################################
 # order related base classes
+# XXX: used by order and invoice views. maybe move to common.py
 ###############################################################################
 
 class OrderDataView(BrowserView):
