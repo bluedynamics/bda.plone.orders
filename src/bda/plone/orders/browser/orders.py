@@ -1,117 +1,45 @@
 # -*- coding: utf-8 -*-
 from AccessControl import Unauthorized
 from Products.CMFPlone.interfaces import IPloneSiteRoot
-from Products.CMFPlone.utils import safe_unicode
 from Products.Five import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from Products.statusmessages.interfaces import IStatusMessage
-from bda.plone.ajax import AjaxAction
-from bda.plone.ajax import ajax_continue
-from bda.plone.cart import ascur
-from bda.plone.cart import get_object_by_uid
-from bda.plone.checkout import message_factory as _co
-from bda.plone.checkout.vocabularies import get_pycountry_name
 from bda.plone.orders import interfaces as ifaces
 from bda.plone.orders import message_factory as _
 from bda.plone.orders import permissions
 from bda.plone.orders import vocabularies as vocabs
+from bda.plone.orders.browser.common import ContentViewBase
+from bda.plone.orders.browser.common import Transition
+from bda.plone.orders.browser.common import Translate
+from bda.plone.orders.browser.common import customers_form_vocab
+from bda.plone.orders.browser.common import salaried_form_vocab
+from bda.plone.orders.browser.common import states_form_vocab
+from bda.plone.orders.browser.common import vendors_form_vocab
 from bda.plone.orders.browser.dropdown import BaseDropdown
-from bda.plone.orders.common import BookingData
 from bda.plone.orders.common import DT_FORMAT
-from bda.plone.orders.common import DT_FORMAT_SHORT
 from bda.plone.orders.common import OrderData
-from bda.plone.orders.common import booking_update_comment
-from bda.plone.orders.common import get_orders_soup
 from bda.plone.orders.common import get_vendor_by_uid
 from bda.plone.orders.common import get_vendor_uids_for
 from bda.plone.orders.common import get_vendors_for
 from bda.plone.orders.interfaces import IBuyable
-from bda.plone.orders.interfaces import IInvoiceSender
 from bda.plone.orders.transitions import do_transition_for
 from bda.plone.orders.transitions import transitions_of_main_state
 from bda.plone.orders.transitions import transitions_of_salaried_state
-from plone.memoize import view
-from plone.protect.utils import addTokenToUrl
 from repoze.catalog.query import Any
 from repoze.catalog.query import Contains
 from repoze.catalog.query import Eq
 from souper.soup import LazyRecord
 from souper.soup import get_soup
 from yafowil.base import factory
-from yafowil.controller import Controller
-from yafowil.utils import Tag
-from zExceptions import BadRequest
-from zExceptions import Redirect
 from zope.i18n import translate
-from zope.i18nmessageid import Message
 from zope.security import checkPermission
 import json
-import pkg_resources
 import plone.api
 import urllib
 import uuid
 
 
-IS_P4 = pkg_resources.require("Products.CMFPlone")[0].version[0] == '4'
-
-
-###############################################################################
-# helpers
-# XXX: move to utils.py
-###############################################################################
-
-class Translate(object):
-
-    def __init__(self, request):
-        self.request = request
-
-    def __call__(self, msg):
-        if not isinstance(msg, Message):
-            return msg
-        return translate(msg, context=self.request)
-
-
-###############################################################################
-# content view base classes
-# XXX: move to common.py
-###############################################################################
-
-class ContentViewBase(BrowserView):
-    """Base view class for content views.
-    """
-    do_disable_border = True
-    do_disable_left_column = True
-    do_disable_right_column = True
-
-    def disable_border(self):
-        if IS_P4 and self.do_disable_border:
-            self.request.set('disable_border', True)
-
-    def disable_left_column(self):
-        if self.do_disable_left_column:
-            self.request.set('disable_plone.leftcolumn', True)
-
-    def disable_right_column(self):
-        if self.do_disable_right_column:
-            self.request.set('disable_plone.rightcolumn', True)
-
-
-# B/C
-OrdersContentView = ContentViewBase
-
-
-class ContentTemplateView(BrowserView):
-    """View mixin for rendering content from dedicated template.
-    """
-    content_template = None
-
-    def render_content(self):
-        return self.content_template(self)
-
-
 ###############################################################################
 # orders table base
-# XXX: move to orders.py
 ###############################################################################
 
 class TableData(BrowserView):
@@ -208,7 +136,6 @@ class TableData(BrowserView):
 
 ###############################################################################
 # order related dropdowns and transitions
-# XXX: move to orders.py
 ###############################################################################
 
 class OrderDropdown(BaseDropdown):
@@ -261,32 +188,6 @@ class OrderSalariedDropdown(OrderDropdown):
         return self.create_items(transitions)
 
 
-class Transition(BrowserView):
-    dropdown = None
-
-    @property
-    def vendor_uids(self):
-        vendor_uid = self.request.form.get('vendor', '')
-        if vendor_uid:
-            vendor_uids = [vendor_uid]
-            vendor = get_vendor_by_uid(self.context, vendor_uid)
-            user = plone.api.user.get_current()
-            if not user.checkPermission(permissions.ModifyOrders, vendor):
-                raise Unauthorized
-        else:
-            vendor_uids = get_vendor_uids_for()
-            if not vendor_uids:
-                raise Unauthorized
-        return vendor_uids
-
-    def __call__(self):
-        uid = self.request['uid']
-        transition = self.request['transition']
-        vendor_uids = self.vendor_uids
-        record = self.do_transition(uid, transition, vendor_uids)
-        return self.dropdown(self.context, self.request, record).render()
-
-
 class OrderTransition(Transition):
 
     def do_transition(self, uid, transition, vendor_uids):
@@ -320,8 +221,7 @@ class OrdersViewBase(ContentViewBase):
 
 
 ###############################################################################
-# orders
-# XXX: move to orders.py
+# orders views
 ###############################################################################
 
 class OrdersView(OrdersViewBase):
@@ -338,7 +238,7 @@ class MyOrdersView(OrdersViewBase):
 
 
 class OrdersTableBase(BrowserView):
-    table_template = ViewPageTemplateFile('table.pt')
+    table_template = ViewPageTemplateFile('templates/table.pt')
     table_id = 'bdaploneorders'
     data_view_name = '@@ordersdata'
 
@@ -411,26 +311,6 @@ class OrdersTableBase(BrowserView):
             'label': _('state', default=u'State'),
             'renderer': self.render_state,
         }]
-
-
-def vendors_form_vocab():
-    vendors = vocabs.vendors_vocab_for()
-    return [('', _('all', default='All'))] + vendors
-
-
-def customers_form_vocab():
-    customers = vocabs.customers_vocab_for()
-    return [('', _('all', default='All'))] + customers
-
-
-def states_form_vocab():
-    states = vocabs.state_vocab()
-    return [('', _('all', default='All'))] + states.items()
-
-
-def salaried_form_vocab():
-    salaried = vocabs.salaried_vocab()
-    return [('', _('all', default='All'))] + salaried.items()
 
 
 class OrdersTable(OrdersTableBase):
@@ -754,545 +634,3 @@ class MyOrdersData(MyOrdersTable, TableData):
                         with_size=True)
         length = res.next()
         return length, res
-
-
-###############################################################################
-# order related base classes
-# XXX: move to order.py
-###############################################################################
-
-class OrderDataView(BrowserView):
-    """Base view for displaying order related data.
-    """
-
-    @property
-    @view.memoize
-    def order_data(self):
-        return OrderData(self.context, uid=self.uid)
-
-    @property
-    def uid(self):
-        # case order uid has been set manually
-        try:
-            return self._uid
-        # fallback to lookup order uid on request
-        except AttributeError:
-            return self.request.form.get('uid', None)
-
-    @uid.setter
-    def uid(self, value):
-        self._uid = value
-
-    @property
-    def order(self):
-        if not self.uid:
-            err = _(
-                'statusmessage_err_no_order_uid_given',
-                default='Cannot show order information because no order uid was given.'  # noqa
-            )
-            IStatusMessage(self.request).addStatusMessage(err, 'error')
-            raise Redirect(self.context.absolute_url())
-        return dict(self.order_data.order.attrs)
-
-    def country(self, country_id):
-        # return value if no id not available i.e. if no dropdown in use
-        try:
-            return get_pycountry_name(country_id)
-        except:
-            return country_id
-
-
-class ProtectedOrderDataView(ContentViewBase, ContentTemplateView):
-    """Protected order data view.
-
-    Expect ordernumber and email to grant access to view details.
-    """
-    view_template = ViewPageTemplateFile('protected_view.pt')
-    content_template = ViewPageTemplateFile('order.pt')
-    uid = None
-    ordernumber = ''
-    email = ''
-    wrapper_css = 'protected_order_data'
-
-    def _form_handler(self, widget, data):
-        self.ordernumber = data['ordernumber'].extracted
-        self.email = data['email'].extracted
-
-    def render_auth_form(self):
-        # Render the authentication form for anonymous users.
-        req = self.request
-        action = req.getURL()
-        ordernumber = self.ordernumber or req.form.get('ordernumber', '')
-        email = self.email or req.form.get('email', '')
-        form = factory(
-            'form',
-            name='content_auth_form',
-            props={'action': action})
-        form['ordernumber'] = factory(
-            'div:label:error:text',
-            value=ordernumber,
-            props={
-                'label': _('anon_auth_label_ordernumber',
-                           default=u'Ordernumber'),
-                'div.class': 'ordernumber',
-                'required': True,
-            })
-        form['email'] = factory(
-            'div:label:error:text',
-            value=email,
-            props={
-                'label': _('anon_auth_label_email', default=u'Email'),
-                'div.class': 'email',
-                'required': True,
-            })
-        form['submit'] = factory(
-            'div:label:submit',
-            props={
-                'label': _('anon_auth_label_submit', default=u'Submit'),
-                'div.class': 'submit',
-                'handler': self._form_handler,
-                'action': 'submit',
-            })
-        controller = Controller(form, req)
-        return controller.rendered
-
-    def __call__(self):
-        req = self.request
-        ordernumber = req.form.get('content_auth_form.ordernumber', None)
-        email = req.form.get('content_auth_form.email', None)
-        order = None
-        errs = []
-        if ordernumber and email:
-            orders_soup = get_orders_soup(self.context)
-            order = orders_soup.query(Eq('ordernumber', ordernumber))
-            try:
-                # generator should have only one item
-                order = order.next()
-                try:
-                    assert(order.attrs['personal_data.email'] == email)
-                except AssertionError:
-                    # Don't raise Unauthorized, as this allows to draw
-                    # conclusions on existing ordernumbers
-                    order = None
-            except StopIteration:
-                # order by ordernumber not exists
-                order = None
-        if not email:
-            err = _('anon_auth_err_email',
-                    default=u'Please provide the email adress you used for '
-                            u'submitting the order.')
-            errs.append(err)
-        if not ordernumber:
-            err = _('anon_auth_err_ordernumber',
-                    default=u'Please provide the ordernumber')
-            errs.append(err)
-        if email and ordernumber and not order:
-            err = _('anon_auth_err_order',
-                    default=u'No order could be found for the given '
-                            u'credentials')
-            errs.append(err)
-        if not ordernumber and not email:
-            # first call of this form
-            errs = []
-        for err in errs:
-            IStatusMessage(self.request).addStatusMessage(err, 'error')
-        self.uid = order.attrs['uid'] if order else None
-        return self.view_template(self)
-
-
-###############################################################################
-# order details
-# XXX: move to order.py
-###############################################################################
-
-class BookingCancel(BrowserView):
-    """Cancel booking action.
-    """
-
-    def __call__(self):
-        booking_uid = self.request.form.get('uid')
-        if not booking_uid:
-            raise BadRequest('value not given')
-        try:
-            booking_data = BookingData(self.context, uid=uuid.UUID(booking_uid))  # noqa
-            if booking_data.booking is None:
-                raise ValueError('invalid value (no booking found)')
-            do_transition_for(
-                booking_data,
-                transition=ifaces.STATE_TRANSITION_CANCEL,
-                context=self.context,
-                request=self.request
-            )
-        except ValueError:
-            raise BadRequest('something is wrong with the value')
-        order_uid = booking_data.booking.attrs['order_uid']
-        target = u'{}?uid={}'.format(self.context.absolute_url(), order_uid)
-        action = AjaxAction(
-            target=target,
-            name='order',
-            mode='replace',
-            selector='.order_details'
-        )
-        ajax_continue(self.request, action)
-
-
-class BookingUpdateComment(BrowserView):
-    """Update boking comment action.
-    """
-
-    def __call__(self):
-        booking_uid = self.request.form.get('uid')
-        if not booking_uid:
-            raise BadRequest('value not given')
-        booking_comment = self.request.form.get('comment')
-        try:
-            booking_update_comment(
-                self,
-                uuid.UUID(booking_uid),
-                booking_comment
-            )
-        except ValueError:
-            raise BadRequest('something is wrong with the value')
-
-
-class OrderViewBase(OrderDataView):
-    """Base view for displaying order details.
-    """
-
-    @property
-    def net(self):
-        return ascur(self.order_data.net)
-
-    @property
-    def vat(self):
-        return ascur(self.order_data.vat)
-
-    @property
-    def discount_net(self):
-        return ascur(self.order_data.discount_net)
-
-    @property
-    def discount_vat(self):
-        return ascur(self.order_data.discount_vat)
-
-    @property
-    def shipping_title(self):
-        # XXX: node.ext.zodb or souper bug with double linked list. figure out
-        order = self.order_data.order.attrs
-        # order = self.order
-        title = translate(order['shipping_label'], context=self.request)
-        if order['shipping_description']:
-            title += ' (%s)' % translate(order['shipping_description'],
-                                         context=self.request)
-        return title
-
-    @property
-    def shipping_net(self):
-        return ascur(self.order_data.shipping_net)
-
-    @property
-    def shipping_vat(self):
-        return ascur(self.order_data.shipping_vat)
-
-    @property
-    def shipping(self):
-        # B/C
-        return ascur(self.order_data.shipping)
-
-    @property
-    def total(self):
-        return ascur(self.order_data.total)
-
-    @property
-    def currency(self):
-        currency = None
-        for booking in self.order_data.bookings:
-            if currency is None:
-                currency = booking.attrs.get('currency')
-            if currency != booking.attrs.get('currency'):
-                return None
-        return currency
-
-    @property
-    def listing(self):
-        # XXX: discount
-        can_cancel_booking = self.can_cancel_booking
-        ret = list()
-        for booking in self.order_data.bookings:
-            obj = get_object_by_uid(self.context, booking.attrs['buyable_uid'])
-            state = vocabs.state_vocab()[booking.attrs.get('state')]
-            salaried = vocabs.salaried_vocab()[booking.attrs.get('salaried')]
-            cancel_target = None
-            if can_cancel_booking and state != ifaces.STATE_CANCELLED:
-                cancel_target = addTokenToUrl('{}?uid={}'.format(
-                    self.context.absolute_url(),
-                    booking.attrs['uid'])
-                )
-            ret.append({
-                'uid': booking.attrs['uid'],
-                'title': booking.attrs['title'],
-                'url': obj.absolute_url() if obj else None,
-                'cancel_target': cancel_target,
-                'count': booking.attrs['buyable_count'],
-                'net': ascur(booking.attrs.get('net', 0.0)),
-                'discount_net': ascur(float(booking.attrs['discount_net'])),
-                'vat': booking.attrs.get('vat', 0.0),
-                'comment': booking.attrs['buyable_comment'],
-                'quantity_unit': booking.attrs.get('quantity_unit'),
-                'currency': booking.attrs.get('currency'),
-                'state': state,
-                'salaried': salaried,
-            })
-        return ret
-
-    @property
-    def can_modify_order(self):
-        return checkPermission('bda.plone.orders.ModifyOrders', self.context)
-
-    @property
-    def can_cancel_booking(self):
-        return (
-            self.can_modify_order and
-            self.order_data.state != ifaces.STATE_CANCELLED
-        )
-
-    @property
-    def gender(self):
-        gender = self.order['personal_data.gender']
-        if gender == 'male':
-            return _co('male', 'Male')
-        if gender == 'female':
-            return _co('female', 'Female')
-        return gender
-
-    @property
-    def payment(self):
-        # XXX: node.ext.zodb or souper bug with double linked list. figure out
-        order = self.order_data.order.attrs
-        # order = self.order
-        title = translate(order['payment_label'], context=self.request)
-        return title
-
-    @property
-    def salaried(self):
-        salaried = self.order_data.salaried or ifaces.SALARIED_NO
-        return vocabs.salaried_vocab()[salaried]
-
-    @property
-    def tid(self):
-        tid = [it for it in self.order_data.tid if it != 'none']
-        if not tid:
-            return _('none', default=u'None')
-        return ', '.join(tid)
-
-    @property
-    def state(self):
-        state = self.order_data.state or ifaces.STATE_NEW
-        return vocabs.state_vocab()[state]
-
-    @property
-    def created(self):
-        value = self.order.get('created', _('unknown', default=u'Unknown'))
-        if value:
-            value = value.strftime(DT_FORMAT)
-        return value
-
-    def exported(self, item):
-        return item['exported'] \
-            and _('yes', default=u'Yes') or _('no', default=u'No')
-
-
-class OrderView(OrderViewBase):
-
-    def __call__(self):
-        vendor_uid = self.request.form.get('vendor', '')
-        if vendor_uid:
-            self.vendor_uids = [vendor_uid]
-            vendor = get_vendor_by_uid(self.context, vendor_uid)
-            user = plone.api.user.get_current()
-            if not user.checkPermission(permissions.ModifyOrders, vendor):
-                raise Unauthorized
-        else:
-            self.vendor_uids = get_vendor_uids_for()
-            if not self.vendor_uids:
-                raise Unauthorized
-        return super(OrderView, self).__call__()
-
-    @property
-    @view.memoize
-    def order_data(self):
-        return OrderData(
-            self.context,
-            uid=self.uid,
-            vendor_uids=self.vendor_uids)
-
-    @property
-    def ordernumber(self):
-        return self.order_data.order.attrs['ordernumber']
-
-
-class MyOrderView(OrderViewBase):
-
-    def __call__(self):
-        # check if order was created by authenticated user
-        user = plone.api.user.get_current()
-        if user.getId() != self.order['creator']:
-            raise Unauthorized
-        return super(MyOrderView, self).__call__()
-
-    @property
-    def ordernumber(self):
-        return self.order_data.order.attrs['ordernumber']
-
-
-class DirectOrderView(OrderViewBase, ProtectedOrderDataView):
-    do_disable_border = False
-    do_disable_left_column = False
-    do_disable_right_column = False
-    content_template = ViewPageTemplateFile('order.pt')
-
-
-###############################################################################
-# invoice
-# XXX: move to invoice.py
-###############################################################################
-
-class InvoiceViewBase(OrderDataView):
-    invoice_prefix = u'INV'
-
-    @property
-    def sender(self):
-        # XXX: right now we provide a global sender for invoices. in order to
-        #      provide vendors there's more to do. there need to be an option
-        #      whether the invoice gets splitted to specific vendors and if so
-        #      multiple invoices need to be available for one order. this also
-        #      needs to be reflected in order emails. if there is one billing
-        #      point even if there are multiple vendors for one order the
-        #      global sender address is used (which is actually the current
-        #      and only behavior).
-        sender = IInvoiceSender(self.context)
-        return {
-            'company': sender.company,
-            'companyadd': sender.companyadd,
-            'firstname': sender.firstname,
-            'lastname': sender.lastname,
-            'street': sender.street,
-            'zip': sender.zip,
-            'city': sender.city,
-            'country': sender.country,
-            'phone': sender.phone,
-            'email': sender.email,
-            'web': sender.web,
-            'iban': sender.iban,
-            'bic': sender.bic
-        }
-
-    @property
-    def invoice_number(self):
-        return '{}{}'.format(self.invoice_prefix, self.order['ordernumber'])
-
-    @property
-    def created(self):
-        value = self.order.get('created', _('unknown', default=u'Unknown'))
-        if value:
-            value = value.strftime(DT_FORMAT_SHORT)
-        return value
-
-    @property
-    def listing(self):
-        ret = list()
-        for booking in self.order_data.bookings:
-            data = dict()
-            data['title'] = safe_unicode(booking.attrs['title'])
-            data['item_number'] = safe_unicode(booking.attrs['item_number'])
-            data['comment'] = safe_unicode(booking.attrs['buyable_comment'])
-            data['currency'] = safe_unicode(booking.attrs['currency'])
-            data['count'] = booking.attrs['buyable_count']
-            data['net'] = booking.attrs.get('net', 0.0)
-            data['vat'] = booking.attrs.get('vat', 0.0)
-            data['discount_net'] = float(booking.attrs['discount_net'])
-            data['quantity_unit'] = booking.attrs.get('quantity_unit')
-            ret.append(data)
-        return ret
-
-    def summary(self):
-        order_data = self.order_data
-        data = dict()
-        data['currency'] = order_data.currency
-        cart_net = order_data.net
-        data['cart_net'] = cart_net
-        cart_vat = order_data.vat
-        data['cart_vat'] = cart_vat
-        discount_net = order_data.discount_net
-        data['discount_net'] = discount_net
-        discount_vat = order_data.discount_vat
-        data['discount_vat'] = discount_vat
-        discount_total = discount_net + discount_vat
-        data['discount_total'] = discount_total
-        shipping_net = order_data.shipping_net
-        data['shipping_net'] = shipping_net
-        shipping_vat = order_data.shipping_vat
-        data['shipping_vat'] = shipping_vat
-        shipping_total = shipping_net + shipping_vat
-        data['shipping_total'] = shipping_total
-        cart_total = order_data.total
-        data['cart_total'] = cart_total
-        return data
-
-    def ascur(self, val):
-        return ascur(val)
-
-
-class InvoiceView(InvoiceViewBase, ContentViewBase, ContentTemplateView):
-    """Invoice view.
-    """
-    content_template = ViewPageTemplateFile('invoice.pt')
-
-
-class DirectInvoiceView(InvoiceViewBase, ProtectedOrderDataView):
-    """Direct Invoice view.
-    """
-    content_template = ViewPageTemplateFile('invoice.pt')
-
-
-###############################################################################
-# views
-###############################################################################
-
-class OrderDone(BrowserView):
-    """Landing page after order has been done.
-    """
-    # XXX: provide different headings and texts for states reservation and
-    #      mixed
-    reservation_states = (ifaces.STATE_RESERVED, ifaces.STATE_MIXED)
-
-    @property
-    def order_data(self):
-        return OrderData(self.context, uid=self.request.get('uid'))
-
-    @property
-    def heading(self):
-        try:
-            if self.order_data.state in self.reservation_states:
-                return _('reservation_done', default=u'Reservation Done')
-            return _('order_done', default=u'Order Done')
-        except ValueError:
-            return _('unknown_order', default=u'Unknown Order')
-
-    @property
-    def id(self):
-        try:
-            return self.order_data.order.attrs['ordernumber']
-        except ValueError:
-            return _('unknown', default=u'Unknown')
-
-    @property
-    def text(self):
-        try:
-            if self.order_data.state in self.reservation_states:
-                return _('reservation_text',
-                         default=u'Thanks for your Reservation.')
-            return _('order_text', default=u'Thanks for your Order.')
-        except ValueError:
-            return _('unknown_order_text',
-                     default=u'Sorry, this order does not exist.')

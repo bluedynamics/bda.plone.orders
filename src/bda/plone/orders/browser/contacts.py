@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 from Products.CMFPlone.utils import safe_unicode
 from bda.plone.orders import message_factory as _
-from bda.plone.orders.browser.views import ContentViewBase
-from bda.plone.orders.browser.views import Translate
+from bda.plone.orders.browser.common import ContentViewBase
+from bda.plone.orders.browser.common import Translate
 from bda.plone.orders.contacts import get_contacts_soup
 from repoze.catalog.query import Contains
 from repoze.catalog.query import Gt

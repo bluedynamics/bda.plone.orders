@@ -9,13 +9,13 @@ from bda.plone.orders import interfaces as ifaces
 from bda.plone.orders import message_factory as _
 from bda.plone.orders import permissions
 from bda.plone.orders import vocabularies as vocabs
+from bda.plone.orders.browser.common import ContentViewBase
+from bda.plone.orders.browser.common import Transition
+from bda.plone.orders.browser.common import customers_form_vocab
+from bda.plone.orders.browser.common import salaried_form_vocab
+from bda.plone.orders.browser.common import states_form_vocab
+from bda.plone.orders.browser.common import vendors_form_vocab
 from bda.plone.orders.browser.dropdown import BaseDropdown
-from bda.plone.orders.browser.views import ContentViewBase
-from bda.plone.orders.browser.views import Transition
-from bda.plone.orders.browser.views import customers_form_vocab
-from bda.plone.orders.browser.views import salaried_form_vocab
-from bda.plone.orders.browser.views import states_form_vocab
-from bda.plone.orders.browser.views import vendors_form_vocab
 from bda.plone.orders.common import BookingData
 from bda.plone.orders.common import DT_FORMAT
 from bda.plone.orders.common import get_bookings_soup
@@ -43,6 +43,10 @@ import plone.api
 import uuid
 import yafowil.loader  # noqa
 
+
+###############################################################################
+# bookings related dropdowns and transitions
+###############################################################################
 
 class BookingsDropdown(BaseDropdown):
 
@@ -119,6 +123,10 @@ class BookingSalariedTransition(BookingTransition):
     dropdown = BookingSalariedDropdown
 
 
+###############################################################################
+# bookings views
+###############################################################################
+
 class BookingsView(ContentViewBase):
     table_view_name = '@@bookingstable'
 
@@ -133,7 +141,7 @@ class BookingsView(ContentViewBase):
 
 
 class BookingsTable(BrowserView):
-    table_template = ViewPageTemplateFile('table.pt')
+    table_template = ViewPageTemplateFile('templates/table.pt')
     table_id = 'bdaplonebookings'
     data_view_name = '@@bookingsdata'
 
