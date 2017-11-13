@@ -21,28 +21,33 @@ class ContactsTable(ContentViewBase):
     def render_get_actions_for_contact(self, colname, record):
         tag = Tag(Translate(self.request))
         site = plone.api.portal.get()
+        base_url = site.absolute_url()
 
+        # view orders
         view_orders_target = '%s/@@orders#%s' % (
-            site.absolute_url(),
+            base_url,
             str(record.attrs['personal_data.email']))
-
         view_orders_attrs = {
-            'class_': 'contenttype-document',
             'href': view_orders_target,
             'title': _('view_orders', default=u'View Orders'),
         }
-        view_orders = tag('a', '&nbsp', **view_orders_attrs)
+        orders_icon_url = '%s/++resource++bda.plone.orders/orders.png' % base_url
+        view_orders_icon = tag('img', src=orders_icon_url)
+        view_orders = tag('a', view_orders_icon, **view_orders_attrs)
 
+        # view bookings
         view_bookings_target = '%s/@@bookings#%s' % (
-            site.absolute_url(),
+            base_url,
             str(record.attrs['personal_data.email']))
-
         view_bookings_attrs = {
-            'class_': 'contenttype-document',
             'href': view_bookings_target,
             'title': _('view_bookings', default=u'View Bookings'),
         }
-        view_bookings = tag('a', '&nbsp', **view_bookings_attrs)
+        bookings_icon_url = '%s/++resource++bda.plone.orders/bookings.png' % base_url
+        view_bookings_icon = tag('img', src=bookings_icon_url)
+        view_bookings = tag('a', view_bookings_icon, **view_bookings_attrs)
+
+        # XXX: view invoices
 
         return view_orders + view_bookings
 

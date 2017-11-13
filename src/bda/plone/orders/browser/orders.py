@@ -408,41 +408,42 @@ class OrdersTable(OrdersTableBase):
     def render_order_actions(self, colname, record):
         tag = Tag(Translate(self.request))
         vendor_uid = self.request.form.get('vendor', '')
+        base_url = self.context.absolute_url()
 
         # view order
         if vendor_uid:
             view_order_target = '%s?uid=%s&vendor=%s' % (
-                self.context.absolute_url(),
+                base_url,
                 str(record.attrs['uid']),
                 vendor_uid)
         else:
             view_order_target = '%s?uid=%s' % (
-                self.context.absolute_url(),
+                base_url,
                 str(record.attrs['uid']))
         view_order_attrs = {
             'ajax:bind': 'click',
             'ajax:target': view_order_target,
             'ajax:overlay': 'order',
-            'class_': 'contenttype-document',
             'href': '',
             'title': _('view_order', default=u'View Order'),
         }
-        view_order = tag('a', '&nbsp;', **view_order_attrs)
+        order_icon_url = '%s/++resource++bda.plone.orders/order.png' % base_url
+        view_order_icon = tag('img', src=order_icon_url)
+        view_order = tag('a', view_order_icon, **view_order_attrs)
 
         # view invoice
-        view_invoice_target = '%s?uid=%s' % (
-            self.context.absolute_url(),
-            str(record.attrs['uid']))
+        view_invoice_target = '%s?uid=%s' % (base_url, str(record.attrs['uid']))
         view_invoice_attrs = {
             'ajax:bind': 'click',
             'ajax:target': view_invoice_target,
             'ajax:overlay': 'invoice',
             'ajax:overlay-css': 'invoice_overlay',
-            'class_': 'contenttype-document',
             'href': '',
             'title': _('view_invoice', default=u'View Invoice'),
         }
-        view_invoice = tag('a', '&nbsp;', **view_invoice_attrs)
+        invoice_icon_url = '%s/++resource++bda.plone.orders/invoice.png' % base_url
+        view_invoice_icon = tag('img', src=invoice_icon_url)
+        view_invoice = tag('a', view_invoice_icon, **view_invoice_attrs)
 
         # select order
         select_order_attrs = {
@@ -523,34 +524,34 @@ class MyOrdersTable(OrdersTableBase):
 
     def render_order_actions(self, colname, record):
         tag = Tag(Translate(self.request))
+        base_url = self.context.absolute_url()
 
         # view order
-        view_order_target = '%s?uid=%s' % (
-            self.context.absolute_url(), str(record.attrs['uid']))
+        view_order_target = '%s?uid=%s' % (base_url, str(record.attrs['uid']))
         view_order_attrs = {
             'ajax:bind': 'click',
             'ajax:target': view_order_target,
             'ajax:overlay': 'myorder',
-            'class_': 'contenttype-document',
             'href': '',
             'title': _('view_order', default=u'View Order'),
         }
-        view_order = tag('a', '&nbsp;', **view_order_attrs)
+        order_icon_url = '%s/++resource++bda.plone.orders/order.png' % base_url
+        view_order_icon = tag('img', src=order_icon_url)
+        view_order = tag('a', view_order_icon, **view_order_attrs)
 
         # view invoice
-        view_invoice_target = '%s?uid=%s' % (
-            self.context.absolute_url(),
-            str(record.attrs['uid']))
+        view_invoice_target = '%s?uid=%s' % (base_url, str(record.attrs['uid']))
         view_invoice_attrs = {
             'ajax:bind': 'click',
             'ajax:target': view_invoice_target,
             'ajax:overlay': 'myinvoice',
             'ajax:overlay-css': 'invoice_overlay',
-            'class_': 'contenttype-document',
             'href': '',
             'title': _('view_invoice', default=u'View Invoice'),
         }
-        view_invoice = tag('a', '&nbsp;', **view_invoice_attrs)
+        invoice_icon_url = '%s/++resource++bda.plone.orders/invoice.png' % base_url
+        view_invoice_icon = tag('img', src=invoice_icon_url)
+        view_invoice = tag('a', view_invoice_icon, **view_invoice_attrs)
 
         # return joined actions
         return view_order + view_invoice
