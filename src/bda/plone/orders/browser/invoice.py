@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
+from AccessControl import Unauthorized
 from Products.CMFPlone.utils import safe_unicode
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bda.plone.cart import ascur
 from bda.plone.orders import message_factory as _
-from bda.plone.orders.browser.common import ContentViewBase
-from bda.plone.orders.browser.common import ContentTemplateView
 from bda.plone.orders.browser.order import OrderDataView
 from bda.plone.orders.browser.order import ProtectedOrderDataView
 from bda.plone.orders.common import DT_FORMAT_SHORT
 from bda.plone.orders.interfaces import IInvoiceSender
+import plone.api
 
 
 ###############################################################################
@@ -101,10 +101,21 @@ class InvoiceViewBase(OrderDataView):
         return ascur(val)
 
 
-class InvoiceView(InvoiceViewBase, ContentViewBase, ContentTemplateView):
+class InvoiceView(InvoiceViewBase):
     """Invoice view.
     """
-    content_template = ViewPageTemplateFile('templates/invoice.pt')
+
+
+class MyInvoiceView(InvoiceViewBase):
+    """My invoice view.
+    """
+
+    def __call__(self):
+        # check if order was created by authenticated user
+        user = plone.api.user.get_current()
+        if user.getId() != self.order['creator']:
+            raise Unauthorized
+        return super(MyInvoiceView, self).__call__()
 
 
 class DirectInvoiceView(InvoiceViewBase, ProtectedOrderDataView):

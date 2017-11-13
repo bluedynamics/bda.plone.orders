@@ -430,12 +430,16 @@ class OrdersTable(OrdersTableBase):
         view_order = tag('a', '&nbsp;', **view_order_attrs)
 
         # view invoice
-        view_invoice_target = '%s/@@invoice?uid=%s' % (
+        view_invoice_target = '%s?uid=%s' % (
             self.context.absolute_url(),
             str(record.attrs['uid']))
         view_invoice_attrs = {
+            'ajax:bind': 'click',
+            'ajax:target': view_invoice_target,
+            'ajax:overlay': 'invoice',
+            'ajax:overlay-css': 'invoice_overlay',
             'class_': 'contenttype-document',
-            'href': view_invoice_target,
+            'href': '',
             'title': _('view_invoice', default=u'View Invoice'),
         }
         view_invoice = tag('a', '&nbsp;', **view_invoice_attrs)
@@ -534,12 +538,16 @@ class MyOrdersTable(OrdersTableBase):
         view_order = tag('a', '&nbsp;', **view_order_attrs)
 
         # view invoice
-        view_invoice_target = '%s/@@invoice?uid=%s' % (
+        view_invoice_target = '%s?uid=%s' % (
             self.context.absolute_url(),
             str(record.attrs['uid']))
         view_invoice_attrs = {
+            'ajax:bind': 'click',
+            'ajax:target': view_invoice_target,
+            'ajax:overlay': 'myinvoice',
+            'ajax:overlay-css': 'invoice_overlay',
             'class_': 'contenttype-document',
-            'href': view_invoice_target,
+            'href': '',
             'title': _('view_invoice', default=u'View Invoice'),
         }
         view_invoice = tag('a', '&nbsp;', **view_invoice_attrs)

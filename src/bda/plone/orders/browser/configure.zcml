@@ -157,9 +157,17 @@
   <browser:page
     for="*"
     name="invoice"
-    template="templates/invoice_view.pt"
+    template="templates/invoice.pt"
     class=".invoice.InvoiceView"
     permission="bda.plone.orders.ViewOrders"
+    layer="..interfaces.IOrdersExtensionLayer" />
+
+  <browser:page
+    for="zope.component.interfaces.ISite"
+    name="myinvoice"
+    template="templates/invoice.pt"
+    class=".invoice.MyInvoiceView"
+    permission="bda.plone.orders.ViewOwnOrders"
     layer="..interfaces.IOrdersExtensionLayer" />
 
   <browser:page

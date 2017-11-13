@@ -10,6 +10,13 @@
   <h1 class="invoice_title"
       i18n:translate="your_invoice">Your Invoice</h1>
 
+  <a href="javascript:window.print()"
+     class="print">
+    <img src="#"
+         alt="print this page"
+         tal:attributes="src string:${context/absolute_url}/++resource++bda.plone.orders/print.png" />
+  </a>
+
   <div class="invoice_sender">
     <strong tal:content="sender/company">company</strong>
     <br />

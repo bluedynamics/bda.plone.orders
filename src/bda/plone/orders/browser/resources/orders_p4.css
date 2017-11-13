@@ -296,6 +296,18 @@ a.notify_customers {
 }
 
 /* invoice */
+.invoice_overlay {
+    width:60%;
+    min-width:800px;
+    min-width:1200px;
+    padding:2em;
+    margin-bottom:2em;
+}
+.invoice .print {
+    position:absolute;
+    top:2em;
+    right:2em;
+}
 .invoice .invoice_title {
     text-align:center;
 }

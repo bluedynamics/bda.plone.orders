@@ -136,7 +136,7 @@ customizing ``bda.plone.checkout`` right after the company name:
 
 .. code-block:: python
 
-    from bda.plone.orders.browser.views import ORDER_EXPORT_ATTRS
+    from bda.plone.orders.browser.export import ORDER_EXPORT_ATTRS
 
     def patchOrderExport():
         idx = ORDER_EXPORT_ATTRS.index('personal_data.company')
@@ -157,7 +157,7 @@ the browser page for your policy package's browserlayer or themelayer:
       for="zope.component.interfaces.ISite"
       name="order"
       template="my-order.pt"
-      class="bda.plone.orders.browser.views.OrderView"
+      class="bda.plone.orders.browser.order.OrderView"
       permission="bda.plone.orders.ViewOrders"
       layer="my.package.interfaces.IMyBrowserLayer"/>
 
@@ -173,44 +173,19 @@ Invoice view
 ------------
 
 The invoice template is ``bda/plone/orders/browser/templates/invoice.pt``.
-It can be customized via `z3c.jbot <https://pypi.python.org/pypi/z3c.jbot>`_.
-
-As alternative, the related view classes can be customized and registered
-for your policy package's browserlayer or themelayer.
-
-Provide Custom views:
-
-.. code-block:: python
-
-    from bda.plone.orders.browser.invoice import DirectInvoiceView
-    from bda.plone.orders.browser.invoice import InvoiceView
-
-    class MyInvoiceView(InvoiceView):
-        content_template = ViewPageTemplateFile('my-invoice.pt')
-
-    class MyDirectInvoiceView(DirectInvoiceView):
-        content_template = ViewPageTemplateFile('my-invoice.pt')
-
-Register views:
+It can be customized via `z3c.jbot <https://pypi.python.org/pypi/z3c.jbot>`_ or
+by registering the browser page for your policy package's browserlayer or
+themelayer:
 
 .. code-block:: xml
 
-    <configure package="bda.plone.orders.browser">
-      <browser:page
-        for="*"
-        name="invoice"
-        template="templates/invoice_view.pt"
-        class="my.package.browser.MyInvoiceView"
-        permission="bda.plone.orders.ViewOrders"
-        layer="my.package.interfaces.IMyBrowserLayer" />
-
       <browser:page
         for="zope.component.interfaces.ISite"
-        name="showinvoice"
-        class="my.package.browser.MyDirectInvoiceView"
-        permission="bda.plone.orders.ViewOrderDirectly"
+        name="invoice"
+        template="my-invoice.pt"
+        class="bda.plone.orders.browser.invoice.InvoiceView"
+        permission="bda.plone.orders.ViewOrders"
         layer="my.package.interfaces.IMyBrowserLayer" />
-    </configure>
 
 
 Restrictions with souper.plone
