@@ -10,26 +10,26 @@ module.exports = function (grunt) {
                     sourceMap: true,
                     outputSourceFiles: true,
                     sourceMapURL: '++resource++bda.plone.orders.css.map',
-                    sourceMapFilename: 'src/bda/plone/orders/browser/resources/orders_p5.css.map',
+                    sourceMapFilename: 'src/bda/plone/orders/browser/resources/orders.css.map',
                     modifyVars: {
                         "isPlone": "false"
                     }
                 },
                 files: {
-                    'src/bda/plone/orders/browser/resources/orders_p5.css': 'src/bda/plone/orders/browser/resources/orders_p5.less',
+                    'src/bda/plone/orders/browser/resources/orders.css': 'src/bda/plone/orders/browser/resources/orders.less',
                 }
             }
         },
         sed: {
             sed0: {
-                path: 'src/bda/plone/orders/browser/resources/orders_p5.css.map',
-                pattern: 'src/bda/plone/orders/browser/resources/orders_p5.less',
+                path: 'src/bda/plone/orders/browser/resources/orders.css.map',
+                pattern: 'src/bda/plone/orders/browser/resources/orders.less',
                 replacement: '++resource++bda.plone.orders.less',
             }
         },
         watch: {
             scripts: {
-                files: ['src/bda/plone/orders/browser/resources/orders_p5.less'],
+                files: ['src/bda/plone/orders/browser/resources/orders.less'],
                 tasks: ['less', 'sed']
             }
         }
