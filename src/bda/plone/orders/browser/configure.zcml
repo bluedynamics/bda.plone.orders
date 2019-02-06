@@ -3,8 +3,6 @@
            xmlns:browser="http://namespaces.zope.org/browser"
            xmlns:zcml="http://namespaces.zope.org/zcml">
 
-  <!-- resources ########################################################## -->
-
   <!-- generic resources -->
   <browser:resource
     name="qrcode.js"
@@ -17,42 +15,26 @@
     layer="..interfaces.IOrdersExtensionLayer" />
 
   <!-- resources directory -->
-  <!-- XXX: later needed for plone 4 icons only -->
+  <!-- XXX: later needed for icons only -->
   <browser:resourceDirectory
     name="bda.plone.orders"
     directory="resources"
     layer="..interfaces.IOrdersExtensionLayer" />
 
-  <!-- plone 4 resources -->
+  <!-- resources -->
   <browser:resource
-    zcml:condition="not-have plone-5"
-    name="bda.plone.orders.css"
-    file="resources/orders_p4.css"
-    layer="..interfaces.IOrdersExtensionLayer" />
-
-  <browser:resource
-    zcml:condition="not-have plone-5"
-    name="bda.plone.orders_print.css"
-    file="resources/orders_print_p4.css"
-    layer="..interfaces.IOrdersExtensionLayer" />
-
-  <!-- plone 5 resources -->
-  <browser:resource
-    zcml:condition="have plone-5"
     name="bda.plone.orders.less"
-    file="resources/orders_p5.less"
+    file="resources/orders.less"
     layer="..interfaces.IOrdersExtensionLayer" />
 
   <browser:resource
-    zcml:condition="have plone-5"
     name="bda.plone.orders.css"
-    file="resources/orders_p5.css"
+    file="resources/orders.css"
     layer="..interfaces.IOrdersExtensionLayer" />
 
   <browser:resource
-    zcml:condition="have plone-5"
     name="bda.plone.orders.css.map"
-    file="resources/orders_p5.css.map"
+    file="resources/orders.css.map"
     layer="..interfaces.IOrdersExtensionLayer" />
 
   <!-- bookings.py ######################################################## -->
