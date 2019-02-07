@@ -12,6 +12,9 @@ from zope.i18nmessageid import Message
 import json
 import plone.api
 import yafowil.loader  # noqa
+import uuid
+
+FLOORUID = uuid.UUID(31*'0'+'1')
 
 
 class ContactsTable(ContentViewBase):
@@ -137,7 +140,7 @@ class ContactsTable(ContentViewBase):
 
     def query(self, soup):
         # always get all contacts
-        query = Gt('uid', 1)
+        query = Gt('uid', FLOORUID)
         req_text = safe_unicode(self.request.get('search[value]', ''))
         text_query = self._text_checker(req_text)
         # take fulltext search into account
@@ -145,5 +148,5 @@ class ContactsTable(ContentViewBase):
             query = query & text_query
 
         res = soup.lazy(query, with_size=True)
-        size = res.next()
+        size = next(res)
         return size, res

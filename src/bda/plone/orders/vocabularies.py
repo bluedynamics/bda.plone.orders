@@ -70,7 +70,7 @@ def all_vendors_vocab():
     """
     vendors = get_all_vendors()
     vocab = [(IUUID(vendor),
-             u'{0} ({1})'.format(vendor.Title().decode('utf-8', 'ignore'), vendor.absolute_url_path()))
+             u'{0} ({1})'.format(safe_unicode(vendor.Title()), vendor.absolute_url_path()))
              for vendor in vendors]
     return vocab
 
@@ -80,7 +80,7 @@ def vendors_vocab_for(user=None):
     """
     vendors = get_vendors_for(user=user)
     vocab = [(IUUID(vendor),
-             u'{0} ({1})'.format(vendor.Title().decode('utf-8', 'ignore'), vendor.absolute_url_path()))
+             u'{0} ({1})'.format(safe_unicode(vendor.Title()), vendor.absolute_url_path()))
              for vendor in vendors]
     return vocab
 

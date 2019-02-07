@@ -4,6 +4,7 @@ from zope.i18nmessageid import MessageFactory
 import gettext
 import pycountry
 import unicodedata
+import six
 
 
 message_factory = MessageFactory('bda.plone.orders')
@@ -13,7 +14,7 @@ def safe_encode(string):
     """Safely unicode objects to UTF-8. If it's a binary string, just return
     it.
     """
-    if isinstance(string, basestring):
+    if isinstance(string, six.string_types):
         return safe_unicode(string).encode('utf-8')
     return string
 

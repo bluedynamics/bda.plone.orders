@@ -6,6 +6,7 @@ from bda.plone.orders.interfaces import IDynamicMailTemplateLibraryStorage
 from zope.annotation import IAnnotations
 from zope.component import queryAdapter
 from zope.interface import implementer
+import six
 
 
 ###############################################################################
@@ -707,19 +708,19 @@ class DynamicMailTemplate(object):
             a unicode string meant to be rendered using python string format
             method
         """
-        assert isinstance(template, unicode), 'template must be unicode'
+        assert isinstance(template, six.text_type), 'template must be unicode'
         try:
             self(template, self.defaults)
-        except KeyError, e:
+        except KeyError as e:
             return False, u'Variable "{0}" is not available.'.format(e.message)
-        except Exception, e:
+        except Exception as e:
             return False, e.message
         return True, ''
 
     def __call__(self, template, data):
         """render template with data
         """
-        assert isinstance(template, unicode), 'template must be unicode'
+        assert isinstance(template, six.text_type), 'template must be unicode'
         for key in self.required:
             if key not in data:
                 raise KeyError(u'Required key {0} is missing.'.format(key))
@@ -749,7 +750,7 @@ class DynamicMailTemplateLibraryAquierer(object):
         parent = self._parent()
         if parent is None:
             return []
-        return parent.keys()
+        return list(parent.keys())
 
     def __getitem__(self, name):
         parent = self._parent()
@@ -783,7 +784,7 @@ class DynamicMailTemplateLibraryStorage(DynamicMailTemplateLibraryAquierer):
 
     def keys(self):
         result = self.direct_keys()
-        parent_keys = super(DynamicMailTemplateLibraryStorage, self).keys()
+        parent_keys = list(super(DynamicMailTemplateLibraryStorage, self).keys())
         for key in parent_keys:
             if key not in result:  # child wins
                 result.append(key)

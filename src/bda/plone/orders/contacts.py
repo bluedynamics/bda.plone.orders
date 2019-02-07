@@ -12,6 +12,7 @@ from souper.soup import get_soup
 from zope.interface import implementer
 import random
 import uuid
+from six.moves import range
 
 
 def get_contacts_soup(context):
@@ -125,10 +126,10 @@ def lookup_contact(context, contact):
         record = Record()
         record.attrs['uid'] = uuid.uuid4()
         record.attrs['cid'] = next_contact_id(soup)
-        record.attrs.update(contact.items())
+        record.attrs.update(list(contact.items()))
         soup.add(record)
     else:
-        record.attrs.update(contact.items())
+        record.attrs.update(list(contact.items()))
         soup.reindex([record])
     return record
 

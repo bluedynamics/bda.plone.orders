@@ -5,7 +5,7 @@ from Products.CMFPlone.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
 from Products.Five import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from StringIO import StringIO
+from six import StringIO
 from bda.plone.cart import get_item_stock
 from bda.plone.cart import get_object_by_uid
 from bda.plone.orders import message_factory as _
@@ -214,9 +214,9 @@ class ExportOrdersForm(YAMLForm, ContentViewBase):
         ex = csv.writer(sio, dialect='excel-colon', quoting=csv.QUOTE_MINIMAL)
         # exported column keys as first line
         ex.writerow(ORDER_EXPORT_ATTRS +
-                    COMPUTED_ORDER_EXPORT_ATTRS.keys() +
+                    list(COMPUTED_ORDER_EXPORT_ATTRS.keys()) +
                     BOOKING_EXPORT_ATTRS +
-                    COMPUTED_BOOKING_EXPORT_ATTRS.keys())
+                    list(COMPUTED_BOOKING_EXPORT_ATTRS.keys()))
         # query orders
         for order in orders_soup.query(query):
             # restrict order bookings for current vendor_uids
@@ -301,9 +301,9 @@ class ExportOrdersContextual(BrowserView):
         ex = csv.writer(sio, dialect='excel-colon', quoting=csv.QUOTE_MINIMAL)
         # exported column keys as first line
         ex.writerow(ORDER_EXPORT_ATTRS +
-                    COMPUTED_ORDER_EXPORT_ATTRS.keys() +
+                    list(COMPUTED_ORDER_EXPORT_ATTRS.keys()) +
                     BOOKING_EXPORT_ATTRS +
-                    COMPUTED_BOOKING_EXPORT_ATTRS.keys())
+                    list(COMPUTED_BOOKING_EXPORT_ATTRS.keys()))
 
         bookings_soup = get_bookings_soup(context)
 

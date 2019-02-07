@@ -147,7 +147,7 @@ class ProtectedOrderDataView(ContentViewBase, ContentTemplateView):
             order = orders_soup.query(Eq('ordernumber', ordernumber))
             try:
                 # generator should have only one item
-                order = order.next()
+                order = next(order)
                 try:
                     assert(order.attrs['personal_data.email'] == email)
                 except AssertionError:

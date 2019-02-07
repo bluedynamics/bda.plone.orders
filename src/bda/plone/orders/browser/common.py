@@ -30,12 +30,12 @@ def customers_form_vocab():
 
 def states_form_vocab():
     states = vocabs.state_vocab()
-    return [('', _('all', default='All'))] + states.items()
+    return [('', _('all', default='All'))] + list(states.items())
 
 
 def salaried_form_vocab():
     salaried = vocabs.salaried_vocab()
-    return [('', _('all', default='All'))] + salaried.items()
+    return [('', _('all', default='All'))] + list(salaried.items())
 
 
 class Translate(object):

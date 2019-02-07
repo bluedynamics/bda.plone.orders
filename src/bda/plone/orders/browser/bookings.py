@@ -708,7 +708,7 @@ class BookingsTable(BrowserView):
             dummysize, bookings_set = soup.catalog.query(query)
         else:
             booking_uids = soup.catalog['uid']
-            bookings_set = booking_uids._rev_index.keys()
+            bookings_set = list(booking_uids._rev_index.keys())
 
         bookings_set = set(bookings_set)
 

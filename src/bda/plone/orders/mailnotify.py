@@ -90,7 +90,7 @@ def general_order_data(context, order_data):
     attrs = order_data.order.attrs
     data = dict(
         (safe_unicode(key), safe_unicode(value))
-        for (key, value) in attrs.items()
+        for (key, value) in list(attrs.items())
     )
     data['portal_url'] = getSite().absolute_url()
     data['date'] = attrs['created'].strftime(DT_FORMAT)
@@ -302,7 +302,7 @@ class ZPTTranslator(object):
         self.request = getRequest()
 
     def __call__(self, msgid, domain=None, mapping=None,
-                 default=None, context=None):
+                 default=None, context=None, target_language=None):
         return translate(msgid, domain=domain, mapping=mapping,
                          default=default, context=self.request)
 
@@ -327,7 +327,7 @@ def create_html_mail_body(context, template_name, template_data):
     """
     templates = PageTemplateLoader(
         MAIL_TEMPLATES_DIRECTORY,
-        translate=ZPTTranslator()
+        translate=ZPTTranslator(), debug=True
     )
     template = templates['{}.pt'.format(template_name)]
     template_data['ascur'] = ascur

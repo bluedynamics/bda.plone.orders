@@ -46,6 +46,7 @@ import logging
 import plone.api
 import time
 import uuid
+from six.moves import filter
 
 
 logger = logging.getLogger('bda.plone.checkout')
@@ -138,7 +139,7 @@ def get_vendors_for(user=None):
         user = plone.api.user.get_current()
 
     def permitted(obj):
-        return user.checkPermission(permissions.ModifyOrders, obj)
+        return plone.api.user.has_permission(permissions.ModifyOrders, obj=obj)
     return [vendor for vendor in get_all_vendors() if permitted(vendor)]
 
 
@@ -529,7 +530,7 @@ def calculate_order_state(bookings):
 
 def calculate_order_salaried(bookings):
     return _calculate_order_attr_from_bookings(
-        filter(is_billable_booking, bookings),
+        list(filter(is_billable_booking, bookings)),
         'salaried',
         ifaces.SALARIED_MIXED
     )
@@ -833,9 +834,9 @@ class BookingData(OrderState):
         if self.vendor_uids:
             query = query & Any('vendor_uid', self.vendor_uids)
         result = soup.query(query, with_size=True)
-        if result.next() != 1:  # first result is length
+        if next(result) != 1:  # first result is length
             return None
-        self._booking = result.next()
+        self._booking = next(result)
         return self._booking
 
     @property

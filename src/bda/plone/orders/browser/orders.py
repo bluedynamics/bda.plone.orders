@@ -33,9 +33,10 @@ from yafowil.base import factory
 from yafowil.utils import Tag
 from zope.i18n import translate
 from zope.security import checkPermission
+from Products.CMFPlone.utils import safe_encode
 import json
 import plone.api
-import urllib
+import six.moves.urllib.request, six.moves.urllib.parse, six.moves.urllib.error
 import uuid
 
 
@@ -81,7 +82,7 @@ class TableData(BrowserView):
         data = soup.storage.data
         sort = self.sort()
         sort_index = soup.catalog[sort['index']]
-        iids = sort_index.sort(data.keys(), reverse=sort['reverse'])
+        iids = sort_index.sort(list(data.keys()), reverse=sort['reverse'])
 
         def lazyrecords():
             for iid in iids:
@@ -501,7 +502,7 @@ class OrdersTable(OrdersTableBase):
             ('state', self.request.form.get('state')),
             ('salaried', self.request.form.get('salaried')),
         ]
-        query = urllib.urlencode(dict([it for it in params if it[1]]))
+        query = six.moves.urllib.parse.urlencode(dict([it for it in params if it[1]]))
         query = query and u'?{0}'.format(query) or ''
         return u'{0:s}/{1:s}{2:s}'.format(
             self.context.absolute_url(),
@@ -604,7 +605,9 @@ class OrdersData(OrdersTable, TableData):
             query = query & Eq('salaried', salaried)
 
         # filter by search term if given
-        term = self.request.form['sSearch'].decode('utf-8')
+        term = self.request.form['sSearch']
+        if six.PY2:
+            term = term.decode('utf-8')
         if term:
             # append * for proper fulltext search
             term += '*'
@@ -620,7 +623,7 @@ class OrdersData(OrdersTable, TableData):
                         sort_index=sort['index'],
                         reverse=sort['reverse'],
                         with_size=True)
-        length = res.next()
+        length = next(res)
         return length, res
 
 
@@ -631,7 +634,9 @@ class MyOrdersData(MyOrdersTable, TableData):
     def query(self, soup):
         query = Eq('creator', plone.api.user.get_current().getId())
         # filter by search term if given
-        term = self.request.form['sSearch'].decode('utf-8')
+        term = self.request.form['sSearch']
+        if six.PY2:
+            term = term.decode('utf-8')
         if term:
             # append * for proper fulltext search
             term += '*'
@@ -642,5 +647,5 @@ class MyOrdersData(MyOrdersTable, TableData):
                         sort_index=sort['index'],
                         reverse=sort['reverse'],
                         with_size=True)
-        length = res.next()
+        length = next(res)
         return length, res
