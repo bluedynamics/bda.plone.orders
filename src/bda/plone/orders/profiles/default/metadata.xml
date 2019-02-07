@@ -3,7 +3,6 @@
   <version>10</version>
   <dependencies>
     <dependency>profile-collective.js.datatables:default</dependency>
-    <dependency>profile-collective.js.jqueryui:default</dependency>
     <dependency>profile-bda.plone.checkout:default</dependency>
     <dependency>profile-bda.plone.discount:default</dependency>
     <dependency>profile-yafowil.plone:default</dependency>

@@ -16,17 +16,13 @@
     <value key="depends">bdajax,datatables,qrcode</value>
   </records>
 
-  <!-- collective.js.jqueryui - enable required base resources -->
-  <records interface="collective.js.jqueryui.controlpanel.IJQueryUIPlugins">
-    <value key="ui_core">True</value>
-    <value key="ui_widget">True</value>
-    <value key="ui_mouse">True</value>
-    <value key="ui_position">True</value>
-    <value key="ui_draggable">True</value>
-    <value key="ui_droppable">True</value>
-    <value key="ui_resizable">True</value>
-    <value key="ui_datepicker">True</value>
-  </records>
+  <!-- yafowil.plone.jqueryui -->
+  <record name="yafowil.plone.jqueryui">
+    <field type="plone.registry.field.Bool">
+      <title>jqueryui for Plone</title>
+    </field>
+    <value>True</value>
+  </record>
 
   <!-- yafowil.widget.array -->
   <record name="yafowil.widget.array.common">
@@ -41,7 +37,7 @@
     <field type="plone.registry.field.Bool">
       <title>Datetime widget datepicker resources</title>
     </field>
-    <value>False</value>
+    <value>True</value>
   </record>
 
   <record name="yafowil.widget.datetime.timepicker">
