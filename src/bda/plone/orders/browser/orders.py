@@ -1,39 +1,40 @@
 # -*- coding: utf-8 -*-
 from AccessControl import Unauthorized
-from Products.CMFPlone.interfaces import IPloneSiteRoot
-from Products.Five import BrowserView
-from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bda.plone.orders import interfaces as ifaces
 from bda.plone.orders import message_factory as _
 from bda.plone.orders import permissions
 from bda.plone.orders import vocabularies as vocabs
 from bda.plone.orders.browser.common import ContentViewBase
-from bda.plone.orders.browser.common import Transition
-from bda.plone.orders.browser.common import Translate
 from bda.plone.orders.browser.common import customers_form_vocab
 from bda.plone.orders.browser.common import salaried_form_vocab
 from bda.plone.orders.browser.common import states_form_vocab
+from bda.plone.orders.browser.common import Transition
+from bda.plone.orders.browser.common import Translate
 from bda.plone.orders.browser.common import vendors_form_vocab
 from bda.plone.orders.browser.dropdown import BaseDropdown
 from bda.plone.orders.common import DT_FORMAT
-from bda.plone.orders.common import OrderData
 from bda.plone.orders.common import get_vendor_by_uid
 from bda.plone.orders.common import get_vendor_uids_for
 from bda.plone.orders.common import get_vendors_for
+from bda.plone.orders.common import OrderData
 from bda.plone.orders.interfaces import IBuyable
 from bda.plone.orders.transitions import do_transition_for
 from bda.plone.orders.transitions import transitions_of_main_state
 from bda.plone.orders.transitions import transitions_of_salaried_state
+from Products.CMFPlone.interfaces import IPloneSiteRoot
+from Products.CMFPlone.resources import add_bundle_on_request
+from Products.CMFPlone.utils import safe_encode
+from Products.Five import BrowserView
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from repoze.catalog.query import Any
 from repoze.catalog.query import Contains
 from repoze.catalog.query import Eq
-from souper.soup import LazyRecord
 from souper.soup import get_soup
+from souper.soup import LazyRecord
 from yafowil.base import factory
 from yafowil.utils import Tag
 from zope.i18n import translate
 from zope.security import checkPermission
-from Products.CMFPlone.utils import safe_encode
 import json
 import plone.api
 import six.moves.urllib.request, six.moves.urllib.parse, six.moves.urllib.error
@@ -217,6 +218,13 @@ class OrderSalariedTransition(OrderTransition):
 
 class OrdersViewBase(ContentViewBase):
     table_view_name = '@@orderstable'
+
+    def __init__(self, context, request):
+        super(OrdersViewBase, self).__init__(context, request)
+        add_bundle_on_request(request, 'bdajax-jquerytools')
+        add_bundle_on_request(request, 'bdajax-jquerytools-overlay')
+        add_bundle_on_request(request, 'datatables')
+        add_bundle_on_request(request, 'bda-plone-orders')
 
     def orders_table(self):
         return self.context.restrictedTraverse(self.table_view_name)()
