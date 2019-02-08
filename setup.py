@@ -36,6 +36,7 @@ setup(
         'setuptools',
         'six',
         'Plone',
+        'bda.plone.ajax',
         'bda.plone.cart',
         'bda.plone.checkout',
         'bda.plone.discount',
