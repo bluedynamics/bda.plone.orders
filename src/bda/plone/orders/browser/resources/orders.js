@@ -3,28 +3,6 @@
 (function ($, bdajax, QRCode) {
     "use strict";
 
-    $(document).ready(function () {
-        $.extend(bdajax.binders, {
-            orders_datatable_binder: orders.datatable_binder,
-            orders_filter_binder: orders.filter_binder,
-            orders_bookings_datatable_binder: orders.bookings_datatable_binder,
-            orders_contacts_datatable_binder: orders.contacts_datatable_binder,
-            orders_dropdown_menus: orders.dropdown_binder,
-            orders_notification_binder: orders.notification_binder,
-            orders_notification_form_binder: orders.notification_form_binder,
-            orders_qr_code_binder: orders.qr_code_binder,
-            comment_edit_binder: orders.comment_edit_binder
-        });
-        orders.datatable_binder(document);
-        orders.filter_binder(document);
-        orders.bookings_datatable_binder(document);
-        orders.contacts_datatable_binder(document);
-        orders.order_select_binder(document);
-        orders.notification_binder(document);
-        orders.qr_code_binder(document);
-        orders.comment_edit_binder(document);
-    });
-
     var orders = {
 
         qr_code_binder: function(context) {
@@ -395,5 +373,27 @@
         });
         return this;
     };
+
+    $(document).ready(function () {
+        $.extend(bdajax.binders, {
+            orders_datatable_binder: orders.datatable_binder,
+            orders_filter_binder: orders.filter_binder,
+            orders_bookings_datatable_binder: orders.bookings_datatable_binder,
+            orders_contacts_datatable_binder: orders.contacts_datatable_binder,
+            orders_dropdown_menus: orders.dropdown_binder,
+            orders_notification_binder: orders.notification_binder,
+            orders_notification_form_binder: orders.notification_form_binder,
+            orders_qr_code_binder: orders.qr_code_binder,
+            comment_edit_binder: orders.comment_edit_binder
+        });
+        orders.datatable_binder(document);
+        orders.filter_binder(document);
+        orders.bookings_datatable_binder(document);
+        orders.contacts_datatable_binder(document);
+        orders.order_select_binder(document);
+        orders.notification_binder(document);
+        orders.qr_code_binder(document);
+        orders.comment_edit_binder(document);
+    });
 
 }(jQuery, bdajax, QRCode));
