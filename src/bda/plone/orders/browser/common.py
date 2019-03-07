@@ -11,6 +11,7 @@ from zope.i18nmessageid import Message
 import pkg_resources
 import plone.api
 
+
 IS_P4 = pkg_resources.require("Products.CMFPlone")[0].version[0] == '4'
 
 
@@ -30,12 +31,12 @@ def customers_form_vocab():
 
 def states_form_vocab():
     states = vocabs.state_vocab()
-    return [('', _('all', default='All'))] + states.items()
+    return [('', _('all', default='All'))] + list(states.items())
 
 
 def salaried_form_vocab():
     salaried = vocabs.salaried_vocab()
-    return [('', _('all', default='All'))] + salaried.items()
+    return [('', _('all', default='All'))] + list(salaried.items())
 
 
 class Translate(object):

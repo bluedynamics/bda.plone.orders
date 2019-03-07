@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-import urllib
+import six.moves.urllib.parse
 
 
 class BaseDropdown(object):
@@ -32,7 +32,7 @@ class BaseDropdown(object):
             params['vendor'] = vendor
         for transition in transitions:
             params['transition'] = transition
-            target = '?'.join([url, urllib.urlencode(params)])
+            target = '?'.join([url, six.moves.urllib.parse.urlencode(params)])
             ret.append({
                 'title': self.transitions[transition],
                 'target': target,

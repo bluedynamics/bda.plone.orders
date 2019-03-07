@@ -5,8 +5,8 @@ from setuptools import setup
 import os
 
 
-version = '1.0a1.dev0'
-shortdesc = "Orders persistence and backoffice UI for bda.plone.shop"
+version = '2.0.dev0'
+shortdesc = 'Orders persistence and backoffice UI for bda.plone.shop'
 longdesc = open(os.path.join(os.path.dirname(__file__), 'README.rst')).read()
 longdesc += open(os.path.join(os.path.dirname(__file__), 'CHANGES.rst')).read()
 longdesc += open(os.path.join(os.path.dirname(__file__), 'LICENSE.rst')).read()
@@ -18,11 +18,12 @@ setup(
     description=shortdesc,
     long_description=longdesc,
     classifiers=[
-        'Environment :: Web Environment',
-        'License :: OSI Approved :: GNU General Public License (GPL)',
-        'Operating System :: OS Independent',
+        'Framework :: Plone',
+        'Framework :: Plone :: 5.1',
+        'Framework :: Plone :: 5.2',
         'Programming Language :: Python',
-        'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
+        'Topic :: Software Development :: Libraries :: Python Modules',
+        'License :: OSI Approved :: GNU General Public License (GPL)',
     ],
     author='BlueDynamics Alliance',
     author_email='dev@bluedynamics.com',
@@ -34,15 +35,17 @@ setup(
     zip_safe=False,
     install_requires=[
         'setuptools',
+        'six',
         'Plone',
+        'bda.plone.ajax',
         'bda.plone.cart',
         'bda.plone.checkout',
         'bda.plone.discount',
         'Chameleon',
         'collective.js.datatables',
-        'collective.js.jqueryui',
         'plone.api',
         'plone.memoize',
+        'yafowil.plone>2.999',
         'yafowil.widget.array',
         'yafowil.widget.datetime',
     ],

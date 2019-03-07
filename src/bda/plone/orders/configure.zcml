@@ -6,7 +6,6 @@
 
   <include package="yafowil.plone" />
   <include package="souper.plone" />
-  <include package="collective.js.jqueryui" />
   <include package="collective.js.datatables" />
   <include package="bda.plone.checkout" />
   <include package="bda.plone.discount" />

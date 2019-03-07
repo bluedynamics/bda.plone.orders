@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
 from Acquisition import aq_parent
-from Products.Five import BrowserView
-from bda.plone.ajax import AjaxMessage
-from bda.plone.ajax import AjaxOverlay
 from bda.plone.ajax import ajax_continue
 from bda.plone.ajax import ajax_form_fiddle
+from bda.plone.ajax import AjaxMessage
+from bda.plone.ajax import AjaxOverlay
 from bda.plone.orders import message_factory as _
 from bda.plone.orders.browser.mailtemplates import TEMPLATE
 from bda.plone.orders.common import OrderData
@@ -13,6 +12,7 @@ from bda.plone.orders.mailnotify import MailNotify
 from bda.plone.orders.vocabularies import salaried_vocab
 from bda.plone.orders.vocabularies import state_vocab
 from node.utils import UNSET
+from Products.Five import BrowserView
 from yafowil.base import ExtractionError
 from yafowil.plone.form import YAMLBaseForm
 from zope.component.interfaces import ISite

@@ -1,22 +1,32 @@
 # -*- coding: utf-8 -*-
-from Products.CMFPlone.utils import safe_unicode
 from bda.plone.orders import message_factory as _
 from bda.plone.orders.browser.common import ContentViewBase
 from bda.plone.orders.browser.common import Translate
 from bda.plone.orders.contacts import get_contacts_soup
+from Products.CMFPlone.resources import add_bundle_on_request
+from Products.CMFPlone.utils import safe_unicode
 from repoze.catalog.query import Contains
 from repoze.catalog.query import Gt
 from yafowil.utils import Tag
-from zope.i18n import translate
-from zope.i18nmessageid import Message
 import json
 import plone.api
+import uuid
 import yafowil.loader  # noqa
+
+
+FLOORUID = uuid.UUID(31 * '0' + '1')
 
 
 class ContactsTable(ContentViewBase):
     table_id = 'bdaplonecontacts'
     data_view_name = '@@contactsdata'
+
+    def __init__(self, context, request):
+        super(ContactsTable, self).__init__(context, request)
+        add_bundle_on_request(request, 'bdajax-jquerytools')
+        add_bundle_on_request(request, 'bdajax-jquerytools-overlay')
+        add_bundle_on_request(request, 'datatables')
+        add_bundle_on_request(request, 'bda-plone-orders')
 
     def render_get_actions_for_contact(self, colname, record):
         tag = Tag(Translate(self.request))
@@ -137,7 +147,7 @@ class ContactsTable(ContentViewBase):
 
     def query(self, soup):
         # always get all contacts
-        query = Gt('uid', 1)
+        query = Gt('uid', FLOORUID)
         req_text = safe_unicode(self.request.get('search[value]', ''))
         text_query = self._text_checker(req_text)
         # take fulltext search into account
@@ -145,5 +155,5 @@ class ContactsTable(ContentViewBase):
             query = query & text_query
 
         res = soup.lazy(query, with_size=True)
-        size = res.next()
+        size = next(res)
         return size, res

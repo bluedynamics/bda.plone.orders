@@ -107,7 +107,7 @@ def do_transition_for(order_state, transition, context=None, request=None):
                 cnt == bookings_len - 1 or  # event_emit_on_last
                 not event_emit_on_last      # or emit always
             ):
-                booking_attrs = dict(booking_data.booking.attrs.items())
+                booking_attrs = dict(list(booking_data.booking.attrs.items()))
                 event = event_class(
                     context=context,
                     request=request,

@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from Products.CMFPlone.utils import safe_unicode
 from bda.plone.orders import interfaces as ifaces
 from bda.plone.orders import message_factory as _
 from bda.plone.orders.common import get_all_vendors
@@ -8,6 +7,7 @@ from bda.plone.orders.common import get_vendor_order_uids_for
 from bda.plone.orders.common import get_vendors_for
 from plone.i18n.normalizer.base import baseNormalize
 from plone.uuid.interfaces import IUUID
+from Products.CMFPlone.utils import safe_unicode
 from zope.component.hooks import getSite
 import plone.api
 
@@ -70,7 +70,7 @@ def all_vendors_vocab():
     """
     vendors = get_all_vendors()
     vocab = [(IUUID(vendor),
-             u'{0} ({1})'.format(vendor.Title().decode('utf-8', 'ignore'), vendor.absolute_url_path()))
+             u'{0} ({1})'.format(safe_unicode(vendor.Title()), vendor.absolute_url_path()))
              for vendor in vendors]
     return vocab
 
@@ -80,7 +80,7 @@ def vendors_vocab_for(user=None):
     """
     vendors = get_vendors_for(user=user)
     vocab = [(IUUID(vendor),
-             u'{0} ({1})'.format(vendor.Title().decode('utf-8', 'ignore'), vendor.absolute_url_path()))
+             u'{0} ({1})'.format(safe_unicode(vendor.Title()), vendor.absolute_url_path()))
              for vendor in vendors]
     return vocab
 

@@ -93,6 +93,7 @@
 #bdaploneorders {
   margin-bottom: 1em;
   border: #ddd 1px solid;
+  width: 100%!important;
 }
 #bdaploneorders thead {
   background-color: #fafafa;

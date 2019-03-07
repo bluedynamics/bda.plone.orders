@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from Acquisition import aq_inner
 from Acquisition import aq_parent
-from Products.CMFPlone.interfaces import IPloneSiteRoot
 from bda.plone.cart import extractitems
 from bda.plone.cart import get_catalog_brain
 from bda.plone.cart import get_data_provider
@@ -27,17 +26,19 @@ from decimal import Decimal
 from node.ext.zodb import OOBTNode
 from node.utils import instance_property
 from plone.uuid.interfaces import IUUID
+from Products.CMFPlone.interfaces import IPloneSiteRoot
 from repoze.catalog.catalog import Catalog
 from repoze.catalog.indexes.field import CatalogFieldIndex
 from repoze.catalog.indexes.keyword import CatalogKeywordIndex
 from repoze.catalog.indexes.text import CatalogTextIndex
 from repoze.catalog.query import Any
 from repoze.catalog.query import Eq
+from six.moves import filter
 from souper.interfaces import ICatalogFactory
+from souper.soup import get_soup
 from souper.soup import NodeAttributeIndexer
 from souper.soup import NodeTextIndexer
 from souper.soup import Record
-from souper.soup import get_soup
 from zope.component import queryAdapter
 from zope.event import notify
 from zope.interface import implementer
@@ -138,7 +139,7 @@ def get_vendors_for(user=None):
         user = plone.api.user.get_current()
 
     def permitted(obj):
-        return user.checkPermission(permissions.ModifyOrders, obj)
+        return plone.api.user.has_permission(permissions.ModifyOrders, obj=obj)
     return [vendor for vendor in get_all_vendors() if permitted(vendor)]
 
 
@@ -529,7 +530,7 @@ def calculate_order_state(bookings):
 
 def calculate_order_salaried(bookings):
     return _calculate_order_attr_from_bookings(
-        filter(is_billable_booking, bookings),
+        list(filter(is_billable_booking, bookings)),
         'salaried',
         ifaces.SALARIED_MIXED
     )
@@ -833,9 +834,9 @@ class BookingData(OrderState):
         if self.vendor_uids:
             query = query & Any('vendor_uid', self.vendor_uids)
         result = soup.query(query, with_size=True)
-        if result.next() != 1:  # first result is length
+        if next(result) != 1:  # first result is length
             return None
-        self._booking = result.next()
+        self._booking = next(result)
         return self._booking
 
     @property

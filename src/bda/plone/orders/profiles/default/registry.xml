@@ -1,0 +1,69 @@
+<registry>
+
+  <!--
+  <records prefix="plone.bundles/bdajax-jquerytools-overlay"
+           interface='Products.CMFPlone.interfaces.IBundleRegistry'>
+    <value key="enabled">True</value>
+    <value key="jscompilation">++resource++bdajax/overlay.js</value>
+    <value key="compile">False</value>
+    <value key="depends">plone</value>
+    <value key="expression">python: member</value>
+  </records>
+  -->
+
+  <records prefix="plone.bundles/qrcode"
+           interface='Products.CMFPlone.interfaces.IBundleRegistry'>
+    <value key="enabled">True</value>
+    <value key="compile">False</value>
+    <value key="jscompilation">++resource++qrcode.js</value>
+  </records>
+
+  <records prefix="plone.bundles/bda-plone-orders"
+           interface='Products.CMFPlone.interfaces.IBundleRegistry'>
+    <!-- not enabled - loaded on request -->
+    <value key="enabled">False</value>
+    <value key="compile">False</value>
+    <value key="jscompilation">++resource++bda.plone.orders.js</value>
+    <value key="csscompilation">++resource++bda.plone.orders.css</value>
+    <value key="depends">bdajax,datatables,qrcode</value>
+  </records>
+
+  <!-- yafowil.plone.jqueryui -->
+  <record name="yafowil.plone.jqueryui">
+    <field type="plone.registry.field.Bool">
+      <title>jqueryui for Plone</title>
+    </field>
+    <value>True</value>
+  </record>
+
+  <!-- yafowil.widget.array -->
+  <record name="yafowil.widget.array.common">
+    <field type="plone.registry.field.Bool">
+      <title>Array widget common resources</title>
+    </field>
+    <value>True</value>
+  </record>
+
+  <!-- yafowil.widget.datetime -->
+  <record name="yafowil.widget.datetime.datepicker">
+    <field type="plone.registry.field.Bool">
+      <title>Datetime widget datepicker resources</title>
+    </field>
+    <value>True</value>
+  </record>
+
+  <record name="yafowil.widget.datetime.timepicker">
+    <field type="plone.registry.field.Bool">
+      <title>Datetime widget timepicker resources</title>
+    </field>
+    <value>True</value>
+  </record>
+
+  <record name="yafowil.widget.datetime.common">
+    <field type="plone.registry.field.Bool">
+      <title>Datetime widget common resources</title>
+    </field>
+    <value>True</value>
+  </record>
+
+</registry>
