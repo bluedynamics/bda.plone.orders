@@ -11,6 +11,7 @@ from zope.i18nmessageid import Message
 import pkg_resources
 import plone.api
 
+
 IS_P4 = pkg_resources.require("Products.CMFPlone")[0].version[0] == '4'
 
 

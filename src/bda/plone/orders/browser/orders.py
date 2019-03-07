@@ -23,7 +23,6 @@ from bda.plone.orders.transitions import transitions_of_main_state
 from bda.plone.orders.transitions import transitions_of_salaried_state
 from Products.CMFPlone.interfaces import IPloneSiteRoot
 from Products.CMFPlone.resources import add_bundle_on_request
-from Products.CMFPlone.utils import safe_encode
 from Products.Five import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from repoze.catalog.query import Any
@@ -34,10 +33,9 @@ from souper.soup import LazyRecord
 from yafowil.base import factory
 from yafowil.utils import Tag
 from zope.i18n import translate
-from zope.security import checkPermission
 import json
 import plone.api
-import six.moves.urllib.request, six.moves.urllib.parse, six.moves.urllib.error
+import six.moves.urllib.parse
 import uuid
 
 

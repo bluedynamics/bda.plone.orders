@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-from Products.Five import BrowserView
 from bda.plone.orders import interfaces as ifaces
 from bda.plone.orders import message_factory as _
 from bda.plone.orders.common import OrderData
+from Products.Five import BrowserView
 
 
 ###############################################################################

@@ -1,10 +1,7 @@
 # -*- coding: utf-8 -*-
 from AccessControl import Unauthorized
-from Products.Five import BrowserView
-from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from Products.statusmessages.interfaces import IStatusMessage
-from bda.plone.ajax import AjaxAction
 from bda.plone.ajax import ajax_continue
+from bda.plone.ajax import AjaxAction
 from bda.plone.cart import ascur
 from bda.plone.cart import get_object_by_uid
 from bda.plone.checkout import message_factory as _co
@@ -13,18 +10,21 @@ from bda.plone.orders import interfaces as ifaces
 from bda.plone.orders import message_factory as _
 from bda.plone.orders import permissions
 from bda.plone.orders import vocabularies as vocabs
-from bda.plone.orders.browser.common import ContentViewBase
 from bda.plone.orders.browser.common import ContentTemplateView
+from bda.plone.orders.browser.common import ContentViewBase
+from bda.plone.orders.common import booking_update_comment
 from bda.plone.orders.common import BookingData
 from bda.plone.orders.common import DT_FORMAT
-from bda.plone.orders.common import OrderData
-from bda.plone.orders.common import booking_update_comment
 from bda.plone.orders.common import get_orders_soup
 from bda.plone.orders.common import get_vendor_by_uid
 from bda.plone.orders.common import get_vendor_uids_for
+from bda.plone.orders.common import OrderData
 from bda.plone.orders.transitions import do_transition_for
 from plone.memoize import view
 from plone.protect.utils import addTokenToUrl
+from Products.Five import BrowserView
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from Products.statusmessages.interfaces import IStatusMessage
 from repoze.catalog.query import Eq
 from yafowil.base import factory
 from yafowil.controller import Controller
@@ -78,7 +78,7 @@ class OrderDataView(BrowserView):
         # return value if no id not available i.e. if no dropdown in use
         try:
             return get_pycountry_name(country_id)
-        except:
+        except Exception:
             return country_id
 
 

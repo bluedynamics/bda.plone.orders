@@ -1,20 +1,20 @@
 # -*- coding: utf-8 -*-
-from Products.CMFPlone.utils import safe_unicode
 from bda.plone.orders import message_factory as _
 from bda.plone.orders.browser.common import ContentViewBase
 from bda.plone.orders.browser.common import Translate
 from bda.plone.orders.contacts import get_contacts_soup
+from Products.CMFPlone.resources import add_bundle_on_request
+from Products.CMFPlone.utils import safe_unicode
 from repoze.catalog.query import Contains
 from repoze.catalog.query import Gt
 from yafowil.utils import Tag
-from zope.i18n import translate
-from zope.i18nmessageid import Message
 import json
 import plone.api
-import yafowil.loader  # noqa
 import uuid
+import yafowil.loader  # noqa
 
-FLOORUID = uuid.UUID(31*'0'+'1')
+
+FLOORUID = uuid.UUID(31 * '0' + '1')
 
 
 class ContactsTable(ContentViewBase):
@@ -27,8 +27,6 @@ class ContactsTable(ContentViewBase):
         add_bundle_on_request(request, 'bdajax-jquerytools-overlay')
         add_bundle_on_request(request, 'datatables')
         add_bundle_on_request(request, 'bda-plone-orders')
-
-
 
     def render_get_actions_for_contact(self, colname, record):
         tag = Tag(Translate(self.request))

@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from Products.CMFPlone.utils import safe_unicode
 from bda.plone.cart import ascur
 from bda.plone.cart import get_catalog_brain
 from bda.plone.checkout.interfaces import ICheckoutEvent
@@ -24,6 +23,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.utils import formataddr
 from plone import api
+from Products.CMFPlone.utils import safe_unicode
 from zope.component.hooks import getSite
 from zope.globalrequest import getRequest
 from zope.i18n import translate
@@ -327,7 +327,8 @@ def create_html_mail_body(context, template_name, template_data):
     """
     templates = PageTemplateLoader(
         MAIL_TEMPLATES_DIRECTORY,
-        translate=ZPTTranslator(), debug=True
+        translate=ZPTTranslator(),
+        debug=True
     )
     template = templates['{}.pt'.format(template_name)]
     template_data['ascur'] = ascur

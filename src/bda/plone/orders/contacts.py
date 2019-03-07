@@ -12,7 +12,6 @@ from souper.soup import get_soup
 from zope.interface import implementer
 import random
 import uuid
-from six.moves import range
 
 
 def get_contacts_soup(context):
