@@ -1038,7 +1038,7 @@ msgstr "Status"
 #. Default: "Cannot show order information because no order uid was given."
 #: ./browser/order.py:69
 msgid "statusmessage_err_no_order_uid_given"
-msgstr "Information über Bestallung kann nich angezeigt werden. Keine Bestellungs-ID gefunden."
+msgstr "Information über Bestellung kann nich angezeigt werden. Keine Bestellungs-ID gefunden."
 
 # subject
 msgid "subject"
