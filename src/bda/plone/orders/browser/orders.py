@@ -4,7 +4,6 @@ from bda.plone.orders import interfaces as ifaces
 from bda.plone.orders import message_factory as _
 from bda.plone.orders import permissions
 from bda.plone.orders import vocabularies as vocabs
-from bda.plone.orders.browser.common import ContentViewBase
 from bda.plone.orders.browser.common import customers_form_vocab
 from bda.plone.orders.browser.common import salaried_form_vocab
 from bda.plone.orders.browser.common import states_form_vocab
@@ -214,7 +213,7 @@ class OrderSalariedTransition(OrderTransition):
     dropdown = OrderSalariedDropdown
 
 
-class OrdersViewBase(ContentViewBase):
+class OrdersViewBase(BrowserView):
     table_view_name = '@@orderstable'
 
     def __init__(self, context, request):

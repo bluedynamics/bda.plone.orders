@@ -1,13 +1,12 @@
 # -*- coding: utf-8 -*-
 from bda.plone.orders import message_factory as _
-from bda.plone.orders.browser.common import ContentViewBase
 from bda.plone.orders.interfaces import IDynamicMailTemplateLibraryStorage
 from bda.plone.orders.mailtemplates import DEFAULT_TEMPLATE_ATTRS
 from bda.plone.orders.mailtemplates import DynamicMailTemplate
 from bda.plone.orders.mailtemplates import REQUIRED_TEMPLATE_ATTRS
+from Products.Five import BrowserView
 from yafowil.base import ExtractionError
 from yafowil.plone.form import YAMLForm
-
 
 TEMPLATE = DynamicMailTemplate(
     required=REQUIRED_TEMPLATE_ATTRS,
@@ -15,7 +14,7 @@ TEMPLATE = DynamicMailTemplate(
 )
 
 
-class MailtemplatesView(ContentViewBase):
+class MailtemplatesView(BrowserView):
 
     def default_attrs(self):
         items = []

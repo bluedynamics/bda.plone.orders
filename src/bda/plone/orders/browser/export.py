@@ -7,7 +7,6 @@ from bda.plone.orders import message_factory as _
 from bda.plone.orders import permissions
 from bda.plone.orders import safe_encode
 from bda.plone.orders import safe_filename
-from bda.plone.orders.browser.common import ContentViewBase
 from bda.plone.orders.browser.common import customers_form_vocab
 from bda.plone.orders.browser.common import vendors_form_vocab
 from bda.plone.orders.common import DT_FORMAT
@@ -136,7 +135,7 @@ def cleanup_for_csv(value):
     return safe_encode(value)
 
 
-class ExportOrdersForm(YAMLForm, ContentViewBase):
+class ExportOrdersForm(YAMLForm, BrowserView):
     browser_template = ViewPageTemplateFile('templates/export.pt')
     form_template = 'bda.plone.orders.browser:forms/orders_export.yaml'
     message_factory = _

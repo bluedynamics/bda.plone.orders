@@ -8,12 +8,13 @@ from bda.plone.orders.common import DT_FORMAT_SHORT
 from bda.plone.orders.interfaces import IInvoiceSender
 from Products.CMFPlone.utils import safe_unicode
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-import plone.api
 
+import plone.api
 
 ###############################################################################
 # invoice
 ###############################################################################
+
 
 class InvoiceViewBase(OrderDataView):
     invoice_prefix = u'INV'

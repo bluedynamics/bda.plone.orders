@@ -145,6 +145,6 @@ class LoadTemplate(BrowserView):
         tpllib = IDynamicMailTemplateLibrary(self.context)
         try:
             tpl = tpllib[self.request.form['name']]
-        except:
+        except Exception:
             tpl = ""
         return json.dumps({'tpl': tpl})

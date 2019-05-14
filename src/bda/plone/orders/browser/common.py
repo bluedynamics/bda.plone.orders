@@ -8,11 +8,8 @@ from bda.plone.orders.common import get_vendor_by_uid
 from bda.plone.orders.common import get_vendor_uids_for
 from zope.i18n import translate
 from zope.i18nmessageid import Message
-import pkg_resources
+
 import plone.api
-
-
-IS_P4 = pkg_resources.require("Products.CMFPlone")[0].version[0] == '4'
 
 
 ###############################################################################
@@ -82,25 +79,6 @@ class Transition(BrowserView):
 ###############################################################################
 # content view base classes
 ###############################################################################
-
-class ContentViewBase(BrowserView):
-    """Base view class for content views.
-    """
-    do_disable_border = True
-    do_disable_left_column = True
-    do_disable_right_column = True
-
-    def disable_border(self):
-        if IS_P4 and self.do_disable_border:
-            self.request.set('disable_border', True)
-
-    def disable_left_column(self):
-        if self.do_disable_left_column:
-            self.request.set('disable_plone.leftcolumn', True)
-
-    def disable_right_column(self):
-        if self.do_disable_right_column:
-            self.request.set('disable_plone.rightcolumn', True)
 
 
 class ContentTemplateView(BrowserView):

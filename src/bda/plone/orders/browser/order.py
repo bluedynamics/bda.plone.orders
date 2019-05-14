@@ -11,7 +11,6 @@ from bda.plone.orders import message_factory as _
 from bda.plone.orders import permissions
 from bda.plone.orders import vocabularies as vocabs
 from bda.plone.orders.browser.common import ContentTemplateView
-from bda.plone.orders.browser.common import ContentViewBase
 from bda.plone.orders.common import booking_update_comment
 from bda.plone.orders.common import BookingData
 from bda.plone.orders.common import DT_FORMAT
@@ -82,7 +81,7 @@ class OrderDataView(BrowserView):
             return country_id
 
 
-class ProtectedOrderDataView(ContentViewBase, ContentTemplateView):
+class ProtectedOrderDataView(ContentTemplateView):
     """Protected order data view.
 
     Expect ordernumber and email to grant access to view details.
@@ -429,7 +428,4 @@ class MyOrderView(OrderViewBase):
 
 
 class DirectOrderView(OrderViewBase, ProtectedOrderDataView):
-    do_disable_border = False
-    do_disable_left_column = False
-    do_disable_right_column = False
     content_template = ViewPageTemplateFile('templates/order.pt')

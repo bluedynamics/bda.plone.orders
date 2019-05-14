@@ -1,23 +1,23 @@
 # -*- coding: utf-8 -*-
 from bda.plone.orders import message_factory as _
-from bda.plone.orders.browser.common import ContentViewBase
 from bda.plone.orders.browser.common import Translate
 from bda.plone.orders.contacts import get_contacts_soup
 from Products.CMFPlone.resources import add_bundle_on_request
 from Products.CMFPlone.utils import safe_unicode
+from Products.Five import BrowserView
 from repoze.catalog.query import Contains
 from repoze.catalog.query import Gt
 from yafowil.utils import Tag
+
 import json
 import plone.api
 import uuid
-import yafowil.loader  # noqa
-
+import yafowil.loader  # noqa: W291
 
 FLOORUID = uuid.UUID(31 * '0' + '1')
 
 
-class ContactsTable(ContentViewBase):
+class ContactsTable(BrowserView):
     table_id = 'bdaplonecontacts'
     data_view_name = '@@contactsdata'
 

@@ -4,6 +4,9 @@ Changelog
 2.0.dev0 (unreleased)
 ---------------------
 
+- Remove Plone 4 specific ContentViewBase
+  [jensens]
+
 - Python 2/3 compatibility
   [agitator]
 
