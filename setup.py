@@ -19,6 +19,7 @@ setup(
     long_description=longdesc,
     classifiers=[
         'Framework :: Plone',
+        'Framework :: Plone :: Addon',
         'Framework :: Plone :: 5.1',
         'Framework :: Plone :: 5.2',
         'Programming Language :: Python',
@@ -48,6 +49,7 @@ setup(
         'yafowil.plone>2.999',
         'yafowil.widget.array',
         'yafowil.widget.datetime',
+        'zope.deferredimport',
     ],
     extras_require={
         'test': [

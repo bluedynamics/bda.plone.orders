@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from bda.plone.orders import events
-from bda.plone.orders import interfaces
+from bda.plone.orders.interfaces import workflow
 from bda.plone.orders.common import BookingData
 from zope.event import notify
 
@@ -29,27 +29,27 @@ def transitions_of_main_state(state):
     """List of transitions for a given orders or bookings main state
     """
     transitions = list()
-    if state in [interfaces.STATE_NEW, interfaces.STATE_RESERVED]:
+    if state in [workflow.STATE_NEW, workflow.STATE_RESERVED]:
         transitions = [
-            interfaces.STATE_TRANSITION_PROCESS,
-            interfaces.STATE_TRANSITION_FINISH,
-            interfaces.STATE_TRANSITION_CANCEL
+            workflow.STATE_TRANSITION_PROCESS,
+            workflow.STATE_TRANSITION_FINISH,
+            workflow.STATE_TRANSITION_CANCEL
         ]
-    elif state == interfaces.STATE_MIXED:
+    elif state == workflow.STATE_MIXED:
         transitions = [
-            interfaces.STATE_TRANSITION_PROCESS,
-            interfaces.STATE_TRANSITION_FINISH,
-            interfaces.STATE_TRANSITION_CANCEL,
-            interfaces.STATE_TRANSITION_RENEW
+            workflow.STATE_TRANSITION_PROCESS,
+            workflow.STATE_TRANSITION_FINISH,
+            workflow.STATE_TRANSITION_CANCEL,
+            workflow.STATE_TRANSITION_RENEW
         ]
-    elif state == interfaces.STATE_PROCESSING:
+    elif state == workflow.STATE_PROCESSING:
         transitions = [
-            interfaces.STATE_TRANSITION_FINISH,
-            interfaces.STATE_TRANSITION_CANCEL,
-            interfaces.STATE_TRANSITION_RENEW
+            workflow.STATE_TRANSITION_FINISH,
+            workflow.STATE_TRANSITION_CANCEL,
+            workflow.STATE_TRANSITION_RENEW
         ]
     elif state is not None:
-        transitions = [interfaces.STATE_TRANSITION_RENEW]
+        transitions = [workflow.STATE_TRANSITION_RENEW]
     else:  # empty dropdown
         transitions = []
     return transitions
@@ -59,14 +59,14 @@ def transitions_of_salaried_state(state):
     """List of transitions for a given orders or bookings salaried state
     """
     transitions = []
-    if state == interfaces.SALARIED_YES:
-        transitions = [interfaces.SALARIED_TRANSITION_OUTSTANDING]
-    elif state == interfaces.SALARIED_NO:
-        transitions = [interfaces.SALARIED_TRANSITION_SALARIED]
+    if state == workflow.SALARIED_YES:
+        transitions = [workflow.SALARIED_TRANSITION_OUTSTANDING]
+    elif state == workflow.SALARIED_NO:
+        transitions = [workflow.SALARIED_TRANSITION_SALARIED]
     else:
         transitions = [
-            interfaces.SALARIED_TRANSITION_OUTSTANDING,
-            interfaces.SALARIED_TRANSITION_SALARIED
+            workflow.SALARIED_TRANSITION_OUTSTANDING,
+            workflow.SALARIED_TRANSITION_SALARIED
         ]
     return transitions
 
@@ -116,36 +116,36 @@ def do_transition_for(order_state, transition, context=None, request=None):
                 )
                 notify(event)
 
-    if transition == interfaces.SALARIED_TRANSITION_SALARIED:
-        _set_state(order_state, interfaces.SALARIED_YES, 'salaried')
+    if transition == workflow.SALARIED_TRANSITION_SALARIED:
+        _set_state(order_state, workflow.SALARIED_YES, 'salaried')
 
-    elif transition == interfaces.SALARIED_TRANSITION_OUTSTANDING:
-        _set_state(order_state, interfaces.SALARIED_NO, 'salaried')
+    elif transition == workflow.SALARIED_TRANSITION_OUTSTANDING:
+        _set_state(order_state, workflow.SALARIED_NO, 'salaried')
 
-    elif transition == interfaces.STATE_TRANSITION_RENEW:
+    elif transition == workflow.STATE_TRANSITION_RENEW:
         _set_state(
             order_state,
-            interfaces.STATE_NEW,
+            workflow.STATE_NEW,
             event_class=events.OrderSuccessfulEvent,
             event_emit_on_last=True
         )
 
-    elif transition == interfaces.STATE_TRANSITION_PROCESS:
+    elif transition == workflow.STATE_TRANSITION_PROCESS:
         event_class = None
-        if order_state.state == interfaces.STATE_RESERVED:
+        if order_state.state == workflow.STATE_RESERVED:
             event_class = events.BookingReservedToOrderedEvent
-        _set_state(order_state, interfaces.STATE_PROCESSING, event_class=event_class)  # noqa
+        _set_state(order_state, workflow.STATE_PROCESSING, event_class=event_class)  # noqa
 
-    elif transition == interfaces.STATE_TRANSITION_FINISH:
+    elif transition == workflow.STATE_TRANSITION_FINISH:
         event_class = None
-        if order_state.state == interfaces.STATE_RESERVED:
+        if order_state.state == workflow.STATE_RESERVED:
             event_class = events.BookingReservedToOrderedEvent
-        _set_state(order_state, interfaces.STATE_FINISHED, event_class=event_class)  # noqa
+        _set_state(order_state, workflow.STATE_FINISHED, event_class=event_class)  # noqa
 
-    elif transition == interfaces.STATE_TRANSITION_CANCEL:
+    elif transition == workflow.STATE_TRANSITION_CANCEL:
         _set_state(
             order_state,
-            interfaces.STATE_CANCELLED,
+            workflow.STATE_CANCELLED,
             event_class=events.BookingCancelledEvent
         )
 
