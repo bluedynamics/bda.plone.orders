@@ -1,0 +1,16 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:plone="http://namespaces.plone.org/plone"
+    xmlns:zcml="http://namespaces.zope.org/zcml">
+  <adapter factory=".serializer.SerializeBookingToJson" />
+  <adapter factory=".serializer.SerializeOrderToJson" />
+  <plone:service
+      accept="application/json"
+      factory=".order.Order"
+      for="*"
+      method="GET"
+      name="@shop-order"
+      permission="bda.plone.orders.ViewOrders"
+  />
+</configure>

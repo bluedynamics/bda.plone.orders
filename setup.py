@@ -40,8 +40,10 @@ setup(
         "bda.plone.checkout",
         "bda.plone.discount",
         "collective.js.datatables",
+        "plone.restapi",
         "Products.CMFPlone",
         "setuptools",
+        "simplejson>=2.1",  # able to serialize Decimal
         "six",
         "yafowil.plone>2.999",
         "yafowil.widget.array",
