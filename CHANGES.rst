@@ -4,6 +4,9 @@ Changelog
 2.0.dev0 (unreleased)
 ---------------------
 
+- Refactor out of `common.py` into different file to make development easier.
+  [jensens]
+
 - Remove Plone 4 specific ContentViewBase
   [jensens]
 
