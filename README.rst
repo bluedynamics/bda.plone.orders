@@ -218,23 +218,22 @@ and perform order related actions in the context of this container.
 Permissions
 ===========
 
-In general, custom shop deployments are likely to configure the permission and
-role settings according to their use cases.
+In general, custom shop deployments are likely to configure the permission and role settings according to their use cases.
 
-The Permissions ``bda.plone.orders.ViewOrderDirectly`` and
-``bda.plone.orders.ViewOwnOrders`` are granted to default Plone roles rather
-than Customer role, because the Customer role can be granted as a local role
-contextually, where the ``@@orders`` and ``@@showorder`` and ``@@showinvoice``
-views should be callable on ``ISite`` root. So a possible customer might be no
-customer on the site root.
+The Permissions ``bda.plone.orders.ViewOrderDirectly`` and ``bda.plone.orders.ViewOwnOrders`` are granted to default Plone roles rather than Customer role.
+The Customer role is intended to be granted as a local role contextually.
+The ``@@orders`` and ``@@showorder`` and ``@@showinvoice`` views should be callable on ``ISite`` root.
+So a possible customer might be no customer on the site root.
+
+Following as listing of the permissions and its purpose:
 
 
-Permission ``bda.plone.orders.ViewOrderDirectly``
-    This permission is used to grant view access to single order data related views,
+``bda.plone.orders.ViewOrderDirectly``
+    Grants view access to single order data related views,
     which are protected by ordernumber and related email address.
 
-    Currently order details and invoice are implemented as such views. A link to
-    them is sent in the order confirmation mail after successful checkout.
+    Currently order details and invoice are implemented as such views.
+    A link to them is sent in the order confirmation mail after successful checkout.
 
     By default, this permission is set for roles:
 
@@ -246,9 +245,8 @@ Permission ``bda.plone.orders.ViewOrderDirectly``
     role via generic setup's ``rolemap.xml`` of your integration package.
 
 
-Permission ``bda.plone.orders.ViewOwnOrders``
-    This permission is used to grant permission to view orders made by the
-    currently authenticated user.
+``bda.plone.orders.ViewOwnOrders``
+    Grants permission to view orders made by the currently authenticated user.
 
     By default, this permission is set for roles:
 
@@ -259,9 +257,8 @@ Permission ``bda.plone.orders.ViewOwnOrders``
     To customize this, edit ``rolemap.xml`` in your integration package as needed.
 
 
-Permission ``bda.plone.orders.ViewOrders``
-    This permission is used to grant permission to view all orders in a given
-    context or globally.
+``bda.plone.orders.ViewOrders``
+    Grants permission to view all orders in a given context or globally.
 
     By default, this permission is set for roles:
 
@@ -272,9 +269,9 @@ Permission ``bda.plone.orders.ViewOrders``
     To customize this, edit ``rolemap.xml`` in your integration package as needed.
 
 
-Permission ``bda.plone.orders.ModifyOrders``
-    This permission grants the user to modify orders. This includes to perform
-    state transitions on orders and bookings, and to modify booking comments.
+``bda.plone.orders.ModifyOrders``
+    Grants the user to modify orders.
+    This includes to perform state transitions on orders and bookings, and to modify booking comments.
 
     By default, this permission is set for roles:
 
@@ -285,8 +282,8 @@ Permission ``bda.plone.orders.ModifyOrders``
     To customize this, edit ``rolemap.xml`` in your integration package as needed.
 
 
-Permission ``bda.plone.orders.ExportOrders``
-    This permission grants the user to export orders in CSV format.
+``bda.plone.orders.ExportOrders``
+    Grants the user to export orders in CSV format.
 
     By default, this permission is set for roles:
 
@@ -297,9 +294,8 @@ Permission ``bda.plone.orders.ExportOrders``
     To customize this, edit ``rolemap.xml`` in your integration package as needed.
 
 
-Permission ``bda.plone.orders.ManageTemplates``
-    This permission grants the user to manage notification mail templates for
-    existing orders.
+``bda.plone.orders.ManageTemplates``
+    Grants the user to manage notification mail templates for existing orders.
 
     By default, this permission is set for roles:
 
@@ -310,9 +306,8 @@ Permission ``bda.plone.orders.ManageTemplates``
     To customize this, edit ``rolemap.xml`` in your integration package as needed.
 
 
-Permission ``bda.plone.orders.DelegateCustomerRole``
-    This permission grants the user to grant the ``Customer`` role to other users
-    via the localroles view.
+``bda.plone.orders.DelegateCustomerRole``
+    Grant the ``Customer`` role to other users via the localroles view.
 
     By default, this permission is set for roles:
 
@@ -322,9 +317,8 @@ Permission ``bda.plone.orders.DelegateCustomerRole``
     To customize this, edit ``rolemap.xml`` in your integration package as needed.
 
 
-Permission ``bda.plone.orders.DelegateVendorRole``
-    This permission grants the user to grant the ``Vendor`` role to other users
-    via the localroles view.
+``bda.plone.orders.DelegateVendorRole``
+    Grants the user to grant the ``Vendor`` role to other users via the localroles view.
 
     By default, this permission is set for no roles.
 
