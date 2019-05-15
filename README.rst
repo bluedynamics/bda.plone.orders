@@ -230,121 +230,105 @@ customer on the site root.
 
 
 Permission ``bda.plone.orders.ViewOrderDirectly``
--------------------------------------------------
+    This permission is used to grant view access to single order data related views,
+    which are protected by ordernumber and related email address.
 
-This permission is used to grant view access to single order data related views,
-which are protected by ordernumber and related email address.
+    Currently order details and invoice are implemented as such views. A link to
+    them is sent in the order confirmation mail after successful checkout.
 
-Currently order details and invoice are implemented as such views. A link to
-them is sent in the order confirmation mail after successful checkout.
+    By default, this permission is set for roles:
 
-By default, this permission is set for roles:
+    * Manager
+    * Site Administrator
+    * Authenticated
 
-* Manager
-* Site Administrator
-* Authenticated
-
-In order to expose this views to all visitors by default, add ``Anonymous``
-role via generic setup's ``rolemap.xml`` of your integration package.
+    In order to expose this views to all visitors by default, add ``Anonymous``
+    role via generic setup's ``rolemap.xml`` of your integration package.
 
 
 Permission ``bda.plone.orders.ViewOwnOrders``
----------------------------------------------
+    This permission is used to grant permission to view orders made by the
+    currently authenticated user.
 
-This permission is used to grant permission to view orders made by the
-currently authenticated user.
+    By default, this permission is set for roles:
 
-By default, this permission is set for roles:
+    * Manager
+    * Site Administrator
+    * Authenticated
 
-* Manager
-* Site Administrator
-* Authenticated
-
-To customize this, edit ``rolemap.xml`` in your integration package as needed.
+    To customize this, edit ``rolemap.xml`` in your integration package as needed.
 
 
 Permission ``bda.plone.orders.ViewOrders``
-------------------------------------------
+    This permission is used to grant permission to view all orders in a given
+    context or globally.
 
-This permission is used to grant permission to view all orders in a given
-context or globally.
+    By default, this permission is set for roles:
 
-By default, this permission is set for roles:
+    * Manager
+    * Site Administrator
+    * Vendor
 
-* Manager
-* Site Administrator
-* Vendor
-
-To customize this, edit ``rolemap.xml`` in your integration package as needed.
+    To customize this, edit ``rolemap.xml`` in your integration package as needed.
 
 
 Permission ``bda.plone.orders.ModifyOrders``
---------------------------------------------
+    This permission grants the user to modify orders. This includes to perform
+    state transitions on orders and bookings, and to modify booking comments.
 
-This permission grants the user to modify orders. This includes to perform
-state transitions on orders and bookings, and to modify booking comments.
+    By default, this permission is set for roles:
 
-By default, this permission is set for roles:
+    * Manager
+    * Site Administrator
+    * Vendor
 
-* Manager
-* Site Administrator
-* Vendor
-
-To customize this, edit ``rolemap.xml`` in your integration package as needed.
+    To customize this, edit ``rolemap.xml`` in your integration package as needed.
 
 
 Permission ``bda.plone.orders.ExportOrders``
---------------------------------------------
+    This permission grants the user to export orders in CSV format.
 
-This permission grants the user to export orders in CSV format.
+    By default, this permission is set for roles:
 
-By default, this permission is set for roles:
+    * Manager
+    * Site Administrator
+    * Vendor
 
-* Manager
-* Site Administrator
-* Vendor
-
-To customize this, edit ``rolemap.xml`` in your integration package as needed.
+    To customize this, edit ``rolemap.xml`` in your integration package as needed.
 
 
 Permission ``bda.plone.orders.ManageTemplates``
------------------------------------------------
+    This permission grants the user to manage notification mail templates for
+    existing orders.
 
-This permission grants the user to manage notification mail templates for
-existing orders.
+    By default, this permission is set for roles:
 
-By default, this permission is set for roles:
+    * Manager
+    * Site Administrator
+    * Vendor
 
-* Manager
-* Site Administrator
-* Vendor
-
-To customize this, edit ``rolemap.xml`` in your integration package as needed.
+    To customize this, edit ``rolemap.xml`` in your integration package as needed.
 
 
 Permission ``bda.plone.orders.DelegateCustomerRole``
-----------------------------------------------------
+    This permission grants the user to grant the ``Customer`` role to other users
+    via the localroles view.
 
-This permission grants the user to grant the ``Customer`` role to other users
-via the localroles view.
+    By default, this permission is set for roles:
 
-By default, this permission is set for roles:
+    * Manager
+    * Site Administrator
 
-* Manager
-* Site Administrator
-
-To customize this, edit ``rolemap.xml`` in your integration package as needed.
+    To customize this, edit ``rolemap.xml`` in your integration package as needed.
 
 
 Permission ``bda.plone.orders.DelegateVendorRole``
---------------------------------------------------
+    This permission grants the user to grant the ``Vendor`` role to other users
+    via the localroles view.
 
-This permission grants the user to grant the ``Vendor`` role to other users
-via the localroles view.
+    By default, this permission is set for no roles.
 
-By default, this permission is set for no roles.
-
-To customize this, edit ``rolemap.xml`` in your integration package as needed.
+    To customize this, edit ``rolemap.xml`` in your integration package as needed.
 
 
 How To allow anonymous users to buy items
@@ -465,6 +449,7 @@ Contributors
 - Harald Frießnegger
 - Ezra Holder
 - Benjamin Stefaner (benniboy)
+- Jens Klein
 
 
 Icons used are `Silk-Icons by FamFamFam <http://www.famfamfam.com/lab/icons/silk/>`_
