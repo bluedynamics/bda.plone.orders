@@ -16,6 +16,7 @@ from decimal import Decimal
 from node.ext.zodb.utils import reset_odict
 from plone.uuid.interfaces import IUUID
 from zope.component.hooks import getSite
+
 import logging
 import uuid
 

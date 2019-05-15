@@ -8,6 +8,7 @@ from Products.Five import BrowserView
 from yafowil.base import ExtractionError
 from yafowil.plone.form import YAMLForm
 
+
 TEMPLATE = DynamicMailTemplate(
     required=REQUIRED_TEMPLATE_ATTRS,
     defaults=DEFAULT_TEMPLATE_ATTRS

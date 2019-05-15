@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
-from Products.CMFPlone.interfaces import IPloneSiteRoot
 from bda.plone.orders.common import acquire_vendor_or_shop_root
 from bda.plone.orders.interfaces import IVendor
 from bda.plone.orders.tests import Orders_INTEGRATION_TESTING
 from bda.plone.orders.tests import set_browserlayer
+from Products.CMFPlone.interfaces import IPloneSiteRoot
 from zope.interface import alsoProvides
+
 import unittest
 
 

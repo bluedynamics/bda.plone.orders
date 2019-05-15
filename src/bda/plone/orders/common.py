@@ -5,12 +5,12 @@ from bda.plone.cart import get_item_stock
 from bda.plone.cart import get_object_by_uid
 from bda.plone.orders import permissions
 from bda.plone.orders import safe_encode
+from bda.plone.orders.interfaces import workflow
 from bda.plone.orders.interfaces.markers import IBuyable
 from bda.plone.orders.interfaces.markers import IVendor
-from bda.plone.orders.interfaces.orders import IOrderState
-from bda.plone.orders.interfaces.orders import IOrderData
 from bda.plone.orders.interfaces.orders import IBookingData
-from bda.plone.orders.interfaces import workflow
+from bda.plone.orders.interfaces.orders import IOrderData
+from bda.plone.orders.interfaces.orders import IOrderState
 from bda.plone.payment.interfaces import IPaymentData
 from decimal import Decimal
 from node.utils import instance_property
@@ -27,6 +27,7 @@ import logging
 import plone.api
 import time
 import uuid
+
 
 deprecated(
     "Import from new location instead",

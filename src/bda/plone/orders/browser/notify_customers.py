@@ -17,6 +17,7 @@ from yafowil.base import ExtractionError
 from yafowil.plone.form import YAMLBaseForm
 from zope.component.interfaces import ISite
 from zope.i18n import translate
+
 import json
 
 

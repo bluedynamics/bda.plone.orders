@@ -32,6 +32,7 @@ from six import StringIO
 from yafowil.base import ExtractionError
 from yafowil.controller import Controller
 from yafowil.plone.form import YAMLForm
+
 import csv
 import datetime
 import plone.api

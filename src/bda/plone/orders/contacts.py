@@ -5,11 +5,12 @@ from repoze.catalog.indexes.field import CatalogFieldIndex
 from repoze.catalog.indexes.text import CatalogTextIndex
 from repoze.catalog.query import Eq
 from souper.interfaces import ICatalogFactory
+from souper.soup import get_soup
 from souper.soup import NodeAttributeIndexer
 from souper.soup import NodeTextIndexer
 from souper.soup import Record
-from souper.soup import get_soup
 from zope.interface import implementer
+
 import random
 import uuid
 

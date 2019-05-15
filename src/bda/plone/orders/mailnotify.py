@@ -14,7 +14,9 @@ from bda.plone.orders.interfaces import IItemNotificationText
 from bda.plone.orders.interfaces import INotificationSettings
 from bda.plone.orders.interfaces import IPaymentText
 from bda.plone.orders.mailtemplates import get_booking_cancelled_templates
-from bda.plone.orders.mailtemplates import get_booking_reserved_to_ordered_templates  # noqa
+from bda.plone.orders.mailtemplates import (
+    get_booking_reserved_to_ordered_templates  # noqa
+)
 from bda.plone.orders.mailtemplates import get_order_templates
 from bda.plone.orders.mailtemplates import get_reservation_templates
 from bda.plone.orders.mailtemplates import get_stock_threshold_reached_templates  # noqa
@@ -27,6 +29,7 @@ from Products.CMFPlone.utils import safe_unicode
 from zope.component.hooks import getSite
 from zope.globalrequest import getRequest
 from zope.i18n import translate
+
 import logging
 import os
 import textwrap

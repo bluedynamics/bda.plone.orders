@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 from AccessControl import Unauthorized
-from Products.Five import BrowserView
 from bda.plone.orders import message_factory as _
 from bda.plone.orders import permissions
 from bda.plone.orders import vocabularies as vocabs
 from bda.plone.orders.common import get_vendor_by_uid
 from bda.plone.orders.common import get_vendor_uids_for
+from Products.Five import BrowserView
 from zope.i18n import translate
 from zope.i18nmessageid import Message
 

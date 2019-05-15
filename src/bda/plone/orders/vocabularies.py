@@ -9,6 +9,7 @@ from plone.i18n.normalizer.base import baseNormalize
 from plone.uuid.interfaces import IUUID
 from Products.CMFPlone.utils import safe_unicode
 from zope.component.hooks import getSite
+
 import plone.api
 
 

@@ -32,6 +32,7 @@ from souper.soup import LazyRecord
 from yafowil.base import factory
 from yafowil.utils import Tag
 from zope.i18n import translate
+
 import json
 import plone.api
 import six.moves.urllib.parse
