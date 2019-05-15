@@ -41,58 +41,58 @@ import yafowil.loader  # noqa
 
 
 class DialectExcelWithColons(csv.excel):
-    delimiter = ';'
+    delimiter = ";"
 
 
-csv.register_dialect('excel-colon', DialectExcelWithColons)
+csv.register_dialect("excel-colon", DialectExcelWithColons)
 
 
 ORDER_EXPORT_ATTRS = [
-    'uid',
-    'created',
-    'ordernumber',
-    'cart_discount_net',
-    'cart_discount_vat',
-    'personal_data.company',
-    'personal_data.email',
-    'personal_data.gender',
-    'personal_data.firstname',
-    'personal_data.phone',
-    'personal_data.lastname',
-    'billing_address.city',
-    'billing_address.country',
-    'billing_address.street',
-    'billing_address.zip',
-    'delivery_address.alternative_delivery',
-    'delivery_address.city',
-    'delivery_address.company',
-    'delivery_address.country',
-    'delivery_address.firstname',
-    'delivery_address.street',
-    'delivery_address.lastname',
-    'delivery_address.zip',
-    'order_comment.comment',
-    'payment_selection.payment',
+    "uid",
+    "created",
+    "ordernumber",
+    "cart_discount_net",
+    "cart_discount_vat",
+    "personal_data.company",
+    "personal_data.email",
+    "personal_data.gender",
+    "personal_data.firstname",
+    "personal_data.phone",
+    "personal_data.lastname",
+    "billing_address.city",
+    "billing_address.country",
+    "billing_address.street",
+    "billing_address.zip",
+    "delivery_address.alternative_delivery",
+    "delivery_address.city",
+    "delivery_address.company",
+    "delivery_address.country",
+    "delivery_address.firstname",
+    "delivery_address.street",
+    "delivery_address.lastname",
+    "delivery_address.zip",
+    "order_comment.comment",
+    "payment_selection.payment",
 ]
 COMPUTED_ORDER_EXPORT_ATTRS = odict()
 BOOKING_EXPORT_ATTRS = [
-    'title',
-    'buyable_comment',
-    'buyable_count',
-    'quantity_unit',
-    'net',
-    'discount_net',
-    'vat',
-    'currency',
-    'state',
-    'salaried',
-    'exported',
+    "title",
+    "buyable_comment",
+    "buyable_count",
+    "quantity_unit",
+    "net",
+    "discount_net",
+    "vat",
+    "currency",
+    "state",
+    "salaried",
+    "exported",
 ]
 COMPUTED_BOOKING_EXPORT_ATTRS = odict()
 
 
 def buyable_available(context, booking):
-    obj = get_object_by_uid(context, booking.attrs['buyable_uid'])
+    obj = get_object_by_uid(context, booking.attrs["buyable_uid"])
     if not obj:
         return None
     item_stock = get_item_stock(obj)
@@ -102,7 +102,7 @@ def buyable_available(context, booking):
 
 
 def buyable_overbook(context, booking):
-    obj = get_object_by_uid(context, booking.attrs['buyable_uid'])
+    obj = get_object_by_uid(context, booking.attrs["buyable_uid"])
     if not obj:
         return None
     item_stock = get_item_stock(obj)
@@ -112,15 +112,15 @@ def buyable_overbook(context, booking):
 
 
 def buyable_url(context, booking):
-    obj = get_object_by_uid(context, booking.attrs['buyable_uid'])
+    obj = get_object_by_uid(context, booking.attrs["buyable_uid"])
     if not obj:
         return None
     return obj.absolute_url()
 
 
-COMPUTED_BOOKING_EXPORT_ATTRS['buyable_available'] = buyable_available
-COMPUTED_BOOKING_EXPORT_ATTRS['buyable_overbook'] = buyable_overbook
-COMPUTED_BOOKING_EXPORT_ATTRS['buyable_url'] = buyable_url
+COMPUTED_BOOKING_EXPORT_ATTRS["buyable_available"] = buyable_available
+COMPUTED_BOOKING_EXPORT_ATTRS["buyable_overbook"] = buyable_overbook
+COMPUTED_BOOKING_EXPORT_ATTRS["buyable_url"] = buyable_url
 
 
 def cleanup_for_csv(value):
@@ -128,18 +128,18 @@ def cleanup_for_csv(value):
     """
     if isinstance(value, datetime.datetime):
         value = value.strftime(DT_FORMAT)
-    if value == '-':
-        value = ''
+    if value == "-":
+        value = ""
     if isinstance(value, float) or isinstance(value, Decimal):
-        value = str(value).replace('.', ',')
+        value = str(value).replace(".", ",")
     return safe_encode(value)
 
 
 class ExportOrdersForm(YAMLForm, BrowserView):
-    browser_template = ViewPageTemplateFile('templates/export.pt')
-    form_template = 'bda.plone.orders.browser:forms/orders_export.yaml'
+    browser_template = ViewPageTemplateFile("templates/export.pt")
+    form_template = "bda.plone.orders.browser:forms/orders_export.yaml"
     message_factory = _
-    action_resource = 'exportorders'
+    action_resource = "exportorders"
 
     def __call__(self):
         # check if authenticated user is vendor
@@ -156,28 +156,28 @@ class ExportOrdersForm(YAMLForm, BrowserView):
         return vendors_form_vocab()
 
     def vendor_mode(self):
-        return len(vendors_form_vocab()) > 2 and 'edit' or 'skip'
+        return len(vendors_form_vocab()) > 2 and "edit" or "skip"
 
     def customer_vocabulary(self):
         return customers_form_vocab()
 
     def customer_mode(self):
-        return len(customers_form_vocab()) > 2 and 'edit' or 'skip'
+        return len(customers_form_vocab()) > 2 and "edit" or "skip"
 
     def from_before_to(self, widget, data):
-        from_date = data.fetch('exportorders.from').extracted
-        to_date = data.fetch('exportorders.to').extracted
+        from_date = data.fetch("exportorders.from").extracted
+        to_date = data.fetch("exportorders.to").extracted
         if to_date <= from_date:
             raise ExtractionError(
-                _('from_date_before_to_date', default=u'From-date after to-date')
+                _("from_date_before_to_date", default=u"From-date after to-date")
             )
         return to_date
 
     def export(self, widget, data):
-        self.vendor = self.request.form.get('exportorders.vendor')
-        self.customer = self.request.form.get('exportorders.customer')
-        self.from_date = data.fetch('exportorders.from').extracted
-        self.to_date = data.fetch('exportorders.to').extracted
+        self.vendor = self.request.form.get("exportorders.vendor")
+        self.customer = self.request.form.get("exportorders.customer")
+        self.from_date = data.fetch("exportorders.from").extracted
+        self.to_date = data.fetch("exportorders.to").extracted
 
     def export_val(self, record, attr_name):
         """Get attribute from record and cleanup.
@@ -194,7 +194,7 @@ class ExportOrdersForm(YAMLForm, BrowserView):
         # fetch user vendor uids
         vendor_uids = get_vendor_uids_for()
         # base query for time range
-        query = Ge('created', self.from_date) & Le('created', self.to_date)
+        query = Ge("created", self.from_date) & Le("created", self.to_date)
         # filter by given vendor uid or user vendor uids
         vendor_uid = self.vendor
         if vendor_uid:
@@ -202,16 +202,16 @@ class ExportOrdersForm(YAMLForm, BrowserView):
             # raise if given vendor uid not in user vendor uids
             if vendor_uid not in vendor_uids:
                 raise Unauthorized
-            query = query & Any('vendor_uids', [vendor_uid])
+            query = query & Any("vendor_uids", [vendor_uid])
         else:
-            query = query & Any('vendor_uids', vendor_uids)
+            query = query & Any("vendor_uids", vendor_uids)
         # filter by customer if given
         customer = self.customer
         if customer:
-            query = query & Eq('creator', customer)
+            query = query & Eq("creator", customer)
         # prepare csv writer
         sio = StringIO()
-        ex = csv.writer(sio, dialect='excel-colon', quoting=csv.QUOTE_MINIMAL)
+        ex = csv.writer(sio, dialect="excel-colon", quoting=csv.QUOTE_MINIMAL)
         # exported column keys as first line
         ex.writerow(
             ORDER_EXPORT_ATTRS
@@ -247,15 +247,15 @@ class ExportOrdersForm(YAMLForm, BrowserView):
                     val = cleanup_for_csv(val)
                     booking_attrs.append(val)
                 ex.writerow(order_attrs + booking_attrs)
-                booking.attrs['exported'] = True
+                booking.attrs["exported"] = True
                 bookings_soup.reindex(booking)
         # create and return response
-        s_start = self.from_date.strftime('%G-%m-%d_%H-%M-%S')
-        s_end = self.to_date.strftime('%G-%m-%d_%H-%M-%S')
-        filename = 'orders-export-%s-%s.csv' % (s_start, s_end)
-        self.request.response.setHeader('Content-Type', 'text/csv')
+        s_start = self.from_date.strftime("%G-%m-%d_%H-%M-%S")
+        s_end = self.to_date.strftime("%G-%m-%d_%H-%M-%S")
+        filename = "orders-export-%s-%s.csv" % (s_start, s_end)
+        self.request.response.setHeader("Content-Type", "text/csv")
         self.request.response.setHeader(
-            'Content-Disposition', 'attachment; filename=%s' % filename
+            "Content-Disposition", "attachment; filename=%s" % filename
         )
         ret = sio.getvalue()
         sio.close()
@@ -273,14 +273,14 @@ class ExportOrdersContextual(BrowserView):
         # plone.app.event
         title = self.context.title or aq_parent(self.context).title
 
-        filename = u'{0}_{1}.csv'.format(
+        filename = u"{0}_{1}.csv".format(
             safe_unicode(title),
-            safe_unicode(datetime.datetime.now().strftime('%Y-%m-%d_%H-%M')),
+            safe_unicode(datetime.datetime.now().strftime("%Y-%m-%d_%H-%M")),
         )
         filename = safe_filename(filename)
         resp = self.request.response
-        resp.setHeader('content-type', 'text/csv; charset=utf-8')
-        resp.setHeader('content-disposition', 'attachment;filename={}'.format(filename))
+        resp.setHeader("content-type", "text/csv; charset=utf-8")
+        resp.setHeader("content-disposition", "attachment;filename={}".format(filename))
         return self.get_csv()
 
     def export_val(self, record, attr_name):
@@ -295,7 +295,7 @@ class ExportOrdersContextual(BrowserView):
 
         # prepare csv writer
         sio = StringIO()
-        ex = csv.writer(sio, dialect='excel-colon', quoting=csv.QUOTE_MINIMAL)
+        ex = csv.writer(sio, dialect="excel-colon", quoting=csv.QUOTE_MINIMAL)
         # exported column keys as first line
         ex.writerow(
             ORDER_EXPORT_ATTRS
@@ -308,17 +308,17 @@ class ExportOrdersContextual(BrowserView):
 
         # First, filter by allowed vendor areas
         vendor_uids = get_vendor_uids_for()
-        query_b = Any('vendor_uid', vendor_uids)
+        query_b = Any("vendor_uid", vendor_uids)
 
         # Second, query for the buyable
         query_cat = {}
-        query_cat['object_provides'] = IBuyable.__identifier__
-        query_cat['path'] = '/'.join(context.getPhysicalPath())
-        cat = getToolByName(context, 'portal_catalog')
+        query_cat["object_provides"] = IBuyable.__identifier__
+        query_cat["path"] = "/".join(context.getPhysicalPath())
+        cat = getToolByName(context, "portal_catalog")
         res = cat(**query_cat)
         buyable_uids = [IUUID(it.getObject()) for it in res]
 
-        query_b = query_b & Any('buyable_uid', buyable_uids)
+        query_b = query_b & Any("buyable_uid", buyable_uids)
 
         all_orders = {}
         for booking in bookings_soup.query(query_b):
@@ -335,7 +335,7 @@ class ExportOrdersContextual(BrowserView):
                 booking_attrs.append(val)
 
             # create order_attrs, if it doesn't exist
-            order_uid = booking.attrs.get('order_uid')
+            order_uid = booking.attrs.get("order_uid")
             if order_uid not in all_orders:
                 order = get_order(context, order_uid)
                 order_data = OrderData(context, order=order, vendor_uids=vendor_uids)

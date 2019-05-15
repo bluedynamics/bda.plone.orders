@@ -24,7 +24,7 @@ class OrdersLayer(PloneSandboxLayer):
         self.loadZCML(package=bda.plone.orders, context=configurationContext)
 
     def setUpPloneSite(self, portal):
-        self.applyProfile(portal, 'bda.plone.orders:default')
+        self.applyProfile(portal, "bda.plone.orders:default")
 
     def tearDownZope(self, app):
         pass

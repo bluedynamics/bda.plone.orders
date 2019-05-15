@@ -16,7 +16,7 @@ import uuid
 
 
 def get_contacts_soup(context):
-    return get_soup('bda_plone_orders_contacts', context)
+    return get_soup("bda_plone_orders_contacts", context)
 
 
 class ContactAttributeIndexer(NodeAttributeIndexer):
@@ -33,49 +33,49 @@ class ContactAttributeIndexer(NodeAttributeIndexer):
 class ContactsCatalogFactory(object):
     def __call__(self, context=None):
         catalog = Catalog()
-        uid_indexer = NodeAttributeIndexer('uid')
-        catalog[u'uid'] = CatalogFieldIndex(uid_indexer)
-        email_indexer = NodeAttributeIndexer('personal_data.email')
-        catalog[u'email'] = CatalogFieldIndex(email_indexer)
-        cid_indexer = NodeAttributeIndexer('cid')
-        catalog[u'cid'] = CatalogFieldIndex(cid_indexer)
-        firstname_indexer = ContactAttributeIndexer('personal_data.firstname')
-        catalog[u'firstname'] = CatalogFieldIndex(firstname_indexer)
-        lastname_indexer = ContactAttributeIndexer('personal_data.lastname')
-        catalog[u'lastname'] = CatalogFieldIndex(lastname_indexer)
-        zip_indexer = ContactAttributeIndexer('billing_address.zip')
-        catalog[u'zip'] = CatalogFieldIndex(zip_indexer)
-        street_indexer = ContactAttributeIndexer('billing_address.street')
-        catalog[u'street'] = CatalogFieldIndex(street_indexer)
+        uid_indexer = NodeAttributeIndexer("uid")
+        catalog[u"uid"] = CatalogFieldIndex(uid_indexer)
+        email_indexer = NodeAttributeIndexer("personal_data.email")
+        catalog[u"email"] = CatalogFieldIndex(email_indexer)
+        cid_indexer = NodeAttributeIndexer("cid")
+        catalog[u"cid"] = CatalogFieldIndex(cid_indexer)
+        firstname_indexer = ContactAttributeIndexer("personal_data.firstname")
+        catalog[u"firstname"] = CatalogFieldIndex(firstname_indexer)
+        lastname_indexer = ContactAttributeIndexer("personal_data.lastname")
+        catalog[u"lastname"] = CatalogFieldIndex(lastname_indexer)
+        zip_indexer = ContactAttributeIndexer("billing_address.zip")
+        catalog[u"zip"] = CatalogFieldIndex(zip_indexer)
+        street_indexer = ContactAttributeIndexer("billing_address.street")
+        catalog[u"street"] = CatalogFieldIndex(street_indexer)
         search_attributes = [
-            'personal_data.email',
-            'personal_data.firstname',
-            'personal_data.lastname',
+            "personal_data.email",
+            "personal_data.firstname",
+            "personal_data.lastname",
         ]
         text_indexer = NodeTextIndexer(search_attributes)
-        catalog[u'text'] = CatalogTextIndex(text_indexer)
+        catalog[u"text"] = CatalogTextIndex(text_indexer)
         return catalog
 
 
 # attributes for extracting contacts
 CONTACT_ATTRIBUTES = [
-    'personal_data.company',
-    'personal_data.email',
-    'personal_data.gender',
-    'personal_data.firstname',
-    'personal_data.phone',
-    'personal_data.lastname',
-    'billing_address.city',
-    'billing_address.country',
-    'billing_address.street',
-    'billing_address.zip',
-    'delivery_address.city',
-    'delivery_address.company',
-    'delivery_address.country',
-    'delivery_address.firstname',
-    'delivery_address.street',
-    'delivery_address.lastname',
-    'delivery_address.zip',
+    "personal_data.company",
+    "personal_data.email",
+    "personal_data.gender",
+    "personal_data.firstname",
+    "personal_data.phone",
+    "personal_data.lastname",
+    "billing_address.city",
+    "billing_address.country",
+    "billing_address.street",
+    "billing_address.zip",
+    "delivery_address.city",
+    "delivery_address.company",
+    "delivery_address.country",
+    "delivery_address.firstname",
+    "delivery_address.street",
+    "delivery_address.lastname",
+    "delivery_address.zip",
 ]
 
 
@@ -84,7 +84,7 @@ def extract_contact(order):
     """
     contact = dict()
     for attr in CONTACT_ATTRIBUTES:
-        contact[attr] = order.attrs.get(attr, u'').strip()
+        contact[attr] = order.attrs.get(attr, u"").strip()
     return contact
 
 
@@ -99,10 +99,10 @@ def next_contact_id(soup):
     attempts = MAX_NEW_CONTACT_ID_ATTEMPTS
     for i in range(attempts):
         next_id = random.randint(0, 1000000)
-        res = [r for r in soup.query(Eq('cid', next_id))]
+        res = [r for r in soup.query(Eq("cid", next_id))]
         if not res:
             return next_id
-    msg = u'Unable to create unique contact id after %i attempts.' % attempts
+    msg = u"Unable to create unique contact id after %i attempts." % attempts
     raise ValueError(msg)
 
 
@@ -112,10 +112,10 @@ def lookup_contact(context, contact):
     """
     soup = get_contacts_soup(context)
     query = (
-        Eq('firstname', contact['personal_data.firstname'].lower())
-        & Eq('lastname', contact['personal_data.lastname'].lower())
-        & Eq('zip', contact['billing_address.zip'].lower())
-        & Eq('street', contact['billing_address.street'].lower())
+        Eq("firstname", contact["personal_data.firstname"].lower())
+        & Eq("lastname", contact["personal_data.lastname"].lower())
+        & Eq("zip", contact["billing_address.zip"].lower())
+        & Eq("street", contact["billing_address.street"].lower())
     )
     res = soup.query(query)
     record = None
@@ -124,8 +124,8 @@ def lookup_contact(context, contact):
         break
     if not record:
         record = Record()
-        record.attrs['uid'] = uuid.uuid4()
-        record.attrs['cid'] = next_contact_id(soup)
+        record.attrs["uid"] = uuid.uuid4()
+        record.attrs["cid"] = next_contact_id(soup)
         record.attrs.update(list(contact.items()))
         soup.add(record)
     else:

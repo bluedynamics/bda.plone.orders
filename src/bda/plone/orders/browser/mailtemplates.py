@@ -20,8 +20,8 @@ class MailtemplatesView(BrowserView):
         for key in sorted(DEFAULT_TEMPLATE_ATTRS.keys()):
             items.append(
                 {
-                    'placeholder': key.replace('.', '_'),
-                    'example': DEFAULT_TEMPLATE_ATTRS[key],
+                    "placeholder": key.replace(".", "_"),
+                    "example": DEFAULT_TEMPLATE_ATTRS[key],
                 }
             )
         return items
@@ -30,8 +30,8 @@ class MailtemplatesView(BrowserView):
         tpllib = IDynamicMailTemplateLibraryStorage(self.context)
         items = []
         for key in tpllib.direct_keys():
-            preview = TEMPLATE(tpllib[key].decode('utf8'), DEFAULT_TEMPLATE_ATTRS)
-            items.append({'title': key, 'preview': preview})
+            preview = TEMPLATE(tpllib[key].decode("utf8"), DEFAULT_TEMPLATE_ATTRS)
+            items.append({"title": key, "preview": preview})
         return items
 
 
@@ -39,31 +39,31 @@ class MailtemplatesForm(YAMLForm):
     """Form to edit all the mailtemplates
     """
 
-    form_template = 'bda.plone.orders.browser:forms/mailtemplates.yaml'
+    form_template = "bda.plone.orders.browser:forms/mailtemplates.yaml"
     message_factory = _
 
     def value_tpl(self, widget, data):
         tpllib = IDynamicMailTemplateLibraryStorage(self.context)
         value = []
         for key in tpllib.direct_keys():
-            value.append({'title': key, 'template': tpllib[key]})
+            value.append({"title": key, "template": tpllib[key]})
         return value
 
     def validate_tpl(self, widget, data):
-        state, msg = TEMPLATE.validate(data.extracted.decode('utf8'))
+        state, msg = TEMPLATE.validate(data.extracted.decode("utf8"))
         if not state:
             raise ExtractionError(msg)
         return data.extracted
 
     def form_action(self, widget, data):
-        return '%s/@@mailtemplates' % self.context.absolute_url()
+        return "%s/@@mailtemplates" % self.context.absolute_url()
 
     def save(self, widget, data):
         tpllib = IDynamicMailTemplateLibraryStorage(self.context)
         newkeys = []
-        for record in data.extracted['array']:
-            newkeys.append(record['title'])
-            tpllib[record['title']] = record['template']
+        for record in data.extracted["array"]:
+            newkeys.append(record["title"])
+            tpllib[record["title"]] = record["template"]
         for key in tpllib.direct_keys():
             if key not in newkeys:
                 del tpllib[key]

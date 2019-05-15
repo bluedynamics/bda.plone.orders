@@ -16,7 +16,7 @@ import six
 
 # EN ##########################################################################
 
-ORDER_SUBJECT_EN = u'Order %s received.'
+ORDER_SUBJECT_EN = u"Order %s received."
 
 ORDER_BODY_EN = u"""
 Date: %(date)s
@@ -49,7 +49,7 @@ Ordered items:
 %(order_summary)s%(global_text)s%(payment_text)s
 """
 
-RESERVATION_SUBJECT_EN = u'Reservation %s received.'
+RESERVATION_SUBJECT_EN = u"Reservation %s received."
 
 RESERVATION_BODY_EN = u"""
 Date: %(date)s
@@ -134,9 +134,9 @@ Products getting out of stock:
 
 # DE ##########################################################################
 
-ORDER_SUBJECT_DE = u'Bestellung %s erhalten.'
+ORDER_SUBJECT_DE = u"Bestellung %s erhalten."
 
-RESERVATION_SUBJECT_DE = u'Reservierung %s erhalten.'
+RESERVATION_SUBJECT_DE = u"Reservierung %s erhalten."
 
 ORDER_BODY_DE = u"""
 Datum: %(date)s
@@ -241,9 +241,9 @@ Details zur Bestellung: %(portal_url)s/@@showorder?ordernumber=%(ordernumber)s
 
 # FR ##########################################################################
 
-ORDER_SUBJECT_FR = u'votre commande %s.'
+ORDER_SUBJECT_FR = u"votre commande %s."
 
-RESERVATION_SUBJECT_FR = u'votre réservation %s.'
+RESERVATION_SUBJECT_FR = u"votre réservation %s."
 
 ORDER_BODY_FR = u"""
 Date: %(date)s
@@ -335,9 +335,9 @@ Order details: %(portal_url)s/@@showorder?ordernumber=%(ordernumber)s
 
 # IT ##########################################################################
 
-ORDER_SUBJECT_IT = u'Il tuo ordine %s.'
+ORDER_SUBJECT_IT = u"Il tuo ordine %s."
 
-RESERVATION_SUBJECT_IT = u'Il tuo prenotazione %s.'
+RESERVATION_SUBJECT_IT = u"Il tuo prenotazione %s."
 
 ORDER_BODY_IT = u"""
 Data: %(date)s
@@ -427,9 +427,9 @@ Order details: %(portal_url)s/@@showorder?ordernumber=%(ordernumber)s
 
 # NO ##########################################################################
 
-ORDER_SUBJECT_NO = u'Bestilling %s mottatt.'
+ORDER_SUBJECT_NO = u"Bestilling %s mottatt."
 
-RESERVATION_SUBJECT_NO = u'Bestilling %s mottatt.'
+RESERVATION_SUBJECT_NO = u"Bestilling %s mottatt."
 
 ORDER_BODY_NO = u"""
 Dato: %(date)s
@@ -525,90 +525,90 @@ Order details: %(portal_url)s/@@showorder?ordernumber=%(ordernumber)s
 ###############################################################################
 
 ORDER_TEMPLATES = {
-    'en': {
-        'subject': ORDER_SUBJECT_EN,
-        'body': ORDER_BODY_EN,
-        'delivery_address': DELIVERY_ADDRESS_EN,
+    "en": {
+        "subject": ORDER_SUBJECT_EN,
+        "body": ORDER_BODY_EN,
+        "delivery_address": DELIVERY_ADDRESS_EN,
     },
-    'de': {
-        'subject': ORDER_SUBJECT_DE,
-        'body': ORDER_BODY_DE,
-        'delivery_address': DELIVERY_ADDRESS_DE,
+    "de": {
+        "subject": ORDER_SUBJECT_DE,
+        "body": ORDER_BODY_DE,
+        "delivery_address": DELIVERY_ADDRESS_DE,
     },
-    'fr': {
-        'subject': ORDER_SUBJECT_FR,
-        'body': ORDER_BODY_FR,
-        'delivery_address': DELIVERY_ADDRESS_FR,
+    "fr": {
+        "subject": ORDER_SUBJECT_FR,
+        "body": ORDER_BODY_FR,
+        "delivery_address": DELIVERY_ADDRESS_FR,
     },
-    'it': {
-        'subject': ORDER_SUBJECT_IT,
-        'body': ORDER_BODY_IT,
-        'delivery_address': DELIVERY_ADDRESS_IT,
+    "it": {
+        "subject": ORDER_SUBJECT_IT,
+        "body": ORDER_BODY_IT,
+        "delivery_address": DELIVERY_ADDRESS_IT,
     },
-    'no': {
-        'subject': ORDER_SUBJECT_NO,
-        'body': ORDER_BODY_NO,
-        'delivery_address': DELIVERY_ADDRESS_NO,
+    "no": {
+        "subject": ORDER_SUBJECT_NO,
+        "body": ORDER_BODY_NO,
+        "delivery_address": DELIVERY_ADDRESS_NO,
     },
 }
 
 RESERVATION_TEMPLATES = {
-    'en': {
-        'subject': RESERVATION_SUBJECT_EN,
-        'body': RESERVATION_BODY_EN,
-        'delivery_address': DELIVERY_ADDRESS_EN,
+    "en": {
+        "subject": RESERVATION_SUBJECT_EN,
+        "body": RESERVATION_BODY_EN,
+        "delivery_address": DELIVERY_ADDRESS_EN,
     },
-    'de': {
-        'subject': RESERVATION_SUBJECT_DE,
-        'body': RESERVATION_BODY_DE,
-        'delivery_address': DELIVERY_ADDRESS_DE,
+    "de": {
+        "subject": RESERVATION_SUBJECT_DE,
+        "body": RESERVATION_BODY_DE,
+        "delivery_address": DELIVERY_ADDRESS_DE,
     },
-    'fr': {
-        'subject': RESERVATION_SUBJECT_FR,
-        'body': RESERVATION_BODY_FR,
-        'delivery_address': DELIVERY_ADDRESS_FR,
+    "fr": {
+        "subject": RESERVATION_SUBJECT_FR,
+        "body": RESERVATION_BODY_FR,
+        "delivery_address": DELIVERY_ADDRESS_FR,
     },
-    'it': {
-        'subject': RESERVATION_SUBJECT_IT,
-        'body': RESERVATION_BODY_IT,
-        'delivery_address': DELIVERY_ADDRESS_IT,
+    "it": {
+        "subject": RESERVATION_SUBJECT_IT,
+        "body": RESERVATION_BODY_IT,
+        "delivery_address": DELIVERY_ADDRESS_IT,
     },
-    'no': {
-        'subject': RESERVATION_SUBJECT_NO,
-        'body': RESERVATION_BODY_NO,
-        'delivery_address': DELIVERY_ADDRESS_NO,
+    "no": {
+        "subject": RESERVATION_SUBJECT_NO,
+        "body": RESERVATION_BODY_NO,
+        "delivery_address": DELIVERY_ADDRESS_NO,
     },
 }
 
 CANCELLED_BOOKING_TEMPLATES = {
-    'en': {'subject': CANCELLED_BOOKING_SUBJECT_EN, 'body': CANCELLED_BOOKING_BODY_EN},
-    'de': {'subject': CANCELLED_BOOKING_SUBJECT_DE, 'body': CANCELLED_BOOKING_BODY_DE},
-    'fr': {'subject': CANCELLED_BOOKING_SUBJECT_FR, 'body': CANCELLED_BOOKING_BODY_FR},
-    'it': {'subject': CANCELLED_BOOKING_SUBJECT_IT, 'body': CANCELLED_BOOKING_BODY_IT},
-    'no': {'subject': CANCELLED_BOOKING_SUBJECT_NO, 'body': CANCELLED_BOOKING_BODY_NO},
+    "en": {"subject": CANCELLED_BOOKING_SUBJECT_EN, "body": CANCELLED_BOOKING_BODY_EN},
+    "de": {"subject": CANCELLED_BOOKING_SUBJECT_DE, "body": CANCELLED_BOOKING_BODY_DE},
+    "fr": {"subject": CANCELLED_BOOKING_SUBJECT_FR, "body": CANCELLED_BOOKING_BODY_FR},
+    "it": {"subject": CANCELLED_BOOKING_SUBJECT_IT, "body": CANCELLED_BOOKING_BODY_IT},
+    "no": {"subject": CANCELLED_BOOKING_SUBJECT_NO, "body": CANCELLED_BOOKING_BODY_NO},
 }
 
 BOOKING_RESERVED_TO_ORDERED_TEMPLATES = {
-    'en': {
-        'subject': BOOKING_RESERVED_TO_ORDERED_SUBJECT_EN,
-        'body': BOOKING_RESERVED_TO_ORDERED_BODY_EN,
+    "en": {
+        "subject": BOOKING_RESERVED_TO_ORDERED_SUBJECT_EN,
+        "body": BOOKING_RESERVED_TO_ORDERED_BODY_EN,
     },
-    'de': {
-        'subject': BOOKING_RESERVED_TO_ORDERED_SUBJECT_DE,
-        'body': BOOKING_RESERVED_TO_ORDERED_BODY_DE,
+    "de": {
+        "subject": BOOKING_RESERVED_TO_ORDERED_SUBJECT_DE,
+        "body": BOOKING_RESERVED_TO_ORDERED_BODY_DE,
     },
 }
 
 STOCK_THRESHOLD_REACHED_TEMPLATES = {
-    'en': {
-        'subject': STOCK_THRESHOLD_REACHED_SUBJECT_EN,
-        'body': STOCK_THRESHOLD_REACHED_BODY_EN,
+    "en": {
+        "subject": STOCK_THRESHOLD_REACHED_SUBJECT_EN,
+        "body": STOCK_THRESHOLD_REACHED_BODY_EN,
     }
 }
 
 
-def _get_templates(context, TPL, default='en'):
-    lang = context.restrictedTraverse('@@plone_portal_state').language()
+def _get_templates(context, TPL, default="en"):
+    lang = context.restrictedTraverse("@@plone_portal_state").language()
     return TPL.get(lang, TPL[default])
 
 
@@ -644,22 +644,22 @@ REQUIRED_TEMPLATE_ATTRS = list()
 # dictionary with attributes valid in mail template as keys, values are used
 # for template validation
 DEFAULT_TEMPLATE_ATTRS = {
-    'created': '14.2.2014 14:42',
-    'ordernumber': '123456',
-    'salaried': ifaces.SALARIED_NO,
-    'state': ifaces.STATE_NEW,
-    'personal_data.company': 'ACME LTD.',
-    'personal_data.email': 'max.mustermann@example.com',
-    'personal_data.gender': 'male',
-    'personal_data.firstname': 'Max',
-    'personal_data.phone': '+43 123 456 78 90',
-    'personal_data.lastname': 'Mustermann',
-    'billing_address.city': 'Springfield',
-    'billing_address.country': 'Austria',
-    'billing_address.street': 'Musterstrasse',
-    'billing_address.zip': '1234',
-    'order_comment.comment': 'Comment',
-    'payment_selection.payment': 'six_payment',
+    "created": "14.2.2014 14:42",
+    "ordernumber": "123456",
+    "salaried": ifaces.SALARIED_NO,
+    "state": ifaces.STATE_NEW,
+    "personal_data.company": "ACME LTD.",
+    "personal_data.email": "max.mustermann@example.com",
+    "personal_data.gender": "male",
+    "personal_data.firstname": "Max",
+    "personal_data.phone": "+43 123 456 78 90",
+    "personal_data.lastname": "Mustermann",
+    "billing_address.city": "Springfield",
+    "billing_address.country": "Austria",
+    "billing_address.street": "Musterstrasse",
+    "billing_address.zip": "1234",
+    "order_comment.comment": "Comment",
+    "payment_selection.payment": "six_payment",
 }
 
 
@@ -682,27 +682,27 @@ class DynamicMailTemplate(object):
             if key in defaults:
                 continue
             raise ValueError(
-                u'All required must be in defaults too, missing: ' u'{0}'.format(key)
+                u"All required must be in defaults too, missing: " u"{0}".format(key)
             )
         self.required = required
         self.defaults = defaults
 
     def normalized(self, keys=[], indict={}):
         if keys and indict:
-            raise ValueError('Only one kwargs please.')
+            raise ValueError("Only one kwargs please.")
         if keys:
             result = []
             for key in keys:
-                result.append(key.replace('.', '_'))
+                result.append(key.replace(".", "_"))
             return result
         if indict:
             result = {}
             for key, value in indict.items():
                 if isinstance(value, str):
-                    value = value.decode('utf-8')
-                result[key.replace('.', '_')] = value
+                    value = value.decode("utf-8")
+                result[key.replace(".", "_")] = value
             return result
-        raise ValueError('Only one kwargs please.')
+        raise ValueError("Only one kwargs please.")
 
     def validate(self, template):
         """validates if the template can be rendered.
@@ -713,22 +713,22 @@ class DynamicMailTemplate(object):
             a unicode string meant to be rendered using python string format
             method
         """
-        assert isinstance(template, six.text_type), 'template must be unicode'
+        assert isinstance(template, six.text_type), "template must be unicode"
         try:
             self(template, self.defaults)
         except KeyError as e:
             return False, u'Variable "{0}" is not available.'.format(e.message)
         except Exception as e:
             return False, e.message
-        return True, ''
+        return True, ""
 
     def __call__(self, template, data):
         """render template with data
         """
-        assert isinstance(template, six.text_type), 'template must be unicode'
+        assert isinstance(template, six.text_type), "template must be unicode"
         for key in self.required:
             if key not in data:
-                raise KeyError(u'Required key {0} is missing.'.format(key))
+                raise KeyError(u"Required key {0} is missing.".format(key))
         return template.format(**self.normalized(indict=data))
 
 
@@ -741,7 +741,7 @@ class DynamicMailTemplateLibraryAquierer(object):
         self.context = context
 
     def _parent(self):
-        if not hasattr(self.context, '__parent__'):
+        if not hasattr(self.context, "__parent__"):
             return None
         if self.context.__parent__:
             dmt_lib = queryAdapter(self.context.__parent__, IDynamicMailTemplateLibrary)
@@ -757,13 +757,13 @@ class DynamicMailTemplateLibraryAquierer(object):
         parent = self._parent()
         if parent is not None:
             return parent[name]
-        raise KeyError('Can not aquire key %s' % name)
+        raise KeyError("Can not aquire key %s" % name)
 
     def __setitem__(self, name, template):
-        raise NotImplementedError('acquierer do not set on parent (permissions)')
+        raise NotImplementedError("acquierer do not set on parent (permissions)")
 
     def __delitem__(self, name):
-        raise NotImplementedError('acquierer do not delete on parent (permissions)')
+        raise NotImplementedError("acquierer do not delete on parent (permissions)")
 
 
 @implementer(IDynamicMailTemplateLibraryStorage)

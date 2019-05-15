@@ -80,7 +80,7 @@ def do_transition_for(order_state, transition, context=None, request=None):
     def _set_state(
         data,
         state_value,
-        state_attr='state',
+        state_attr="state",
         event_class=None,
         event_emit_on_last=False,
     ):
@@ -89,7 +89,7 @@ def do_transition_for(order_state, transition, context=None, request=None):
         #                    Case OrderData    |
         # BookingData or OrderData    |        |
         #                   V         V        V
-        bookings = getattr(data, 'bookings', [data])
+        bookings = getattr(data, "bookings", [data])
         bookings = list(bookings)  # make list out of generator to have a len
         bookings_len = len(bookings)
         for cnt, booking_data in enumerate(bookings):
@@ -114,16 +114,16 @@ def do_transition_for(order_state, transition, context=None, request=None):
                 event = event_class(
                     context=context,
                     request=request,
-                    order_uid=booking_attrs['order_uid'],
+                    order_uid=booking_attrs["order_uid"],
                     booking_attrs=booking_attrs,
                 )
                 notify(event)
 
     if transition == workflow.SALARIED_TRANSITION_SALARIED:
-        _set_state(order_state, workflow.SALARIED_YES, 'salaried')
+        _set_state(order_state, workflow.SALARIED_YES, "salaried")
 
     elif transition == workflow.SALARIED_TRANSITION_OUTSTANDING:
-        _set_state(order_state, workflow.SALARIED_NO, 'salaried')
+        _set_state(order_state, workflow.SALARIED_NO, "salaried")
 
     elif transition == workflow.STATE_TRANSITION_RENEW:
         _set_state(

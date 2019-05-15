@@ -19,22 +19,22 @@ import plone.api
 
 def vendors_form_vocab():
     vendors = vocabs.vendors_vocab_for()
-    return [('', _('all', default='All'))] + vendors
+    return [("", _("all", default="All"))] + vendors
 
 
 def customers_form_vocab():
     customers = vocabs.customers_vocab_for()
-    return [('', _('all', default='All'))] + customers
+    return [("", _("all", default="All"))] + customers
 
 
 def states_form_vocab():
     states = vocabs.state_vocab()
-    return [('', _('all', default='All'))] + list(states.items())
+    return [("", _("all", default="All"))] + list(states.items())
 
 
 def salaried_form_vocab():
     salaried = vocabs.salaried_vocab()
-    return [('', _('all', default='All'))] + list(salaried.items())
+    return [("", _("all", default="All"))] + list(salaried.items())
 
 
 class Translate(object):
@@ -52,7 +52,7 @@ class Transition(BrowserView):
 
     @property
     def vendor_uids(self):
-        vendor_uid = self.request.form.get('vendor', '')
+        vendor_uid = self.request.form.get("vendor", "")
         if vendor_uid:
             vendor_uids = [vendor_uid]
             vendor = get_vendor_by_uid(self.context, vendor_uid)
@@ -66,8 +66,8 @@ class Transition(BrowserView):
         return vendor_uids
 
     def __call__(self):
-        uid = self.request['uid']
-        transition = self.request['transition']
+        uid = self.request["uid"]
+        transition = self.request["transition"]
         vendor_uids = self.vendor_uids
         record = self.do_transition(uid, transition, vendor_uids)
         return self.dropdown(self.context, self.request, record).render()

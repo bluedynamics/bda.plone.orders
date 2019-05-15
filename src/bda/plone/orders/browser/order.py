@@ -58,7 +58,7 @@ class OrderDataView(BrowserView):
             return self._uid
         # fallback to lookup order uid on request
         except AttributeError:
-            return self.request.form.get('uid', None)
+            return self.request.form.get("uid", None)
 
     @uid.setter
     def uid(self, value):
@@ -68,10 +68,10 @@ class OrderDataView(BrowserView):
     def order(self):
         if not self.uid:
             err = _(
-                'statusmessage_err_no_order_uid_given',
-                default='Cannot show order information because no order uid was given.',  # noqa
+                "statusmessage_err_no_order_uid_given",
+                default="Cannot show order information because no order uid was given.",  # noqa
             )
-            IStatusMessage(self.request).addStatusMessage(err, 'error')
+            IStatusMessage(self.request).addStatusMessage(err, "error")
             raise Redirect(self.context.absolute_url())
         return dict(self.order_data.order.attrs)
 
@@ -89,49 +89,49 @@ class ProtectedOrderDataView(ContentTemplateView):
     Expect ordernumber and email to grant access to view details.
     """
 
-    view_template = ViewPageTemplateFile('templates/protected_view.pt')
+    view_template = ViewPageTemplateFile("templates/protected_view.pt")
     content_template = None
     uid = None
-    ordernumber = ''
-    email = ''
-    wrapper_css = 'protected_order_data'
+    ordernumber = ""
+    email = ""
+    wrapper_css = "protected_order_data"
 
     def _form_handler(self, widget, data):
-        self.ordernumber = data['ordernumber'].extracted
-        self.email = data['email'].extracted
+        self.ordernumber = data["ordernumber"].extracted
+        self.email = data["email"].extracted
 
     def render_auth_form(self):
         # Render the authentication form for anonymous users.
         req = self.request
         action = req.getURL()
-        ordernumber = self.ordernumber or req.form.get('ordernumber', '')
-        email = self.email or req.form.get('email', '')
-        form = factory('form', name='content_auth_form', props={'action': action})
-        form['ordernumber'] = factory(
-            'div:label:error:text',
+        ordernumber = self.ordernumber or req.form.get("ordernumber", "")
+        email = self.email or req.form.get("email", "")
+        form = factory("form", name="content_auth_form", props={"action": action})
+        form["ordernumber"] = factory(
+            "div:label:error:text",
             value=ordernumber,
             props={
-                'label': _('anon_auth_label_ordernumber', default=u'Ordernumber'),
-                'div.class': 'ordernumber',
-                'required': True,
+                "label": _("anon_auth_label_ordernumber", default=u"Ordernumber"),
+                "div.class": "ordernumber",
+                "required": True,
             },
         )
-        form['email'] = factory(
-            'div:label:error:text',
+        form["email"] = factory(
+            "div:label:error:text",
             value=email,
             props={
-                'label': _('anon_auth_label_email', default=u'Email'),
-                'div.class': 'email',
-                'required': True,
+                "label": _("anon_auth_label_email", default=u"Email"),
+                "div.class": "email",
+                "required": True,
             },
         )
-        form['submit'] = factory(
-            'div:label:submit',
+        form["submit"] = factory(
+            "div:label:submit",
             props={
-                'label': _('anon_auth_label_submit', default=u'Submit'),
-                'div.class': 'submit',
-                'handler': self._form_handler,
-                'action': 'submit',
+                "label": _("anon_auth_label_submit", default=u"Submit"),
+                "div.class": "submit",
+                "handler": self._form_handler,
+                "action": "submit",
             },
         )
         controller = Controller(form, req)
@@ -139,18 +139,18 @@ class ProtectedOrderDataView(ContentTemplateView):
 
     def __call__(self):
         req = self.request
-        ordernumber = req.form.get('content_auth_form.ordernumber', None)
-        email = req.form.get('content_auth_form.email', None)
+        ordernumber = req.form.get("content_auth_form.ordernumber", None)
+        email = req.form.get("content_auth_form.email", None)
         order = None
         errs = []
         if ordernumber and email:
             orders_soup = get_orders_soup(self.context)
-            order = orders_soup.query(Eq('ordernumber', ordernumber))
+            order = orders_soup.query(Eq("ordernumber", ordernumber))
             try:
                 # generator should have only one item
                 order = next(order)
                 try:
-                    assert order.attrs['personal_data.email'] == email
+                    assert order.attrs["personal_data.email"] == email
                 except AssertionError:
                     # Don't raise Unauthorized, as this allows to draw
                     # conclusions on existing ordernumbers
@@ -160,28 +160,28 @@ class ProtectedOrderDataView(ContentTemplateView):
                 order = None
         if not email:
             err = _(
-                'anon_auth_err_email',
-                default=u'Please provide the email adress you used for '
-                u'submitting the order.',
+                "anon_auth_err_email",
+                default=u"Please provide the email adress you used for "
+                u"submitting the order.",
             )
             errs.append(err)
         if not ordernumber:
             err = _(
-                'anon_auth_err_ordernumber', default=u'Please provide the ordernumber'
+                "anon_auth_err_ordernumber", default=u"Please provide the ordernumber"
             )
             errs.append(err)
         if email and ordernumber and not order:
             err = _(
-                'anon_auth_err_order',
-                default=u'No order could be found for the given ' u'credentials',
+                "anon_auth_err_order",
+                default=u"No order could be found for the given " u"credentials",
             )
             errs.append(err)
         if not ordernumber and not email:
             # first call of this form
             errs = []
         for err in errs:
-            IStatusMessage(self.request).addStatusMessage(err, 'error')
-        self.uid = order.attrs['uid'] if order else None
+            IStatusMessage(self.request).addStatusMessage(err, "error")
+        self.uid = order.attrs["uid"] if order else None
         return self.view_template(self)
 
 
@@ -195,13 +195,13 @@ class BookingCancel(BrowserView):
     """
 
     def __call__(self):
-        booking_uid = self.request.form.get('uid')
+        booking_uid = self.request.form.get("uid")
         if not booking_uid:
-            raise BadRequest('value not given')
+            raise BadRequest("value not given")
         try:
             booking_data = BookingData(self.context, uid=uuid.UUID(booking_uid))  # noqa
             if booking_data.booking is None:
-                raise ValueError('invalid value (no booking found)')
+                raise ValueError("invalid value (no booking found)")
             do_transition_for(
                 booking_data,
                 transition=ifaces.STATE_TRANSITION_CANCEL,
@@ -209,11 +209,11 @@ class BookingCancel(BrowserView):
                 request=self.request,
             )
         except ValueError:
-            raise BadRequest('something is wrong with the value')
-        order_uid = booking_data.booking.attrs['order_uid']
-        target = u'{}?uid={}'.format(self.context.absolute_url(), order_uid)
+            raise BadRequest("something is wrong with the value")
+        order_uid = booking_data.booking.attrs["order_uid"]
+        target = u"{}?uid={}".format(self.context.absolute_url(), order_uid)
         action = AjaxAction(
-            target=target, name='order', mode='replace', selector='.order_details'
+            target=target, name="order", mode="replace", selector=".order_details"
         )
         ajax_continue(self.request, action)
 
@@ -223,14 +223,14 @@ class BookingUpdateComment(BrowserView):
     """
 
     def __call__(self):
-        booking_uid = self.request.form.get('uid')
+        booking_uid = self.request.form.get("uid")
         if not booking_uid:
-            raise BadRequest('value not given')
-        booking_comment = self.request.form.get('comment')
+            raise BadRequest("value not given")
+        booking_comment = self.request.form.get("comment")
         try:
             booking_update_comment(self, uuid.UUID(booking_uid), booking_comment)
         except ValueError:
-            raise BadRequest('something is wrong with the value')
+            raise BadRequest("something is wrong with the value")
 
 
 ###############################################################################
@@ -263,10 +263,10 @@ class OrderViewBase(OrderDataView):
         # XXX: node.ext.zodb or souper bug with double linked list. figure out
         order = self.order_data.order.attrs
         # order = self.order
-        title = translate(order['shipping_label'], context=self.request)
-        if order['shipping_description']:
-            title += ' (%s)' % translate(
-                order['shipping_description'], context=self.request
+        title = translate(order["shipping_label"], context=self.request)
+        if order["shipping_description"]:
+            title += " (%s)" % translate(
+                order["shipping_description"], context=self.request
             )
         return title
 
@@ -292,8 +292,8 @@ class OrderViewBase(OrderDataView):
         currency = None
         for booking in self.order_data.bookings:
             if currency is None:
-                currency = booking.attrs.get('currency')
-            if currency != booking.attrs.get('currency'):
+                currency = booking.attrs.get("currency")
+            if currency != booking.attrs.get("currency"):
                 return None
         return currency
 
@@ -303,38 +303,38 @@ class OrderViewBase(OrderDataView):
         can_cancel_booking = self.can_cancel_booking
         ret = list()
         for booking in self.order_data.bookings:
-            obj = get_object_by_uid(self.context, booking.attrs['buyable_uid'])
-            state = vocabs.state_vocab()[booking.attrs.get('state')]
-            salaried = vocabs.salaried_vocab()[booking.attrs.get('salaried')]
+            obj = get_object_by_uid(self.context, booking.attrs["buyable_uid"])
+            state = vocabs.state_vocab()[booking.attrs.get("state")]
+            salaried = vocabs.salaried_vocab()[booking.attrs.get("salaried")]
             cancel_target = None
             if can_cancel_booking and state != ifaces.STATE_CANCELLED:
                 cancel_target = addTokenToUrl(
-                    '{}?uid={}'.format(
-                        self.context.absolute_url(), booking.attrs['uid']
+                    "{}?uid={}".format(
+                        self.context.absolute_url(), booking.attrs["uid"]
                     )
                 )
             ret.append(
                 {
-                    'uid': booking.attrs['uid'],
-                    'title': booking.attrs['title'],
-                    'url': obj.absolute_url() if obj else None,
-                    'cancel_target': cancel_target,
-                    'count': booking.attrs['buyable_count'],
-                    'net': ascur(booking.attrs.get('net', 0.0)),
-                    'discount_net': ascur(float(booking.attrs['discount_net'])),
-                    'vat': booking.attrs.get('vat', 0.0),
-                    'comment': booking.attrs['buyable_comment'],
-                    'quantity_unit': booking.attrs.get('quantity_unit'),
-                    'currency': booking.attrs.get('currency'),
-                    'state': state,
-                    'salaried': salaried,
+                    "uid": booking.attrs["uid"],
+                    "title": booking.attrs["title"],
+                    "url": obj.absolute_url() if obj else None,
+                    "cancel_target": cancel_target,
+                    "count": booking.attrs["buyable_count"],
+                    "net": ascur(booking.attrs.get("net", 0.0)),
+                    "discount_net": ascur(float(booking.attrs["discount_net"])),
+                    "vat": booking.attrs.get("vat", 0.0),
+                    "comment": booking.attrs["buyable_comment"],
+                    "quantity_unit": booking.attrs.get("quantity_unit"),
+                    "currency": booking.attrs.get("currency"),
+                    "state": state,
+                    "salaried": salaried,
                 }
             )
         return ret
 
     @property
     def can_modify_order(self):
-        return checkPermission('bda.plone.orders.ModifyOrders', self.context)
+        return checkPermission("bda.plone.orders.ModifyOrders", self.context)
 
     @property
     def can_cancel_booking(self):
@@ -342,11 +342,11 @@ class OrderViewBase(OrderDataView):
 
     @property
     def gender(self):
-        gender = self.order['personal_data.gender']
-        if gender == 'male':
-            return _co('male', 'Male')
-        if gender == 'female':
-            return _co('female', 'Female')
+        gender = self.order["personal_data.gender"]
+        if gender == "male":
+            return _co("male", "Male")
+        if gender == "female":
+            return _co("female", "Female")
         return gender
 
     @property
@@ -354,7 +354,7 @@ class OrderViewBase(OrderDataView):
         # XXX: node.ext.zodb or souper bug with double linked list. figure out
         order = self.order_data.order.attrs
         # order = self.order
-        title = translate(order['payment_label'], context=self.request)
+        title = translate(order["payment_label"], context=self.request)
         return title
 
     @property
@@ -364,10 +364,10 @@ class OrderViewBase(OrderDataView):
 
     @property
     def tid(self):
-        tid = [it for it in self.order_data.tid if it != 'none']
+        tid = [it for it in self.order_data.tid if it != "none"]
         if not tid:
-            return _('none', default=u'None')
-        return ', '.join(tid)
+            return _("none", default=u"None")
+        return ", ".join(tid)
 
     @property
     def state(self):
@@ -376,18 +376,18 @@ class OrderViewBase(OrderDataView):
 
     @property
     def created(self):
-        value = self.order.get('created', _('unknown', default=u'Unknown'))
+        value = self.order.get("created", _("unknown", default=u"Unknown"))
         if value:
             value = value.strftime(DT_FORMAT)
         return value
 
     def exported(self, item):
-        return item['exported'] and _('yes', default=u'Yes') or _('no', default=u'No')
+        return item["exported"] and _("yes", default=u"Yes") or _("no", default=u"No")
 
 
 class OrderView(OrderViewBase):
     def __call__(self):
-        vendor_uid = self.request.form.get('vendor', '')
+        vendor_uid = self.request.form.get("vendor", "")
         if vendor_uid:
             self.vendor_uids = [vendor_uid]
             vendor = get_vendor_by_uid(self.context, vendor_uid)
@@ -407,21 +407,21 @@ class OrderView(OrderViewBase):
 
     @property
     def ordernumber(self):
-        return self.order_data.order.attrs['ordernumber']
+        return self.order_data.order.attrs["ordernumber"]
 
 
 class MyOrderView(OrderViewBase):
     def __call__(self):
         # check if order was created by authenticated user
         user = plone.api.user.get_current()
-        if user.getId() != self.order['creator']:
+        if user.getId() != self.order["creator"]:
             raise Unauthorized
         return super(MyOrderView, self).__call__()
 
     @property
     def ordernumber(self):
-        return self.order_data.order.attrs['ordernumber']
+        return self.order_data.order.attrs["ordernumber"]
 
 
 class DirectOrderView(OrderViewBase, ProtectedOrderDataView):
-    content_template = ViewPageTemplateFile('templates/order.pt')
+    content_template = ViewPageTemplateFile("templates/order.pt")

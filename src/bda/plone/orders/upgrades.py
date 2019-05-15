@@ -21,7 +21,7 @@ import logging
 import uuid
 
 
-logger = logging.getLogger('bda.plone.orders UPGRADE')
+logger = logging.getLogger("bda.plone.orders UPGRADE")
 
 
 def fix_bookings_vendor_uid(ctx=None):
@@ -34,23 +34,23 @@ def fix_bookings_vendor_uid(ctx=None):
     for item in data.values():
         update = False
         try:
-            item.attrs['vendor_uid']
-            if not isinstance(item.attrs['vendor_uid'], uuid.UUID):
+            item.attrs["vendor_uid"]
+            if not isinstance(item.attrs["vendor_uid"], uuid.UUID):
                 update = True
         except KeyError:
             update = True
         if not update:
             continue
-        buyable_uid = item.attrs['buyable_uid']
+        buyable_uid = item.attrs["buyable_uid"]
         obj = get_object_by_uid(portal, buyable_uid)
         if not obj:
             shop = acquire_vendor_or_shop_root(portal)
         else:
             shop = acquire_vendor_or_shop_root(obj)
         vendor_uid = uuid.UUID(IUUID(shop))
-        item.attrs['vendor_uid'] = vendor_uid
+        item.attrs["vendor_uid"] = vendor_uid
         need_rebuild = True
-        logging.info(u"Added vendor_uid to booking {0}".format(item.attrs['uid']))
+        logging.info(u"Added vendor_uid to booking {0}".format(item.attrs["uid"]))
     if need_rebuild:
         soup.rebuild()
         logging.info("Rebuilt bookings catalog")
@@ -66,10 +66,10 @@ def fix_orders_vendor_uids(ctx=None):
     for item in data.values():
         update = False
         try:
-            item.attrs['vendor_uids']
+            item.attrs["vendor_uids"]
             if (
-                not isinstance(item.attrs['vendor_uids'], list)
-                or not item.attrs['vendor_uids']
+                not isinstance(item.attrs["vendor_uids"], list)
+                or not item.attrs["vendor_uids"]
             ):
                 update = True
         except KeyError:
@@ -79,10 +79,10 @@ def fix_orders_vendor_uids(ctx=None):
         order_data = OrderData(portal, order=item)
         vendor_uids = set()
         for booking in order_data.bookings:
-            vendor_uids.add(booking.attrs['vendor_uid'])
-        item.attrs['vendor_uids'] = list(vendor_uids)
+            vendor_uids.add(booking.attrs["vendor_uid"])
+        item.attrs["vendor_uids"] = list(vendor_uids)
         need_rebuild = True
-        logging.info(u"Added vendor_uids to order {0}".format(item.attrs['uid']))
+        logging.info(u"Added vendor_uids to order {0}".format(item.attrs["uid"]))
     if need_rebuild:
         soup.rebuild()
         logging.info("Rebuilt orders catalog")
@@ -96,58 +96,58 @@ def fix_bookings_state_salaried_tid(ctx=None):
     for item in data.values():
         order_data = OrderData(portal, order=item)
         try:
-            state = item.attrs['state']
+            state = item.attrs["state"]
             state_exists = True
         except KeyError:
             state = None
             state_exists = False
         try:
-            salaried = item.attrs['salaried']
+            salaried = item.attrs["salaried"]
             salaried_exists = True
         except KeyError:
             salaried = None
             salaried_exists = False
         try:
-            tid = item.attrs['tid']
+            tid = item.attrs["tid"]
             tid_exists = True
         except KeyError:
-            tid = 'none'  # tid default in b.p.payment
+            tid = "none"  # tid default in b.p.payment
             tid_exists = False
         for booking in order_data.bookings:
             # add too booking node
             try:
-                booking.attrs['state']
+                booking.attrs["state"]
             except KeyError:
-                booking.attrs['state'] = state
+                booking.attrs["state"] = state
                 need_rebuild = True
                 logging.info(
-                    u"Added state {0} to booking {1}".format(state, item.attrs['uid'])
+                    u"Added state {0} to booking {1}".format(state, item.attrs["uid"])
                 )
             try:
-                booking.attrs['salaried']
+                booking.attrs["salaried"]
             except KeyError:
-                booking.attrs['salaried'] = salaried
+                booking.attrs["salaried"] = salaried
                 need_rebuild = True
                 logging.info(
                     u"Added salaried {0} to booking {1}".format(
-                        salaried, item.attrs['uid']
+                        salaried, item.attrs["uid"]
                     )
                 )
             try:
-                booking.attrs['tid']
+                booking.attrs["tid"]
             except KeyError:
-                booking.attrs['tid'] = tid
+                booking.attrs["tid"] = tid
                 need_rebuild = True
                 logging.info(
-                    u"Added tid {0} to booking {1}".format(tid, item.attrs['uid'])
+                    u"Added tid {0} to booking {1}".format(tid, item.attrs["uid"])
                 )
         # now, delete from order node
         if state_exists:
-            del item.attrs['state']
+            del item.attrs["state"]
         if salaried_exists:
-            del item.attrs['salaried']
+            del item.attrs["salaried"]
         if tid_exists:
-            del item.attrs['tid']
+            del item.attrs["tid"]
     if need_rebuild:
         bookings_soup = get_bookings_soup(portal)
         bookings_soup.rebuild()
@@ -162,20 +162,20 @@ def fix_discount_attrs(ctx=None):
     data = orders_soup.storage.data
     for item in data.values():
         try:
-            item.attrs['cart_discount_net']
+            item.attrs["cart_discount_net"]
         except KeyError:
             need_rebuild = True
-            item.attrs['cart_discount_net'] = Decimal(0)
+            item.attrs["cart_discount_net"] = Decimal(0)
             logging.info(
-                u"Added cart_discount_net to order {0}".format(item.attrs['uid'])
+                u"Added cart_discount_net to order {0}".format(item.attrs["uid"])
             )
         try:
-            item.attrs['cart_discount_vat']
+            item.attrs["cart_discount_vat"]
         except KeyError:
             need_rebuild = True
-            item.attrs['cart_discount_vat'] = Decimal(0)
+            item.attrs["cart_discount_vat"] = Decimal(0)
             logging.info(
-                u"Added cart_discount_vat to order {0}".format(item.attrs['uid'])
+                u"Added cart_discount_vat to order {0}".format(item.attrs["uid"])
             )
     if need_rebuild:
         orders_soup.rebuild()
@@ -186,11 +186,11 @@ def fix_discount_attrs(ctx=None):
     data = bookings_soup.storage.data
     for item in data.values():
         try:
-            item.attrs['discount_net']
+            item.attrs["discount_net"]
         except KeyError:
             need_rebuild = True
-            item.attrs['discount_net'] = Decimal(0)
-            logging.info(u"Added discount_net to booking {0}".format(item.attrs['uid']))
+            item.attrs["discount_net"] = Decimal(0)
+            logging.info(u"Added discount_net to booking {0}".format(item.attrs["uid"]))
     if need_rebuild:
         bookings_soup.rebuild()
         logging.info("Rebuilt bookings catalog")
@@ -202,48 +202,48 @@ def fix_shipping_attrs(ctx=None):
     data = orders_soup.storage.data
     for item in data.values():
         try:
-            item.attrs['shipping_method']
+            item.attrs["shipping_method"]
         except KeyError:
-            item.attrs['shipping_method'] = 'unknown'
+            item.attrs["shipping_method"] = "unknown"
             logging.info(
                 u"Added shipping_method {0} to booking {1}".format(
-                    'unknown', item.attrs['uid']
+                    "unknown", item.attrs["uid"]
                 )
             )
         try:
-            item.attrs['shipping_label']
+            item.attrs["shipping_label"]
         except KeyError:
-            item.attrs['shipping_label'] = _('unknown', default=u'Unknown')
+            item.attrs["shipping_label"] = _("unknown", default=u"Unknown")
             logging.info(
                 u"Added shipping_label {0} to booking {1}".format(
-                    'unknown', item.attrs['uid']
+                    "unknown", item.attrs["uid"]
                 )
             )
         try:
-            item.attrs['shipping_description']
+            item.attrs["shipping_description"]
         except KeyError:
-            item.attrs['shipping_description'] = _('unknown', default=u'Unknown')
+            item.attrs["shipping_description"] = _("unknown", default=u"Unknown")
             logging.info(
                 u"Added shipping_description {0} to booking {1}".format(
-                    'unknown', item.attrs['uid']
+                    "unknown", item.attrs["uid"]
                 )
             )
         try:
-            item.attrs['shipping_net']
+            item.attrs["shipping_net"]
         except KeyError:
-            item.attrs['shipping_net'] = item.attrs['shipping']
+            item.attrs["shipping_net"] = item.attrs["shipping"]
             logging.info(
                 u"Added shipping_net {0} to booking {1}".format(
-                    item.attrs['shipping'], item.attrs['uid']
+                    item.attrs["shipping"], item.attrs["uid"]
                 )
             )
         try:
-            item.attrs['shipping_vat']
+            item.attrs["shipping_vat"]
         except KeyError:
-            item.attrs['shipping_vat'] = Decimal(0)
+            item.attrs["shipping_vat"] = Decimal(0)
             logging.info(
                 u"Added shipping_vat {0} to booking {1}".format(
-                    Decimal(0), item.attrs['uid']
+                    Decimal(0), item.attrs["uid"]
                 )
             )
 
@@ -255,26 +255,26 @@ def fix_payment_attrs(ctx=None):
     data = orders_soup.storage.data
     for item in data.values():
         try:
-            item.attrs['payment_method']
-            item.attrs['payment_label']
+            item.attrs["payment_method"]
+            item.attrs["payment_label"]
             continue
         except KeyError:
-            payment_method = item.attrs['payment_selection.payment']
+            payment_method = item.attrs["payment_selection.payment"]
             payment = payments.get(payment_method)
             if payment:
                 payment_label = payment.label
             else:
-                payment_label = _('unknown', default=u'Unknown')
-            item.attrs['payment_method'] = payment_method
+                payment_label = _("unknown", default=u"Unknown")
+            item.attrs["payment_method"] = payment_method
             logging.info(
                 u"Added payment_method {0} to booking {1}".format(
-                    payment_method, item.attrs['uid']
+                    payment_method, item.attrs["uid"]
                 )
             )
-            item.attrs['payment_label'] = payment_label
+            item.attrs["payment_label"] = payment_label
             logging.info(
                 u"Added payment_label {0} to booking {1}".format(
-                    payment_label, item.attrs['uid']
+                    payment_label, item.attrs["uid"]
                 )
             )
 
@@ -286,17 +286,17 @@ def fix_bookings_shippable(ctx=None):
     need_rebuild = False
     for booking in data.values():
         try:
-            booking.attrs['shippable']
+            booking.attrs["shippable"]
         except KeyError:
-            obj = get_object_by_uid(portal, booking.attrs['buyable_uid'])
+            obj = get_object_by_uid(portal, booking.attrs["buyable_uid"])
             shippable = True
             if obj:
                 shippable = IShippingItem(obj).shippable
-            booking.attrs['shippable'] = shippable
+            booking.attrs["shippable"] = shippable
             need_rebuild = True
             logging.info(
                 u"Added shippable {0} to booking {1}".format(
-                    shippable, booking.attrs['uid']
+                    shippable, booking.attrs["uid"]
                 )
             )
     if need_rebuild:
@@ -312,26 +312,26 @@ def fix_bookings_trading(ctx=None):
     need_rebuild = False
     for booking in data.values():
         try:
-            booking.attrs['item_number']
+            booking.attrs["item_number"]
         except KeyError:
-            obj = get_object_by_uid(portal, booking.attrs['buyable_uid'])
+            obj = get_object_by_uid(portal, booking.attrs["buyable_uid"])
             if obj:
                 trading = ITrading(obj)
                 item_number = trading.item_number
                 gtin = trading.gtin
             else:
-                item_number = ''
-                gtin = ''
+                item_number = ""
+                gtin = ""
             need_rebuild = True
-            booking.attrs['item_number'] = item_number
+            booking.attrs["item_number"] = item_number
             logging.info(
                 u"Added item_number {0} to booking {1}".format(
-                    item_number, booking.attrs['uid']
+                    item_number, booking.attrs["uid"]
                 )
             )
-            booking.attrs['gtin'] = gtin
+            booking.attrs["gtin"] = gtin
             logging.info(
-                u"Added gtin {0} to booking {1}".format(gtin, booking.attrs['uid'])
+                u"Added gtin {0} to booking {1}".format(gtin, booking.attrs["uid"])
             )
     if need_rebuild:
         bookings_soup = get_bookings_soup(portal)
@@ -341,7 +341,7 @@ def fix_bookings_trading(ctx=None):
 
 def reset_records(ctx=None):
     def ignore_key(key):
-        return key.startswith('____')
+        return key.startswith("____")
 
     portal = getSite()
     soup = get_orders_soup(portal)
@@ -349,14 +349,14 @@ def reset_records(ctx=None):
     for order in data.values():
         reset_odict(order.attrs.storage, ignore_key=ignore_key)
         logging.info(
-            u'Reset attributes storage on order {0}'.format(order.attrs['uid'])
+            u"Reset attributes storage on order {0}".format(order.attrs["uid"])
         )
     soup = get_bookings_soup(portal)
     data = soup.storage.data
     for booking in data.values():
         reset_odict(booking.attrs.storage, ignore_key=ignore_key)
         logging.info(
-            u"Reset attributes storage on booking {0}".format(booking.attrs['uid'])
+            u"Reset attributes storage on booking {0}".format(booking.attrs["uid"])
         )
 
 
@@ -370,18 +370,18 @@ def fix_bookings_email(ctx=None):
     for item in data.values():
         update = False
         try:
-            item.attrs['email']
+            item.attrs["email"]
         except KeyError:
             update = True
         if not update:
             continue
 
-        order = get_order(portal, item.attrs['order_uid'])
-        email = order.attrs.get('personal_data.email', 'n/a')
+        order = get_order(portal, item.attrs["order_uid"])
+        email = order.attrs.get("personal_data.email", "n/a")
 
-        item.attrs['email'] = email
+        item.attrs["email"] = email
         need_rebuild = True
-        logging.info(u"Added email to booking {0}".format(item.attrs['uid']))
+        logging.info(u"Added email to booking {0}".format(item.attrs["uid"]))
     if need_rebuild:
         soup.rebuild()
         logging.info("Rebuilt bookings catalog")
@@ -397,16 +397,16 @@ def fix_contacts_email(ctx=None):
     for item in data.values():
         update = False
         try:
-            item.attrs['email']
+            item.attrs["email"]
         except KeyError:
             update = True
         if not update:
             continue
 
-        email = item.attrs.get('personal_data.email', 'n/a')
-        item.attrs['email'] = email
+        email = item.attrs.get("personal_data.email", "n/a")
+        item.attrs["email"] = email
         need_rebuild = True
-        logging.info(u"Added email to contact {0}".format(item.attrs['uid']))
+        logging.info(u"Added email to contact {0}".format(item.attrs["uid"]))
     if need_rebuild:
         soup.rebuild()
         logging.info("Rebuilt contacts catalog")
@@ -419,8 +419,8 @@ def fix_order_state_and_salaried(ctx=None):
     soup = get_orders_soup(portal)
     data = soup.storage.data
     for order in data.values():
-        order_data = OrderData(portal, uid=order.attrs['uid'])
+        order_data = OrderData(portal, uid=order.attrs["uid"])
         bookings = order_data.bookings
-        order.attrs['state'] = calculate_order_state(bookings)
-        order.attrs['salaried'] = calculate_order_salaried(bookings)
+        order.attrs["state"] = calculate_order_state(bookings)
+        order.attrs["salaried"] = calculate_order_salaried(bookings)
     soup.rebuild()

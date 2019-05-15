@@ -18,7 +18,7 @@ import plone.api
 
 
 class InvoiceViewBase(OrderDataView):
-    invoice_prefix = u'INV'
+    invoice_prefix = u"INV"
 
     @property
     def sender(self):
@@ -32,28 +32,28 @@ class InvoiceViewBase(OrderDataView):
         #      and only behavior).
         sender = IInvoiceSender(self.context)
         return {
-            'company': sender.company,
-            'companyadd': sender.companyadd,
-            'firstname': sender.firstname,
-            'lastname': sender.lastname,
-            'street': sender.street,
-            'zip': sender.zip,
-            'city': sender.city,
-            'country': sender.country,
-            'phone': sender.phone,
-            'email': sender.email,
-            'web': sender.web,
-            'iban': sender.iban,
-            'bic': sender.bic,
+            "company": sender.company,
+            "companyadd": sender.companyadd,
+            "firstname": sender.firstname,
+            "lastname": sender.lastname,
+            "street": sender.street,
+            "zip": sender.zip,
+            "city": sender.city,
+            "country": sender.country,
+            "phone": sender.phone,
+            "email": sender.email,
+            "web": sender.web,
+            "iban": sender.iban,
+            "bic": sender.bic,
         }
 
     @property
     def invoice_number(self):
-        return '{}{}'.format(self.invoice_prefix, self.order['ordernumber'])
+        return "{}{}".format(self.invoice_prefix, self.order["ordernumber"])
 
     @property
     def created(self):
-        value = self.order.get('created', _('unknown', default=u'Unknown'))
+        value = self.order.get("created", _("unknown", default=u"Unknown"))
         if value:
             value = value.strftime(DT_FORMAT_SHORT)
         return value
@@ -63,40 +63,40 @@ class InvoiceViewBase(OrderDataView):
         ret = list()
         for booking in self.order_data.bookings:
             data = dict()
-            data['title'] = safe_unicode(booking.attrs['title'])
-            data['item_number'] = safe_unicode(booking.attrs['item_number'])
-            data['comment'] = safe_unicode(booking.attrs['buyable_comment'])
-            data['currency'] = safe_unicode(booking.attrs['currency'])
-            data['count'] = booking.attrs['buyable_count']
-            data['net'] = booking.attrs.get('net', 0.0)
-            data['vat'] = booking.attrs.get('vat', 0.0)
-            data['discount_net'] = float(booking.attrs['discount_net'])
-            data['quantity_unit'] = booking.attrs.get('quantity_unit')
+            data["title"] = safe_unicode(booking.attrs["title"])
+            data["item_number"] = safe_unicode(booking.attrs["item_number"])
+            data["comment"] = safe_unicode(booking.attrs["buyable_comment"])
+            data["currency"] = safe_unicode(booking.attrs["currency"])
+            data["count"] = booking.attrs["buyable_count"]
+            data["net"] = booking.attrs.get("net", 0.0)
+            data["vat"] = booking.attrs.get("vat", 0.0)
+            data["discount_net"] = float(booking.attrs["discount_net"])
+            data["quantity_unit"] = booking.attrs.get("quantity_unit")
             ret.append(data)
         return ret
 
     def summary(self):
         order_data = self.order_data
         data = dict()
-        data['currency'] = order_data.currency
+        data["currency"] = order_data.currency
         cart_net = order_data.net
-        data['cart_net'] = cart_net
+        data["cart_net"] = cart_net
         cart_vat = order_data.vat
-        data['cart_vat'] = cart_vat
+        data["cart_vat"] = cart_vat
         discount_net = order_data.discount_net
-        data['discount_net'] = discount_net
+        data["discount_net"] = discount_net
         discount_vat = order_data.discount_vat
-        data['discount_vat'] = discount_vat
+        data["discount_vat"] = discount_vat
         discount_total = discount_net + discount_vat
-        data['discount_total'] = discount_total
+        data["discount_total"] = discount_total
         shipping_net = order_data.shipping_net
-        data['shipping_net'] = shipping_net
+        data["shipping_net"] = shipping_net
         shipping_vat = order_data.shipping_vat
-        data['shipping_vat'] = shipping_vat
+        data["shipping_vat"] = shipping_vat
         shipping_total = shipping_net + shipping_vat
-        data['shipping_total'] = shipping_total
+        data["shipping_total"] = shipping_total
         cart_total = order_data.total
-        data['cart_total'] = cart_total
+        data["cart_total"] = cart_total
         return data
 
     def ascur(self, val):
@@ -115,7 +115,7 @@ class MyInvoiceView(InvoiceViewBase):
     def __call__(self):
         # check if order was created by authenticated user
         user = plone.api.user.get_current()
-        if user.getId() != self.order['creator']:
+        if user.getId() != self.order["creator"]:
             raise Unauthorized
         return super(MyInvoiceView, self).__call__()
 
@@ -124,4 +124,4 @@ class DirectInvoiceView(InvoiceViewBase, ProtectedOrderDataView):
     """Direct Invoice view.
     """
 
-    content_template = ViewPageTemplateFile('templates/invoice.pt')
+    content_template = ViewPageTemplateFile("templates/invoice.pt")

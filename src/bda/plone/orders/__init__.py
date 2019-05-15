@@ -8,7 +8,7 @@ import six
 import unicodedata
 
 
-message_factory = MessageFactory('bda.plone.orders')
+message_factory = MessageFactory("bda.plone.orders")
 
 
 def safe_encode(string):
@@ -16,7 +16,7 @@ def safe_encode(string):
     it.
     """
     if isinstance(string, six.string_types):
-        return safe_unicode(string).encode('utf-8')
+        return safe_unicode(string).encode("utf-8")
     return string
 
 
@@ -30,14 +30,14 @@ def safe_filename(value):
     https://github.com/django/django/blob/master/django/utils/text.py
     """
     value = safe_unicode(value)
-    value = unicodedata.normalize('NFKD', value).encode('ascii', 'ignore')
-    return value.replace(' ', '-').strip()
+    value = unicodedata.normalize("NFKD", value).encode("ascii", "ignore")
+    return value.replace(" ", "-").strip()
 
 
-def get_country_name(country_code, lang='en'):
+def get_country_name(country_code, lang="en"):
     """Return the translated country name for a given pycountry country code.
     """
 
     country_name = pycountry.countries.get(numeric=country_code).name
-    trans = gettext.translation('iso3166', pycountry.LOCALES_DIR, languages=['de'])
+    trans = gettext.translation("iso3166", pycountry.LOCALES_DIR, languages=["de"])
     return safe_unicode(trans.gettext(country_name))

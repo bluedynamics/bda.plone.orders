@@ -13,8 +13,8 @@ class TestOrders(unittest.TestCase):
     layer = Orders_INTEGRATION_TESTING
 
     def setUp(self):
-        self.portal = self.layer['portal']
-        self.request = self.layer['request']
+        self.portal = self.layer["portal"]
+        self.request = self.layer["request"]
         set_browserlayer(self.request)
 
 
@@ -33,17 +33,17 @@ class DummyContext(dict):
 class TestOrdersUnit(unittest.TestCase):
     def setUp(self):
         root = DummyContext()
-        root['sub1'] = DummyContext()
-        root['sub1']['subsub1'] = DummyContext()
-        root['sub2'] = DummyContext()
+        root["sub1"] = DummyContext()
+        root["sub1"]["subsub1"] = DummyContext()
+        root["sub2"] = DummyContext()
 
         alsoProvides(root, IPloneSiteRoot)
-        alsoProvides(root['sub1'], IVendor)
+        alsoProvides(root["sub1"], IVendor)
         self.root = root
 
     def test_acquire_vendor_or_shop_root(self):
         root = self.root
         self.assertEqual(
-            acquire_vendor_or_shop_root(root['sub1']['subsub1']), root['sub1']
+            acquire_vendor_or_shop_root(root["sub1"]["subsub1"]), root["sub1"]
         )
-        self.assertEqual(acquire_vendor_or_shop_root(root['sub2']), root)
+        self.assertEqual(acquire_vendor_or_shop_root(root["sub2"]), root)

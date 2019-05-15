@@ -12,8 +12,8 @@ import unittest
 optionflags = doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS
 
 TESTFILES = [
-    ('dynamicmailtemplate.rst', UNIT_TESTING),
-    ('dynamicmaillibrary.rst', Orders_INTEGRATION_TESTING),
+    ("dynamicmailtemplate.rst", UNIT_TESTING),
+    ("dynamicmaillibrary.rst", Orders_INTEGRATION_TESTING),
 ]
 
 
@@ -24,7 +24,7 @@ def test_suite():
                 doctest.DocFileSuite(
                     filename,
                     optionflags=optionflags,
-                    globs={'interact': interact, 'pprint': pprint.pprint},  # noqa
+                    globs={"interact": interact, "pprint": pprint.pprint},  # noqa
                 ),
                 layer=layer,
             )
