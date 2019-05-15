@@ -31,7 +31,6 @@ class ContactAttributeIndexer(NodeAttributeIndexer):
 
 @implementer(ICatalogFactory)
 class ContactsCatalogFactory(object):
-
     def __call__(self, context=None):
         catalog = Catalog()
         uid_indexer = NodeAttributeIndexer('uid')
@@ -48,10 +47,11 @@ class ContactsCatalogFactory(object):
         catalog[u'zip'] = CatalogFieldIndex(zip_indexer)
         street_indexer = ContactAttributeIndexer('billing_address.street')
         catalog[u'street'] = CatalogFieldIndex(street_indexer)
-        search_attributes = ['personal_data.email',
-                             'personal_data.firstname',
-                             'personal_data.lastname'
-                             ]
+        search_attributes = [
+            'personal_data.email',
+            'personal_data.firstname',
+            'personal_data.lastname',
+        ]
         text_indexer = NodeTextIndexer(search_attributes)
         catalog[u'text'] = CatalogTextIndex(text_indexer)
         return catalog
@@ -112,10 +112,10 @@ def lookup_contact(context, contact):
     """
     soup = get_contacts_soup(context)
     query = (
-        Eq('firstname', contact['personal_data.firstname'].lower()) &
-        Eq('lastname', contact['personal_data.lastname'].lower()) &
-        Eq('zip', contact['billing_address.zip'].lower()) &
-        Eq('street', contact['billing_address.street'].lower())
+        Eq('firstname', contact['personal_data.firstname'].lower())
+        & Eq('lastname', contact['personal_data.lastname'].lower())
+        & Eq('zip', contact['billing_address.zip'].lower())
+        & Eq('street', contact['billing_address.street'].lower())
     )
     res = soup.query(query)
     record = None

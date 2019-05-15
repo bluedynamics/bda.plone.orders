@@ -15,7 +15,7 @@ from bda.plone.orders.interfaces import INotificationSettings
 from bda.plone.orders.interfaces import IPaymentText
 from bda.plone.orders.mailtemplates import get_booking_cancelled_templates
 from bda.plone.orders.mailtemplates import (
-    get_booking_reserved_to_ordered_templates  # noqa
+    get_booking_reserved_to_ordered_templates,  # noqa
 )
 from bda.plone.orders.mailtemplates import get_order_templates
 from bda.plone.orders.mailtemplates import get_reservation_templates
@@ -66,11 +66,7 @@ def get_order_uid(event):
 def _indent(text, ind=5, width=80):
     """Helper indents text.
     """
-    wrapped = textwrap.fill(
-        safe_unicode(text),
-        width,
-        initial_indent=ind * u' '
-    )
+    wrapped = textwrap.fill(safe_unicode(text), width, initial_indent=ind * u' ')
     return wrapped
 
 
@@ -88,32 +84,26 @@ def _process_template_cb(name, tpls, args, context, order_data):
 # mail notification related data exraction
 ###############################################################################
 
+
 def general_order_data(context, order_data):
     lang = context.restrictedTraverse('@@plone_portal_state').language()
     attrs = order_data.order.attrs
     data = dict(
-        (safe_unicode(key), safe_unicode(value))
-        for (key, value) in list(attrs.items())
+        (safe_unicode(key), safe_unicode(value)) for (key, value) in list(attrs.items())
     )
     data['portal_url'] = getSite().absolute_url()
     data['date'] = attrs['created'].strftime(DT_FORMAT)
     data['salutation'] = translate(
-        attrs['personal_data.gender'],
-        domain='bda.plone.checkout',
-        target_language=lang
+        attrs['personal_data.gender'], domain='bda.plone.checkout', target_language=lang
     )
     if data.get('billing_address.country', None):
-        data['billing_address.country'] = \
-            get_country_name(
-                data['billing_address.country'],
-                lang=lang
-            )
+        data['billing_address.country'] = get_country_name(
+            data['billing_address.country'], lang=lang
+        )
     if data.get('delivery_address.country', None):
-        data['delivery_address.country'] = \
-            get_country_name(
-                data['delivery_address.country'],
-                lang=lang
-            )
+        data['delivery_address.country'] = get_country_name(
+            data['delivery_address.country'], lang=lang
+        )
     return data
 
 
@@ -141,14 +131,16 @@ def order_item_data(context, booking):
     return data
 
 
-default_include_booking_states=(
+default_include_booking_states = (
     ifaces.STATE_FINISHED,
     ifaces.STATE_NEW,
-    ifaces.STATE_PROCESSING
+    ifaces.STATE_PROCESSING,
 )
 
-def order_items_data(context, order_data,
-                     include_booking_states=default_include_booking_states):
+
+def order_items_data(
+    context, order_data, include_booking_states=default_include_booking_states
+):
     """Extract item listing data.
     """
     data = list()
@@ -217,16 +209,19 @@ def order_notifications(context, order_data):
 def stock_threshold_reached_items_data(items):
     ret = list()
     for item in items:
-        ret.append({
-            'title': safe_unicode(item['title']),
-            'remaining_stock_available': item['remaining_stock_available']
-        })
+        ret.append(
+            {
+                'title': safe_unicode(item['title']),
+                'remaining_stock_available': item['remaining_stock_available'],
+            }
+        )
     return ret
 
 
 ###############################################################################
 # mail notification
 ###############################################################################
+
 
 class MailNotify(object):
     """Mail notifyer.
@@ -261,17 +256,10 @@ class MailNotify(object):
             message = text
         else:
             message = self.create_multipart_message(
-                subject,
-                mailfrom,
-                receiver,
-                text,
-                html
+                subject, mailfrom, receiver, text, html
             )
         api.portal.send_email(
-            recipient=receiver,
-            sender=mailfrom,
-            subject=subject,
-            body=message,
+            recipient=receiver, sender=mailfrom, subject=subject, body=message
         )
 
 
@@ -289,31 +277,29 @@ def create_text_mail_body(context, order_data, templates):
     """
     arguments = general_order_data(context, order_data)
     for name in POSSIBLE_TEMPLATE_CALLBACKS:
-        _process_template_cb(
-            name,
-            templates,
-            arguments,
-            context,
-            order_data
-        )
+        _process_template_cb(name, templates, arguments, context, order_data)
     return templates['body'] % arguments
 
 
 class ZPTTranslator(object):
-
     def __init__(self):
         self.request = getRequest()
 
-    def __call__(self, msgid, domain=None, mapping=None,
-                 default=None, context=None, target_language=None):
-        return translate(msgid, domain=domain, mapping=mapping,
-                         default=default, context=self.request)
+    def __call__(
+        self,
+        msgid,
+        domain=None,
+        mapping=None,
+        default=None,
+        context=None,
+        target_language=None,
+    ):
+        return translate(
+            msgid, domain=domain, mapping=mapping, default=default, context=self.request
+        )
 
 
-MAIL_TEMPLATES_DIRECTORY = os.path.join(
-    os.path.dirname(__file__),
-    'mailtemplates'
-)
+MAIL_TEMPLATES_DIRECTORY = os.path.join(os.path.dirname(__file__), 'mailtemplates')
 
 
 def create_html_mail_body(context, template_name, template_data):
@@ -329,17 +315,14 @@ def create_html_mail_body(context, template_name, template_data):
         Dict containing data passed to template.
     """
     templates = PageTemplateLoader(
-        MAIL_TEMPLATES_DIRECTORY,
-        translate=ZPTTranslator(),
-        debug=True
+        MAIL_TEMPLATES_DIRECTORY, translate=ZPTTranslator(), debug=True
     )
     template = templates['{}.pt'.format(template_name)]
     template_data['ascur'] = ascur
     return template(**template_data)
 
 
-def do_notify(context, order_data, receiver,
-              templates, template_name, template_data):
+def do_notify(context, order_data, receiver, templates, template_name, template_data):
     """Do mail notification.
     """
     attrs = order_data.order.attrs
@@ -351,28 +334,24 @@ def do_notify(context, order_data, receiver,
         mail_notify.send(subject, receiver, text, html=html)
     except Exception:
         msg = translate(
-            _('email_sending_failed',
-              default=u'Failed to send notification to ${receiver}',
-              mapping={'receiver': receiver}))
+            _(
+                'email_sending_failed',
+                default=u'Failed to send notification to ${receiver}',
+                mapping={'receiver': receiver},
+            )
+        )
         api.portal.show_message(message=msg, request=context.REQUEST)
         logger.exception("Email could not be sent.")
 
 
-def do_notify_customer(context, order_data, templates,
-                       template_name, template_data):
+def do_notify_customer(context, order_data, templates, template_name, template_data):
     customer_address = order_data.order.attrs['personal_data.email']
     do_notify(
-        context,
-        order_data,
-        customer_address,
-        templates,
-        template_name,
-        template_data
+        context, order_data, customer_address, templates, template_name, template_data
     )
 
 
-def do_notify_shopmanager(context, order_data, templates,
-                          template_name, template_data):
+def do_notify_shopmanager(context, order_data, templates, template_name, template_data):
     shop_manager_address = INotificationSettings(context).admin_email
     do_notify(
         context,
@@ -380,7 +359,7 @@ def do_notify_shopmanager(context, order_data, templates,
         shop_manager_address,
         templates,
         template_name,
-        template_data
+        template_data,
     )
 
 
@@ -389,6 +368,7 @@ def do_notify_shopmanager(context, order_data, templates,
 ###############################################################################
 
 # template callbacks and helpers ##############################################
+
 
 def create_order_listing_item(item_data):
     """Create text for one item in order.
@@ -425,15 +405,14 @@ def create_order_listing_item(item_data):
     return text
 
 
-def create_order_listing(context, order_data,
-                         include_booking_states=default_include_booking_states):
+def create_order_listing(
+    context, order_data, include_booking_states=default_include_booking_states
+):
     """Create item listing text for notification mail.
     """
     items = []
     items_data = order_items_data(
-        context,
-        order_data,
-        include_booking_states=include_booking_states
+        context, order_data, include_booking_states=include_booking_states
     )
     for item_data in items_data:
         items.append(create_order_listing_item(item_data))
@@ -445,9 +424,7 @@ def create_reserved_order_listing(context, order_data):
     of this order.
     """
     return create_order_listing(
-        context,
-        order_data,
-        include_booking_states=(ifaces.STATE_RESERVED,)
+        context, order_data, include_booking_states=(ifaces.STATE_RESERVED,)
     )
 
 
@@ -463,98 +440,158 @@ def create_order_summary(context, order_data):
     # cart net and vat
     if summary_data['cart_net']:
         # cart net
-        lines.append(translate(_(
-            'order_summary_cart_net',
-            default=u'Net: ${value} ${currency}',
-            mapping={
-                'value': ascur(summary_data['cart_net']),
-                'currency': summary_data['currency'],
-            }), context=request))
+        lines.append(
+            translate(
+                _(
+                    'order_summary_cart_net',
+                    default=u'Net: ${value} ${currency}',
+                    mapping={
+                        'value': ascur(summary_data['cart_net']),
+                        'currency': summary_data['currency'],
+                    },
+                ),
+                context=request,
+            )
+        )
         # cart vat
-        lines.append(translate(_(
-            'order_summary_cart_vat',
-            default=u'VAT: ${value} ${currency}',
-            mapping={
-                'value': ascur(summary_data['cart_vat']),
-                'currency': summary_data['currency'],
-            }), context=request))
+        lines.append(
+            translate(
+                _(
+                    'order_summary_cart_vat',
+                    default=u'VAT: ${value} ${currency}',
+                    mapping={
+                        'value': ascur(summary_data['cart_vat']),
+                        'currency': summary_data['currency'],
+                    },
+                ),
+                context=request,
+            )
+        )
     # cart discount
     if summary_data['discount_net']:
         # discount net
-        lines.append(translate(_(
-            'order_summary_discount_net',
-            default=u'Discount Net: ${value} ${currency}',
-            mapping={
-                'value': ascur(summary_data['discount_net']),
-                'currency': summary_data['currency'],
-            }), context=request))
+        lines.append(
+            translate(
+                _(
+                    'order_summary_discount_net',
+                    default=u'Discount Net: ${value} ${currency}',
+                    mapping={
+                        'value': ascur(summary_data['discount_net']),
+                        'currency': summary_data['currency'],
+                    },
+                ),
+                context=request,
+            )
+        )
         # discount vat
-        lines.append(translate(_(
-            'order_summary_discount_vat',
-            default=u'Discount VAT: ${value} ${currency}',
-            mapping={
-                'value': ascur(summary_data['discount_vat']),
-                'currency': summary_data['currency'],
-            }), context=request))
+        lines.append(
+            translate(
+                _(
+                    'order_summary_discount_vat',
+                    default=u'Discount VAT: ${value} ${currency}',
+                    mapping={
+                        'value': ascur(summary_data['discount_vat']),
+                        'currency': summary_data['currency'],
+                    },
+                ),
+                context=request,
+            )
+        )
         # discount total
-        lines.append(translate(_(
-            'order_summary_discount_total',
-            default=u'Discount Total: ${value} ${currency}',
-            mapping={
-                'value': ascur(summary_data['discount_total']),
-                'currency': summary_data['currency'],
-            }), context=request))
+        lines.append(
+            translate(
+                _(
+                    'order_summary_discount_total',
+                    default=u'Discount Total: ${value} ${currency}',
+                    mapping={
+                        'value': ascur(summary_data['discount_total']),
+                        'currency': summary_data['currency'],
+                    },
+                ),
+                context=request,
+            )
+        )
     # shipping costs
     if summary_data['shipping_net']:
         # shiping label
-        lines.append(translate(_(
-            'order_summary_shipping_label',
-            default=u'Shipping: ${label}',
-            mapping={
-                'label': translate(
-                    summary_data['shipping_label'], context=request),
-            }), context=request))
+        lines.append(
+            translate(
+                _(
+                    'order_summary_shipping_label',
+                    default=u'Shipping: ${label}',
+                    mapping={
+                        'label': translate(
+                            summary_data['shipping_label'], context=request
+                        )
+                    },
+                ),
+                context=request,
+            )
+        )
         # shiping description
-        lines.append(translate(
-            summary_data['shipping_description'], context=request))
+        lines.append(translate(summary_data['shipping_description'], context=request))
         # shiping net
-        lines.append(translate(_(
-            'order_summary_shipping_net',
-            default=u'Shipping Net: ${value} ${currency}',
-            mapping={
-                'value': ascur(summary_data['shipping_net']),
-                'currency': summary_data['currency'],
-            }), context=request))
+        lines.append(
+            translate(
+                _(
+                    'order_summary_shipping_net',
+                    default=u'Shipping Net: ${value} ${currency}',
+                    mapping={
+                        'value': ascur(summary_data['shipping_net']),
+                        'currency': summary_data['currency'],
+                    },
+                ),
+                context=request,
+            )
+        )
         # shiping vat
-        lines.append(translate(_(
-            'order_summary_shipping_vat',
-            default=u'Shipping VAT: ${value} ${currency}',
-            mapping={
-                'value': ascur(summary_data['shipping_vat']),
-                'currency': summary_data['currency'],
-            }), context=request))
+        lines.append(
+            translate(
+                _(
+                    'order_summary_shipping_vat',
+                    default=u'Shipping VAT: ${value} ${currency}',
+                    mapping={
+                        'value': ascur(summary_data['shipping_vat']),
+                        'currency': summary_data['currency'],
+                    },
+                ),
+                context=request,
+            )
+        )
         # shiping total
-        lines.append(translate(_(
-            'order_summary_shipping_total',
-            default=u'Shipping Total: ${value} ${currency}',
-            mapping={
-                'value': ascur(summary_data['shipping_total']),
-                'currency': summary_data['currency'],
-            }), context=request))
+        lines.append(
+            translate(
+                _(
+                    'order_summary_shipping_total',
+                    default=u'Shipping Total: ${value} ${currency}',
+                    mapping={
+                        'value': ascur(summary_data['shipping_total']),
+                        'currency': summary_data['currency'],
+                    },
+                ),
+                context=request,
+            )
+        )
     # cart total
-    lines.append(translate(_(
-        'order_summary_cart_total',
-        default=u'Total: ${value} ${currency}',
-        mapping={
-            'value': ascur(summary_data['cart_total']),
-            'currency': summary_data['currency'],
-        }), context=request))
+    lines.append(
+        translate(
+            _(
+                'order_summary_cart_total',
+                default=u'Total: ${value} ${currency}',
+                mapping={
+                    'value': ascur(summary_data['cart_total']),
+                    'currency': summary_data['currency'],
+                },
+            ),
+            context=request,
+        )
+    )
     summary_title = translate(
-        _('order_summary_label', default=u'Summary:'), context=request)
+        _('order_summary_label', default=u'Summary:'), context=request
+    )
     summary_text = u'\n'.join(lines)
     return u'\n{summary_title}\n{summary_text}\n'.format(
-        summary_title=summary_title,
-        summary_text=summary_text
+        summary_title=summary_title, summary_text=summary_text
     )
 
 
@@ -581,11 +618,14 @@ def create_delivery_address(context, order_data):
         return delivery_address_template % arguments
     return u''
 
+
 # event handling ##############################################################
+
 
 def dispatch_notify_order_success(event):
     for func in NOTIFICATIONS['order_success']:
         func(event)
+
 
 # notification ##############################################################
 
@@ -596,9 +636,7 @@ def notify_order_success(event, who=None):
     """Send notification mail after order succeeded.
     """
     if who not in ['customer', 'shopmanager']:
-        raise ValueError(
-            'kw "who" mus be one out of ("customer", "shopmanager")'
-        )
+        raise ValueError('kw "who" mus be one out of ("customer", "shopmanager")')
     order_data = OrderData(event.context, uid=get_order_uid(event))
     templates = dict()
     state = order_data.state
@@ -617,18 +655,19 @@ def notify_order_success(event, who=None):
     template_data['order'] = general_order_data(event.context, order_data)
     template_data['items'] = order_items_data(event.context, order_data)
     template_data['reserved_items'] = order_items_data(
-        event.context, order_data,
-        include_booking_states=(ifaces.STATE_RESERVED,))
+        event.context, order_data, include_booking_states=(ifaces.STATE_RESERVED,)
+    )
     template_data['summary'] = order_summary_data(order_data)
     template_data['payment'] = order_payment_data(order_data)
-    template_data['notifications'] = order_notifications(
-        event.context, order_data)
+    template_data['notifications'] = order_notifications(event.context, order_data)
     if who == "customer":
         do_notify_customer(
-            event.context, order_data, templates, template_name, template_data)
+            event.context, order_data, templates, template_name, template_data
+        )
     else:
         do_notify_shopmanager(
-            event.context, order_data, templates, template_name, template_data)
+            event.context, order_data, templates, template_name, template_data
+        )
 
 
 def notify_order_success_customer(event):
@@ -647,6 +686,7 @@ NOTIFICATIONS['order_success'].append(notify_order_success_shopmanager)
 ###############################################################################
 # checkout success
 ###############################################################################
+
 
 def dispatch_notify_checkout_success(event):
     for func in NOTIFICATIONS['checkout_success']:
@@ -679,6 +719,7 @@ NOTIFICATIONS['checkout_success'].append(notify_checkout_success_shopmanager)
 ###############################################################################
 # payment success
 ###############################################################################
+
 
 def dispatch_notify_payment_success(event):
     for func in NOTIFICATIONS['payment_success']:
@@ -715,14 +756,11 @@ def dispatch_notify_booking_cancelled(event):
 
 
 class BookingCancelledTitleCB(object):
-
     def __init__(self, event):
         self.event = event
 
     def __call__(self, *args):
-        return safe_unicode(
-            self.event.booking_attrs[BOOKING_CANCELLED_TITLE_ATTRIBUTE]
-        )
+        return safe_unicode(self.event.booking_attrs[BOOKING_CANCELLED_TITLE_ATTRIBUTE])
 
 
 BOOKING_CANCELLED_TEMPLATE = 'booking_cancelled'
@@ -742,14 +780,14 @@ def notify_booking_cancelled(event, who=None):
     template_data['booking']['title'] = BookingCancelledTitleCB(event)()
     if who == "customer":
         do_notify_customer(
-            event.context, order_data, templates, template_name, template_data)
+            event.context, order_data, templates, template_name, template_data
+        )
     elif who == 'shopmanager':
         do_notify_shopmanager(
-            event.context, order_data, templates, template_name, template_data)
-    else:
-        raise ValueError(
-            'kw "who" mus be one out of ("customer", "shopmanager")'
+            event.context, order_data, templates, template_name, template_data
         )
+    else:
+        raise ValueError('kw "who" mus be one out of ("customer", "shopmanager")')
 
 
 def notify_booking_cancelled_customer(event):
@@ -769,6 +807,7 @@ NOTIFICATIONS['booking_cancelled'].append(notify_booking_cancelled_shopmanager)
 # booking reserved to ordered
 ###############################################################################
 
+
 def dispatch_notify_booking_reserved_to_ordered(event):
     for func in NOTIFICATIONS['booking_reserved_to_ordered']:
         func(event)
@@ -784,7 +823,9 @@ def notify_booking_reserved_to_ordered(event, who=None):
     order_data = OrderData(event.context, uid=get_order_uid(event))
     templates = dict()
     templates.update(get_booking_reserved_to_ordered_templates(event.context))
-    templates['booking_reserved_to_ordered_title_cb'] = BookingReservedToOrderedTitleCB(event)  # noqa
+    templates['booking_reserved_to_ordered_title_cb'] = BookingReservedToOrderedTitleCB(
+        event
+    )  # noqa
     template_name = BOOKING_RESERVED_TO_ORDERED_TEMPLATE
     template_data = dict()
     template_data['order'] = general_order_data(event.context, order_data)
@@ -792,14 +833,14 @@ def notify_booking_reserved_to_ordered(event, who=None):
     template_data['booking']['title'] = BookingReservedToOrderedTitleCB(event)()
     if who == "customer":
         do_notify_customer(
-            event.context, order_data, templates, template_name, template_data)
+            event.context, order_data, templates, template_name, template_data
+        )
     elif who == 'shopmanager':
         do_notify_shopmanager(
-            event.context, order_data, templates, template_name, template_data)
-    else:
-        raise ValueError(
-            'kw "who" mus be one out of ("customer", "shopmanager")'
+            event.context, order_data, templates, template_name, template_data
         )
+    else:
+        raise ValueError('kw "who" mus be one out of ("customer", "shopmanager")')
 
 
 def notify_booking_reserved_to_ordered_customer(event):
@@ -811,13 +852,18 @@ def notify_booking_reserved_to_ordered_shopmanager(event):
 
 
 NOTIFICATIONS['booking_reserved_to_ordered'] = []
-NOTIFICATIONS['booking_reserved_to_ordered'].append(notify_booking_reserved_to_ordered_customer)  # noqa
-NOTIFICATIONS['booking_reserved_to_ordered'].append(notify_booking_reserved_to_ordered_shopmanager)  # noqa
+NOTIFICATIONS['booking_reserved_to_ordered'].append(
+    notify_booking_reserved_to_ordered_customer
+)  # noqa
+NOTIFICATIONS['booking_reserved_to_ordered'].append(
+    notify_booking_reserved_to_ordered_shopmanager
+)  # noqa
 
 
 ###############################################################################
 # stock threshold reached
 ###############################################################################
+
 
 def dispatch_notify_stock_threshold_reached(event):
     for func in NOTIFICATIONS['stock_threshold_reached']:
@@ -825,14 +871,14 @@ def dispatch_notify_stock_threshold_reached(event):
 
 
 class StockThresholdReachedCB(object):
-
     def __init__(self, event):
         self.event = event
 
     def __call__(self, *args):
         text = ''
         items = stock_threshold_reached_items_data(
-            self.event.stock_threshold_reached_items)
+            self.event.stock_threshold_reached_items
+        )
         for item in items:
             title = safe_unicode(item['title'])
             remaining = item['remaining_stock_available']
@@ -849,15 +895,16 @@ def notify_stock_threshold_reached(event):
     order_data = OrderData(event.context, uid=get_order_uid(event))
     templates = dict()
     templates.update(get_stock_threshold_reached_templates(event.context))
-    templates['stock_threshold_reached_text_cb'] = \
-        StockThresholdReachedCB(event)
+    templates['stock_threshold_reached_text_cb'] = StockThresholdReachedCB(event)
     template_name = STOCK_THRESHOLD_REACHED_TEMPLATE
     template_data = dict()
     template_data['order'] = general_order_data(event.context, order_data)
     template_data['items'] = stock_threshold_reached_items_data(
-        event.stock_threshold_reached_items)
+        event.stock_threshold_reached_items
+    )
     do_notify_shopmanager(
-        event.context, order_data, templates, template_name, template_data)
+        event.context, order_data, templates, template_name, template_data
+    )
 
 
 NOTIFICATIONS['stock_threshold_reached'] = []

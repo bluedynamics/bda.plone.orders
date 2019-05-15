@@ -121,7 +121,9 @@ Booked item: %(booking_reserved_to_ordered_title)s
 Order details: %(portal_url)s/@@showorder?ordernumber=%(ordernumber)s
 """
 
-STOCK_THRESHOLD_REACHED_SUBJECT_EN = u"Order %s has products that are getting out of stock."  # noqa
+STOCK_THRESHOLD_REACHED_SUBJECT_EN = (
+    u"Order %s has products that are getting out of stock."
+)  # noqa
 
 STOCK_THRESHOLD_REACHED_BODY_EN = u"""
 Date: %(date)s
@@ -526,79 +528,82 @@ ORDER_TEMPLATES = {
     'en': {
         'subject': ORDER_SUBJECT_EN,
         'body': ORDER_BODY_EN,
-        'delivery_address': DELIVERY_ADDRESS_EN},
+        'delivery_address': DELIVERY_ADDRESS_EN,
+    },
     'de': {
         'subject': ORDER_SUBJECT_DE,
         'body': ORDER_BODY_DE,
-        'delivery_address': DELIVERY_ADDRESS_DE},
+        'delivery_address': DELIVERY_ADDRESS_DE,
+    },
     'fr': {
         'subject': ORDER_SUBJECT_FR,
         'body': ORDER_BODY_FR,
-        'delivery_address': DELIVERY_ADDRESS_FR},
+        'delivery_address': DELIVERY_ADDRESS_FR,
+    },
     'it': {
         'subject': ORDER_SUBJECT_IT,
         'body': ORDER_BODY_IT,
-        'delivery_address': DELIVERY_ADDRESS_IT},
+        'delivery_address': DELIVERY_ADDRESS_IT,
+    },
     'no': {
         'subject': ORDER_SUBJECT_NO,
         'body': ORDER_BODY_NO,
-        'delivery_address': DELIVERY_ADDRESS_NO}
+        'delivery_address': DELIVERY_ADDRESS_NO,
+    },
 }
 
 RESERVATION_TEMPLATES = {
     'en': {
         'subject': RESERVATION_SUBJECT_EN,
         'body': RESERVATION_BODY_EN,
-        'delivery_address': DELIVERY_ADDRESS_EN},
+        'delivery_address': DELIVERY_ADDRESS_EN,
+    },
     'de': {
         'subject': RESERVATION_SUBJECT_DE,
         'body': RESERVATION_BODY_DE,
-        'delivery_address': DELIVERY_ADDRESS_DE},
+        'delivery_address': DELIVERY_ADDRESS_DE,
+    },
     'fr': {
         'subject': RESERVATION_SUBJECT_FR,
         'body': RESERVATION_BODY_FR,
-        'delivery_address': DELIVERY_ADDRESS_FR},
+        'delivery_address': DELIVERY_ADDRESS_FR,
+    },
     'it': {
         'subject': RESERVATION_SUBJECT_IT,
         'body': RESERVATION_BODY_IT,
-        'delivery_address': DELIVERY_ADDRESS_IT},
+        'delivery_address': DELIVERY_ADDRESS_IT,
+    },
     'no': {
         'subject': RESERVATION_SUBJECT_NO,
         'body': RESERVATION_BODY_NO,
-        'delivery_address': DELIVERY_ADDRESS_NO}
+        'delivery_address': DELIVERY_ADDRESS_NO,
+    },
 }
 
 CANCELLED_BOOKING_TEMPLATES = {
-    'en': {
-        'subject': CANCELLED_BOOKING_SUBJECT_EN,
-        'body': CANCELLED_BOOKING_BODY_EN},
-    'de': {
-        'subject': CANCELLED_BOOKING_SUBJECT_DE,
-        'body': CANCELLED_BOOKING_BODY_DE},
-    'fr': {
-        'subject': CANCELLED_BOOKING_SUBJECT_FR,
-        'body': CANCELLED_BOOKING_BODY_FR},
-    'it': {
-        'subject': CANCELLED_BOOKING_SUBJECT_IT,
-        'body': CANCELLED_BOOKING_BODY_IT},
-    'no': {
-        'subject': CANCELLED_BOOKING_SUBJECT_NO,
-        'body': CANCELLED_BOOKING_BODY_NO}
+    'en': {'subject': CANCELLED_BOOKING_SUBJECT_EN, 'body': CANCELLED_BOOKING_BODY_EN},
+    'de': {'subject': CANCELLED_BOOKING_SUBJECT_DE, 'body': CANCELLED_BOOKING_BODY_DE},
+    'fr': {'subject': CANCELLED_BOOKING_SUBJECT_FR, 'body': CANCELLED_BOOKING_BODY_FR},
+    'it': {'subject': CANCELLED_BOOKING_SUBJECT_IT, 'body': CANCELLED_BOOKING_BODY_IT},
+    'no': {'subject': CANCELLED_BOOKING_SUBJECT_NO, 'body': CANCELLED_BOOKING_BODY_NO},
 }
 
 BOOKING_RESERVED_TO_ORDERED_TEMPLATES = {
     'en': {
         'subject': BOOKING_RESERVED_TO_ORDERED_SUBJECT_EN,
-        'body': BOOKING_RESERVED_TO_ORDERED_BODY_EN},
+        'body': BOOKING_RESERVED_TO_ORDERED_BODY_EN,
+    },
     'de': {
         'subject': BOOKING_RESERVED_TO_ORDERED_SUBJECT_DE,
-        'body': BOOKING_RESERVED_TO_ORDERED_BODY_DE}
+        'body': BOOKING_RESERVED_TO_ORDERED_BODY_DE,
+    },
 }
 
 STOCK_THRESHOLD_REACHED_TEMPLATES = {
     'en': {
         'subject': STOCK_THRESHOLD_REACHED_SUBJECT_EN,
-        'body': STOCK_THRESHOLD_REACHED_BODY_EN}
+        'body': STOCK_THRESHOLD_REACHED_BODY_EN,
+    }
 }
 
 
@@ -677,8 +682,7 @@ class DynamicMailTemplate(object):
             if key in defaults:
                 continue
             raise ValueError(
-                u'All required must be in defaults too, missing: '
-                u'{0}'.format(key)
+                u'All required must be in defaults too, missing: ' u'{0}'.format(key)
             )
         self.required = required
         self.defaults = defaults
@@ -733,7 +737,6 @@ DYNAMIC_MAIL_LIBRARY_KEY = "bda.plone.order.dynamic_mail_lib"
 
 @implementer(IDynamicMailTemplateLibrary)
 class DynamicMailTemplateLibraryAquierer(object):
-
     def __init__(self, context):
         self.context = context
 
@@ -741,10 +744,7 @@ class DynamicMailTemplateLibraryAquierer(object):
         if not hasattr(self.context, '__parent__'):
             return None
         if self.context.__parent__:
-            dmt_lib = queryAdapter(
-                self.context.__parent__,
-                IDynamicMailTemplateLibrary,
-            )
+            dmt_lib = queryAdapter(self.context.__parent__, IDynamicMailTemplateLibrary)
             return dmt_lib
 
     def keys(self):
@@ -760,19 +760,14 @@ class DynamicMailTemplateLibraryAquierer(object):
         raise KeyError('Can not aquire key %s' % name)
 
     def __setitem__(self, name, template):
-        raise NotImplementedError(
-            'acquierer do not set on parent (permissions)'
-        )
+        raise NotImplementedError('acquierer do not set on parent (permissions)')
 
     def __delitem__(self, name):
-        raise NotImplementedError(
-            'acquierer do not delete on parent (permissions)'
-        )
+        raise NotImplementedError('acquierer do not delete on parent (permissions)')
 
 
 @implementer(IDynamicMailTemplateLibraryStorage)
 class DynamicMailTemplateLibraryStorage(DynamicMailTemplateLibraryAquierer):
-
     @property
     def _storage(self):
         annotations = IAnnotations(self.context)
@@ -795,10 +790,7 @@ class DynamicMailTemplateLibraryStorage(DynamicMailTemplateLibraryAquierer):
         try:
             return self._storage[name]
         except KeyError:
-            return super(
-                DynamicMailTemplateLibraryStorage,
-                self
-            ).__getitem__(name)
+            return super(DynamicMailTemplateLibraryStorage, self).__getitem__(name)
 
     def __setitem__(self, name, template):
         self._storage[name] = template

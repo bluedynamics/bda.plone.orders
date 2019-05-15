@@ -10,40 +10,35 @@ from yafowil.plone.form import YAMLForm
 
 
 TEMPLATE = DynamicMailTemplate(
-    required=REQUIRED_TEMPLATE_ATTRS,
-    defaults=DEFAULT_TEMPLATE_ATTRS
+    required=REQUIRED_TEMPLATE_ATTRS, defaults=DEFAULT_TEMPLATE_ATTRS
 )
 
 
 class MailtemplatesView(BrowserView):
-
     def default_attrs(self):
         items = []
         for key in sorted(DEFAULT_TEMPLATE_ATTRS.keys()):
-            items.append({
-                'placeholder': key.replace('.', '_'),
-                'example': DEFAULT_TEMPLATE_ATTRS[key],
-            })
+            items.append(
+                {
+                    'placeholder': key.replace('.', '_'),
+                    'example': DEFAULT_TEMPLATE_ATTRS[key],
+                }
+            )
         return items
 
     def rendered(self):
         tpllib = IDynamicMailTemplateLibraryStorage(self.context)
         items = []
         for key in tpllib.direct_keys():
-            preview = TEMPLATE(
-                tpllib[key].decode('utf8'),
-                DEFAULT_TEMPLATE_ATTRS
-            )
-            items.append({
-                'title': key,
-                'preview': preview
-            })
+            preview = TEMPLATE(tpllib[key].decode('utf8'), DEFAULT_TEMPLATE_ATTRS)
+            items.append({'title': key, 'preview': preview})
         return items
 
 
 class MailtemplatesForm(YAMLForm):
     """Form to edit all the mailtemplates
     """
+
     form_template = 'bda.plone.orders.browser:forms/mailtemplates.yaml'
     message_factory = _
 
@@ -51,10 +46,7 @@ class MailtemplatesForm(YAMLForm):
         tpllib = IDynamicMailTemplateLibraryStorage(self.context)
         value = []
         for key in tpllib.direct_keys():
-            value.append({
-                'title': key,
-                'template': tpllib[key]
-            })
+            value.append({'title': key, 'template': tpllib[key]})
         return value
 
     def validate_tpl(self, widget, data):

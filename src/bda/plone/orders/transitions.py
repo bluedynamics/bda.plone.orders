@@ -33,20 +33,20 @@ def transitions_of_main_state(state):
         transitions = [
             workflow.STATE_TRANSITION_PROCESS,
             workflow.STATE_TRANSITION_FINISH,
-            workflow.STATE_TRANSITION_CANCEL
+            workflow.STATE_TRANSITION_CANCEL,
         ]
     elif state == workflow.STATE_MIXED:
         transitions = [
             workflow.STATE_TRANSITION_PROCESS,
             workflow.STATE_TRANSITION_FINISH,
             workflow.STATE_TRANSITION_CANCEL,
-            workflow.STATE_TRANSITION_RENEW
+            workflow.STATE_TRANSITION_RENEW,
         ]
     elif state == workflow.STATE_PROCESSING:
         transitions = [
             workflow.STATE_TRANSITION_FINISH,
             workflow.STATE_TRANSITION_CANCEL,
-            workflow.STATE_TRANSITION_RENEW
+            workflow.STATE_TRANSITION_RENEW,
         ]
     elif state is not None:
         transitions = [workflow.STATE_TRANSITION_RENEW]
@@ -66,7 +66,7 @@ def transitions_of_salaried_state(state):
     else:
         transitions = [
             workflow.SALARIED_TRANSITION_OUTSTANDING,
-            workflow.SALARIED_TRANSITION_SALARIED
+            workflow.SALARIED_TRANSITION_SALARIED,
         ]
     return transitions
 
@@ -76,8 +76,14 @@ def do_transition_for(order_state, transition, context=None, request=None):
 
     This mixes main state and salaried!
     """
-    def _set_state(data, state_value, state_attr='state',
-                   event_class=None, event_emit_on_last=False):
+
+    def _set_state(
+        data,
+        state_value,
+        state_attr='state',
+        event_class=None,
+        event_emit_on_last=False,
+    ):
         #
         #                             Case BookingData
         #                    Case OrderData    |
@@ -92,10 +98,7 @@ def do_transition_for(order_state, transition, context=None, request=None):
                 # Case OrderData
                 # It's a booking record from iterating over ``bookings`` in
                 # OrderData. We have to factorize a BookingData object now.
-                booking_data = BookingData(
-                    context=context,
-                    booking=booking_data
-                )
+                booking_data = BookingData(context=context, booking=booking_data)
 
             # Set state. This includes updates via it's setter method (E.g.
             # OrderData state and item_stock).
@@ -104,8 +107,8 @@ def do_transition_for(order_state, transition, context=None, request=None):
             # Optionally send out event.
             # May include sending out a notification mail.
             if event_class and (
-                cnt == bookings_len - 1 or  # event_emit_on_last
-                not event_emit_on_last      # or emit always
+                cnt == bookings_len - 1
+                or not event_emit_on_last  # event_emit_on_last  # or emit always
             ):
                 booking_attrs = dict(list(booking_data.booking.attrs.items()))
                 event = event_class(
@@ -127,26 +130,30 @@ def do_transition_for(order_state, transition, context=None, request=None):
             order_state,
             workflow.STATE_NEW,
             event_class=events.OrderSuccessfulEvent,
-            event_emit_on_last=True
+            event_emit_on_last=True,
         )
 
     elif transition == workflow.STATE_TRANSITION_PROCESS:
         event_class = None
         if order_state.state == workflow.STATE_RESERVED:
             event_class = events.BookingReservedToOrderedEvent
-        _set_state(order_state, workflow.STATE_PROCESSING, event_class=event_class)  # noqa
+        _set_state(
+            order_state, workflow.STATE_PROCESSING, event_class=event_class
+        )  # noqa
 
     elif transition == workflow.STATE_TRANSITION_FINISH:
         event_class = None
         if order_state.state == workflow.STATE_RESERVED:
             event_class = events.BookingReservedToOrderedEvent
-        _set_state(order_state, workflow.STATE_FINISHED, event_class=event_class)  # noqa
+        _set_state(
+            order_state, workflow.STATE_FINISHED, event_class=event_class
+        )  # noqa
 
     elif transition == workflow.STATE_TRANSITION_CANCEL:
         _set_state(
             order_state,
             workflow.STATE_CANCELLED,
-            event_class=events.BookingCancelledEvent
+            event_class=events.BookingCancelledEvent,
         )
 
     else:

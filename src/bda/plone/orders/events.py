@@ -8,7 +8,6 @@ from zope.interface import implementer
 
 @implementer(IOrderSuccessfulEvent)
 class OrderSuccessfulEvent(object):
-
     def __init__(self, context, request, order_uid, booking_attrs=None):
         self.context = context
         self.request = request
@@ -18,7 +17,6 @@ class OrderSuccessfulEvent(object):
 
 @implementer(IBookingCancelledEvent)
 class BookingCancelledEvent(object):
-
     def __init__(self, context, request, order_uid, booking_attrs):
         self.context = context
         self.request = request
@@ -28,7 +26,6 @@ class BookingCancelledEvent(object):
 
 @implementer(IBookingReservedToOrderedEvent)
 class BookingReservedToOrderedEvent(object):
-
     def __init__(self, context, request, order_uid, booking_attrs):
         self.context = context
         self.request = request
@@ -38,12 +35,7 @@ class BookingReservedToOrderedEvent(object):
 
 @implementer(IStockThresholdReached)
 class StockThresholdReached(object):
-
-    def __init__(self,
-                 context,
-                 request,
-                 order_uid,
-                 stock_threshold_reached_items):
+    def __init__(self, context, request, order_uid, stock_threshold_reached_items):
         self.context = context
         self.request = request
         self.order_uid = order_uid

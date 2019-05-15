@@ -44,7 +44,7 @@ class InvoiceViewBase(OrderDataView):
             'email': sender.email,
             'web': sender.web,
             'iban': sender.iban,
-            'bic': sender.bic
+            'bic': sender.bic,
         }
 
     @property
@@ -123,4 +123,5 @@ class MyInvoiceView(InvoiceViewBase):
 class DirectInvoiceView(InvoiceViewBase, ProtectedOrderDataView):
     """Direct Invoice view.
     """
+
     content_template = ViewPageTemplateFile('templates/invoice.pt')

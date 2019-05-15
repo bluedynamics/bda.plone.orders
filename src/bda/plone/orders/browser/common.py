@@ -16,6 +16,7 @@ import plone.api
 # utils
 ###############################################################################
 
+
 def vendors_form_vocab():
     vendors = vocabs.vendors_vocab_for()
     return [('', _('all', default='All'))] + vendors
@@ -37,7 +38,6 @@ def salaried_form_vocab():
 
 
 class Translate(object):
-
     def __init__(self, request):
         self.request = request
 
@@ -84,6 +84,7 @@ class Transition(BrowserView):
 class ContentTemplateView(BrowserView):
     """View mixin for rendering content from dedicated template.
     """
+
     content_template = None
 
     def render_content(self):

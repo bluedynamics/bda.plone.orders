@@ -84,9 +84,7 @@ class OrderCheckoutAdapter(CheckoutAdapter):
         # no payment
         else:
             order.attrs["payment_method"] = "no_payment"
-            order.attrs["payment_label"] = _(
-                "no_payment", default=u"No Payment"
-            )
+            order.attrs["payment_label"] = _("no_payment", default=u"No Payment")
         # shipping related information
         if cart_data.include_shipping_costs:
             shipping_param = "checkout.shipping_selection.shipping"
@@ -109,9 +107,7 @@ class OrderCheckoutAdapter(CheckoutAdapter):
         # no shipping
         else:
             order.attrs["shipping_method"] = "no_shipping"
-            order.attrs["shipping_label"] = _(
-                "no_shipping", default=u"No Shipping"
-            )
+            order.attrs["shipping_label"] = _("no_shipping", default=u"No Shipping")
             order.attrs["shipping_description"] = ""
             order.attrs["shipping_net"] = Decimal(0)
             order.attrs["shipping_vat"] = Decimal(0)
@@ -154,9 +150,7 @@ class OrderCheckoutAdapter(CheckoutAdapter):
         stock_threshold_reached_items = list()
         for booking in bookings:
             bookings_soup.add(booking)
-            buyable = get_object_by_uid(
-                self.context, booking.attrs["buyable_uid"]
-            )
+            buyable = get_object_by_uid(self.context, booking.attrs["buyable_uid"])
             item_stock = get_item_stock(buyable)
             # no stock applied
             if item_stock is None:
@@ -183,9 +177,7 @@ class OrderCheckoutAdapter(CheckoutAdapter):
         ret = list()
         cart_data = get_data_provider(self.context)
         for uid, count, comment in self.items:
-            booking = self.create_booking(
-                order, cart_data, uid, count, comment
-            )
+            booking = self.create_booking(order, cart_data, uid, count, comment)
             if booking:
                 ret.append(booking)
         return ret

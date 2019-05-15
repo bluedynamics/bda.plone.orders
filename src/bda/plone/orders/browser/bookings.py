@@ -49,8 +49,8 @@ import yafowil.loader  # noqa
 # bookings related dropdowns and transitions
 ###############################################################################
 
-class BookingsDropdown(BaseDropdown):
 
+class BookingsDropdown(BaseDropdown):
     @property
     def booking_data(self):
         vendor_uid = self.request.form.get('vendor', '')
@@ -58,11 +58,7 @@ class BookingsDropdown(BaseDropdown):
             vendor_uids = [vendor_uid]
         else:
             vendor_uids = get_vendor_uids_for()
-        return BookingData(
-            self.context,
-            booking=self.record,
-            vendor_uids=vendor_uids
-        )
+        return BookingData(self.context, booking=self.record, vendor_uids=vendor_uids)
 
 
 class BookingStateDropdown(BookingsDropdown):
@@ -100,18 +96,13 @@ class BookingSalariedDropdown(BookingsDropdown):
 
 
 class BookingTransition(Transition):
-
     def do_transition(self, uid, transition, vendor_uids):
-        booking_data = BookingData(
-            self.context,
-            uid=uid,
-            vendor_uids=vendor_uids
-        )
+        booking_data = BookingData(self.context, uid=uid, vendor_uids=vendor_uids)
         do_transition_for(
             booking_data,
             transition=transition,
             context=self.context,
-            request=self.request
+            request=self.request,
         )
         return booking_data.booking
 
@@ -127,6 +118,7 @@ class BookingSalariedTransition(BookingTransition):
 ###############################################################################
 # bookings views
 ###############################################################################
+
 
 class BookingsView(BrowserView):
     table_view_name = '@@bookingstable'
@@ -170,9 +162,8 @@ class BookingsTable(BrowserView):
                 value=self.request.form.get('vendor', ''),
                 props={
                     'vocabulary': vendors,
-                    'label': _('filter_for_vendors',
-                               default=u'Filter for vendors'),
-                }
+                    'label': _('filter_for_vendors', default=u'Filter for vendors'),
+                },
             )
             filter_widgets += vendor_selector(request=self.request)
 
@@ -187,9 +178,8 @@ class BookingsTable(BrowserView):
                 value=self.request.form.get('customer', ''),
                 props={
                     'vocabulary': customers,
-                    'label': _('filter_for_customers',
-                               default=u'Filter for customers'),
-                }
+                    'label': _('filter_for_customers', default=u'Filter for customers'),
+                },
             )
             filter_widgets += customer_selector(request=self.request)
 
@@ -200,9 +190,8 @@ class BookingsTable(BrowserView):
             value=self.request.form.get('state', ''),
             props={
                 'vocabulary': states,
-                'label': _('filter_for_state',
-                           default=u'Filter for states'),
-            }
+                'label': _('filter_for_state', default=u'Filter for states'),
+            },
         )
         filter_widgets += state_selector(request=self.request)
 
@@ -213,9 +202,8 @@ class BookingsTable(BrowserView):
             value=self.request.form.get('salaried', ''),
             props={
                 'vocabulary': salaried,
-                'label': _('filter_for_salaried',
-                           default=u'Filter for salaried state'),
-            }
+                'label': _('filter_for_salaried', default=u'Filter for salaried state'),
+            },
         )
         filter_widgets += salaried_selector(request=self.request)
 
@@ -226,9 +214,8 @@ class BookingsTable(BrowserView):
             value=self.request.form.get('from_date', ''),
             props={
                 'div.class': 'date_from_filter',
-                'label': _('filter_from_date',
-                           default=u'Filter from date'),
-            }
+                'label': _('filter_from_date', default=u'Filter from date'),
+            },
         )
         filter_widgets += from_date(request=self.request)
 
@@ -239,9 +226,8 @@ class BookingsTable(BrowserView):
             value=self.request.form.get('to_date', ''),
             props={
                 'div.class': 'date_to_filter',
-                'label': _('filter_to_date',
-                           default=u'Filter to date'),
-            }
+                'label': _('filter_to_date', default=u'Filter to date'),
+            },
         )
         filter_widgets += to_date(request=self.request)
 
@@ -254,9 +240,8 @@ class BookingsTable(BrowserView):
             props={
                 'div.class': 'group_filter',
                 'vocabulary': groups,
-                'label': _('group_orders_by',
-                           default=u'Group orders by'),
-            }
+                'label': _('group_orders_by', default=u'Group orders by'),
+            },
         )
         filter_widgets += group_selector(request=self.request)
 
@@ -272,21 +257,27 @@ class BookingsTable(BrowserView):
         email = record.attrs.get(colname, '')
         bookings_quantity = self.render_bookings_quantity(colname, record)
         bookings_total_sum = self.render_bookings_total_sum(colname, record)
-        value = \
-            '<tr class="group_email">' \
-            '<td colspan="13">' + '<p>' + email + '</p>' +\
-            '<span>' +\
-            translate(
-                _("bookings_quantity", default=u"Bookings quantity"),
-                self.request
-            ) \
-            + ': ' + str(bookings_quantity) + '</span>' \
-            '<span>' +\
-            translate(
-                _("bookings_total_sum", default=u"Bookings total sum"),
-                self.request
-            ) \
-            + ': ' + str(bookings_total_sum) + '</td></tr>'
+        value = (
+            '<tr class="group_email">'
+            '<td colspan="13">'
+            + '<p>'
+            + email
+            + '</p>'
+            + '<span>'
+            + translate(
+                _("bookings_quantity", default=u"Bookings quantity"), self.request
+            )
+            + ': '
+            + str(bookings_quantity)
+            + '</span>'
+            '<span>'
+            + translate(
+                _("bookings_total_sum", default=u"Bookings total sum"), self.request
+            )
+            + ': '
+            + str(bookings_total_sum)
+            + '</td></tr>'
+        )
 
         return value
 
@@ -295,21 +286,27 @@ class BookingsTable(BrowserView):
         title = record.attrs.get('title', '')
         bookings_quantity = self.render_bookings_quantity(colname, record)
         bookings_total_sum = self.render_bookings_total_sum(colname, record)
-        value = \
-            u'<tr class="group_buyable">' \
-            u'<td colspan="13">' + u'<p>' + safe_unicode(title) + u'</p>' +\
-            u'<span>' +\
-            translate(
-                _("bookings_quantity", default=u"Bookings quantity"),
-                self.request
-            ) \
-            + u': ' + safe_unicode(bookings_quantity) + u'</span>' \
-            u'<span>' +\
-            translate(
-                _("bookings_total_sum", default=u"Bookings total sum"),
-                self.request
-            ) \
-            + u': ' + bookings_total_sum + u'</td></tr>'
+        value = (
+            u'<tr class="group_buyable">'
+            u'<td colspan="13">'
+            + u'<p>'
+            + safe_unicode(title)
+            + u'</p>'
+            + u'<span>'
+            + translate(
+                _("bookings_quantity", default=u"Bookings quantity"), self.request
+            )
+            + u': '
+            + safe_unicode(bookings_quantity)
+            + u'</span>'
+            u'<span>'
+            + translate(
+                _("bookings_total_sum", default=u"Bookings total sum"), self.request
+            )
+            + u': '
+            + bookings_total_sum
+            + u'</td></tr>'
+        )
 
         return value
 
@@ -351,29 +348,16 @@ class BookingsTable(BrowserView):
             return value
 
     def render_name(self, colname, record):
-        firstname = safe_unicode(self._get_ordervalue(
-            'personal_data.firstname',
-            record,
-        ))
-        lastname = safe_unicode(self._get_ordervalue(
-            'personal_data.lastname',
-            record,
-        ))
+        firstname = safe_unicode(
+            self._get_ordervalue('personal_data.firstname', record)
+        )
+        lastname = safe_unicode(self._get_ordervalue('personal_data.lastname', record))
         return u"{0}, {1}".format(firstname, lastname)
 
     def render_address(self, colname, record):
-        street = safe_unicode(self._get_ordervalue(
-            'billing_address.street',
-            record,
-        ))
-        city = safe_unicode(self._get_ordervalue(
-            'billing_address.city',
-            record,
-        ))
-        phone = safe_unicode(self._get_ordervalue(
-            'personal_data.phone',
-            record,
-        ))
+        street = safe_unicode(self._get_ordervalue('billing_address.street', record))
+        city = safe_unicode(self._get_ordervalue('billing_address.city', record))
+        phone = safe_unicode(self._get_ordervalue('personal_data.phone', record))
         email = safe_unicode(record.attrs.get('email', ''))
 
         return u"{0} {1}<br/>{2}: {3}<br/>{4}: {5}".format(
@@ -382,15 +366,12 @@ class BookingsTable(BrowserView):
             _("phone", default=u"Phone"),
             phone,
             _("email", default=u"Email"),
-            email
+            email,
         )
 
     @property
     def ajaxurl(self):
-        return u'{0}/{1}'.format(
-            self.context.absolute_url(),
-            self.data_view_name
-        )
+        return u'{0}/{1}'.format(self.context.absolute_url(), self.data_view_name)
 
     @property
     def columns(self):
@@ -418,11 +399,7 @@ class BookingsTable(BrowserView):
                 'renderer': self.render_dt,
                 'origin': 'b',
             },
-            {
-                'id': 'title',
-                'label': _('Item', default=u'Item'),
-                'origin': 'b',
-            },
+            {'id': 'title', 'label': _('Item', default=u'Item'), 'origin': 'b'},
             {
                 'id': 'buyable_comment',
                 'label': _('booking_comment', default=u'Comment'),
@@ -432,7 +409,7 @@ class BookingsTable(BrowserView):
                 'id': 'name',
                 'label': u'{0}, {1}'.format(
                     _('firstname', default=u'First Name'),
-                    _('lastname', default=u'Last Name')
+                    _('lastname', default=u'Last Name'),
                 ),
                 'renderer': self.render_name,
                 'origin': 'o',
@@ -469,10 +446,7 @@ class BookingsTable(BrowserView):
             },
             {
                 'id': 'bookings_total_sum',
-                'label': _(
-                    'bookings_total_sum',
-                    default=u'Bookings total sum'
-                ),
+                'label': _('bookings_total_sum', default=u'Bookings total sum'),
                 'renderer': self.render_bookings_total_sum,
                 'origin': 'b',
             },
@@ -538,8 +512,7 @@ class BookingsTable(BrowserView):
         }
 
         self.request.response.setHeader(
-            'Content-Type',
-            'application/json; charset=utf-8'
+            'Content-Type', 'application/json; charset=utf-8'
         )
         return json.dumps(data)
 
@@ -608,20 +581,22 @@ class BookingsTable(BrowserView):
                 to_date = convert(to_date, locale=locale)
             except DateTimeConversionError:
                 return None
-            if isinstance(to_date, datetime.datetime) \
-                    and to_date.hour == 0 and to_date.minute == 0:
+            if (
+                isinstance(to_date, datetime.datetime)
+                and to_date.hour == 0
+                and to_date.minute == 0
+            ):
                 to_date = to_date.replace(hour=23, minute=59, second=59)
 
         if isinstance(from_date, str) and isinstance(to_date, str):
             return None
-        if isinstance(from_date, datetime.datetime) \
-                and isinstance(to_date, str):
+        if isinstance(from_date, datetime.datetime) and isinstance(to_date, str):
             return Ge('created', from_date)
-        if isinstance(from_date, str) \
-                and isinstance(to_date, datetime.datetime):
+        if isinstance(from_date, str) and isinstance(to_date, datetime.datetime):
             return Le('created', to_date)
-        if isinstance(from_date, datetime.datetime) \
-                and isinstance(to_date, datetime.datetime):
+        if isinstance(from_date, datetime.datetime) and isinstance(
+            to_date, datetime.datetime
+        ):
             return InRange('created', from_date, to_date)
 
     def _text_checker(self, text):
@@ -751,35 +726,19 @@ class BookingsTable(BrowserView):
 
     def render_salaried(self, colname, record):
         if not self.check_modify_order(record):
-            booking_data = BookingData(
-                self.context,
-                booking=record
-            )
+            booking_data = BookingData(self.context, booking=record)
             return translate(
-                vocabs.salaried_vocab()[booking_data.salaried],
-                context=self.request
+                vocabs.salaried_vocab()[booking_data.salaried], context=self.request
             )
-        return BookingSalariedDropdown(
-            self.context,
-            self.request,
-            record
-        ).render()
+        return BookingSalariedDropdown(self.context, self.request, record).render()
 
     def render_state(self, colname, record):
         if not self.check_modify_order(record):
-            booking_data = BookingData(
-                self.context,
-                booking=record
-            )
+            booking_data = BookingData(self.context, booking=record)
             return translate(
-                vocabs.state_vocab()[booking_data.state],
-                context=self.request
+                vocabs.state_vocab()[booking_data.state], context=self.request
             )
-        return BookingStateDropdown(
-            self.context,
-            self.request,
-            record
-        ).render()
+        return BookingStateDropdown(self.context, self.request, record).render()
 
     def __call__(self):
         # check if authenticated user is vendor

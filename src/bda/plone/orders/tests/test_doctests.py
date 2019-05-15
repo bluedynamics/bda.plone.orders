@@ -13,21 +13,21 @@ optionflags = doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS
 
 TESTFILES = [
     ('dynamicmailtemplate.rst', UNIT_TESTING),
-    ('dynamicmaillibrary.rst', Orders_INTEGRATION_TESTING)
+    ('dynamicmaillibrary.rst', Orders_INTEGRATION_TESTING),
 ]
 
 
 def test_suite():
-    return unittest.TestSuite([
-        layered(
-            doctest.DocFileSuite(
-                filename,
-                optionflags=optionflags,
-                globs={
-                    'interact': interact,
-                    'pprint': pprint.pprint,  # noqa
-                },
-            ), layer=layer
-        )
-        for filename, layer in TESTFILES]
+    return unittest.TestSuite(
+        [
+            layered(
+                doctest.DocFileSuite(
+                    filename,
+                    optionflags=optionflags,
+                    globs={'interact': interact, 'pprint': pprint.pprint},  # noqa
+                ),
+                layer=layer,
+            )
+            for filename, layer in TESTFILES
+        ]
     )

@@ -50,9 +50,7 @@ def fix_bookings_vendor_uid(ctx=None):
         vendor_uid = uuid.UUID(IUUID(shop))
         item.attrs['vendor_uid'] = vendor_uid
         need_rebuild = True
-        logging.info(
-            u"Added vendor_uid to booking {0}".format(item.attrs['uid'])
-        )
+        logging.info(u"Added vendor_uid to booking {0}".format(item.attrs['uid']))
     if need_rebuild:
         soup.rebuild()
         logging.info("Rebuilt bookings catalog")
@@ -69,8 +67,10 @@ def fix_orders_vendor_uids(ctx=None):
         update = False
         try:
             item.attrs['vendor_uids']
-            if not isinstance(item.attrs['vendor_uids'], list)\
-                    or not item.attrs['vendor_uids']:
+            if (
+                not isinstance(item.attrs['vendor_uids'], list)
+                or not item.attrs['vendor_uids']
+            ):
                 update = True
         except KeyError:
             update = True
@@ -82,9 +82,7 @@ def fix_orders_vendor_uids(ctx=None):
             vendor_uids.add(booking.attrs['vendor_uid'])
         item.attrs['vendor_uids'] = list(vendor_uids)
         need_rebuild = True
-        logging.info(
-            u"Added vendor_uids to order {0}".format(item.attrs['uid'])
-        )
+        logging.info(u"Added vendor_uids to order {0}".format(item.attrs['uid']))
     if need_rebuild:
         soup.rebuild()
         logging.info("Rebuilt orders catalog")
@@ -123,9 +121,7 @@ def fix_bookings_state_salaried_tid(ctx=None):
                 booking.attrs['state'] = state
                 need_rebuild = True
                 logging.info(
-                    u"Added state {0} to booking {1}".format(
-                        state, item.attrs['uid']
-                    )
+                    u"Added state {0} to booking {1}".format(state, item.attrs['uid'])
                 )
             try:
                 booking.attrs['salaried']
@@ -143,9 +139,7 @@ def fix_bookings_state_salaried_tid(ctx=None):
                 booking.attrs['tid'] = tid
                 need_rebuild = True
                 logging.info(
-                    u"Added tid {0} to booking {1}".format(
-                        tid, item.attrs['uid']
-                    )
+                    u"Added tid {0} to booking {1}".format(tid, item.attrs['uid'])
                 )
         # now, delete from order node
         if state_exists:
@@ -173,9 +167,7 @@ def fix_discount_attrs(ctx=None):
             need_rebuild = True
             item.attrs['cart_discount_net'] = Decimal(0)
             logging.info(
-                u"Added cart_discount_net to order {0}".format(
-                    item.attrs['uid']
-                )
+                u"Added cart_discount_net to order {0}".format(item.attrs['uid'])
             )
         try:
             item.attrs['cart_discount_vat']
@@ -183,9 +175,7 @@ def fix_discount_attrs(ctx=None):
             need_rebuild = True
             item.attrs['cart_discount_vat'] = Decimal(0)
             logging.info(
-                u"Added cart_discount_vat to order {0}".format(
-                    item.attrs['uid']
-                )
+                u"Added cart_discount_vat to order {0}".format(item.attrs['uid'])
             )
     if need_rebuild:
         orders_soup.rebuild()
@@ -200,9 +190,7 @@ def fix_discount_attrs(ctx=None):
         except KeyError:
             need_rebuild = True
             item.attrs['discount_net'] = Decimal(0)
-            logging.info(
-                u"Added discount_net to booking {0}".format(item.attrs['uid'])
-            )
+            logging.info(u"Added discount_net to booking {0}".format(item.attrs['uid']))
     if need_rebuild:
         bookings_soup.rebuild()
         logging.info("Rebuilt bookings catalog")
@@ -234,8 +222,7 @@ def fix_shipping_attrs(ctx=None):
         try:
             item.attrs['shipping_description']
         except KeyError:
-            item.attrs['shipping_description'] = \
-                _('unknown', default=u'Unknown')
+            item.attrs['shipping_description'] = _('unknown', default=u'Unknown')
             logging.info(
                 u"Added shipping_description {0} to booking {1}".format(
                     'unknown', item.attrs['uid']
@@ -344,9 +331,7 @@ def fix_bookings_trading(ctx=None):
             )
             booking.attrs['gtin'] = gtin
             logging.info(
-                u"Added gtin {0} to booking {1}".format(
-                    gtin, booking.attrs['uid']
-                )
+                u"Added gtin {0} to booking {1}".format(gtin, booking.attrs['uid'])
             )
     if need_rebuild:
         bookings_soup = get_bookings_soup(portal)
@@ -355,7 +340,6 @@ def fix_bookings_trading(ctx=None):
 
 
 def reset_records(ctx=None):
-
     def ignore_key(key):
         return key.startswith('____')
 
@@ -365,18 +349,14 @@ def reset_records(ctx=None):
     for order in data.values():
         reset_odict(order.attrs.storage, ignore_key=ignore_key)
         logging.info(
-            u'Reset attributes storage on order {0}'.format(
-                order.attrs['uid'],
-            )
+            u'Reset attributes storage on order {0}'.format(order.attrs['uid'])
         )
     soup = get_bookings_soup(portal)
     data = soup.storage.data
     for booking in data.values():
         reset_odict(booking.attrs.storage, ignore_key=ignore_key)
         logging.info(
-            u"Reset attributes storage on booking {0}".format(
-                booking.attrs['uid']
-            )
+            u"Reset attributes storage on booking {0}".format(booking.attrs['uid'])
         )
 
 
@@ -401,9 +381,7 @@ def fix_bookings_email(ctx=None):
 
         item.attrs['email'] = email
         need_rebuild = True
-        logging.info(
-            u"Added email to booking {0}".format(item.attrs['uid'])
-        )
+        logging.info(u"Added email to booking {0}".format(item.attrs['uid']))
     if need_rebuild:
         soup.rebuild()
         logging.info("Rebuilt bookings catalog")
@@ -428,9 +406,7 @@ def fix_contacts_email(ctx=None):
         email = item.attrs.get('personal_data.email', 'n/a')
         item.attrs['email'] = email
         need_rebuild = True
-        logging.info(
-            u"Added email to contact {0}".format(item.attrs['uid'])
-        )
+        logging.info(u"Added email to contact {0}".format(item.attrs['uid']))
     if need_rebuild:
         soup.rebuild()
         logging.info("Rebuilt contacts catalog")

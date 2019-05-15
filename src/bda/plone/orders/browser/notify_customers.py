@@ -32,6 +32,7 @@ def mail_gender_vocab():
 class NotifyCustomers(YAMLBaseForm):
     """Notify customers form.
     """
+
     form_template = 'bda.plone.orders.browser:forms/notify_customers.yaml'
     message_factory = _
 
@@ -42,12 +43,12 @@ class NotifyCustomers(YAMLBaseForm):
             if ISite.providedBy(context):
                 return context
             return _acquire_site(aq_parent(context))
+
         self.context = _acquire_site(context)
         self.request = request
 
     def form_action(self, widget, data):
-        return '%s/ajaxform?form_name=notify_customers' % \
-            self.context.absolute_url()
+        return '%s/ajaxform?form_name=notify_customers' % self.context.absolute_url()
 
     def template_value(self, widget, data):
         if data.extracted and data.extracted['template'] != '-':
@@ -59,9 +60,7 @@ class NotifyCustomers(YAMLBaseForm):
         return UNSET
 
     def template_vocabulary(self, widget, data):
-        vocab = [
-            ('-', _('no_template_selected', default=u'No template selected')),
-        ]
+        vocab = [('-', _('no_template_selected', default=u'No template selected'))]
         tpllib = IDynamicMailTemplateLibrary(self.context)
         for key in tpllib.keys():
             vocab.append((key, key))
@@ -86,18 +85,21 @@ class NotifyCustomers(YAMLBaseForm):
             # XXX: refactor and use configurable callbacks
             # special case gender
             if key == 'personal_data.gender':
-                data[key] = translate(mail_gender_vocab()[order.attrs[key]],
-                                      context=self.request)
+                data[key] = translate(
+                    mail_gender_vocab()[order.attrs[key]], context=self.request
+                )
                 continue
             # special case salaried
             if key == 'salaried':
-                data[key] = translate(salaried_vocab()[order_data.salaried],
-                                      context=self.request)
+                data[key] = translate(
+                    salaried_vocab()[order_data.salaried], context=self.request
+                )
                 continue
             # special case state
             if key == 'state':
-                data[key] = translate(state_vocab()[order_data.state],
-                                      context=self.request)
+                data[key] = translate(
+                    state_vocab()[order_data.state], context=self.request
+                )
                 continue
             # read attrs from order
             if key in order.attrs:
@@ -115,31 +117,25 @@ class NotifyCustomers(YAMLBaseForm):
             self._sendmail(notifier, uid, tpl, subject)
 
     def ajax_url(self, widget, data):
-        url = u"{0}/@@load_notification_template".format(
-            self.context.absolute_url()
-        )
+        url = u"{0}/@@load_notification_template".format(self.context.absolute_url())
         return {'tplurl': url}
 
     def send_success(self, request):
-        message = translate(_('customers_notified_success',
-                              default=u'Mail to customers sent'),
-                            context=self.request)
-        continuation = [
-            AjaxOverlay(close=True),
-            AjaxMessage(message, 'info', None)
-        ]
+        message = translate(
+            _('customers_notified_success', default=u'Mail to customers sent'),
+            context=self.request,
+        )
+        continuation = [AjaxOverlay(close=True), AjaxMessage(message, 'info', None)]
         ajax_continue(self.request, continuation)
         return True
 
     def __call__(self):
         # XXX: security check -> current user has valid vandor area?
-        ajax_form_fiddle(
-            self.request, 'form[id=form-notify_customers]', 'replace')
+        ajax_form_fiddle(self.request, 'form[id=form-notify_customers]', 'replace')
         return self.render_form()
 
 
 class LoadTemplate(BrowserView):
-
     def __call__(self):
         # XXX: security check -> current user has valid vandor area?
         self.request.response.setHeader('Content-Type', 'application/json')

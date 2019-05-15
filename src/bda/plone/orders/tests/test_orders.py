@@ -25,13 +25,12 @@ class DummyContext(dict):
         return True
 
     def __setitem__(self, key, val):
-        assert(isinstance(val, DummyContext))
+        assert isinstance(val, DummyContext)
         val.__parent__ = self
         super(DummyContext, self).__setitem__(key, val)
 
 
 class TestOrdersUnit(unittest.TestCase):
-
     def setUp(self):
         root = DummyContext()
         root['sub1'] = DummyContext()
@@ -45,7 +44,6 @@ class TestOrdersUnit(unittest.TestCase):
     def test_acquire_vendor_or_shop_root(self):
         root = self.root
         self.assertEqual(
-            acquire_vendor_or_shop_root(root['sub1']['subsub1']),
-            root['sub1']
+            acquire_vendor_or_shop_root(root['sub1']['subsub1']), root['sub1']
         )
         self.assertEqual(acquire_vendor_or_shop_root(root['sub2']), root)

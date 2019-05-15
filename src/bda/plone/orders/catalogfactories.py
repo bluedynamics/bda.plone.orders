@@ -62,13 +62,9 @@ class OrdersCatalogFactory(object):
         created_indexer = NodeAttributeIndexer("created")
         catalog[u"created"] = CatalogFieldIndex(created_indexer)
         firstname_indexer = NodeAttributeIndexer("personal_data.firstname")
-        catalog[u"personal_data.firstname"] = CatalogFieldIndex(
-            firstname_indexer
-        )
+        catalog[u"personal_data.firstname"] = CatalogFieldIndex(firstname_indexer)
         lastname_indexer = NodeAttributeIndexer("personal_data.lastname")
-        catalog[u"personal_data.lastname"] = CatalogFieldIndex(
-            lastname_indexer
-        )
+        catalog[u"personal_data.lastname"] = CatalogFieldIndex(lastname_indexer)
         city_indexer = NodeAttributeIndexer("billing_address.city")
         catalog[u"billing_address.city"] = CatalogFieldIndex(city_indexer)
         search_attributes = [

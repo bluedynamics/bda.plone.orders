@@ -43,9 +43,11 @@ import uuid
 # orders table base
 ###############################################################################
 
+
 class TableData(BrowserView):
     """Base view for displaying sour records in datatable.
     """
+
     soup_name = None
     search_text_index = None
 
@@ -60,14 +62,16 @@ class TableData(BrowserView):
             'renderer': callback,
         }]
         """
-        raise NotImplementedError(u"Abstract DataTable does not implement "
-                                  u"``columns``.")
+        raise NotImplementedError(
+            u"Abstract DataTable does not implement " u"``columns``."
+        )
 
     def query(self, soup):
         """Return 2-tuple with result length and lazy record iterator.
         """
-        raise NotImplementedError(u"Abstract DataTable does not implement "
-                                  u"``query``.")
+        raise NotImplementedError(
+            u"Abstract DataTable does not implement " u"``query``."
+        )
 
     def sort(self):
         columns = self.columns
@@ -86,6 +90,7 @@ class TableData(BrowserView):
         def lazyrecords():
             for iid in iids:
                 yield LazyRecord(iid, soup)
+
         return soup.storage.length.value, lazyrecords()
 
     def slice(self, fullresult):
@@ -123,6 +128,7 @@ class TableData(BrowserView):
                     value = record.attrs.get(colname, '')
                 result.append(value)
             return result
+
         for lazyrecord in self.slice(lazydata):
             aaData.append(record2list(lazyrecord()))
         data = {
@@ -139,8 +145,8 @@ class TableData(BrowserView):
 # order related dropdowns and transitions
 ###############################################################################
 
-class OrderDropdown(BaseDropdown):
 
+class OrderDropdown(BaseDropdown):
     @property
     def order_data(self):
         vendor_uid = self.request.form.get('vendor', '')
@@ -148,11 +154,7 @@ class OrderDropdown(BaseDropdown):
             vendor_uids = [vendor_uid]
         else:
             vendor_uids = get_vendor_uids_for()
-        return OrderData(
-            self.context,
-            order=self.record,
-            vendor_uids=vendor_uids
-        )
+        return OrderData(self.context, order=self.record, vendor_uids=vendor_uids)
 
 
 class OrderStateDropdown(OrderDropdown):
@@ -190,18 +192,13 @@ class OrderSalariedDropdown(OrderDropdown):
 
 
 class OrderTransition(Transition):
-
     def do_transition(self, uid, transition, vendor_uids):
-        order_data = OrderData(
-            self.context,
-            uid=uid,
-            vendor_uids=vendor_uids
-        )
+        order_data = OrderData(self.context, uid=uid, vendor_uids=vendor_uids)
         do_transition_for(
             order_data,
             transition=transition,
             context=self.context,
-            request=self.request
+            request=self.request,
         )
         return order_data.order
 
@@ -232,8 +229,8 @@ class OrdersViewBase(BrowserView):
 # orders views
 ###############################################################################
 
-class OrdersView(OrdersViewBase):
 
+class OrdersView(OrdersViewBase):
     def __call__(self):
         # check if authenticated user is vendor
         if not get_vendors_for():
@@ -263,10 +260,8 @@ class OrdersTableBase(BrowserView):
         return None
 
     def render_salaried(self, colname, record):
-        salaried = OrderData(self.context, order=record).salaried\
-            or ifaces.SALARIED_NO
-        return translate(vocabs.salaried_vocab()[salaried],
-                         context=self.request)
+        salaried = OrderData(self.context, order=record).salaried or ifaces.SALARIED_NO
+        return translate(vocabs.salaried_vocab()[salaried], context=self.request)
 
     def render_state(self, colname, record):
         state = OrderData(self.context, order=record).state
@@ -282,47 +277,46 @@ class OrdersTableBase(BrowserView):
 
     @property
     def ajaxurl(self):
-        return u'{0}/{1}'.format(
-            self.context.absolute_url(),
-            self.data_view_name
-        )
+        return u'{0}/{1}'.format(self.context.absolute_url(), self.data_view_name)
 
     @property
     def columns(self):
-        return [{
-            'id': 'actions',
-            'label': _('actions', default=u'Actions'),
-            'head': self.render_order_actions_head,
-            'renderer': self.render_order_actions,
-        }, {
-            'id': 'created',
-            'label': _('date', default=u'Date'),
-            'renderer': self.render_dt,
-        }, {
-            'id': 'personal_data.lastname',
-            'label': _('lastname', default=u'Last Name'),
-        }, {
-            'id': 'personal_data.firstname',
-            'label': _('firstname', default=u'First Name'),
-        }, {
-            'id': 'personal_data.email',
-            'label': _('email', default=u'Email'),
-        }, {
-            'id': 'billing_address.city',
-            'label': _('city', default=u'City'),
-        }, {
-            'id': 'salaried',
-            'label': _('salaried', default=u'Salaried'),
-            'renderer': self.render_salaried,
-        }, {
-            'id': 'state',
-            'label': _('state', default=u'State'),
-            'renderer': self.render_state,
-        }]
+        return [
+            {
+                'id': 'actions',
+                'label': _('actions', default=u'Actions'),
+                'head': self.render_order_actions_head,
+                'renderer': self.render_order_actions,
+            },
+            {
+                'id': 'created',
+                'label': _('date', default=u'Date'),
+                'renderer': self.render_dt,
+            },
+            {
+                'id': 'personal_data.lastname',
+                'label': _('lastname', default=u'Last Name'),
+            },
+            {
+                'id': 'personal_data.firstname',
+                'label': _('firstname', default=u'First Name'),
+            },
+            {'id': 'personal_data.email', 'label': _('email', default=u'Email')},
+            {'id': 'billing_address.city', 'label': _('city', default=u'City')},
+            {
+                'id': 'salaried',
+                'label': _('salaried', default=u'Salaried'),
+                'renderer': self.render_salaried,
+            },
+            {
+                'id': 'state',
+                'label': _('state', default=u'State'),
+                'renderer': self.render_state,
+            },
+        ]
 
 
 class OrdersTable(OrdersTableBase):
-
     def render_filter(self):
         # vendor areas of current user
         vendors = vendors_form_vocab()
@@ -335,9 +329,8 @@ class OrdersTable(OrdersTableBase):
                 value=self.request.form.get('vendor', ''),
                 props={
                     'vocabulary': vendors,
-                    'label': _('filter_for_vendors',
-                               default=u'Filter for vendors'),
-                }
+                    'label': _('filter_for_vendors', default=u'Filter for vendors'),
+                },
             )
         # customers of current user
         customers = customers_form_vocab()
@@ -350,9 +343,8 @@ class OrdersTable(OrdersTableBase):
                 value=self.request.form.get('customer', ''),
                 props={
                     'vocabulary': customers,
-                    'label': _('filter_for_customers',
-                               default=u'Filter for customers'),
-                }
+                    'label': _('filter_for_customers', default=u'Filter for customers'),
+                },
             )
 
         states = states_form_vocab()
@@ -362,9 +354,8 @@ class OrdersTable(OrdersTableBase):
             value=self.request.form.get('state', ''),
             props={
                 'vocabulary': states,
-                'label': _('filter_for_state',
-                           default=u'Filter for states'),
-            }
+                'label': _('filter_for_state', default=u'Filter for states'),
+            },
         )
 
         salaried = salaried_form_vocab()
@@ -374,9 +365,8 @@ class OrdersTable(OrdersTableBase):
             value=self.request.form.get('salaried', ''),
             props={
                 'vocabulary': salaried,
-                'label': _('filter_for_salaried',
-                           default=u'Filter for salaried state'),
-            }
+                'label': _('filter_for_salaried', default=u'Filter for salaried state'),
+            },
         )
 
         # concatenate filters
@@ -397,8 +387,7 @@ class OrdersTable(OrdersTableBase):
             'name': 'select_all_orders',
             'type': 'checkbox',
             'class_': 'select_all_orders',
-            'title': _('select_all_orders',
-                       default=u'Select all visible orders'),
+            'title': _('select_all_orders', default=u'Select all visible orders'),
         }
         select_all_orders = tag('input', **select_all_orders_attrs)
         notify_customers_target = self.context.absolute_url()
@@ -406,8 +395,9 @@ class OrdersTable(OrdersTableBase):
             'ajax:target': notify_customers_target,
             'class_': 'notify_customers',
             'href': '',
-            'title': _('notify_customers',
-                       default=u'Notify customers of selected orders'),
+            'title': _(
+                'notify_customers', default=u'Notify customers of selected orders'
+            ),
         }
         notify_customers = tag('a', '&nbsp;', **notify_customers_attributes)
         return select_all_orders + notify_customers
@@ -422,11 +412,10 @@ class OrdersTable(OrdersTableBase):
             view_order_target = '%s?uid=%s&vendor=%s' % (
                 base_url,
                 str(record.attrs['uid']),
-                vendor_uid)
+                vendor_uid,
+            )
         else:
-            view_order_target = '%s?uid=%s' % (
-                base_url,
-                str(record.attrs['uid']))
+            view_order_target = '%s?uid=%s' % (base_url, str(record.attrs['uid']))
         view_order_attrs = {
             'ajax:bind': 'click',
             'ajax:target': view_order_target,
@@ -481,24 +470,14 @@ class OrdersTable(OrdersTableBase):
     def render_salaried(self, colname, record):
         if not self.check_modify_order(record):
             salaried = OrderData(self.context, order=record).salaried
-            return translate(vocabs.salaried_vocab()[salaried],
-                             context=self.request)
-        return OrderSalariedDropdown(
-            self.context,
-            self.request,
-            record
-        ).render()
+            return translate(vocabs.salaried_vocab()[salaried], context=self.request)
+        return OrderSalariedDropdown(self.context, self.request, record).render()
 
     def render_state(self, colname, record):
         if not self.check_modify_order(record):
             state = OrderData(self.context, order=record).state
-            return translate(vocabs.state_vocab()[state],
-                             context=self.request)
-        return OrderStateDropdown(
-            self.context,
-            self.request,
-            record
-        ).render()
+            return translate(vocabs.state_vocab()[state], context=self.request)
+        return OrderStateDropdown(self.context, self.request, record).render()
 
     @property
     def ajaxurl(self):
@@ -511,9 +490,7 @@ class OrdersTable(OrdersTableBase):
         query = six.moves.urllib.parse.urlencode(dict([it for it in params if it[1]]))
         query = query and u'?{0}'.format(query) or ''
         return u'{0:s}/{1:s}{2:s}'.format(
-            self.context.absolute_url(),
-            self.data_view_name,
-            query
+            self.context.absolute_url(), self.data_view_name, query
         )
 
     def __call__(self):
@@ -625,10 +602,9 @@ class OrdersData(OrdersTable, TableData):
             query = query & Any('buyable_uids', buyable_uids)
         # query orders and return result
         sort = self.sort()
-        res = soup.lazy(query,
-                        sort_index=sort['index'],
-                        reverse=sort['reverse'],
-                        with_size=True)
+        res = soup.lazy(
+            query, sort_index=sort['index'], reverse=sort['reverse'], with_size=True
+        )
         length = next(res)
         return length, res
 
@@ -649,9 +625,8 @@ class MyOrdersData(MyOrdersTable, TableData):
             query = query & Contains(self.search_text_index, term)
         # query orders and return result
         sort = self.sort()
-        res = soup.lazy(query,
-                        sort_index=sort['index'],
-                        reverse=sort['reverse'],
-                        with_size=True)
+        res = soup.lazy(
+            query, sort_index=sort['index'], reverse=sort['reverse'], with_size=True
+        )
         length = next(res)
         return length, res

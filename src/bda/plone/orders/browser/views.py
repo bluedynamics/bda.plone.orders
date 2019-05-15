@@ -9,9 +9,11 @@ from Products.Five import BrowserView
 # views
 ###############################################################################
 
+
 class OrderDone(BrowserView):
     """Landing page after order has been done.
     """
+
     # XXX: provide different headings and texts for states reservation and
     #      mixed
     reservation_states = (ifaces.STATE_RESERVED, ifaces.STATE_MIXED)
@@ -40,9 +42,7 @@ class OrderDone(BrowserView):
     def text(self):
         try:
             if self.order_data.state in self.reservation_states:
-                return _('reservation_text',
-                         default=u'Thanks for your Reservation.')
+                return _('reservation_text', default=u'Thanks for your Reservation.')
             return _('order_text', default=u'Thanks for your Order.')
         except ValueError:
-            return _('unknown_order_text',
-                     default=u'Sorry, this order does not exist.')
+            return _('unknown_order_text', default=u'Sorry, this order does not exist.')

@@ -25,9 +25,7 @@ class IGlobalNotificationText(Interface):
     """Notification text per order.
     """
 
-    global_order_text = Attribute(
-        u"Text sent after successful checkout for order"
-    )
+    global_order_text = Attribute(u"Text sent after successful checkout for order")
     global_overbook_text = Attribute(
         u"Text sent after successful checkout for order if stock overbooked"
     )

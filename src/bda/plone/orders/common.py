@@ -77,9 +77,7 @@ def acquire_vendor_or_shop_root(context):
     if not context:
         message = u"No context given to acquire vendor or shop root from"
         raise ValueError(message)
-    while not IVendor.providedBy(context) and not IPloneSiteRoot.providedBy(
-        context
-    ):
+    while not IVendor.providedBy(context) and not IPloneSiteRoot.providedBy(context):
         context = aq_parent(aq_inner(context))
     return context
 
@@ -211,16 +209,12 @@ def _calculate_order_attr_from_bookings(bookings, attr, mixed_value):
 
 
 def calculate_order_state(bookings):
-    return _calculate_order_attr_from_bookings(
-        bookings, "state", workflow.STATE_MIXED
-    )
+    return _calculate_order_attr_from_bookings(bookings, "state", workflow.STATE_MIXED)
 
 
 def calculate_order_salaried(bookings):
     return _calculate_order_attr_from_bookings(
-        list(filter(is_billable_booking, bookings)),
-        "salaried",
-        workflow.SALARIED_MIXED,
+        list(filter(is_billable_booking, bookings)), "salaried", workflow.SALARIED_MIXED
     )
 
 
@@ -244,21 +238,15 @@ class OrderState(object):
 
     @property
     def state(self):
-        raise NotImplementedError(
-            "Abstract OrderState does not implement state"
-        )
+        raise NotImplementedError("Abstract OrderState does not implement state")
 
     @state.setter
     def state(self, value):
-        raise NotImplementedError(
-            "Abstract OrderState does not implement state.setter"
-        )
+        raise NotImplementedError("Abstract OrderState does not implement state.setter")
 
     @property
     def salaried(self):
-        raise NotImplementedError(
-            "Abstract OrderState does not implement salaried"
-        )
+        raise NotImplementedError("Abstract OrderState does not implement salaried")
 
     @salaried.setter
     def salaried(self, value):
@@ -279,10 +267,7 @@ class OrderState(object):
                 # do nothing
                 pass
         elif old_state == workflow.STATE_RESERVED:
-            if new_state in (
-                workflow.STATE_PROCESSING,
-                workflow.STATE_FINISHED,
-            ):
+            if new_state in (workflow.STATE_PROCESSING, workflow.STATE_FINISHED):
                 self.decrease_stock(booking)
             else:
                 # do nothing
@@ -344,9 +329,7 @@ class OrderData(OrderState):
         :type vendor_uids: List of vendor uids as string or uuid.UUID object.
         """
         if not (bool(uid) != bool(order)):  # ^= xor
-            raise ValueError(
-                "Parameters 'uid' and 'order' are mutually exclusive."
-            )
+            raise ValueError("Parameters 'uid' and 'order' are mutually exclusive.")
         if uid and not isinstance(uid, uuid.UUID):
             uid = uuid.UUID(uid)
         vendor_uids = [uuid.UUID(str(vuid)) for vuid in vendor_uids]
@@ -575,9 +558,7 @@ class BookingData(OrderState):
         booking.attrs["salaried"] = value
         order = self.order
         del order.order.attrs["salaried"]
-        order.order.attrs["salaried"] = calculate_order_salaried(
-            order.bookings
-        )  # noqa
+        order.order.attrs["salaried"] = calculate_order_salaried(order.bookings)  # noqa
         self.reindex_bookings([booking])
         self.reindex_order(order.order)
 
@@ -595,9 +576,7 @@ class BuyableData(object):
         bookings_soup = get_bookings_soup(context)
         order_bookings = dict()
         for booking in bookings_soup.query(Eq("buyable_uid", IUUID(context))):
-            bookings = order_bookings.setdefault(
-                booking.attrs["order_uid"], list()
-            )
+            bookings = order_bookings.setdefault(booking.attrs["order_uid"], list())
             bookings.append(booking)
         count = Decimal("0")
         for order_uid, bookings in order_bookings.items():
@@ -631,10 +610,7 @@ class PaymentData(object):
     def description(self):
         order = self.order_data.order
         attrs = order.attrs
-        amount = "%s %s" % (
-            self.currency,
-            str(round(self.order_data.total, 2)),
-        )
+        amount = "%s %s" % (self.currency, str(round(self.order_data.total, 2)))
         description = ", ".join(
             [
                 attrs["created"].strftime(DT_FORMAT),

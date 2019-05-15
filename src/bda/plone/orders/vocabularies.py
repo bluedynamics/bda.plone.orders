@@ -48,9 +48,11 @@ def salaried_vocab():
 def salaried_transitions_vocab():
     vocab = {
         ifaces.SALARIED_TRANSITION_SALARIED: _(
-            'mark_salaried', default=u'Mark salaried'),
+            'mark_salaried', default=u'Mark salaried'
+        ),
         ifaces.SALARIED_TRANSITION_OUTSTANDING: _(
-            'mark_outstanding', default=u'Mark outstanding'),
+            'mark_outstanding', default=u'Mark outstanding'
+        ),
     }
     return vocab
 
@@ -70,9 +72,15 @@ def all_vendors_vocab():
     """Vocabulary for all vendor areas by uuid.
     """
     vendors = get_all_vendors()
-    vocab = [(IUUID(vendor),
-             u'{0} ({1})'.format(safe_unicode(vendor.Title()), vendor.absolute_url_path()))
-             for vendor in vendors]
+    vocab = [
+        (
+            IUUID(vendor),
+            u'{0} ({1})'.format(
+                safe_unicode(vendor.Title()), vendor.absolute_url_path()
+            ),
+        )
+        for vendor in vendors
+    ]
     return vocab
 
 
@@ -80,9 +88,15 @@ def vendors_vocab_for(user=None):
     """Vendors vocabulary for given or currently authenticated user.
     """
     vendors = get_vendors_for(user=user)
-    vocab = [(IUUID(vendor),
-             u'{0} ({1})'.format(safe_unicode(vendor.Title()), vendor.absolute_url_path()))
-             for vendor in vendors]
+    vocab = [
+        (
+            IUUID(vendor),
+            u'{0} ({1})'.format(
+                safe_unicode(vendor.Title()), vendor.absolute_url_path()
+            ),
+        )
+        for vendor in vendors
+    ]
     return vocab
 
 

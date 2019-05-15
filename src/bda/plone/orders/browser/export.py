@@ -130,8 +130,7 @@ def cleanup_for_csv(value):
         value = value.strftime(DT_FORMAT)
     if value == '-':
         value = ''
-    if isinstance(value, float) or \
-       isinstance(value, Decimal):
+    if isinstance(value, float) or isinstance(value, Decimal):
         value = str(value).replace('.', ',')
     return safe_encode(value)
 
@@ -169,8 +168,9 @@ class ExportOrdersForm(YAMLForm, BrowserView):
         from_date = data.fetch('exportorders.from').extracted
         to_date = data.fetch('exportorders.to').extracted
         if to_date <= from_date:
-            raise ExtractionError(_('from_date_before_to_date',
-                                    default=u'From-date after to-date'))
+            raise ExtractionError(
+                _('from_date_before_to_date', default=u'From-date after to-date')
+            )
         return to_date
 
     def export(self, widget, data):
@@ -213,16 +213,16 @@ class ExportOrdersForm(YAMLForm, BrowserView):
         sio = StringIO()
         ex = csv.writer(sio, dialect='excel-colon', quoting=csv.QUOTE_MINIMAL)
         # exported column keys as first line
-        ex.writerow(ORDER_EXPORT_ATTRS +
-                    list(COMPUTED_ORDER_EXPORT_ATTRS.keys()) +
-                    BOOKING_EXPORT_ATTRS +
-                    list(COMPUTED_BOOKING_EXPORT_ATTRS.keys()))
+        ex.writerow(
+            ORDER_EXPORT_ATTRS
+            + list(COMPUTED_ORDER_EXPORT_ATTRS.keys())
+            + BOOKING_EXPORT_ATTRS
+            + list(COMPUTED_BOOKING_EXPORT_ATTRS.keys())
+        )
         # query orders
         for order in orders_soup.query(query):
             # restrict order bookings for current vendor_uids
-            order_data = OrderData(self.context,
-                                   order=order,
-                                   vendor_uids=vendor_uids)
+            order_data = OrderData(self.context, order=order, vendor_uids=vendor_uids)
             order_attrs = list()
             # order export attrs
             for attr_name in ORDER_EXPORT_ATTRS:
@@ -254,15 +254,15 @@ class ExportOrdersForm(YAMLForm, BrowserView):
         s_end = self.to_date.strftime('%G-%m-%d_%H-%M-%S')
         filename = 'orders-export-%s-%s.csv' % (s_start, s_end)
         self.request.response.setHeader('Content-Type', 'text/csv')
-        self.request.response.setHeader('Content-Disposition',
-                                        'attachment; filename=%s' % filename)
+        self.request.response.setHeader(
+            'Content-Disposition', 'attachment; filename=%s' % filename
+        )
         ret = sio.getvalue()
         sio.close()
         return ret
 
 
 class ExportOrdersContextual(BrowserView):
-
     def __call__(self):
         user = plone.api.user.get_current()
         # check if authenticated user is vendor
@@ -275,15 +275,12 @@ class ExportOrdersContextual(BrowserView):
 
         filename = u'{0}_{1}.csv'.format(
             safe_unicode(title),
-            safe_unicode(datetime.datetime.now().strftime('%Y-%m-%d_%H-%M'))
+            safe_unicode(datetime.datetime.now().strftime('%Y-%m-%d_%H-%M')),
         )
         filename = safe_filename(filename)
         resp = self.request.response
         resp.setHeader('content-type', 'text/csv; charset=utf-8')
-        resp.setHeader(
-            'content-disposition',
-            'attachment;filename={}'.format(filename)
-        )
+        resp.setHeader('content-disposition', 'attachment;filename={}'.format(filename))
         return self.get_csv()
 
     def export_val(self, record, attr_name):
@@ -300,10 +297,12 @@ class ExportOrdersContextual(BrowserView):
         sio = StringIO()
         ex = csv.writer(sio, dialect='excel-colon', quoting=csv.QUOTE_MINIMAL)
         # exported column keys as first line
-        ex.writerow(ORDER_EXPORT_ATTRS +
-                    list(COMPUTED_ORDER_EXPORT_ATTRS.keys()) +
-                    BOOKING_EXPORT_ATTRS +
-                    list(COMPUTED_BOOKING_EXPORT_ATTRS.keys()))
+        ex.writerow(
+            ORDER_EXPORT_ATTRS
+            + list(COMPUTED_ORDER_EXPORT_ATTRS.keys())
+            + BOOKING_EXPORT_ATTRS
+            + list(COMPUTED_BOOKING_EXPORT_ATTRS.keys())
+        )
 
         bookings_soup = get_bookings_soup(context)
 
@@ -339,9 +338,7 @@ class ExportOrdersContextual(BrowserView):
             order_uid = booking.attrs.get('order_uid')
             if order_uid not in all_orders:
                 order = get_order(context, order_uid)
-                order_data = OrderData(context,
-                                       order=order,
-                                       vendor_uids=vendor_uids)
+                order_data = OrderData(context, order=order, vendor_uids=vendor_uids)
                 order_attrs = []
                 # order export attrs
                 for attr_name in ORDER_EXPORT_ATTRS:

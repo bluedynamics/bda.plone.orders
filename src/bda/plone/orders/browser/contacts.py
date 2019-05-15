@@ -37,7 +37,8 @@ class ContactsTable(BrowserView):
         # view orders
         view_orders_target = '%s/@@orders#%s' % (
             base_url,
-            str(record.attrs['personal_data.email']))
+            str(record.attrs['personal_data.email']),
+        )
         view_orders_attrs = {
             'href': view_orders_target,
             'title': _('view_orders', default=u'View Orders'),
@@ -49,7 +50,8 @@ class ContactsTable(BrowserView):
         # view bookings
         view_bookings_target = '%s/@@bookings#%s' % (
             base_url,
-            str(record.attrs['personal_data.email']))
+            str(record.attrs['personal_data.email']),
+        )
         view_bookings_attrs = {
             'href': view_bookings_target,
             'title': _('view_bookings', default=u'View Bookings'),
@@ -74,10 +76,7 @@ class ContactsTable(BrowserView):
                 'label': _('actions', default=u'Actions'),
                 'renderer': self.render_get_actions_for_contact,
             },
-            {
-                'id': 'personal_data.email',
-                'label': _('email', default=u'Email'),
-            },
+            {'id': 'personal_data.email', 'label': _('email', default=u'Email')},
             {
                 'id': 'personal_data.lastname',
                 'label': _('lastname', default=u'Last Name'),
@@ -119,8 +118,7 @@ class ContactsTable(BrowserView):
             "data": aaData,
         }
         self.request.response.setHeader(
-            'Content-Type',
-            'application/json; charset=utf-8'
+            'Content-Type', 'application/json; charset=utf-8'
         )
         return json.dumps(data)
 

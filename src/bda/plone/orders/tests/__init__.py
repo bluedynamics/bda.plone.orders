@@ -20,8 +20,8 @@ class OrdersLayer(PloneSandboxLayer):
 
     def setUpZope(self, app, configurationContext):
         import bda.plone.orders
-        self.loadZCML(package=bda.plone.orders,
-                      context=configurationContext)
+
+        self.loadZCML(package=bda.plone.orders, context=configurationContext)
 
     def setUpPloneSite(self, portal):
         self.applyProfile(portal, 'bda.plone.orders:default')
@@ -32,5 +32,5 @@ class OrdersLayer(PloneSandboxLayer):
 
 Orders_FIXTURE = OrdersLayer()
 Orders_INTEGRATION_TESTING = IntegrationTesting(
-    bases=(Orders_FIXTURE,),
-    name="Orders:Integration")
+    bases=(Orders_FIXTURE,), name="Orders:Integration"
+)

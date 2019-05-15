@@ -5,7 +5,6 @@ import unittest
 
 
 class TestMailnotifyUnit(unittest.TestCase):
-
     def test_indent_wrap(self):
         """The _indent mehtod should wrap like defined by it's parameters.
         """

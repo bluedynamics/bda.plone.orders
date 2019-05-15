@@ -7,6 +7,7 @@ import six.moves.urllib.parse
 class BaseDropdown(object):
     """Base class for order related dropdown menus.
     """
+
     render = ViewPageTemplateFile('templates/dropdown.pt')
     name = ''
     css = 'dropdown'
@@ -25,19 +26,14 @@ class BaseDropdown(object):
         """
         ret = list()
         url = self.context.absolute_url()
-        params = {
-            'uid': str(self.record.attrs['uid']),
-        }
+        params = {'uid': str(self.record.attrs['uid'])}
         vendor = self.request.form.get('vendor', '')
         if vendor:
             params['vendor'] = vendor
         for transition in transitions:
             params['transition'] = transition
             target = '?'.join([url, six.moves.urllib.parse.urlencode(params)])
-            ret.append({
-                'title': self.transitions[transition],
-                'target': target,
-            })
+            ret.append({'title': self.transitions[transition], 'target': target})
         return ret
 
     @property
@@ -46,11 +42,14 @@ class BaseDropdown(object):
 
     @property
     def ajax_action(self):
-        return '%s:#%s-%s:replace' % (self.action,
-                                      self.name,
-                                      str(self.record.attrs['uid']))
+        return '%s:#%s-%s:replace' % (
+            self.action,
+            self.name,
+            str(self.record.attrs['uid']),
+        )
 
     @property
     def items(self):
-        raise NotImplementedError(u"Abstract Dropdown does not implement "
-                                  u"``items``.")
+        raise NotImplementedError(
+            u"Abstract Dropdown does not implement " u"``items``."
+        )

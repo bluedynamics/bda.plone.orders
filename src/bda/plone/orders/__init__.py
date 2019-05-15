@@ -39,7 +39,5 @@ def get_country_name(country_code, lang='en'):
     """
 
     country_name = pycountry.countries.get(numeric=country_code).name
-    trans = gettext.translation(
-        'iso3166', pycountry.LOCALES_DIR, languages=['de']
-    )
+    trans = gettext.translation('iso3166', pycountry.LOCALES_DIR, languages=['de'])
     return safe_unicode(trans.gettext(country_name))
