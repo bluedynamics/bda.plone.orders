@@ -9,16 +9,16 @@ cache:
 matrix:
   include:
     - python: 2.7
-      env: PLONE_VERSION=5.1.x
+      env: PLONE_VERSION=5.1
     - python: 2.7
-      env: PLONE_VERSION=5.2.x
+      env: PLONE_VERSION=5.2
     - python: 3.6
-      env: PLONE_VERSION=5.2.x
+      env: PLONE_VERSION=5.2
     - python: 3.7
-      env: PLONE_VERSION=5.2.x
+      env: PLONE_VERSION=5.2
 install:
-  - sed -ie "s#plone-5.1.x.cfg#plone-$PLONE_VERSION.cfg#" travis.cfg
-  - pip install -U zc.buildout setuptools pip
+  - sed -ie "s#plone-5.1.x.cfg#plone-$PLONE_VERSION.x.cfg#" travis.cfg
+  - pip install -r http://dist.plone.org/release/$PLONE_VERSION-latest/versions.cfg
   - buildout -c travis.cfg annotate
   - buildout -t 10 -Nc travis.cfg
 before_script:
