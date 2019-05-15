@@ -5,8 +5,11 @@ from bda.plone.cart import get_item_stock
 from bda.plone.cart import get_object_by_uid
 from bda.plone.orders import permissions
 from bda.plone.orders import safe_encode
-from bda.plone.orders.interfaces import IBuyable
-from bda.plone.orders.interfaces import IVendor
+from bda.plone.orders.interfaces.markers import IBuyable
+from bda.plone.orders.interfaces.markers import IVendor
+from bda.plone.orders.interfaces.orders import IOrderState
+from bda.plone.orders.interfaces.orders import IOrderData
+from bda.plone.orders.interfaces.orders import IBookingData
 from bda.plone.orders.interfaces import workflow
 from bda.plone.payment.interfaces import IPaymentData
 from decimal import Decimal
@@ -220,6 +223,7 @@ def calculate_order_salaried(bookings):
     )
 
 
+@implementer(IOrderState)
 class OrderState(object):
     context = None
 
@@ -321,6 +325,7 @@ class OrderState(object):
             stock.available -= float(booking.attrs["buyable_count"])
 
 
+@implementer(IOrderData)
 class OrderData(OrderState):
     """Object for extracting order information.
     """
@@ -482,6 +487,7 @@ class OrderData(OrderState):
         return total + self.shipping
 
 
+@implementer(IBookingData)
 class BookingData(OrderState):
     def __init__(self, context, uid=None, booking=None, vendor_uids=[]):
         """Create booking data object by criteria

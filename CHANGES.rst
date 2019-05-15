@@ -4,6 +4,9 @@ Changelog
 2.0.dev0 (unreleased)
 ---------------------
 
+- Define features of OrderState, OrderData and BookingData in interfaces and let add implementer to classes.
+  [jensens]
+
 - Refactor out of `common.py` into different file to make development easier.
   [jensens]
 
