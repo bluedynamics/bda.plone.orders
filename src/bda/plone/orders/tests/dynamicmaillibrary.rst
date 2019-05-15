@@ -64,7 +64,7 @@ setitem only on storages::
 
     >>> try:
     ...     lib_root['fooroot'] = u'foo root'
-    ... except NotImplementedError, e:
+    ... except NotImplementedError as e:
     ...     print e.message
     acquierer do not set on parent (permissions)
 
@@ -72,7 +72,7 @@ setitem only on storages::
 
     >>> try:
     ...     lib_lvl3['foo3'] = u'foo 3'
-    ... except NotImplementedError, e:
+    ... except NotImplementedError as e:
     ...     print e.message
     acquierer do not set on parent (permissions)
 
