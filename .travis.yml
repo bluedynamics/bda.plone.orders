@@ -6,6 +6,8 @@ cache:
   directories:
     - eggs
     - downloads
+services:
+  - xvfb
 matrix:
   include:
     - python: 2.7
@@ -21,9 +23,6 @@ install:
   - pip install -r http://dist.plone.org/release/$PLONE_VERSION-latest/requirements.txt
   - buildout -c travis.cfg annotate
   - buildout -t 10 -Nc travis.cfg
-before_script:
-  - "export DISPLAY=:99.0"
-  - "sh -e /etc/init.d/xvfb start"
 script:
   - bin/code-analysis
   - bin/test
