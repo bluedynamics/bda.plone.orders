@@ -263,21 +263,12 @@ class OrderState(object):
         if old_state == workflow.STATE_NEW:
             if new_state == workflow.STATE_CANCELLED:
                 self.increase_stock(booking)
-            else:
-                # do nothing
-                pass
         elif old_state == workflow.STATE_RESERVED:
             if new_state in (workflow.STATE_PROCESSING, workflow.STATE_FINISHED):
                 self.decrease_stock(booking)
-            else:
-                # do nothing
-                pass
         elif old_state == workflow.STATE_PROCESSING:
             if new_state == workflow.STATE_CANCELLED:
                 self.increase_stock(booking)
-            else:
-                # do nothing
-                pass
         elif old_state == workflow.STATE_FINISHED:
             if new_state == workflow.STATE_NEW:
                 # do nothing
@@ -285,9 +276,6 @@ class OrderState(object):
         elif old_state == workflow.STATE_CANCELLED:
             if new_state == workflow.STATE_NEW:
                 self.decrease_stock(booking)
-            else:
-                # do nothing
-                pass
 
     def increase_stock(self, booking):
         obj = get_object_by_uid(self.context, booking.attrs["buyable_uid"])

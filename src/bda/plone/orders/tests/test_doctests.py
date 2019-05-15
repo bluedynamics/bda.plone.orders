@@ -21,9 +21,7 @@ def test_suite():
         [
             layered(
                 doctest.DocFileSuite(
-                    filename,
-                    optionflags=optionflags,
-                    globs={"pprint": pprint.pprint},
+                    filename, optionflags=optionflags, globs={"pprint": pprint.pprint}
                 ),
                 layer=layer,
             )

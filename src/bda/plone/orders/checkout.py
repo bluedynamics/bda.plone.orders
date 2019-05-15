@@ -52,9 +52,7 @@ class OrderCheckoutAdapter(CheckoutAdapter):
         return extractitems(readcookie(self.request))
 
     def ordernumber_exists(self, soup, ordernumber):
-        for order in soup.query(Eq("ordernumber", ordernumber)):
-            return bool(order)
-        return False
+        return bool(soup.query(Eq("ordernumber", ordernumber), with_size=True).next())
 
     def save(self, providers, widget, data):
         super(OrderCheckoutAdapter, self).save(providers, widget, data)
@@ -186,7 +184,9 @@ class OrderCheckoutAdapter(CheckoutAdapter):
         brain = get_catalog_brain(self.context, uid)
         # brain could be None if uid for item in cookie which no longer exists.
         if not brain:
-            return
+            msg = u"Item was removed from shop, uid={0}".format(uid)
+            logger.warning(msg)
+            raise CheckoutError(msg)
         buyable = brain.getObject()
         item_state = get_item_state(buyable, self.request)
         if not item_state.validate_count(count):
@@ -237,10 +237,8 @@ class OrderCheckoutAdapter(CheckoutAdapter):
         shipping_info = queryAdapter(buyable, IShippingItem)
         booking.attrs["shippable"] = shipping_info and shipping_info.shippable
         trading_info = queryAdapter(buyable, ifaces.ITrading)
-        if trading_info:
-            booking.attrs["item_number"] = trading_info.item_number
-            booking.attrs["gtin"] = trading_info.gtin
-        else:
-            booking.attrs["item_number"] = None
-            booking.attrs["gtin"] = None
+        booking.attrs["item_number"] = (
+            trading_info.item_number if trading_info else None
+        )
+        booking.attrs["gtin"] = trading_info.gtin if trading_info else None
         return booking
