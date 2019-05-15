@@ -18,7 +18,7 @@ matrix:
       env: PLONE_VERSION=5.2
 install:
   - sed -ie "s#plone-5.1.x.cfg#plone-$PLONE_VERSION.x.cfg#" travis.cfg
-  - pip install -r http://dist.plone.org/release/$PLONE_VERSION-latest/versions.cfg
+  - pip install -r http://dist.plone.org/release/$PLONE_VERSION-latest/requirements.txt
   - buildout -c travis.cfg annotate
   - buildout -t 10 -Nc travis.cfg
 before_script:
