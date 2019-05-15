@@ -12,7 +12,7 @@ from yafowil.utils import Tag
 import json
 import plone.api
 import uuid
-import yafowil.loader  # noqa: W291
+import yafowil.loader  # noqa: W291,F401
 
 
 FLOORUID = uuid.UUID(31 * "0" + "1")
