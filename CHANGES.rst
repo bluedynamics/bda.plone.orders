@@ -4,6 +4,9 @@ Changelog
 2.0.dev0 (unreleased)
 ---------------------
 
+- Bootstrapping rest endpoints and add first endpoint for order under ``@shop-order/ORDER_UID``.
+  [jensens]
+
 - Define features of OrderState, OrderData and BookingData in interfaces and let add implementer to classes.
   [jensens]
 
