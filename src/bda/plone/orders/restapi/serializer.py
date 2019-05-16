@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
+from bda.plone.cart.restapi.converter import json_compatible_dict
 from bda.plone.orders.common import BookingData
-from bda.plone.orders.restapi.converter import json_compatible_dict
 from bda.plone.orders.interfaces.orders import IBookingData
 from bda.plone.orders.interfaces.orders import IOrderData
 from plone.restapi.interfaces import ISerializeToJson

@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 from bda.plone.orders.common import OrderData
-from bda.plone.orders.restapi.service import TraversingService
+from bda.plone.cart.restapi.service import TraversingService
 from plone.restapi.interfaces import ISerializeToJson
 from zope.component import getMultiAdapter
 
 
 class OrderService(TraversingService):
-    """One orders, filtered by permission and additional filters."""
+    """Single Order with bookings"""
 
     def reply(self):
         if len(self.params) != 1:

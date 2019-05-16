@@ -3,9 +3,6 @@
     xmlns:browser="http://namespaces.zope.org/browser"
     xmlns:plone="http://namespaces.plone.org/plone"
     xmlns:zcml="http://namespaces.zope.org/zcml">
-  <adapter factory=".converter.decimal_converter" />
-  <adapter factory=".converter.unset_converter" />
-  <adapter factory=".converter.uuid_converter" />
   <adapter factory=".serializer.SerializeBookingToJson" />
   <adapter factory=".serializer.SerializeOrderToJson" />
   <plone:service
