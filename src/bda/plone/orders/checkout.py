@@ -17,8 +17,8 @@ from bda.plone.orders.common import create_ordernumber
 from bda.plone.orders.common import get_bookings_soup
 from bda.plone.orders.common import get_orders_soup
 from bda.plone.payment import Payments
-from bda.plone.shipping import Shippings
-from bda.plone.shipping.interfaces import IShippingItem
+from bda.plone.cart.shipping import Shippings
+from bda.plone.cart.interfaces import IShippingItem
 from decimal import Decimal
 from node.ext.zodb import OOBTNode
 from node.utils import instance_property
