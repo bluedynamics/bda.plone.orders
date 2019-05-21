@@ -11,7 +11,7 @@ from bda.plone.orders.common import OrderData
 from bda.plone.orders.contacts import get_contacts_soup
 from bda.plone.orders.interfaces import ITrading
 from bda.plone.payment import Payments
-from bda.plone.cart.shipping.interfaces import IShippingItem
+from bda.plone.cart.interfaces import IShippingItem
 from decimal import Decimal
 from node.ext.zodb.utils import reset_odict
 from plone.uuid.interfaces import IUUID
