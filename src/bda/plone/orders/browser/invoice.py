@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from AccessControl import Unauthorized
-from bda.plone.cart import ascur
+from bda.plone.cart.utils import ascur
 from bda.plone.orders import message_factory as _
 from bda.plone.orders.browser.order import OrderDataView
 from bda.plone.orders.browser.order import ProtectedOrderDataView

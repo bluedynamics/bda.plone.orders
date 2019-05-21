@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 from Acquisition import aq_inner
 from Acquisition import aq_parent
-from bda.plone.cart import get_item_stock
-from bda.plone.cart import get_object_by_uid
+from bda.plone.cart.cartitem import get_item_stock
+from bda.plone.cart.utils import get_object_by_uid
 from bda.plone.orders import permissions
 from bda.plone.orders import safe_encode
 from bda.plone.orders.interfaces import workflow

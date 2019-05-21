@@ -2,8 +2,8 @@
 from AccessControl import Unauthorized
 from bda.plone.ajax import ajax_continue
 from bda.plone.ajax import AjaxAction
-from bda.plone.cart import ascur
-from bda.plone.cart import get_object_by_uid
+from bda.plone.cart.utils import ascur
+from bda.plone.cart.utils import get_object_by_uid
 from bda.plone.checkout import message_factory as _co
 from bda.plone.checkout.vocabularies import get_pycountry_name
 from bda.plone.orders import interfaces as ifaces

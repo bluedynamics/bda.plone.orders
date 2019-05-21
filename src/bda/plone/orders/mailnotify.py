@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from bda.plone.cart import ascur
-from bda.plone.cart import get_catalog_brain
+from bda.plone.cart.utils import ascur
+from bda.plone.cart.utils import get_catalog_brain
 from bda.plone.checkout.interfaces import ICheckoutEvent
 from bda.plone.checkout.interfaces import ICheckoutSettings
 from bda.plone.orders import get_country_name
