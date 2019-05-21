@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
-from bda.plone.cart import extractitems
-from bda.plone.cart import get_catalog_brain
-from bda.plone.cart import get_data_provider
-from bda.plone.cart import get_item_data_provider
-from bda.plone.cart import get_item_state
-from bda.plone.cart import get_item_stock
-from bda.plone.cart import get_object_by_uid
-from bda.plone.cart import readcookie
+from bda.plone.cart import cookie
+from bda.plone.cart.cart import get_data_provider
+from bda.plone.cart.cartitem import get_item_data_provider
+from bda.plone.cart.cartitem import get_item_state
+from bda.plone.cart.cartitem import get_item_stock
+from bda.plone.cart.utils import get_catalog_brain
+from bda.plone.cart.utils import get_object_by_uid
 from bda.plone.checkout import CheckoutAdapter
 from bda.plone.checkout import CheckoutError
 from bda.plone.orders import events
@@ -49,7 +48,8 @@ class OrderCheckoutAdapter(CheckoutAdapter):
 
     @property
     def items(self):
-        return extractitems(readcookie(self.request))
+        # XXX here the ICartItemDataProvider implementation must be used
+        return cookie.extractitems(cookie.read(self.request))
 
     def ordernumber_exists(self, soup, ordernumber):
         return bool(soup.query(Eq("ordernumber", ordernumber), with_size=True).next())

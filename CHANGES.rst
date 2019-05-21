@@ -4,6 +4,9 @@ Changelog
 2.0.dev0 (unreleased)
 ---------------------
 
+- Update imports to reflect last cart/shipping chnages.
+  [jensens]
+
 - Bootstrapping rest endpoints and add first endpoint for order under ``@shop-order/ORDER_UID``.
   [jensens]
 

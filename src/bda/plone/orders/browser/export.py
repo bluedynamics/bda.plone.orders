@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 from AccessControl import Unauthorized
 from Acquisition import aq_parent
-from bda.plone.cart import get_item_stock
-from bda.plone.cart import get_object_by_uid
+from bda.plone.cart.cartitem import get_item_stock
+from bda.plone.cart.utils import get_object_by_uid
 from bda.plone.orders import message_factory as _
 from bda.plone.orders import permissions
 from bda.plone.orders import safe_encode
