@@ -361,6 +361,21 @@ In your Generic Setup's profile, add to ``rolemap.xml``:
     </permission>
 
 
+REST-API
+========
+
+There is a REST API available.
+It is based on `plone.rest <https://pypi.org/project/plone.rest/>`_ endpoints.
+
+The REST API is work in progress and will be enhanced over time.
+
+We provide the following endpoints:
+
+GET ``@shop-order/${ORDER-UID}``
+    The order data of the order with the given order-uid.
+    It includes bookings and the booking-data.
+
+
 Create translations
 ===================
 
