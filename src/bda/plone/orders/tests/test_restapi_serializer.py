@@ -62,28 +62,28 @@ class TestSerializers(unittest.TestCase):
     def test_booking_serialization(self):
         booking = self._create_booking()
         self.assertDictEqual(
-            {"net": Decimal("123.45"), "uid": "Unique-Id-0001", "yesno": False},
+            {'net': 123.45, 'uid': u'Unique-Id-0001', 'yesno': False},
             self._serializer(booking)(),
         )
 
     def test_order_serialization(self):
         order = self._create_order()
         self.assertDictEqual(
-            self._serializer(order)(),
             {
                 "bookings": [
                     {
-                        "net": Decimal("123.45"),
+                        "net": 123.45,
                         "order_uid": "Unique-Id-0001",
                         "uid": "Unique-Id-0002",
                         "yesno": False,
                     }
                 ],
                 "order": {
-                    "net": Decimal("123.45"),
+                    "net": 123.45,
                     "order_uids": ["Unique-Id-0002"],
                     "uid": "Unique-Id-0001",
                     "yesno": False,
                 },
             },
+            self._serializer(order)(),
         )
