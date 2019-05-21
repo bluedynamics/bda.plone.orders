@@ -62,8 +62,8 @@ class TestSerializers(unittest.TestCase):
     def test_booking_serialization(self):
         booking = self._create_booking()
         self.assertDictEqual(
-            self._serializer(booking)(),
             {"net": Decimal("123.45"), "uid": "Unique-Id-0001", "yesno": False},
+            self._serializer(booking)(),
         )
 
     def test_order_serialization(self):

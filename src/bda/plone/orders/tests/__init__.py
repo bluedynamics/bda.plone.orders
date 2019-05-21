@@ -27,7 +27,6 @@ class OrdersLayer(PloneSandboxLayer):
 
     def setUpPloneSite(self, portal):
         self.applyProfile(portal, "bda.plone.orders:default")
-        alsoProvides(self.layer["request"], ICartExtensionLayer)
 
     def tearDownZope(self, app):
         pass
