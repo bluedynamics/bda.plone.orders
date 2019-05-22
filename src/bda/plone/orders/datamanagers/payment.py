@@ -3,7 +3,7 @@ from bda.plone.orders import safe_encode
 from bda.plone.orders.interfaces import workflow
 from bda.plone.orders.common import get_orders_soup
 from bda.plone.orders.common import DT_FORMAT
-from bda.plone.orders.datamanager.order import OrderData
+from bda.plone.orders.datamanagers.order import OrderData
 from bda.plone.payment.interfaces import IPaymentData
 from node.utils import instance_property
 from repoze.catalog.query import Eq

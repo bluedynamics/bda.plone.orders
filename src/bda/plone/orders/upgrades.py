@@ -7,9 +7,9 @@ from bda.plone.orders.common import get_bookings_soup
 from bda.plone.orders.common import get_order
 from bda.plone.orders.common import get_orders_soup
 from bda.plone.orders.contacts import get_contacts_soup
-from bda.plone.orders.datamanager.base import calculate_order_salaried
-from bda.plone.orders.datamanager.base import calculate_order_state
-from bda.plone.orders.datamanager.order import OrderData
+from bda.plone.orders.datamanagers.base import calculate_order_salaried
+from bda.plone.orders.datamanagers.base import calculate_order_state
+from bda.plone.orders.datamanagers.order import OrderData
 from bda.plone.orders.interfaces import ITrading
 from bda.plone.payment import Payments
 from decimal import Decimal

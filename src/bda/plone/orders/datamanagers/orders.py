@@ -5,7 +5,7 @@ from bda.plone.orders.common import acquire_vendor_or_shop_root
 from bda.plone.orders.common import get_bookings_soup
 from bda.plone.orders.common import get_orders_soup
 from bda.plone.orders.common import get_vendor_uids_for
-from bda.plone.orders.datamanager.order import OrderData
+from bda.plone.orders.datamanagers.order import OrderData
 from plone import api
 from Products.CMFPlone.interfaces import IPloneSiteRoot
 from repoze.catalog import query as rq

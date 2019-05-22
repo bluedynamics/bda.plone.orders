@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from bda.plone.orders import events
-from bda.plone.orders.datamanager.booking import BookingData
+from bda.plone.orders.datamanagers.booking import BookingData
 from bda.plone.orders.interfaces import workflow
 from zope.event import notify
 

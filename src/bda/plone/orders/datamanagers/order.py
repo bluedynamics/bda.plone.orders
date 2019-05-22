@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 from bda.plone.orders.common import get_order
 from bda.plone.orders.common import is_billable_booking
-from bda.plone.orders.datamanager.base import BaseState
-from bda.plone.orders.datamanager.base import calculate_order_salaried
-from bda.plone.orders.datamanager.base import calculate_order_state
+from bda.plone.orders.datamanagers.base import BaseState
+from bda.plone.orders.datamanagers.base import calculate_order_salaried
+from bda.plone.orders.datamanagers.base import calculate_order_state
 from bda.plone.orders.interfaces.orders import IOrderData
 from decimal import Decimal
 from repoze.catalog.query import Any

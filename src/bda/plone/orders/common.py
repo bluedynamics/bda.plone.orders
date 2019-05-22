@@ -26,30 +26,30 @@ deprecated(
     OrderCheckoutAdapter="bda.plone.orders.checkout:OrderCheckoutAdapter",
 )
 deprecated(
-    "Import from new location 'datamanager.base' instead",
-    OrderState="bda.plone.orders.datamanager.base:BaseState",
-    calculate_order_state="bda.plone.orders.datamanager.base:calculate_order_state",
-    calculate_order_salaried="bda.plone.orders.datamanager.base:calculate_order_salaried",
+    "Import from new location 'datamanagers.base' instead",
+    OrderState="bda.plone.orders.datamanagers.base:BaseState",
+    calculate_order_state="bda.plone.orders.datamanagers.base:calculate_order_state",
+    calculate_order_salaried="bda.plone.orders.datamanagers.base:calculate_order_salaried",
 )
 deprecated(
-    "Import from new location 'datamanager.order' instead",
-    create_order_number="bda.plone.orders.datamanager.order:create_order_number",
-    OrderData="bda.plone.orders.datamanager.order:OrderData",
+    "Import from new location 'datamanagers.order' instead",
+    create_order_number="bda.plone.orders.datamanagers.order:create_order_number",
+    OrderData="bda.plone.orders.datamanagers.order:OrderData",
 )
 deprecated(
-    "Import from new location 'datamanager.booking' instead",
-    BookingData="bda.plone.orders.datamanager.booking:BookingData",
-    booking_update_comment="bda.plone.orders.datamanager.booking:booking_update_comment",
+    "Import from new location 'datamanagers.booking' instead",
+    BookingData="bda.plone.orders.datamanagers.booking:BookingData",
+    booking_update_comment="bda.plone.orders.datamanagers.booking:booking_update_comment",
 )
 deprecated(
-    "Import from new location 'datamanager.buyable' instead",
-    BuyableData="bda.plone.orders.datamanager.buyable:BuyableData",
+    "Import from new location 'datamanagers.buyable' instead",
+    BuyableData="bda.plone.orders.datamanagers.buyable:BuyableData",
 )
 deprecated(
-    "Import from new location 'datamanager.payment' instead",
-    PaymentData="bda.plone.orders.datamanager.payment:PaymentData",
-    payment_success="bda.plone.orders.datamanager.payment:payment_success",
-    payment_failed="bda.plone.orders.datamanager.payment:payment_failed",
+    "Import from new location 'datamanagers.payment' instead",
+    PaymentData="bda.plone.orders.datamanagers.payment:PaymentData",
+    payment_success="bda.plone.orders.datamanagers.payment:payment_success",
+    payment_failed="bda.plone.orders.datamanagers.payment:payment_failed",
 )
 
 logger = logging.getLogger(__name__)
