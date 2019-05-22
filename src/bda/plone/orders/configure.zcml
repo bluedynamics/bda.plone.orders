@@ -53,7 +53,7 @@
     factory=".checkout.OrderCheckoutAdapter" />
 
   <!-- payment data adapter -->
-  <adapter for="*" factory=".common.PaymentData" />
+  <adapter for="*" factory=".datamanagers.payment.PaymentData" />
 
 
   <!-- mail templates storage -->
@@ -73,10 +73,10 @@
   <!-- payment-->
   <subscriber
     for="bda.plone.payment.interfaces.IPaymentFailedEvent"
-    handler=".common.payment_failed" />
+    handler=".datamanagers.payment.payment_failed" />
   <subscriber
     for="bda.plone.payment.interfaces.IPaymentSuccessEvent"
-    handler=".common.payment_success" />
+    handler=".datamanagers.payment.payment_success" />
 
   <!-- mailnotify -->
   <subscriber

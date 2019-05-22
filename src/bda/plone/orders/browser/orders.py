@@ -15,7 +15,7 @@ from bda.plone.orders.common import DT_FORMAT
 from bda.plone.orders.common import get_vendor_by_uid
 from bda.plone.orders.common import get_vendor_uids_for
 from bda.plone.orders.common import get_vendors_for
-from bda.plone.orders.common import OrderData
+from bda.plone.orders.datamanagers.order import OrderData
 from bda.plone.orders.interfaces import IBuyable
 from bda.plone.orders.transitions import do_transition_for
 from bda.plone.orders.transitions import transitions_of_main_state
