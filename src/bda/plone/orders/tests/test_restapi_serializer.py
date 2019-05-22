@@ -62,7 +62,7 @@ class TestSerializers(unittest.TestCase):
     def test_booking_serialization(self):
         booking = self._create_booking()
         self.assertDictEqual(
-            {'net': 123.45, 'uid': u'Unique-Id-0001', 'yesno': False},
+            {"net": 123.45, "uid": u"Unique-Id-0001", "yesno": False},
             self._serializer(booking)(),
         )
 

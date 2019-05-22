@@ -6,7 +6,7 @@ from bda.plone.ajax import AjaxMessage
 from bda.plone.ajax import AjaxOverlay
 from bda.plone.orders import message_factory as _
 from bda.plone.orders.browser.mailtemplates import TEMPLATE
-from bda.plone.orders.common import OrderData
+from bda.plone.orders.datamanager.order import OrderData
 from bda.plone.orders.interfaces import IDynamicMailTemplateLibrary
 from bda.plone.orders.mailnotify import MailNotify
 from bda.plone.orders.vocabularies import salaried_vocab

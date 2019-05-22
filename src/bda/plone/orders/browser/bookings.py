@@ -12,7 +12,7 @@ from bda.plone.orders.browser.common import states_form_vocab
 from bda.plone.orders.browser.common import Transition
 from bda.plone.orders.browser.common import vendors_form_vocab
 from bda.plone.orders.browser.dropdown import BaseDropdown
-from bda.plone.orders.common import BookingData
+from bda.plone.orders.datamanager.booking import BookingData
 from bda.plone.orders.common import DT_FORMAT
 from bda.plone.orders.common import get_bookings_soup
 from bda.plone.orders.common import get_order

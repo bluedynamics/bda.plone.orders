@@ -4,7 +4,13 @@ Changelog
 2.0.dev0 (unreleased)
 ---------------------
 
-- Update imports to reflect last cart/shipping chnages.
+- Add new order manager with ability to query and delete orders.
+  [jensens]
+
+- Clean out `common.py` into `datamanagers` directory with deprecation messages in place.
+  [jensens]
+
+- Update imports to reflect last cart/shipping changes.
   [jensens]
 
 - Bootstrapping rest endpoints and add first endpoint for order under ``@shop-order/ORDER_UID``.

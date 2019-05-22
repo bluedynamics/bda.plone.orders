@@ -15,6 +15,7 @@ from .notifications import IPaymentText  # noqa: W291,F401
 from .orders import IBookingData  # noqa: W291,F401
 from .orders import IInvoiceSender  # noqa: W291,F401
 from .orders import IOrderData  # noqa: W291,F401
+from .orders import IOrderState  # noqa: W291,F401
 from .tradings import ITrading  # noqaL W291,F401
 from .workflow import SALARIED_FAILED  # noqa: W291,F401
 from .workflow import SALARIED_MIXED  # noqa: W291,F401

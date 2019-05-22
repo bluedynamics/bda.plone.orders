@@ -15,7 +15,7 @@ from bda.plone.orders.common import get_order
 from bda.plone.orders.common import get_orders_soup
 from bda.plone.orders.common import get_vendor_uids_for
 from bda.plone.orders.common import get_vendors_for
-from bda.plone.orders.common import OrderData
+from bda.plone.orders.datamanager.order import OrderData
 from bda.plone.orders.interfaces import IBuyable
 from decimal import Decimal
 from odict import odict

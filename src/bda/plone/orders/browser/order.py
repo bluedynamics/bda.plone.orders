@@ -11,13 +11,13 @@ from bda.plone.orders import message_factory as _
 from bda.plone.orders import permissions
 from bda.plone.orders import vocabularies as vocabs
 from bda.plone.orders.browser.common import ContentTemplateView
-from bda.plone.orders.common import booking_update_comment
-from bda.plone.orders.common import BookingData
 from bda.plone.orders.common import DT_FORMAT
 from bda.plone.orders.common import get_orders_soup
 from bda.plone.orders.common import get_vendor_by_uid
 from bda.plone.orders.common import get_vendor_uids_for
-from bda.plone.orders.common import OrderData
+from bda.plone.orders.datamanager.booking import booking_update_comment
+from bda.plone.orders.datamanager.booking import BookingData
+from bda.plone.orders.datamanager.order import OrderData
 from bda.plone.orders.transitions import do_transition_for
 from plone.memoize import view
 from plone.protect.utils import addTokenToUrl
