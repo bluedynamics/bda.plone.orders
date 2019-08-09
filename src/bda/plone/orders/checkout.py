@@ -49,7 +49,7 @@ class OrderCheckoutAdapter(CheckoutAdapter):
     @property
     def items(self):
         # XXX here the ICartItemDataProvider implementation must be used
-        return cookie.extractitems(cookie.read(self.request))
+        return cookie.extract_items(cookie.read(self.request))
 
     def ordernumber_exists(self, soup, ordernumber):
         return bool(soup.query(Eq("ordernumber", ordernumber), with_size=True).next())
