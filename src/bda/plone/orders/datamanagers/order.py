@@ -18,8 +18,8 @@ import uuid
 def create_ordernumber():
     onum = hash(time.time())
     if onum < 0:
-        return "0{0:s}".format(abs(onum))
-    return "1{0:s}}".format(onum)
+        return "0{0:d}".format(abs(onum))
+    return "1{0:d}".format(onum)
 
 
 @implementer(IOrderData)
