@@ -6,6 +6,7 @@ from bda.plone.orders.common import DT_FORMAT
 from bda.plone.orders.datamanagers.order import OrderData
 from bda.plone.payment.interfaces import IPaymentData
 from node.utils import instance_property
+from persistent.dict import PersistentDict
 from repoze.catalog.query import Eq
 from zope.interface import implementer
 
@@ -22,7 +23,7 @@ class PaymentData(object):
     @property
     def amount(self):
         amount = "%0.2f" % self.order_data.total
-        amount = amount[: amount.index(".")] + amount[amount.index(".") + 1 :]
+        amount = amount[:amount.index(".")] + amount[amount.index(".") + 1:]
         return amount
 
     @property
@@ -48,6 +49,13 @@ class PaymentData(object):
     @property
     def ordernumber(self):
         return self.order_data.order.attrs["ordernumber"]
+
+    def annotations(self, ordernumber):
+        self.order_uid = self.uid_for(ordernumber)
+        attrs = self.order_data.order.attrs
+        if 'annotations' not in attrs:
+            attrs['annotations'] = PersistentDict()
+        return attrs['annotations']
 
     def uid_for(self, ordernumber):
         soup = get_orders_soup(self.context)
