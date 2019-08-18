@@ -3,6 +3,7 @@ from bda.plone.cart.cartitem import get_item_stock
 from bda.plone.cart.utils import get_object_by_uid
 from bda.plone.orders.common import get_bookings_soup
 from bda.plone.orders.common import get_orders_soup
+from bda.plone.orders.common import is_billable_booking
 from bda.plone.orders.interfaces import IOrderState
 from bda.plone.orders.interfaces import workflow
 from node.utils import instance_property
