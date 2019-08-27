@@ -34,6 +34,7 @@ from bda.plone.cart import (
 from bda.plone.shipping import Shippings
 from bda.plone.payment.interfaces import IPaymentData
 from bda.plone.shop.interfaces import IBuyable
+from persistent.dict import PersistentDict
 
 
 DT_FORMAT = '%d.%m.%Y %H:%M'
@@ -321,7 +322,7 @@ class PaymentData(object):
     @property
     def amount(self):
         amount = '%0.2f' % self.order_data.total
-        amount = amount[:amount.index('.')] + amount[amount.index('.') + 1:]
+        amount = amount[:amount.index(".")] + amount[amount.index(".") + 1:]
         return amount
 
     @property
@@ -344,6 +345,13 @@ class PaymentData(object):
     @property
     def ordernumber(self):
         return self.order_data.order.attrs['ordernumber']
+
+    def annotations(self, ordernumber):
+	        self.order_uid = self.uid_for(ordernumber)
+	        attrs = self.order_data.order.attrs
+	        if 'annotations' not in attrs:
+	            attrs['annotations'] = PersistentDict()
+	        return attrs['annotations']
 
     def uid_for(self, ordernumber):
         soup = get_soup('bda_plone_orders_orders', self.context)
