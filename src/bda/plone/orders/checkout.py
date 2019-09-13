@@ -52,7 +52,7 @@ class OrderCheckoutAdapter(CheckoutAdapter):
         return cookie.extract_items(cookie.read(self.request))
 
     def ordernumber_exists(self, soup, ordernumber):
-        return bool(soup.query(Eq("ordernumber", ordernumber), with_size=True).next())
+        return bool(next(soup.query(Eq("ordernumber", ordernumber), with_size=True)))
 
     def save(self, providers, widget, data):
         super(OrderCheckoutAdapter, self).save(providers, widget, data)
