@@ -18,25 +18,33 @@
   </a>
 
   <div class="invoice_sender">
-    <strong tal:content="sender/company">company</strong>
-    <br />
+    <tal:company condition="sender/company">
+      <strong tal:content="sender/company">company</strong>
+      <br />
+    </tal:company>
     <tal:companyadd condition="sender/companyadd">
       <span tal:replace="sender/companyadd">company additional</span>
       <br />
     </tal:companyadd>
     <br />
-    <span tal:replace="sender/firstname">first name</span>
-    <span tal:replace="sender/lastname">last name</span>
-    <br />
-    <span tal:replace="sender/street">street</span>
-    <br />
-    <span tal:replace="sender/zip">zip</span>
-    <span tal:replace="sender/city">city</span>
-    <br />
-    <span tal:replace="python:view.country(sender['country'])">
-      country
-    </span>
-    <br />
+    <tal:names condition="python:sender['firstname'] or sender['lastname']">
+      <span tal:condition="sender/firstname" tal:replace="sender/firstname">first name</span>
+      <span tal:condition="sender/lastname" tal:replace="sender/lastname">last name</span>
+      <br />
+    </tal:names>
+    <tal:street condition="sender/street">
+      <span tal:replace="sender/street">street</span>
+      <br />
+    </tal:street>
+    <tal:city condition="python:sender['zip'] or sender['city']">
+      <span tal:replace="sender/zip">zip</span>
+      <span tal:replace="sender/city">city</span>
+      <br />
+      <span tal:replace="python:view.country(sender['country'])">
+        country
+      </span>
+      <br />
+    </tal:city>
     <tal:phone condition="sender/phone">
       <span tal:replace="sender/phone">phone</span>
       <br />
@@ -75,7 +83,9 @@
   </h2>
 
   <h3 class="invoice_date">
-    <span tal:replace="sender/city">city</span>,
+    <tal:invoice_date condition="sender/city">
+      <span tal:replace="sender/city">city</span>,
+    </tal:invoice_date>
     <span tal:replace="view/created">date</span>
   </h3>
 
@@ -247,33 +257,46 @@
     </div>
   </div>
 
-  <div class="invoice_bank_connection">
-    <strong>IBAN</strong>
-    <span tal:replace="sender/iban">IBAN</span>
-    <br />
-
-    <strong>BIC</strong>
-    <span tal:replace="sender/bic">BIC</span>
-    <br />
-  </div>
+  <tal:bank condition="python:sender['iban'] or sender['bic']">
+    <div class="invoice_bank_connection">
+      <tal:iban condition="sender/iban">
+        <strong>IBAN</strong>
+        <span tal:replace="sender/iban">IBAN</span>
+        <br />
+      </tal:iban>
+        <tal:bic condition="sender/bic">
+        <strong>BIC</strong>
+        <span tal:replace="sender/bic">BIC</span>
+        <br />
+      </tal:bic>
+    </div>
+  </tal:bank>
 
   <div class="invoice_footer">
-    <span i18n:translate="invoice_prices_in_currency">All prices in</span>
-    <span tal:replace="summary/currency" />
-    <br />
-    <br />
-    <br />
-    <span i18n:translate="invoice_kind_regards">Kind regards</span>,
-    <br />
-    <br />
-    <span tal:replace="sender/firstname">first name</span>
-    <span tal:replace="sender/lastname">last name</span>
-    <br />
-    <br />
-    <strong tal:content="sender/company">company</strong>
-    <tal:companyadd condition="sender/companyadd">
-      - <strong tal:content="sender/companyadd">company additional</strong>
-    </tal:companyadd>
+    <tal:currency condition="python:sender['iban'] or sender['bic']">
+      <span i18n:translate="invoice_prices_in_currency">All prices in</span>
+      <span tal:replace="summary/currency" />
+      <br />
+      <br />
+      <br />
+    </tal:currency>
+    <tal:regards condition="python:sender['firstname'] or sender['lastname'] or sender['company'] or sender['companyadd']">
+      <span i18n:translate="invoice_kind_regards">Kind regards</span>,
+      <br />
+      <br />
+      <tal:names condition="python:sender['firstname'] or sender['lastname']">
+        <span tal:replace="sender/firstname">first name</span>
+        <span tal:replace="sender/lastname">last name</span>
+        <br />
+        <br />
+      </tal:names>
+      <tal:company condition="python:sender['company'] or sender['companyadd']">
+      <strong tal:condition="sender/company" tal:content="sender/company">company</strong>
+        <tal:companyadd condition="sender/companyadd">
+          - <strong tal:content="sender/companyadd">company additional</strong>
+        </tal:companyadd>
+      </tal:company>
+    </tal:regards>
   </div>
 
 </div>
