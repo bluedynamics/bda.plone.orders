@@ -4,6 +4,9 @@ Changelog
 2.0.dev0 (unreleased)
 ---------------------
 
+- Make invoice fields optional
+  [agitator]
+
 - Add new order manager with ability to query and delete orders.
   [jensens]
 
