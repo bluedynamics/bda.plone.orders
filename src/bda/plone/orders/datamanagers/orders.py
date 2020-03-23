@@ -63,7 +63,10 @@ class OrdersManager(object):
         returns:
             iterator with first result length, then all following order records.
         """
-        query = query & self.orders_base_query()
+        if query is not None:
+            query = query & self.orders_base_query()
+        else:
+            query = self.orders_base_query()
         res = self.orders_soup.lazy(
             query, with_size=True, sort_index=sort_index, reverse=reverse
         )
@@ -83,11 +86,11 @@ class OrdersManager(object):
         returns:
             iterator with first result length, then all following OrderData
         """
-        length, records = self.orders(query=query, sort_index=None, reverse=None)
+        length, lazy_records = self.orders(query=query, sort_index=None, reverse=None)
 
         def orderdata_generator():
-            for record in records:
-                yield OrderData(order=record)
+            for lazy_record in lazy_records:
+                yield OrderData(self.context, order=lazy_record())
 
         return length, orderdata_generator()
 

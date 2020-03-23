@@ -54,5 +54,5 @@ class QueryOrdersService(Service):
         }
         for order in orders:
             serializer = getMultiAdapter((order, self.request), ISerializeToJson)
-            result.append(serializer())
+            result['orders'].append(serializer())
         return result
