@@ -13,4 +13,12 @@
       name="@shop-order"
       permission="bda.plone.orders.ViewOrders"
   />
+  <plone:service
+      accept="application/json"
+      factory=".order.QueryOrdersService"
+      for="*"
+      method="GET"
+      name="@shop-orders"
+      permission="bda.plone.orders.ViewOrders"
+  />
 </configure>
