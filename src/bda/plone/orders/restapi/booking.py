@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
 from bda.plone.cart.restapi.service import TraversingService
-from bda.plone.orders.interfaces import workflow
 from bda.plone.orders.common import get_vendor_uids_for
 from bda.plone.orders.datamanagers.booking import BookingData
+from bda.plone.orders.interfaces import workflow
+from plone.protect.interfaces import IDisableCSRFProtection
 from plone.restapi.interfaces import ISerializeToJson
 from zope.component import getMultiAdapter
+from zope.interface import alsoProvides
 
 
 class BookingService(TraversingService):
@@ -22,7 +24,6 @@ class BookingService(TraversingService):
         booking_data = BookingData(self.context, uid=self.params[0])
         if booking_data.booking is None:
             raise ValueError("Can not find given UID '{0}'".format(self.params[0]))
-        import pdb; pdb.set_trace()
         self.process_request(booking_data)
         serializer = getMultiAdapter((booking_data, self.request), ISerializeToJson)
         return serializer()
@@ -32,6 +33,8 @@ class BookingUpdateService(BookingService):
     """Single Booking update: state and salaried"""
 
     def process_request(self, booking_data):
+        # Disable CSRF protection
+        alsoProvides(self.request, IDisableCSRFProtection)
         salaried = self.request.form.get("salaried", booking_data.salaried)
         if salaried not in [
             workflow.SALARIED_YES,
