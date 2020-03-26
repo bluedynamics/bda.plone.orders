@@ -31,7 +31,7 @@
   />
   <plone:service
       accept="application/json"
-      factory=".booking.BookingService"
+      factory=".booking.BookingUpdateService"
       for="*"
       method="POST"
       name="@shop-booking"

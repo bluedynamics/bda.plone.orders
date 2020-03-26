@@ -22,6 +22,7 @@ class BookingService(TraversingService):
         booking_data = BookingData(self.context, uid=self.params[0])
         if booking_data.booking is None:
             raise ValueError("Can not find given UID '{0}'".format(self.params[0]))
+        import pdb; pdb.set_trace()
         self.process_request(booking_data)
         serializer = getMultiAdapter((booking_data, self.request), ISerializeToJson)
         return serializer()
