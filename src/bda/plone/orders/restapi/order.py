@@ -9,20 +9,22 @@ from repoze.catalog.query import Any
 from repoze.catalog.query import Eq
 from zope.component import getMultiAdapter
 
+
 class OrderService(TraversingService):
     """Single Order with bookings"""
 
     def reply(self):
         if len(self.params) != 1:
             raise Exception(
-                "Must supply exactly one parameter (identifier of"
-                "the order) to be retrieved."
+                "Must supply exactly one UID (unique identifier of"
+                "the order) to be retrieved as last part of the URL ."
             )
         serializer = getMultiAdapter(
             (OrderData(self.context, uid=self.params[0]), self.request),
             ISerializeToJson,
         )
         return serializer()
+
 
 class QueryOrdersService(Service):
     """List Orders by given Query for current users vendor
@@ -38,7 +40,7 @@ class QueryOrdersService(Service):
     """
 
     def reply(self):
-        states =  self.request.form.get("state", [])
+        states = self.request.form.get("state", [])
         if not isinstance(states, list):
             states = [states]
         query = None  # build a repoze catalog query
@@ -54,5 +56,5 @@ class QueryOrdersService(Service):
         }
         for order in orders:
             serializer = getMultiAdapter((order, self.request), ISerializeToJson)
-            result['orders'].append(serializer())
+            result["orders"].append(serializer())
         return result

@@ -21,4 +21,20 @@
       name="@shop-orders"
       permission="bda.plone.orders.ViewOrders"
   />
+  <plone:service
+      accept="application/json"
+      factory=".booking.BookingService"
+      for="*"
+      method="GET"
+      name="@shop-booking"
+      permission="bda.plone.orders.ViewOrders"
+  />
+  <plone:service
+      accept="application/json"
+      factory=".booking.BookingService"
+      for="*"
+      method="POST"
+      name="@shop-booking"
+      permission="bda.plone.orders.ModifyOrders"
+  />
 </configure>

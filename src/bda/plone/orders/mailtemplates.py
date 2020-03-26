@@ -122,8 +122,8 @@ Order details: %(portal_url)s/@@showorder?ordernumber=%(ordernumber)s
 """
 
 STOCK_THRESHOLD_REACHED_SUBJECT_EN = (
-    u"Order %s has products that are getting out of stock."
-)  # noqa
+    u"Order %s has products that are getting out of stock."  # noqa
+)
 
 STOCK_THRESHOLD_REACHED_BODY_EN = u"""
 Date: %(date)s

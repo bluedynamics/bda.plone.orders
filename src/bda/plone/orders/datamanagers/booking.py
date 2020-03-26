@@ -41,6 +41,7 @@ class BookingData(BaseState):
         self.context = context
         self._uid = uid
         self._booking = booking
+
         self.vendor_uids = vendor_uids
 
     @property
@@ -61,7 +62,8 @@ class BookingData(BaseState):
         if self.vendor_uids:
             query = query & Any("vendor_uid", self.vendor_uids)
         result = soup.query(query, with_size=True)
-        if next(result) != 1:  # first result is length
+        length = next(result)
+        if length != 1:  # first result is length
             return None
         self._booking = next(result)
         return self._booking

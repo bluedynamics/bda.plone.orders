@@ -23,7 +23,7 @@ class PaymentData(object):
     @property
     def amount(self):
         amount = "%0.2f" % self.order_data.total
-        amount = amount[:amount.index(".")] + amount[amount.index(".") + 1:]
+        amount = amount[: amount.index(".")] + amount[amount.index(".") + 1 :]
         return amount
 
     @property
@@ -53,9 +53,9 @@ class PaymentData(object):
     def annotations(self, ordernumber):
         self.order_uid = self.uid_for(ordernumber)
         attrs = self.order_data.order.attrs
-        if 'annotations' not in attrs:
-            attrs['annotations'] = PersistentDict()
-        return attrs['annotations']
+        if "annotations" not in attrs:
+            attrs["annotations"] = PersistentDict()
+        return attrs["annotations"]
 
     def uid_for(self, ordernumber):
         soup = get_orders_soup(self.context)

@@ -38,7 +38,7 @@ import uuid
 
 ###############################################################################
 # order related base classes
-# XXX: used by order and invoice views. maybe move to common.py
+# XXX: used by order and invoice views. maybe generalize
 ###############################################################################
 
 
