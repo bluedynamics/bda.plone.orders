@@ -38,7 +38,7 @@ class BookingUpdateService(BookingService):
             workflow.SALARIED_FAILED,
         ]:
             raise Exception(
-                "salaried mus be one out of: {0}, {1}, {2}.".format(
+                "salaried must be one out of: {0}, {1}, {2}.".format(
                     workflow.SALARIED_YES,
                     workflow.SALARIED_NO,
                     workflow.SALARIED_FAILED,
@@ -49,15 +49,19 @@ class BookingUpdateService(BookingService):
 
         state = self.request.form.get("state", booking_data.state)
         if state not in [
-            workflow.STATE_YES,
-            workflow.STATE_NO,
-            workflow.STATE_FAILED,
+            workflow.STATE_CANCELLED,
+            workflow.STATE_FINISHED,
+            workflow.STATE_NEW,
+            workflow.STATE_PROCESSING,
+            workflow.STATE_RESERVED,
         ]:
             raise Exception(
-                "state mus be one out of: {0}, {1}, {2}.".format(
-                    workflow.STATE_YES,
-                    workflow.STATE_NO,
-                    workflow.STATE_FAILED,
+                "state must be one out of: {0}, {1}, {2}, {3}, {4}.".format(
+                    workflow.STATE_CANCELLED,
+                    workflow.STATE_FINISHED,
+                    workflow.STATE_NEW,
+                    workflow.STATE_PROCESSING,
+                    workflow.STATE_RESERVED,
                 )
             )
         if state != booking_data.state:
