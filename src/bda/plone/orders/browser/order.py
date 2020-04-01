@@ -342,7 +342,7 @@ class OrderViewBase(OrderDataView):
 
     @property
     def gender(self):
-        gender = self.order["personal_data.gender"]
+        gender = self.order.get("personal_data.gender", _co("unknown", "Unknown"))
         if gender == "male":
             return _co("male", "Male")
         if gender == "female":
