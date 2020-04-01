@@ -94,7 +94,9 @@ def general_order_data(context, order_data):
     data["portal_url"] = getSite().absolute_url()
     data["date"] = attrs["created"].strftime(DT_FORMAT)
     data["salutation"] = translate(
-        attrs["personal_data.gender"], domain="bda.plone.checkout", target_language=lang
+        attrs.get("personal_data.gender", "dear"),
+        domain="bda.plone.checkout",
+        target_language=lang,
     )
     if data.get("billing_address.country", None):
         data["billing_address.country"] = get_country_name(
@@ -611,7 +613,7 @@ def create_payment_text(context, order_data):
 
 
 def create_delivery_address(context, order_data):
-    if order_data.order.attrs["delivery_address.alternative_delivery"]:
+    if order_data.order.attrs.get("delivery_address.alternative_delivery", None):
         templates = get_order_templates(context)
         delivery_address_template = templates["delivery_address"]
         arguments = general_order_data(context, order_data)
