@@ -4,6 +4,9 @@ Changelog
 2.0.dev0 (unreleased)
 ---------------------
 
+- More robust dict-get on order.pt - do not require a bucnh of fields.
+  [jensens]
+
 - No longer support for z3c.autoinclude.
   [jensens]
 

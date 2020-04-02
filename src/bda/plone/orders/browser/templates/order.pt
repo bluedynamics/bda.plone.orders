@@ -27,30 +27,30 @@
       <span tal:replace="view/gender">gender</span>
       <br />
       <strong i18n:translate="order_name">Name:</strong>
-      <span tal:replace="order/personal_data.firstname">first name</span>
-      <span tal:replace="order/personal_data.lastname">last name</span>
+      <span tal:replace="python:order.get('personal_data.firstname', '')">first name</span>
+      <span tal:replace="python:order.get('personal_data.lastname', '')">last name</span>
       <br />
       <strong i18n:translate="order_email">Email:</strong>
-      <span tal:replace="order/personal_data.email">email</span>
+      <span tal:replace="python:order.get('personal_data.email', '')">email</span>
       <br />
       <strong i18n:translate="order_company">Company:</strong>
-      <span tal:replace="order/personal_data.company">company</span>
+      <span tal:replace="python:order.get('personal_data.company', '')">company</span>
       <br />
       <strong i18n:translate="order_phone">Phone:</strong>
-      <span tal:replace="order/personal_data.phone">phone</span>
+      <span tal:replace="python:order.get('personal_data.phone', '')">phone</span>
     </div>
 
     <div class="billing_address">
       <h3 i18n:translate="billing_address">Billing Address:</h3>
       <strong i18n:translate="order_street">Street:</strong>
-      <span tal:replace="order/billing_address.street">street</span>
+      <span tal:replace="python:order.get('billing_address.street', '')">street</span>
       <br />
       <strong i18n:translate="order_zip_city">ZIP/City:</strong>
-      <span tal:replace="order/billing_address.zip">zip</span>
-      <span tal:replace="order/billing_address.city">city</span>
+      <span tal:replace="python:order.get('billing_address.zip', '')">zip</span>
+      <span tal:replace="python:order.get('billing_address.city', '')">city</span>
       <br />
       <strong i18n:translate="order_country">Country:</strong>
-      <span tal:replace="python:view.country(order['billing_address.country'])">
+      <span tal:replace="python:view.country(order.get('billing_address.country', ''))">
         country
       </span>
     </div>
@@ -118,21 +118,21 @@
 
   <div class="order_details_row">
     <div class="delivery_address"
-         tal:condition="order/delivery_address.alternative_delivery">
+         tal:condition="python:order.get('delivery_address.alternative_delivery', '')">
       <h3 i18n:translate="delivery_address">Delivery Address:</h3>
       <strong i18n:translate="order_name">Name:</strong>
-      <span tal:replace="order/delivery_address.firstname">first name</span>
-      <span tal:replace="order/delivery_address.lastname">last name</span>
+      <span tal:replace="python:order.get('delivery_address.firstname', '')">first name</span>
+      <span tal:replace="python:order.get('delivery_address.lastname', '')">last name</span>
       <br />
       <strong i18n:translate="order_company">Company:</strong>
-      <span tal:replace="order/delivery_address.company">company</span>
+      <span tal:replace="python:order.get('delivery_address.company', '')">company</span>
       <br />
       <strong i18n:translate="order_street">Street:</strong>
-      <span tal:replace="order/delivery_address.street">street</span>
+      <span tal:replace="python:order.get('delivery_address.street', '')">street</span>
       <br />
       <strong i18n:translate="order_zip_city">ZIP/City:</strong>
-      <span tal:replace="order/delivery_address.zip">zip</span>
-      <span tal:replace="order/delivery_address.city">city</span>
+      <span tal:replace="python:order.get('delivery_address.zip', '')">zip</span>
+      <span tal:replace="python:order.get('delivery_address.city', '')">city</span>
       <br />
       <strong i18n:translate="order_country">Country:</strong>
       <span tal:replace="python:view.country(order['delivery_address.country'])">
@@ -141,7 +141,7 @@
     </div>
 
     <div class="delivery_address"
-         tal:condition="not:order/delivery_address.alternative_delivery">
+         tal:condition="not:python:order.get('delivery_address.alternative_delivery', '')">
       <h3 i18n:translate="delivery_address">Delivery Address:</h3>
       <p i18n:translate="order_no_delivery_address">
         No delivery Address defined
