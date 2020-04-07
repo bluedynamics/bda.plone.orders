@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from bda.plone.orders.datamanagers.base import BaseState
+from bda.plone.orders.datamanagers.base import calculate_order_salaried
 from bda.plone.orders.datamanagers.base import calculate_order_state
 from bda.plone.orders.datamanagers.order import OrderData
 from bda.plone.orders.interfaces.orders import IBookingData

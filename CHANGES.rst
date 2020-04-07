@@ -4,6 +4,9 @@ Changelog
 2.0.dev0 (unreleased)
 ---------------------
 
+- Fix: UNSET email adress result in borken checkout.
+  [jensens, faro]
+
 - More robust dict-get on order.pt - do not require a bucnh of fields.
   [jensens]
 

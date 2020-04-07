@@ -59,6 +59,9 @@ class OrderCheckoutAdapter(CheckoutAdapter):
         order = self.order
         # order UUID
         uid = order.attrs["uid"] = uuid.uuid4()
+        # manage empty email
+        if not order.attrs["personal_data.email"]:
+            order.attrs["personal_data.email"] = ""
         # order creator
         creator = None
         member = plone.api.user.get_current()
