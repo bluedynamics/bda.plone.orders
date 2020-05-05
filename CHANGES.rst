@@ -4,6 +4,9 @@ Changelog
 2.0.dev0 (unreleased)
 ---------------------
 
+- Add mailtemplate lang mapping for de-ch
+  [agitator]
+
 - Fix: UNSET email adress result in borken checkout.
   [jensens, faro]
 

@@ -535,6 +535,11 @@ ORDER_TEMPLATES = {
         "body": ORDER_BODY_DE,
         "delivery_address": DELIVERY_ADDRESS_DE,
     },
+    "de-ch": {
+        "subject": ORDER_SUBJECT_DE,
+        "body": ORDER_BODY_DE,
+        "delivery_address": DELIVERY_ADDRESS_DE,
+    },
     "fr": {
         "subject": ORDER_SUBJECT_FR,
         "body": ORDER_BODY_FR,
@@ -563,6 +568,11 @@ RESERVATION_TEMPLATES = {
         "body": RESERVATION_BODY_DE,
         "delivery_address": DELIVERY_ADDRESS_DE,
     },
+    "de-ch": {
+        "subject": RESERVATION_SUBJECT_DE,
+        "body": RESERVATION_BODY_DE,
+        "delivery_address": DELIVERY_ADDRESS_DE,
+    },
     "fr": {
         "subject": RESERVATION_SUBJECT_FR,
         "body": RESERVATION_BODY_FR,
@@ -583,6 +593,7 @@ RESERVATION_TEMPLATES = {
 CANCELLED_BOOKING_TEMPLATES = {
     "en": {"subject": CANCELLED_BOOKING_SUBJECT_EN, "body": CANCELLED_BOOKING_BODY_EN},
     "de": {"subject": CANCELLED_BOOKING_SUBJECT_DE, "body": CANCELLED_BOOKING_BODY_DE},
+    "de-ch": {"subject": CANCELLED_BOOKING_SUBJECT_DE, "body": CANCELLED_BOOKING_BODY_DE},
     "fr": {"subject": CANCELLED_BOOKING_SUBJECT_FR, "body": CANCELLED_BOOKING_BODY_FR},
     "it": {"subject": CANCELLED_BOOKING_SUBJECT_IT, "body": CANCELLED_BOOKING_BODY_IT},
     "no": {"subject": CANCELLED_BOOKING_SUBJECT_NO, "body": CANCELLED_BOOKING_BODY_NO},
@@ -594,6 +605,10 @@ BOOKING_RESERVED_TO_ORDERED_TEMPLATES = {
         "body": BOOKING_RESERVED_TO_ORDERED_BODY_EN,
     },
     "de": {
+        "subject": BOOKING_RESERVED_TO_ORDERED_SUBJECT_DE,
+        "body": BOOKING_RESERVED_TO_ORDERED_BODY_DE,
+    },
+    "de-ch": {
         "subject": BOOKING_RESERVED_TO_ORDERED_SUBJECT_DE,
         "body": BOOKING_RESERVED_TO_ORDERED_BODY_DE,
     },
