@@ -14,6 +14,14 @@ from zope.interface import implementer
 import random
 import uuid
 
+CID_GENERATION = {
+    # valid range for customer ids
+    "min": 1,
+    "max": 1000000,
+    # maximum attempts for creating a new contact id before failure
+    "attempts": 10,
+}
+
 
 def get_contacts_soup(context):
     return get_soup("bda_plone_orders_contacts", context)
@@ -88,21 +96,18 @@ def extract_contact(order):
     return contact
 
 
-# maximum attempts for creating a new contact id before failure
-MAX_NEW_CONTACT_ID_ATTEMPTS = 10
-
-
 def next_contact_id(soup):
     """Create a unique contact id.
     """
     next_id = None
-    attempts = MAX_NEW_CONTACT_ID_ATTEMPTS
-    for i in range(attempts):
-        next_id = random.randint(0, 1000000)
+    for i in range(CID_GENERATION["attempts"]):
+        next_id = random.randint(CID_GENERATION["min"], CID_GENERATION["max"])
         res = [r for r in soup.query(Eq("cid", next_id))]
         if not res:
             return next_id
-    msg = u"Unable to create unique contact id after %i attempts." % attempts
+    msg = u"Unable to create unique contact id after {0} attempts.".format(
+        CID_GENERATION["attempts"]
+    )
     raise ValueError(msg)
 
 
