@@ -21,6 +21,12 @@ CID_GENERATION = {
     # maximum attempts for creating a new contact id before failure
     "attempts": 10,
 }
+LOOKUP_QUERY_MAPPING = [
+    "firstname", "personal_data.firstname",
+    "lastname", "personal_data.lastname",
+    "zip", "billing_address.zip",
+    "street", "billing_address.street",
+]
 
 
 def get_contacts_soup(context):
@@ -115,13 +121,14 @@ def lookup_contact(context, contact):
     """Lookup existing contact from soup by given contact or add to soup
     if inexistent.
     """
+    query = None
+    for index_key, contact_key in LOOKUP_QUERY_MAPPING:
+        query_element = Eq(index_key, contact[contact_key].lower())
+        if query is None:
+            query = query_element
+        else:
+            query &= query_element
     soup = get_contacts_soup(context)
-    query = (
-        Eq("firstname", contact["personal_data.firstname"].lower())
-        & Eq("lastname", contact["personal_data.lastname"].lower())
-        & Eq("zip", contact["billing_address.zip"].lower())
-        & Eq("street", contact["billing_address.street"].lower())
-    )
     res = soup.query(query)
     record = None
     for rec in res:

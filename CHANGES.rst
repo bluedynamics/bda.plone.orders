@@ -4,6 +4,9 @@ Changelog
 2.0.dev0 (unreleased)
 ---------------------
 
+- Customizable contact lookup query.
+  [jensens]
+
 - Add mailtemplate lang mapping for de-ch
   [agitator]
 
