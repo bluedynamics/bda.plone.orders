@@ -736,8 +736,8 @@ class DynamicMailTemplate(object):
             self(template, self.defaults)
         except KeyError as e:
             return False, u'Variable "{0}" is not available.'.format(e.message)
-        except Exception as e:
-            return False, e.message
+        except Exception as exc:
+            return False, str(exc)
         return True, ""
 
     def __call__(self, template, data):

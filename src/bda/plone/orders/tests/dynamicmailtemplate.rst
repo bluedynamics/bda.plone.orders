@@ -39,7 +39,7 @@ template must be unicode::
 
     >>> dmt = DynamicMailTemplate(required, defaults)
 
-    >>> wrong_tpl = 'foo'
+    >>> wrong_tpl = b'foo'
     >>> dmt.validate(wrong_tpl)
     Traceback (most recent call last):
     ...
@@ -81,7 +81,7 @@ required keys must be in data::
     >>> dmt(tpl, wrong_data)
     Traceback (most recent call last):
     ...
-    KeyError: u'Required key uid is missing.'
+    KeyError: 'Required key uid is missing.'
 
 finally a working set::
 

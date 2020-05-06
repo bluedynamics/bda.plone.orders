@@ -64,16 +64,16 @@ setitem only on storages::
 
     >>> try:
     ...     lib_root['fooroot'] = u'foo root'
-    ... except NotImplementedError as e:
-    ...     print e.message
+    ... except NotImplementedError as exc:
+    ...     print(exc)
     acquierer do not set on parent (permissions)
 
     >>> lib_lvl2['foo2'] = u'foo 2'
 
     >>> try:
     ...     lib_lvl3['foo3'] = u'foo 3'
-    ... except NotImplementedError as e:
-    ...     print e.message
+    ... except NotImplementedError as exc:
+    ...     print(exc)
     acquierer do not set on parent (permissions)
 
     >>> lib_lvl4['foo4'] = u'foo 4'
