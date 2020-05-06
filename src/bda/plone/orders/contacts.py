@@ -22,10 +22,14 @@ CID_GENERATION = {
     "attempts": 10,
 }
 LOOKUP_QUERY_MAPPING = [
-    "firstname", "personal_data.firstname",
-    "lastname", "personal_data.lastname",
-    "zip", "billing_address.zip",
-    "street", "billing_address.street",
+    "firstname",
+    "personal_data.firstname",
+    "lastname",
+    "personal_data.lastname",
+    "zip",
+    "billing_address.zip",
+    "street",
+    "billing_address.street",
 ]
 
 
@@ -73,23 +77,23 @@ class ContactsCatalogFactory(object):
 
 # attributes for extracting contacts
 CONTACT_ATTRIBUTES = [
-    "personal_data.company",
-    "personal_data.email",
-    "personal_data.gender",
-    "personal_data.firstname",
-    "personal_data.phone",
-    "personal_data.lastname",
-    "billing_address.city",
-    "billing_address.country",
-    "billing_address.street",
-    "billing_address.zip",
-    "delivery_address.city",
-    "delivery_address.company",
-    "delivery_address.country",
-    "delivery_address.firstname",
-    "delivery_address.street",
-    "delivery_address.lastname",
-    "delivery_address.zip",
+    ("personal_data.company"),
+    ("personal_data.email"),
+    ("personal_data.gender"),
+    ("personal_data.firstname"),
+    ("personal_data.phone"),
+    ("personal_data.lastname"),
+    ("billing_address.city"),
+    ("billing_address.country"),
+    ("billing_address.street"),
+    ("billing_address.zip"),
+    ("delivery_address.city"),
+    ("delivery_address.company"),
+    ("delivery_address.country"),
+    ("delivery_address.firstname"),
+    ("delivery_address.street"),
+    ("delivery_address.lastname"),
+    ("delivery_address.zip"),
 ]
 
 

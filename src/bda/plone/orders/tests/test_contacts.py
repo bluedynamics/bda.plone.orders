@@ -15,10 +15,8 @@ class TestContacts(unittest.TestCase):
 
     def test_next_contact_id(self):
         from bda.plone.orders import contacts
+
         soup = contacts.get_contacts_soup()
-        contacts.CID_GENERATION['min'] = 10
-        contacts.CID_GENERATION['min'] = 12
+        contacts.CID_GENERATION["min"] = 10
+        contacts.CID_GENERATION["min"] = 12
         self.assertTrue(10 <= contacts.next_contact_id(soup) <= 12)
-
-
-
