@@ -21,12 +21,10 @@ class SerializeBookingToJson(object):
     def __call__(self):
         data = dict(self.booking_dm.booking.attrs)
         try:
-            obj = api.content.get(
-                UID=self.booking_dm.booking.attrs['buyable_uid'],
-            )
-            data['path'] = "/".join(obj.getPhysicalPath())
+            obj = api.content.get(UID=self.booking_dm.booking.attrs["buyable_uid"],)
+            data["path"] = "/".join(obj.getPhysicalPath())
         except ValueError:
-            data['path'] = None
+            data["path"] = None
         return json_compatible_dict(data)
 
 
