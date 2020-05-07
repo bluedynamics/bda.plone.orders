@@ -7,6 +7,9 @@ from bda.plone.orders.common import get_bookings_soup
 from bda.plone.orders.common import get_order
 from bda.plone.orders.common import get_orders_soup
 from bda.plone.orders.contacts import get_contacts_soup
+from bda.plone.orders.contacts import extract_contact
+from bda.plone.orders.contacts import lookup_contact
+from bda.plone.orders.contacts import LOOKUP_QUERY_MAPPING
 from bda.plone.orders.datamanagers.base import calculate_order_salaried
 from bda.plone.orders.datamanagers.base import calculate_order_state
 from bda.plone.orders.datamanagers.order import OrderData
@@ -15,6 +18,7 @@ from bda.plone.payment import Payments
 from decimal import Decimal
 from node.ext.zodb.utils import reset_odict
 from plone.uuid.interfaces import IUUID
+from repoze.catalog.query import Eq
 from zope.component.hooks import getSite
 
 import logging
@@ -424,3 +428,27 @@ def fix_order_state_and_salaried(ctx=None):
         order.attrs["state"] = calculate_order_state(bookings)
         order.attrs["salaried"] = calculate_order_salaried(bookings)
     soup.rebuild()
+
+
+def fix_order_contact_uid(ctx=None):
+    """Add contact_uid to order
+    """
+    portal = getSite()
+    soup = get_orders_soup(portal)
+    data = soup.storage.data
+    need_rebuild = False
+    for order in data.values():
+        order_data = OrderData(portal, uid=order.attrs["uid"])
+        if not order.attrs.get('contact_uid', None):
+            contact_soup = get_contacts_soup(portal)
+            contact = list(contact_soup.query(
+                Eq("email", order.attrs['personal_data.email'])))
+            if contact:
+                order.attrs['contact_uid'] = contact[0].attrs['uid']
+            else:
+                order.attrs['contact_uid'] = ''
+            need_rebuild = True
+            logging.info(u"Added contact_uid to order {0}".format(order.attrs["uid"]))
+    if need_rebuild:
+        soup.rebuild()
+        logging.info("Rebuilt contacts catalog")

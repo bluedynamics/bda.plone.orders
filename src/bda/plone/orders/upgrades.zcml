@@ -98,4 +98,12 @@
     profile="bda.plone.orders:default"
     handler=".upgrades.fix_order_state_and_salaried" />
 
+  <genericsetup:upgradeStep
+    source="10"
+    destination="11"
+    title="Add contact_uid on order"
+    description=""
+    profile="bda.plone.orders:default"
+    handler=".upgrades.fix_order_contact_uid" />
+
 </configure>
