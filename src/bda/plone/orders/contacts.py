@@ -151,4 +151,5 @@ def save_contact(event):
     order contact to soup.
     """
     order = get_order(event.context, event.uid)
-    lookup_contact(event.context, extract_contact(order))
+    contact = lookup_contact(event.context, extract_contact(order))
+    order.attrs['contact_uid'] = contact.attrs['uid']

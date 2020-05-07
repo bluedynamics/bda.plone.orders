@@ -4,6 +4,9 @@ Changelog
 2.0.dev0 (unreleased)
 ---------------------
 
+- Store contact uid back to order as attr contact_uid.
+  [jensens, agitator]
+
 - Customizable contact lookup query.
   [jensens]
 
