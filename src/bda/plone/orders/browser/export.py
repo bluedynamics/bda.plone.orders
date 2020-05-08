@@ -15,6 +15,7 @@ from bda.plone.orders.common import get_order
 from bda.plone.orders.common import get_orders_soup
 from bda.plone.orders.common import get_vendor_uids_for
 from bda.plone.orders.common import get_vendors_for
+from bda.plone.orders.contacts import get_contacts_soup
 from bda.plone.orders.datamanagers.order import OrderData
 from bda.plone.orders.interfaces import IBuyable
 from decimal import Decimal
@@ -38,6 +39,7 @@ import datetime
 import plone.api
 import uuid
 import yafowil.loader  # noqa
+import six
 
 
 class DialectExcelWithColons(csv.excel):
@@ -75,6 +77,10 @@ ORDER_EXPORT_ATTRS = [
     "payment_selection.payment",
 ]
 COMPUTED_ORDER_EXPORT_ATTRS = odict()
+CONTACT_EXPORT_ATTRS = [
+    "cid",
+]
+COMPUTED_CONTACT_EXPORT_ATTRS = odict()
 BOOKING_EXPORT_ATTRS = [
     "title",
     "buyable_comment",
@@ -191,6 +197,8 @@ class ExportOrdersForm(YAMLForm, BrowserView):
         orders_soup = get_orders_soup(self.context)
         # get bookings soup
         bookings_soup = get_bookings_soup(self.context)
+        # get contacts soup
+        contacts_soup = get_contacts_soup(self.context)
         # fetch user vendor uids
         vendor_uids = get_vendor_uids_for()
         # base query for time range
@@ -216,6 +224,8 @@ class ExportOrdersForm(YAMLForm, BrowserView):
         ex.writerow(
             ORDER_EXPORT_ATTRS
             + list(COMPUTED_ORDER_EXPORT_ATTRS.keys())
+            + CONTACT_EXPORT_ATTRS
+            + list(COMPUTED_CONTACT_EXPORT_ATTRS.keys())
             + BOOKING_EXPORT_ATTRS
             + list(COMPUTED_BOOKING_EXPORT_ATTRS.keys())
         )
@@ -234,6 +244,22 @@ class ExportOrdersForm(YAMLForm, BrowserView):
                 val = cb(self.context, order_data)
                 val = cleanup_for_csv(val)
                 order_attrs.append(val)
+            if CONTACT_EXPORT_ATTRS:
+                contact_attrs = list()
+                contact = list(contacts_soup.query(
+                    Eq("uid", order.attrs['contact_uid'])))
+                if contact:
+                    # contact export attrs
+                    for attr_name in CONTACT_EXPORT_ATTRS:
+                        val = self.export_val(contact[0], attr_name)
+                        contact_attrs.append(val)
+                    # computed contact export attrs
+                    for attr_name in COMPUTED_CONTACT_EXPORT_ATTRS:
+                        cb = COMPUTED_CONTACT_EXPORT_ATTRS[attr_name]
+                        val = cb(self.context, contact[0])
+                        val = cleanup_for_csv(val)
+                        contact_attrs.append(val)
+
             for booking in order_data.bookings:
                 booking_attrs = list()
                 # booking export attrs
@@ -246,7 +272,13 @@ class ExportOrdersForm(YAMLForm, BrowserView):
                     val = cb(self.context, booking)
                     val = cleanup_for_csv(val)
                     booking_attrs.append(val)
-                ex.writerow(order_attrs + booking_attrs)
+                if six.PY3:
+                    ex.writerow(
+                        [x.decode() if isinstance(x, six.binary_type) else x
+                        for x in order_attrs + contact_attrs + booking_attrs]
+                    )
+                else:
+                    ex.writerow(order_attrs + contact_attrs + booking_attrs)
                 booking.attrs["exported"] = True
                 bookings_soup.reindex(booking)
         # create and return response

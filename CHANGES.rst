@@ -4,6 +4,12 @@ Changelog
 2.0.dev0 (unreleased)
 ---------------------
 
+- Remove b'' from values in py3 csv export
+  [agitator]
+
+- Add contact information to export
+  [jensens, agitator]
+
 - Store contact uid back to order as attr contact_uid.
   [jensens, agitator]
 
