@@ -271,7 +271,6 @@ class ExportOrdersForm(YAMLForm, BrowserView):
                     val = cb(self.context, booking)
                     val = cleanup_for_csv(val)
                     booking_attrs.append(val)
-
                 ex.writerow(order_attrs + contact_attrs + booking_attrs)
                 booking.attrs["exported"] = True
                 bookings_soup.reindex(booking)
