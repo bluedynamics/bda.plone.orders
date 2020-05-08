@@ -267,8 +267,6 @@ class ExportOrdersForm(YAMLForm, BrowserView):
                     booking_attrs.append(val)
                 # computed booking export attrs
                 for attr_name in COMPUTED_BOOKING_EXPORT_ATTRS:
-                    import pdb
-                    pdb.set_trace()
                     cb = COMPUTED_BOOKING_EXPORT_ATTRS[attr_name]
                     val = cb(self.context, booking)
                     val = cleanup_for_csv(val)
