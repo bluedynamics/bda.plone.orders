@@ -39,6 +39,7 @@ import datetime
 import plone.api
 import uuid
 import yafowil.loader  # noqa
+import six
 
 
 class DialectExcelWithColons(csv.excel):
@@ -271,7 +272,13 @@ class ExportOrdersForm(YAMLForm, BrowserView):
                     val = cb(self.context, booking)
                     val = cleanup_for_csv(val)
                     booking_attrs.append(val)
-                ex.writerow(order_attrs + contact_attrs + booking_attrs)
+                if six.PY3:
+                    ex.writerow(
+                        [x.decode() if isinstance(x, six.binary_type) else x
+                        for x in order_attrs + contact_attrs + booking_attrs]
+                    )
+                else:
+                    ex.writerow(order_attrs + contact_attrs + booking_attrs)
                 booking.attrs["exported"] = True
                 bookings_soup.reindex(booking)
         # create and return response
