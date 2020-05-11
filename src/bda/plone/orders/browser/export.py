@@ -48,6 +48,7 @@ class DialectExcelWithColons(csv.excel):
 
 csv.register_dialect("excel-colon", DialectExcelWithColons)
 
+EXPORT_DT_FORMAT = DT_FORMAT
 
 ORDER_EXPORT_ATTRS = [
     "uid",
@@ -133,7 +134,7 @@ def cleanup_for_csv(value):
     """Cleanup a value for CSV export.
     """
     if isinstance(value, datetime.datetime):
-        value = value.strftime(DT_FORMAT)
+        value = value.strftime(EXPORT_DT_FORMAT)
     if value == "-":
         value = ""
     if isinstance(value, float) or isinstance(value, Decimal):
