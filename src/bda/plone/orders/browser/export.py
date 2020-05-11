@@ -29,26 +29,28 @@ from repoze.catalog.query import Any
 from repoze.catalog.query import Eq
 from repoze.catalog.query import Ge
 from repoze.catalog.query import Le
-from six import StringIO
+from io import BytesIO
 from yafowil.base import ExtractionError
 from yafowil.controller import Controller
 from yafowil.plone.form import YAMLForm
 
 import csv
+import csv23
 import datetime
 import plone.api
 import uuid
 import yafowil.loader  # noqa
-import six
 
 
 class DialectExcelWithColons(csv.excel):
     delimiter = ";"
 
 
-csv.register_dialect("excel-colon", DialectExcelWithColons)
+csv23.register_dialect("excel-colon", DialectExcelWithColons)
 
 EXPORT_DT_FORMAT = DT_FORMAT
+
+EXPORT_CHARSET = "UTF-8"
 
 ORDER_EXPORT_ATTRS = [
     "uid",
@@ -137,7 +139,7 @@ def cleanup_for_csv(value):
         value = value.strftime(EXPORT_DT_FORMAT)
     if value == "-":
         value = ""
-    return safe_encode(value)
+    return value
 
 
 class ExportOrdersForm(YAMLForm, BrowserView):
@@ -217,8 +219,9 @@ class ExportOrdersForm(YAMLForm, BrowserView):
         if customer:
             query = query & Eq("creator", customer)
         # prepare csv writer
-        sio = StringIO()
-        ex = csv.writer(sio, dialect="excel-colon", quoting=csv.QUOTE_MINIMAL)
+        bio = BytesIO()
+        ex = csv23.writer(bio, dialect="excel-colon",
+                          encoding=EXPORT_CHARSET)
         # exported column keys as first line
         ex.writerow(
             ORDER_EXPORT_ATTRS
@@ -271,13 +274,7 @@ class ExportOrdersForm(YAMLForm, BrowserView):
                     val = cb(self.context, booking)
                     val = cleanup_for_csv(val)
                     booking_attrs.append(val)
-                if six.PY3:
-                    ex.writerow(
-                        [x.decode() if isinstance(x, six.binary_type) else x
-                        for x in order_attrs + contact_attrs + booking_attrs]
-                    )
-                else:
-                    ex.writerow(order_attrs + contact_attrs + booking_attrs)
+                ex.writerow(order_attrs + contact_attrs + booking_attrs)
                 booking.attrs["exported"] = True
                 bookings_soup.reindex(booking)
         # create and return response
@@ -288,8 +285,8 @@ class ExportOrdersForm(YAMLForm, BrowserView):
         self.request.response.setHeader(
             "Content-Disposition", "attachment; filename=%s" % filename
         )
-        ret = sio.getvalue()
-        sio.close()
+        ret = bio.getvalue()
+        bio.close()
         return ret
 
 
@@ -310,7 +307,8 @@ class ExportOrdersContextual(BrowserView):
         )
         filename = safe_filename(filename)
         resp = self.request.response
-        resp.setHeader("content-type", "text/csv; charset=utf-8")
+        resp.setHeader(
+            "content-type", "text/csv; charset={0}".format(EXPORT_CHARSET))
         resp.setHeader("content-disposition", "attachment;filename={}".format(filename))
         return self.get_csv()
 
@@ -325,8 +323,9 @@ class ExportOrdersContextual(BrowserView):
         context = self.context
 
         # prepare csv writer
-        sio = StringIO()
-        ex = csv.writer(sio, dialect="excel-colon", quoting=csv.QUOTE_MINIMAL)
+        bio = BytesIO()
+        ex = csv23.writer(bio, dialect="excel-colon",
+                          encoding=EXPORT_CHARSET)
         # exported column keys as first line
         ex.writerow(
             ORDER_EXPORT_ATTRS
@@ -389,6 +388,6 @@ class ExportOrdersContextual(BrowserView):
             # booking.attrs['exported'] = True
             # bookings_soup.reindex(booking)
 
-        ret = sio.getvalue()
-        sio.close()
+        ret = bio.getvalue()
+        bio.close()
         return ret

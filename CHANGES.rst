@@ -4,7 +4,8 @@ Changelog
 2.0.dev0 (unreleased)
 ---------------------
 
-- Remove b'' from values in py3 csv export
+- Use csv23 for py2/3 csv export.
+  Make export charset configurable.
   [agitator]
 
 - Add contact information to export
