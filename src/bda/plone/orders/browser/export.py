@@ -137,8 +137,6 @@ def cleanup_for_csv(value):
         value = value.strftime(EXPORT_DT_FORMAT)
     if value == "-":
         value = ""
-    if isinstance(value, float) or isinstance(value, Decimal):
-        value = str(value).replace(".", ",")
     return safe_encode(value)
 
 
