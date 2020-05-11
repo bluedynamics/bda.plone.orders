@@ -6,6 +6,7 @@ Changelog
 
 - Use csv23 for py2/3 csv export.
   Make export charset configurable.
+  Do not convert point to comma for numbers in export.
   [agitator]
 
 - Add contact information to export
