@@ -45,6 +45,7 @@ setup(
         "setuptools",
         "simplejson>=2.1",  # able to serialize Decimal
         "six",
+        "csv23",
         "yafowil.plone>2.999",
         "yafowil.widget.array",
         "yafowil.widget.datetime",
