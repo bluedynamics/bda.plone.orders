@@ -439,7 +439,7 @@ def fix_order_contact_uid(ctx=None):
     need_rebuild = False
     for order in data.values():
         if not order.attrs.get('contact_uid', None):
-            lookup_contact(portal, extract_contact(order))
+            contact = lookup_contact(portal, extract_contact(order))
             if contact:
                 order.attrs['contact_uid'] = contact.attrs['uid']
             else:
