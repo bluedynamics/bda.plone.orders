@@ -3,7 +3,7 @@ name: exportorders
 props:
     action: context.form_action
 widgets:
-- row:
+- row-vendor:
     factory: div
     props:
         class: "form-row"
@@ -21,7 +21,7 @@ widgets:
             label: i18n:customer_filter:Customer
             vocabulary: expr:context.customer_vocabulary
         mode: expr:context.customer_mode
-- row:
+- row-date:
     factory: div
     props:
         class: "form-row"

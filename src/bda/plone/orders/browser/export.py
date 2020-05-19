@@ -162,12 +162,14 @@ class ExportOrdersForm(YAMLForm, BrowserView):
     def vendor_vocabulary(self):
         return vendors_form_vocab()
 
+    @property
     def vendor_mode(self):
         return len(vendors_form_vocab()) > 2 and "edit" or "skip"
 
     def customer_vocabulary(self):
         return customers_form_vocab()
 
+    @property
     def customer_mode(self):
         return len(customers_form_vocab()) > 2 and "edit" or "skip"
 
