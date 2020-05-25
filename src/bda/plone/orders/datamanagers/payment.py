@@ -10,6 +10,8 @@ from persistent.dict import PersistentDict
 from repoze.catalog.query import Eq
 from zope.interface import implementer
 
+import six
+
 
 @implementer(IPaymentData)
 class PaymentData(object):
@@ -34,14 +36,17 @@ class PaymentData(object):
     def description(self):
         order = self.order_data.order
         attrs = order.attrs
-        amount = "%s %s" % (self.currency, str(round(self.order_data.total, 2)))
+        if six.PY2:
+            amount = safe_encode("%s %s" % (self.currency, str(round(self.order_data.total, 2))))
+        else:
+            amount = "%s %s" % (self.currency, str(round(self.order_data.total, 2)))
         description = ", ".join(
             [
                 attrs["created"].strftime(DT_FORMAT),
                 attrs["personal_data.firstname"],
                 attrs["personal_data.lastname"],
                 attrs["billing_address.city"],
-                safe_encode(amount),
+                amount,
             ]
         )
         return description
