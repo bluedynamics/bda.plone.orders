@@ -5,7 +5,9 @@
      class="ajaxtable"
      data-tablename="bookingstable">
 
-  <h1 class="documentFirstHeading" i18n:translate="bookings">Bookings</h1>
+  <header>
+    <h1 class="documentFirstHeading" i18n:translate="bookings">Bookings</h1>
+  </header>
 
   <tal:table replace="structure view/rendered_table" />
 

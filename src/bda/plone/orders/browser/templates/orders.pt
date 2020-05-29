@@ -5,7 +5,9 @@
      class="ajaxtable"
      tal:attributes="data-tablename view/__name__">
 
-  <h1 class="documentFirstHeading" i18n:translate="orders">Orders</h1>
+  <header>
+    <h1 class="documentFirstHeading" i18n:translate="orders">Orders</h1>
+  </header>
 
   <tal:table replace="structure view/rendered_table" />
 
