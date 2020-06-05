@@ -143,21 +143,6 @@ def cleanup_for_csv(value):
 
 
 class ExportMixin(object):
-    @property
-    def vendor(self):
-        raise NotImplementedError()
-
-    @property
-    def customer(self):
-        raise NotImplementedError()
-
-    @property
-    def from_date(self):
-        raise NotImplementedError()
-
-    @property
-    def to_date(self):
-        raise NotImplementedError()
 
     def export_val(self, record, attr_name):
         """Get attribute from record and cleanup.
