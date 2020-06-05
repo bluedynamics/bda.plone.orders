@@ -143,7 +143,6 @@ def cleanup_for_csv(value):
 
 
 class ExportMixin(obejct):
-
     @property
     def vendor(self):
         raise NotImplementedError()
@@ -194,8 +193,7 @@ class ExportMixin(obejct):
             query = query & Eq("creator", customer)
         # prepare csv writer
         bio = BytesIO()
-        ex = csv23.writer(bio, dialect="excel-colon",
-                          encoding=EXPORT_CHARSET)
+        ex = csv23.writer(bio, dialect="excel-colon", encoding=EXPORT_CHARSET)
         # exported column keys as first line
         ex.writerow(
             ORDER_EXPORT_ATTRS
@@ -222,8 +220,9 @@ class ExportMixin(obejct):
                 order_attrs.append(val)
             if CONTACT_EXPORT_ATTRS:
                 contact_attrs = list()
-                contact = list(contacts_soup.query(
-                    Eq("uid", order.attrs['contact_uid'])))
+                contact = list(
+                    contacts_soup.query(Eq("uid", order.attrs["contact_uid"]))
+                )
                 if contact:
                     # contact export attrs
                     for attr_name in CONTACT_EXPORT_ATTRS:
@@ -332,8 +331,7 @@ class ExportOrdersContextual(BrowserView):
         )
         filename = safe_filename(filename)
         resp = self.request.response
-        resp.setHeader(
-            "content-type", "text/csv; charset={0}".format(EXPORT_CHARSET))
+        resp.setHeader("content-type", "text/csv; charset={0}".format(EXPORT_CHARSET))
         resp.setHeader("content-disposition", "attachment;filename={}".format(filename))
         return self.get_csv()
 
@@ -349,8 +347,7 @@ class ExportOrdersContextual(BrowserView):
 
         # prepare csv writer
         bio = BytesIO()
-        ex = csv23.writer(bio, dialect="excel-colon",
-                          encoding=EXPORT_CHARSET)
+        ex = csv23.writer(bio, dialect="excel-colon", encoding=EXPORT_CHARSET)
         # exported column keys as first line
         ex.writerow(
             ORDER_EXPORT_ATTRS

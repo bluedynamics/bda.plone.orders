@@ -152,4 +152,4 @@ def save_contact(event):
     """
     order = get_order(event.context, event.uid)
     contact = lookup_contact(event.context, extract_contact(order))
-    order.attrs['contact_uid'] = contact.attrs['uid']
+    order.attrs["contact_uid"] = contact.attrs["uid"]
