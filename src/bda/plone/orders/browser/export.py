@@ -142,51 +142,23 @@ def cleanup_for_csv(value):
     return value
 
 
-class ExportOrdersForm(YAMLForm, BrowserView):
-    browser_template = ViewPageTemplateFile("templates/export.pt")
-    form_template = "bda.plone.orders.browser:forms/orders_export.yaml"
-    message_factory = _
-    action_resource = "exportorders"
-
-    def __call__(self):
-        # check if authenticated user is vendor
-        if not get_vendors_for():
-            raise Unauthorized
-        self.prepare()
-        controller = Controller(self.form, self.request)
-        if not controller.next:
-            self.rendered_form = controller.rendered
-            return self.browser_template(self)
-        return controller.next
-
-    def vendor_vocabulary(self):
-        return vendors_form_vocab()
+class ExportMixin(obejct):
 
     @property
-    def vendor_mode(self):
-        return len(vendors_form_vocab()) > 2 and "edit" or "skip"
-
-    def customer_vocabulary(self):
-        return customers_form_vocab()
+    def vendor(self):
+        raise NotImplementedError()
 
     @property
-    def customer_mode(self):
-        return len(customers_form_vocab()) > 2 and "edit" or "skip"
+    def customer(self):
+        raise NotImplementedError()
 
-    def from_before_to(self, widget, data):
-        from_date = data.fetch("exportorders.from").extracted
-        to_date = data.fetch("exportorders.to").extracted
-        if to_date <= from_date:
-            raise ExtractionError(
-                _("from_date_before_to_date", default=u"From-date after to-date")
-            )
-        return to_date
+    @property
+    def from_date(self):
+        raise NotImplementedError()
 
-    def export(self, widget, data):
-        self.vendor = self.request.form.get("exportorders.vendor")
-        self.customer = self.request.form.get("exportorders.customer")
-        self.from_date = data.fetch("exportorders.from").extracted
-        self.to_date = data.fetch("exportorders.to").extracted
+    @property
+    def to_date(self):
+        raise NotImplementedError()
 
     def export_val(self, record, attr_name):
         """Get attribute from record and cleanup.
@@ -195,7 +167,7 @@ class ExportOrdersForm(YAMLForm, BrowserView):
         val = record.attrs.get(attr_name)
         return cleanup_for_csv(val)
 
-    def csv(self, request):
+    def csv(self):
         # get orders soup
         orders_soup = get_orders_soup(self.context)
         # get bookings soup
@@ -279,6 +251,59 @@ class ExportOrdersForm(YAMLForm, BrowserView):
                 ex.writerow(order_attrs + contact_attrs + booking_attrs)
                 booking.attrs["exported"] = True
                 bookings_soup.reindex(booking)
+        ret = bio.getvalue()
+        bio.close()
+        return ret
+
+
+class ExportOrdersForm(YAMLForm, ExportMixin, BrowserView):
+    browser_template = ViewPageTemplateFile("templates/export.pt")
+    form_template = "bda.plone.orders.browser:forms/orders_export.yaml"
+    message_factory = _
+    action_resource = "exportorders"
+
+    def __call__(self):
+        # check if authenticated user is vendor
+        if not get_vendors_for():
+            raise Unauthorized
+        self.prepare()
+        controller = Controller(self.form, self.request)
+        if not controller.next:
+            self.rendered_form = controller.rendered
+            return self.browser_template(self)
+        return controller.next
+
+    def vendor_vocabulary(self):
+        return vendors_form_vocab()
+
+    @property
+    def vendor_mode(self):
+        return len(vendors_form_vocab()) > 2 and "edit" or "skip"
+
+    def customer_vocabulary(self):
+        return customers_form_vocab()
+
+    @property
+    def customer_mode(self):
+        return len(customers_form_vocab()) > 2 and "edit" or "skip"
+
+    def from_before_to(self, widget, data):
+        from_date = data.fetch("exportorders.from").extracted
+        to_date = data.fetch("exportorders.to").extracted
+        if to_date <= from_date:
+            raise ExtractionError(
+                _("from_date_before_to_date", default=u"From-date after to-date")
+            )
+        return to_date
+
+    def export(self, widget, data):
+        self.vendor = self.request.form.get("exportorders.vendor")
+        self.customer = self.request.form.get("exportorders.customer")
+        self.from_date = data.fetch("exportorders.from").extracted
+        self.to_date = data.fetch("exportorders.to").extracted
+
+    def csv(self, request):
+        ret = super(ExportOrdersForm, self).csv()
         # create and return response
         s_start = self.from_date.strftime("%G-%m-%d_%H-%M-%S")
         s_end = self.to_date.strftime("%G-%m-%d_%H-%M-%S")
@@ -287,8 +312,6 @@ class ExportOrdersForm(YAMLForm, BrowserView):
         self.request.response.setHeader(
             "Content-Disposition", "attachment; filename=%s" % filename
         )
-        ret = bio.getvalue()
-        bio.close()
         return ret
 
 
