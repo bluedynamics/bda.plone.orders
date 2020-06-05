@@ -142,7 +142,7 @@ def cleanup_for_csv(value):
     return value
 
 
-class ExportMixin(obejct):
+class ExportMixin(object):
     @property
     def vendor(self):
         raise NotImplementedError()
