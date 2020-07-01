@@ -18,7 +18,7 @@ import plone.api
 
 
 class InvoiceViewBase(OrderDataView):
-    invoice_prefix = u"INV"
+    invoice_prefix = u""
 
     @property
     def sender(self):
