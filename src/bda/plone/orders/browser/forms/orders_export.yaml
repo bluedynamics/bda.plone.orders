@@ -6,7 +6,7 @@ widgets:
 - row-vendor:
     factory: div
     props:
-        class: "form-row"
+        class: "row"
         structural: True
     widgets:
     - vendor:
@@ -24,7 +24,7 @@ widgets:
 - row-date:
     factory: div
     props:
-        class: "form-row"
+        class: "row"
         structural: True
     widgets:
     - from:
