@@ -29,6 +29,7 @@ from Products.CMFPlone.utils import safe_unicode
 from zope.component.hooks import getSite
 from zope.globalrequest import getRequest
 from zope.i18n import translate
+from decimal import Decimal
 
 import logging
 import os
@@ -117,9 +118,15 @@ def order_item_data(context, booking):
     data["item_number"] = safe_unicode(booking.attrs["item_number"])
     data["comment"] = safe_unicode(booking.attrs["buyable_comment"])
     data["currency"] = safe_unicode(booking.attrs["currency"])
-    data["buyable_count"] = booking.attrs["buyable_count"]
+    data["buyable_count"] = Decimal(booking.attrs["buyable_count"])
+    data["quantity_unit"] = booking.attrs["quantity_unit"]
     data["net"] = booking.attrs["net"]
-    data["discount_net"] = float(booking.attrs["discount_net"])
+    data["net_total"] = booking.attrs["net"] * Decimal(booking.attrs["buyable_count"])
+    data["vat"] = booking.attrs["vat"]
+    data["gross"] = booking.attrs["net"] * (1 + booking.attrs["vat"] / 100)
+    data["gross_total"] = data["gross"] * Decimal(booking.attrs["buyable_count"])
+    data["discount_net"] = Decimal(booking.attrs["discount_net"])
+    data["discount_gross"] = Decimal(booking.attrs["discount_net"]) * (1 + booking.attrs["vat"] / 100)
     data["state"] = state = safe_unicode(booking.attrs.get("state"))
     brain = get_catalog_brain(context, booking.attrs["buyable_uid"])
     buyable = brain.getObject()
