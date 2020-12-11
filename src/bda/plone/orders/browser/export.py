@@ -19,6 +19,7 @@ from bda.plone.orders.contacts import get_contacts_soup
 from bda.plone.orders.datamanagers.order import OrderData
 from bda.plone.orders.interfaces import IBuyable
 from decimal import Decimal
+from io import BytesIO
 from odict import odict
 from plone.uuid.interfaces import IUUID
 from Products.CMFPlone.utils import getToolByName
@@ -29,7 +30,6 @@ from repoze.catalog.query import Any
 from repoze.catalog.query import Eq
 from repoze.catalog.query import Ge
 from repoze.catalog.query import Le
-from io import BytesIO
 from yafowil.base import ExtractionError
 from yafowil.controller import Controller
 from yafowil.plone.form import YAMLForm

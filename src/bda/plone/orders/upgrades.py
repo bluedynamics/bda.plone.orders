@@ -6,8 +6,8 @@ from bda.plone.orders.common import acquire_vendor_or_shop_root
 from bda.plone.orders.common import get_bookings_soup
 from bda.plone.orders.common import get_order
 from bda.plone.orders.common import get_orders_soup
-from bda.plone.orders.contacts import get_contacts_soup
 from bda.plone.orders.contacts import extract_contact
+from bda.plone.orders.contacts import get_contacts_soup
 from bda.plone.orders.contacts import lookup_contact
 from bda.plone.orders.contacts import LOOKUP_QUERY_MAPPING
 from bda.plone.orders.datamanagers.base import calculate_order_salaried

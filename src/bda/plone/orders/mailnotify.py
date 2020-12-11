@@ -14,13 +14,12 @@ from bda.plone.orders.interfaces import IItemNotificationText
 from bda.plone.orders.interfaces import INotificationSettings
 from bda.plone.orders.interfaces import IPaymentText
 from bda.plone.orders.mailtemplates import get_booking_cancelled_templates
-from bda.plone.orders.mailtemplates import (
-    get_booking_reserved_to_ordered_templates,  # noqa
-)
+from bda.plone.orders.mailtemplates import get_booking_reserved_to_ordered_templates
 from bda.plone.orders.mailtemplates import get_order_templates
 from bda.plone.orders.mailtemplates import get_reservation_templates
-from bda.plone.orders.mailtemplates import get_stock_threshold_reached_templates  # noqa
+from bda.plone.orders.mailtemplates import get_stock_threshold_reached_templates
 from chameleon import PageTemplateLoader
+from decimal import Decimal
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.utils import formataddr
@@ -29,7 +28,6 @@ from Products.CMFPlone.utils import safe_unicode
 from zope.component.hooks import getSite
 from zope.globalrequest import getRequest
 from zope.i18n import translate
-from decimal import Decimal
 
 import logging
 import os

@@ -14,6 +14,7 @@ from zope.interface import implementer
 import random
 import uuid
 
+
 CID_GENERATION = {
     # valid range for customer ids
     "min": 1,
