@@ -118,10 +118,10 @@ def order_item_data(context, booking):
     data["currency"] = safe_unicode(booking.attrs["currency"])
     data["buyable_count"] = Decimal(booking.attrs["buyable_count"])
     data["quantity_unit"] = booking.attrs["quantity_unit"]
-    data["net"] = booking.attrs["net"]
-    data["net_total"] = booking.attrs["net"] * Decimal(booking.attrs["buyable_count"])
+    data["net"] = Decimal(booking.attrs["net"])
+    data["net_total"] = Decimal(booking.attrs["net"]) * Decimal(booking.attrs["buyable_count"])
     data["vat"] = booking.attrs["vat"]
-    data["gross"] = booking.attrs["net"] * (1 + booking.attrs["vat"] / 100)
+    data["gross"] = Decimal(booking.attrs["net"]) * (1 + booking.attrs["vat"] / 100)
     data["gross_total"] = data["gross"] * Decimal(booking.attrs["buyable_count"])
     data["discount_net"] = Decimal(booking.attrs["discount_net"])
     data["discount_gross"] = Decimal(booking.attrs["discount_net"]) * (1 + booking.attrs["vat"] / 100)
