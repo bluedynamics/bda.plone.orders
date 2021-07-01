@@ -277,8 +277,8 @@ class BookingsTable(BrowserView):
     def render_buyable_uid(self, colname, record):
         # this actually gets the title of a buyable_uid
         title = record.attrs.get('title', '')
-        bookings_quantity = self.render_bookings_quantity(colname, record)
-        bookings_total_sum = self.render_bookings_total_sum(colname, record)
+        bookings_quantity = self.render_bookings_quantity(colname, record) or u'-/-'
+        bookings_total_sum = self.render_bookings_total_sum(colname, record) or u'-/-'
         value = \
             u'<tr class="group_buyable">' \
             u'<td colspan="13">' + u'<p>' + safe_unicode(title) + u'</p>' +\
@@ -293,7 +293,7 @@ class BookingsTable(BrowserView):
                 _("bookings_total_sum", default=u"Bookings total sum"),
                 self.request
             ) \
-            + u': ' + bookings_total_sum + u'</td></tr>'
+            + u': ' + safe_unicode(bookings_total_sum) + u'</td></tr>'
 
         return value
 
