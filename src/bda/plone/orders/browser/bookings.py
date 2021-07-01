@@ -688,7 +688,7 @@ class BookingsTable(BrowserView):
         if date_query:
             queries.append(date_query)
 
-        req_text = self.request.get('search[value]', '')
+        req_text = safe_unicode(self.request.get('search[value]', u''))
         text_query = self._text_checker(req_text)
         if text_query:
             queries.append(text_query)
