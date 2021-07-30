@@ -14,6 +14,10 @@ from zope.interface import implementer
 import time
 import uuid
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 def create_ordernumber():
     onum = hash(time.time())
@@ -39,6 +43,8 @@ class OrderData(BaseState):
         :param vendor_uids: Vendor uids, used to filter order bookings.
         :type vendor_uids: List of vendor uids as string or uuid.UUID object.
         """
+        # breakpoint()
+        logger.info(f"order.py: uid={uid} order={order}")
         if not (bool(uid) != bool(order)):  # ^= xor
             raise ValueError("Parameters 'uid' and 'order' are mutually exclusive.")
         if uid and not isinstance(uid, uuid.UUID):

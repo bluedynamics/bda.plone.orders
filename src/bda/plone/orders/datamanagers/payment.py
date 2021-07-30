@@ -12,6 +12,10 @@ from zope.interface import implementer
 
 import six
 
+import logging
+
+
+logger = logging.getLogger(__name__)
 
 @implementer(IPaymentData)
 class PaymentData(object):
@@ -20,6 +24,8 @@ class PaymentData(object):
 
     @instance_property
     def order_data(self):
+        logger.info(f"payment.py: order_uid={self.order_uid}")
+        # breakpoint()
         return OrderData(self.context, uid=self.order_uid)
 
     @property
