@@ -119,7 +119,7 @@ def order_item_data(context, booking):
     data["currency"] = safe_unicode(booking.attrs["currency"])
     data["buyable_count"] = booking.attrs["buyable_count"]
     data["net"] = booking.attrs["net"]
-    data["discount_net"] = float(booking.attrs["discount_net"])
+    data["discount_net"] = booking.attrs["discount_net"]
     data["state"] = state = safe_unicode(booking.attrs.get("state"))
     brain = get_catalog_brain(context, booking.attrs["buyable_uid"])
     buyable = brain.getObject()
