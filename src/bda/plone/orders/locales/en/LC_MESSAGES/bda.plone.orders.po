@@ -1156,4 +1156,4 @@ msgstr ""
 #. Default: "Your Order number"
 #: ./browser/templates/order_done.pt:24
 msgid "your_order_order_id"
-msgstr "Your Order number: ${number}"
+msgstr ""
