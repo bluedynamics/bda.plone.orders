@@ -14,13 +14,12 @@ from bda.plone.orders.interfaces import IItemNotificationText
 from bda.plone.orders.interfaces import INotificationSettings
 from bda.plone.orders.interfaces import IPaymentText
 from bda.plone.orders.mailtemplates import get_booking_cancelled_templates
-from bda.plone.orders.mailtemplates import (
-    get_booking_reserved_to_ordered_templates,  # noqa
-)
+from bda.plone.orders.mailtemplates import get_booking_reserved_to_ordered_templates
 from bda.plone.orders.mailtemplates import get_order_templates
 from bda.plone.orders.mailtemplates import get_reservation_templates
-from bda.plone.orders.mailtemplates import get_stock_threshold_reached_templates  # noqa
+from bda.plone.orders.mailtemplates import get_stock_threshold_reached_templates
 from chameleon import PageTemplateLoader
+from decimal import Decimal
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.utils import formataddr
@@ -117,9 +116,15 @@ def order_item_data(context, booking):
     data["item_number"] = safe_unicode(booking.attrs["item_number"])
     data["comment"] = safe_unicode(booking.attrs["buyable_comment"])
     data["currency"] = safe_unicode(booking.attrs["currency"])
-    data["buyable_count"] = booking.attrs["buyable_count"]
-    data["net"] = booking.attrs["net"]
-    data["discount_net"] = booking.attrs["discount_net"]
+    data["buyable_count"] = Decimal(booking.attrs["buyable_count"])
+    data["quantity_unit"] = booking.attrs["quantity_unit"]
+    data["net"] = Decimal(booking.attrs["net"])
+    data["net_total"] = Decimal(booking.attrs["net"]) * Decimal(booking.attrs["buyable_count"])
+    data["vat"] = booking.attrs["vat"]
+    data["gross"] = Decimal(booking.attrs["net"]) * (1 + booking.attrs["vat"] / 100)
+    data["gross_total"] = data["gross"] * Decimal(booking.attrs["buyable_count"])
+    data["discount_net"] = Decimal(booking.attrs["discount_net"])
+    data["discount_gross"] = Decimal(booking.attrs["discount_net"]) * (1 + booking.attrs["vat"] / 100)
     data["state"] = state = safe_unicode(booking.attrs.get("state"))
     brain = get_catalog_brain(context, booking.attrs["buyable_uid"])
     buyable = brain.getObject()

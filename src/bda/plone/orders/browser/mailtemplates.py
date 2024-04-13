@@ -30,7 +30,7 @@ class MailtemplatesView(BrowserView):
         tpllib = IDynamicMailTemplateLibraryStorage(self.context)
         items = []
         for key in tpllib.direct_keys():
-            preview = TEMPLATE(tpllib[key].decode("utf8"), DEFAULT_TEMPLATE_ATTRS)
+            preview = TEMPLATE(tpllib[key], DEFAULT_TEMPLATE_ATTRS)
             items.append({"title": key, "preview": preview})
         return items
 
@@ -50,7 +50,7 @@ class MailtemplatesForm(YAMLForm):
         return value
 
     def validate_tpl(self, widget, data):
-        state, msg = TEMPLATE.validate(data.extracted.decode("utf8"))
+        state, msg = TEMPLATE.validate(data.extracted)
         if not state:
             raise ExtractionError(msg)
         return data.extracted

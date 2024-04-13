@@ -50,9 +50,9 @@ widgets:
                 extractors:
                     - context.from_before_to
 - export:
-    factory: button
+    factory: submit
     props:
-        text: i18n:export:export
+        label: i18n:export:export
         action: export
         handler: context.export
         next: context.csv

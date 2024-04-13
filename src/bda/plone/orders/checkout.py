@@ -4,6 +4,8 @@ from bda.plone.cart.cart import get_data_provider
 from bda.plone.cart.cartitem import get_item_data_provider
 from bda.plone.cart.cartitem import get_item_state
 from bda.plone.cart.cartitem import get_item_stock
+from bda.plone.cart.interfaces import IShippingItem
+from bda.plone.cart.shipping import Shippings
 from bda.plone.cart.utils import get_catalog_brain
 from bda.plone.cart.utils import get_object_by_uid
 from bda.plone.checkout import CheckoutAdapter
@@ -12,13 +14,11 @@ from bda.plone.orders import events
 from bda.plone.orders import interfaces as ifaces
 from bda.plone.orders import message_factory as _
 from bda.plone.orders.common import acquire_vendor_or_shop_root
-from bda.plone.orders.datamanagers.order import calculate_order_state
-from bda.plone.orders.datamanagers.order import create_ordernumber
 from bda.plone.orders.common import get_bookings_soup
 from bda.plone.orders.common import get_orders_soup
+from bda.plone.orders.datamanagers.order import calculate_order_state
+from bda.plone.orders.datamanagers.order import create_ordernumber
 from bda.plone.payment import Payments
-from bda.plone.cart.shipping import Shippings
-from bda.plone.cart.interfaces import IShippingItem
 from decimal import Decimal
 from node.ext.zodb import OOBTNode
 from node.utils import instance_property

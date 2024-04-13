@@ -7,8 +7,6 @@ from zope.annotation import IAnnotations
 from zope.component import queryAdapter
 from zope.interface import implementer
 
-import six
-
 
 ###############################################################################
 # text templates
@@ -716,8 +714,6 @@ class DynamicMailTemplate(object):
         if indict:
             result = {}
             for key, value in indict.items():
-                if isinstance(value, str):
-                    value = value.decode("utf-8")
                 result[key.replace(".", "_")] = value
             return result
         raise ValueError("Only one kwargs please.")

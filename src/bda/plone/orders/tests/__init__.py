@@ -19,8 +19,8 @@ class OrdersLayer(PloneSandboxLayer):
     defaultBases = (PLONE_FIXTURE,)
 
     def setUpZope(self, app, configurationContext):
-        import plone.restapi
         import bda.plone.orders
+        import plone.restapi
 
         self.loadZCML(package=plone.restapi, context=configurationContext)
         self.loadZCML(package=bda.plone.orders, context=configurationContext)
