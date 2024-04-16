@@ -42,6 +42,7 @@ setup(
         "collective.js.datatables",
         "plone.restapi",
         "Products.CMFPlone",
+        "pycountry>=23.12.7",
         "setuptools",
         "simplejson>=2.1",  # able to serialize Decimal
         "six",
