@@ -1,8 +1,8 @@
 Changelog
 =========
 
-2.0.dev0 (unreleased)
----------------------
+2.0b1 (unreleased)
+------------------
 
 - Introduce base class to allow more flexible subclassing for export.
   [jensens]
