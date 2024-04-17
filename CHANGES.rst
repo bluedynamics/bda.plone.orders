@@ -1,7 +1,7 @@
 Changelog
 =========
 
-2.0b2 (unreleased)
+2.0b2 (2024-04-17)
 ------------------
 
 - Add missing compiled resources.
