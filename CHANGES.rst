@@ -4,7 +4,8 @@ Changelog
 2.0b2 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Add missing compiled resources.
+  [petschki]
 
 
 2.0b1 (2024-04-17)

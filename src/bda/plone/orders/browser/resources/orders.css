@@ -2,12 +2,14 @@
   z-index: 0 !important;
   /* render exposeMask BEHIND the overlay */
 }
+
 /* dropdown menu */
 .dropdown {
   padding: 0;
   margin: 0;
   position: relative;
 }
+
 .dropdown_items {
   display: none;
   position: absolute;
@@ -26,10 +28,12 @@
   -webkit-border-radius: 3px;
   -o-border-radius: 3px;
 }
+
 .dropdown_items li {
   margin: 0;
   padding-left: 5px;
 }
+
 .dropdown_items li a {
   text-decoration: none;
   border: none !important;
@@ -37,145 +41,165 @@
   padding-bottom: 2px;
   line-height: 16px;
 }
+
 .dropdown_header {
   cursor: pointer;
 }
+
 /* orders filter and bookings filter */
 #orders_wrapper .filter,
 #bookings_wrapper .filter {
   padding: 0.3em;
 }
-#orders_wrapper .filter:before,
-#bookings_wrapper .filter:before,
-#orders_wrapper .filter:after,
-#bookings_wrapper .filter:after {
-  content: " ";
-  display: table;
-}
-#orders_wrapper .filter:after,
-#bookings_wrapper .filter:after {
-  clear: both;
-}
+
 #orders_wrapper .filter > div,
 #bookings_wrapper .filter > div {
   float: left;
   margin-right: 1em;
 }
+
 #orders_wrapper .filter label,
 #bookings_wrapper .filter label {
   margin-right: 0.5em;
   padding-top: 3px;
   display: inline-block;
 }
+
 #orders_wrapper .filter select,
 #bookings_wrapper .filter select {
   margin-right: 0.5em;
   width: unset;
   display: unset;
 }
+
 /* orders */
 #bdaploneorders_wrapper {
   margin-top: 1em;
   margin-bottom: 2.2em;
 }
+
 #bdaploneorders_length {
   margin-bottom: 0.8em;
 }
+
 #bdaploneorders_length select,
 #bdaploneorders_filter input {
   font-size: 90%;
   width: unset;
   display: unset;
 }
+
 #bdaploneorders_filter {
   margin-top: 0.25em;
 }
+
 #bdaploneorders {
   margin-bottom: 1em;
   border: #ddd 1px solid;
-  width: 100%!important;
+  width: 100% !important;
 }
+
 #bdaploneorders thead {
   background-color: #fafafa;
 }
+
 #bdaploneorders th {
   border-right: #ddd 1px solid;
   border-bottom: #ddd 1px solid;
 }
+
 #bdaploneorders th.datarow-actions {
   width: 120px;
 }
+
 #bdaploneorders td {
   padding: 1px 3px 1px 10px;
   border-right: #ddd 1px solid;
 }
+
 #bdaploneorders a.contenttype-document {
   border: none !important;
 }
+
 #bdaploneorders_paginate a:hover {
   color: #fff !important;
 }
+
 input.select_all_orders,
 input.select_order {
   position: relative;
   top: 2px;
 }
+
 a.notify_customers {
   border-bottom: none !important;
   display: inline-block;
   line-height: 16px;
   padding-left: 20px !important;
-  background: url('++resource++bda.plone.orders/notify_customers.png') 4px 0px no-repeat;
+  background: url("++resource++bda.plone.orders/notify_customers.png") 4px 0px no-repeat;
 }
+
 /* orders filter */
 #form-ordersfilter label {
   margin-right: 0.5em;
 }
+
 #form-ordersfilter select,
 #form-ordersfilter input {
   margin-right: 1em;
 }
+
 /* bookings */
 #bdaplonebookings_wrapper {
   margin-top: 1em;
   margin-bottom: 2.2em;
 }
+
 #bdaplonebookings_length {
   margin-bottom: 0.8em;
 }
+
 #bdaplonebookings_length select,
 #bdaplonebookings_filter input {
   font-size: 90%;
 }
+
 #bdaplonebookings {
   margin-bottom: 1em;
   border: #ddd 1px solid;
 }
+
 #bdaplonebookings_wrapper div.group_filter {
   margin-left: 3em;
 }
+
 #bdaplonebookings_wrapper div.group_filter,
 #bdaplonebookings_wrapper div.date_from_filter,
 #bdaplonebookings_wrapper div.date_to_filter {
   float: left;
   margin-right: 3em;
 }
+
 #bdaplonebookings thead {
   background-color: #fafafa;
 }
+
 #bdaplonebookings th {
   border-right: #ddd 1px solid;
   border-bottom: #ddd 1px solid;
 }
+
 #bdaplonebookings th.datarow-actions {
   width: 120px;
 }
+
 #bdaplonebookings tr.group_email,
 #bdaplonebookings tr.group_email:hover,
 #bdaplonebookings tr.group_buyable,
 #bdaplonebookings tr.group_buyable:hover {
   background-color: #ddd !important;
 }
+
 #bdaplonebookings tr.group_email td p,
 #bdaplonebookings tr.group_buyable td p {
   margin-bottom: 0;
@@ -183,6 +207,7 @@ a.notify_customers {
   min-width: 18em;
   width: 18em;
 }
+
 #bdaplonebookings tr.group_email span,
 #bdaplonebookings tr.group_buyable span {
   min-width: 18em;
@@ -190,114 +215,143 @@ a.notify_customers {
   float: left;
   margin-left: 7em;
 }
+
 #bdaplonebookings td {
   padding: 1px 3px 1px 10px;
   border-right: #ddd 1px solid;
 }
+
 #bdaplonebookings a.contenttype-document {
   border: none !important;
 }
+
 #bdaplonebookings_paginate a:hover {
   color: #fff !important;
 }
+
 /* end rules for new bookingstable */
 /* export form */
 #field-exportorders-from,
 #field-exportorders-to {
   margin: 0.4em;
 }
+
 /* mail templates */
 #array-notify_customers-array table {
   width: 100%;
 }
+
 /* notification form */
 #form-notify_customers {
   margin: 2em;
 }
+
 /* order state colors */
 .state-value-reserved {
   color: #00b400;
 }
+
 .state-value-new {
   color: #ffcc00;
 }
+
 .state-value-finished {
   color: #1600e5;
 }
+
 .state-value-cancelled {
   color: #e50000;
 }
+
 /* order salaried colors */
 .salaried-value-yes {
   color: #1600e5;
 }
+
 .salaried-value-no {
   color: #ffcc00;
 }
+
 .salaried-value-failed {
   color: #e50000;
 }
+
 /* protected order data */
 .protected_order_data form {
   display: table;
   border-spacing: 1em;
 }
+
 .protected_order_data form > div {
   display: table-row;
 }
+
 .protected_order_data form label {
   display: table-cell;
 }
+
 .protected_order_data form div.error,
 .protected_order_data form input {
   display: table-cell;
 }
+
 .protected_order_data form div.submit label {
   color: transparent;
 }
+
 .protected_order_data form div.submit input {
   float: right;
 }
+
 /* order */
 .order_details {
   padding: 1.2em;
 }
+
 .order_details .qr_code {
   position: absolute;
   right: 1em;
   top: 1em;
 }
+
 .order_details_row {
   display: table-row;
 }
+
 .order_details_row div {
   display: table-cell;
   width: 380px;
   padding: 0.4em;
 }
+
 .booking_comment_spinner {
   display: none;
 }
-input[type="text"].booking_comment_edit {
+
+input[type=text].booking_comment_edit {
   display: inline-block;
   width: 10em;
   height: unset;
   font-size: unset;
   padding: 0 0.5em;
 }
+
 .order_bookings {
   padding: 0 0.4em 0.4em 0.4em;
 }
+
 .order_bookings h3 {
   margin-top: 0.8em;
   margin-bottom: 0.3em;
 }
+
 .order_bookings table {
   width: 100%;
   border: #ddd 1px solid;
   border-spacing: 0;
   border-collapse: collapse;
 }
+
 .order_bookings table th {
   padding: 5px 3px 5px 1em;
   text-align: left;
@@ -306,118 +360,143 @@ input[type="text"].booking_comment_edit {
   border-bottom: #ddd 1px solid;
   font-weight: bold;
 }
+
 .order_bookings table td {
   padding: 5px 3px 5px 1em;
   border-right: #ddd 1px solid;
 }
+
 .order_bookings tr.odd td {
   background-color: #fbfbfb;
 }
+
 /* invoice */
 .invoice_overlay {
-  width:60%;
-  min-width:800px;
-  min-width:1200px;
-  padding:2em;
-  margin-bottom:2em;
+  width: 60%;
+  min-width: 800px;
+  min-width: 1200px;
+  padding: 2em;
+  margin-bottom: 2em;
 }
+
 .invoice .print {
-  position:absolute;
-  top:2em;
-  right:2em;
+  position: absolute;
+  top: 2em;
+  right: 2em;
 }
+
 .invoice .invoice_title {
-  text-align:center;
+  text-align: center;
 }
+
 .invoice .invoice_sender {
-  width:30%;
-  float:right;
+  width: 30%;
+  float: right;
 }
+
 .invoice .invoice_receiver {
-  clear:both;
-  padding-top:2em;
-  padding-bottom:2em;
+  clear: both;
+  padding-top: 2em;
+  padding-bottom: 2em;
 }
+
 .invoice .invoice_number {
-  float:left;
-  margin-bottom:1em;
+  float: left;
+  margin-bottom: 1em;
 }
+
 .invoice .invoice_date {
-  float:right;
-  margin-top:1.2em;
+  float: right;
+  margin-top: 1.2em;
 }
+
 .invoice .invoice_listing {
-  clear:both;
-  display:table;
-  border-collapse:collapse;
-  width:100%;
+  clear: both;
+  display: table;
+  border-collapse: collapse;
+  width: 100%;
 }
+
 .invoice .invoice_listing_head {
-  display:table-row;
-  border-top:#333 1px solid;
-  border-bottom:#333 1px solid;
+  display: table-row;
+  border-top: #333 1px solid;
+  border-bottom: #333 1px solid;
 }
+
 .invoice .invoice_listing_item {
-  display:table-row;
-  border-bottom:#333 1px solid;
+  display: table-row;
+  border-bottom: #333 1px solid;
 }
+
 .invoice .invoice_listing_amount,
 .invoice .invoice_listing_position,
 .invoice .invoice_listing_price {
-  display:table-cell;
-  padding-top:0.3em;
-  padding-bottom:0.3em;
+  display: table-cell;
+  padding-top: 0.3em;
+  padding-bottom: 0.3em;
 }
+
 .invoice .invoice_listing_amount {
   width: 12%;
 }
+
 .invoice .invoice_listing_price {
-  text-align:right;
+  text-align: right;
   width: 24%;
 }
+
 .invoice .original_price {
-  float:left;
+  float: left;
   color: red;
   text-decoration: line-through;
 }
+
 .invoice .invoice_summary {
-  width:30%;
-  float:right;
-  margin-top:2em;
+  width: 30%;
+  float: right;
+  margin-top: 2em;
 }
+
 .invoice .invoice_summary_section {
-  display:table;
-  width:100%;
-  border-bottom:#333 1px solid;
-  padding-top:0.5em;
-  padding-bottom:0.5em;
+  display: table;
+  width: 100%;
+  border-bottom: #333 1px solid;
+  padding-top: 0.5em;
+  padding-bottom: 0.5em;
 }
+
 .invoice .invoice_summary_row {
-  display:table-row;
+  display: table-row;
 }
+
 .invoice .invoice_summary_label {
-  display:table-cell;
-  padding-top:0.1em;
-  padding-bottom:0.1em;
+  display: table-cell;
+  padding-top: 0.1em;
+  padding-bottom: 0.1em;
 }
+
 .invoice .invoice_summary_value {
-  display:table-cell;
-  padding-top:0.1em;
-  padding-bottom:0.1em;
-  text-align:right;
+  display: table-cell;
+  padding-top: 0.1em;
+  padding-bottom: 0.1em;
+  text-align: right;
 }
+
 .invoice .invoice_summary .red {
   color: red;
 }
+
 .invoice .invoice_bank_connection {
-  clear:both;
+  clear: both;
 }
+
 .invoice .invoice_footer {
-  margin-top:2em;
+  margin-top: 2em;
 }
+
 /* print styles */
 @media print {
-  /* rules for bookingstable  print preview */
+  /* rules for bookingstable - print preview */
   #bookings_wrapper .customfilter label,
   #bookings_wrapper #bdaplonebookings_filter label,
   #bookings_wrapper #bdaplonebookings_length label {
@@ -495,4 +574,5 @@ input[type="text"].booking_comment_edit {
     display: none;
   }
 }
-/*# sourceMappingURL=++resource++bda.plone.orders.css.map */
+
+/*# sourceMappingURL=orders.css.map */
