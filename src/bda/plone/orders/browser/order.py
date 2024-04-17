@@ -126,10 +126,11 @@ class ProtectedOrderDataView(ContentTemplateView):
             },
         )
         form["submit"] = factory(
-            "div:label:submit",
+            "button",
             props={
-                "label": _("anon_auth_label_submit", default=u"Submit"),
-                "div.class": "submit",
+                "type": "submit",
+                "text": _("anon_auth_label_submit", default=u"Submit"),
+                "class": "btn btn-secondary mt-3",
                 "handler": self._form_handler,
                 "action": "submit",
             },

@@ -438,12 +438,12 @@ def fix_order_contact_uid(ctx=None):
     data = soup.storage.data
     need_rebuild = False
     for order in data.values():
-        if not order.attrs.get('contact_uid', None):
+        if not order.attrs.get("contact_uid", None):
             contact = lookup_contact(portal, extract_contact(order))
             if contact:
-                order.attrs['contact_uid'] = contact.attrs['uid']
+                order.attrs["contact_uid"] = contact.attrs["uid"]
             else:
-                order.attrs['contact_uid'] = ''
+                order.attrs["contact_uid"] = ""
             need_rebuild = True
             logging.info(u"Added contact_uid to order {0}".format(order.attrs["uid"]))
     if need_rebuild:

@@ -142,7 +142,105 @@ def cleanup_for_csv(value):
     return value
 
 
-class ExportOrdersForm(YAMLForm, BrowserView):
+class ExportMixin(object):
+
+    def export_val(self, record, attr_name):
+        """Get attribute from record and cleanup.
+        Since the record object is available, you can return aggregated values.
+        """
+        val = record.attrs.get(attr_name)
+        return cleanup_for_csv(val)
+
+    def csv(self):
+        # get orders soup
+        orders_soup = get_orders_soup(self.context)
+        # get bookings soup
+        bookings_soup = get_bookings_soup(self.context)
+        # get contacts soup
+        contacts_soup = get_contacts_soup(self.context)
+        # fetch user vendor uids
+        vendor_uids = get_vendor_uids_for()
+        # base query for time range
+        query = Ge("created", self.from_date) & Le("created", self.to_date)
+        # filter by given vendor uid or user vendor uids
+        vendor_uid = self.vendor
+        if vendor_uid:
+            vendor_uid = uuid.UUID(vendor_uid)
+            # raise if given vendor uid not in user vendor uids
+            if vendor_uid not in vendor_uids:
+                raise Unauthorized
+            query = query & Any("vendor_uids", [vendor_uid])
+        else:
+            query = query & Any("vendor_uids", vendor_uids)
+        # filter by customer if given
+        customer = self.customer
+        if customer:
+            query = query & Eq("creator", customer)
+        # prepare csv writer
+        bio = BytesIO()
+        ex = csv23.writer(bio, dialect="excel-colon", encoding=EXPORT_CHARSET)
+        # exported column keys as first line
+        ex.writerow(
+            ORDER_EXPORT_ATTRS
+            + list(COMPUTED_ORDER_EXPORT_ATTRS.keys())
+            + CONTACT_EXPORT_ATTRS
+            + list(COMPUTED_CONTACT_EXPORT_ATTRS.keys())
+            + BOOKING_EXPORT_ATTRS
+            + list(COMPUTED_BOOKING_EXPORT_ATTRS.keys())
+        )
+        # query orders
+        for order in orders_soup.query(query):
+            # restrict order bookings for current vendor_uids
+            order_data = OrderData(self.context, order=order, vendor_uids=vendor_uids)
+            order_attrs = list()
+            # order export attrs
+            for attr_name in ORDER_EXPORT_ATTRS:
+                val = self.export_val(order, attr_name)
+                order_attrs.append(val)
+            # computed order export attrs
+            for attr_name in COMPUTED_ORDER_EXPORT_ATTRS:
+                cb = COMPUTED_ORDER_EXPORT_ATTRS[attr_name]
+                val = cb(self.context, order_data)
+                val = cleanup_for_csv(val)
+                order_attrs.append(val)
+            if CONTACT_EXPORT_ATTRS:
+                contact_attrs = list()
+                contact = list(
+                    contacts_soup.query(Eq("uid", order.attrs["contact_uid"]))
+                )
+                if contact:
+                    # contact export attrs
+                    for attr_name in CONTACT_EXPORT_ATTRS:
+                        val = self.export_val(contact[0], attr_name)
+                        contact_attrs.append(val)
+                    # computed contact export attrs
+                    for attr_name in COMPUTED_CONTACT_EXPORT_ATTRS:
+                        cb = COMPUTED_CONTACT_EXPORT_ATTRS[attr_name]
+                        val = cb(self.context, contact[0])
+                        val = cleanup_for_csv(val)
+                        contact_attrs.append(val)
+
+            for booking in order_data.bookings:
+                booking_attrs = list()
+                # booking export attrs
+                for attr_name in BOOKING_EXPORT_ATTRS:
+                    val = self.export_val(booking, attr_name)
+                    booking_attrs.append(val)
+                # computed booking export attrs
+                for attr_name in COMPUTED_BOOKING_EXPORT_ATTRS:
+                    cb = COMPUTED_BOOKING_EXPORT_ATTRS[attr_name]
+                    val = cb(self.context, booking)
+                    val = cleanup_for_csv(val)
+                    booking_attrs.append(val)
+                ex.writerow(order_attrs + contact_attrs + booking_attrs)
+                booking.attrs["exported"] = True
+                bookings_soup.reindex(booking)
+        ret = bio.getvalue()
+        bio.close()
+        return ret
+
+
+class ExportOrdersForm(YAMLForm, ExportMixin, BrowserView):
     browser_template = ViewPageTemplateFile("templates/export.pt")
     form_template = "bda.plone.orders.browser:forms/orders_export.yaml"
     message_factory = _
@@ -188,97 +286,8 @@ class ExportOrdersForm(YAMLForm, BrowserView):
         self.from_date = data.fetch("exportorders.from").extracted
         self.to_date = data.fetch("exportorders.to").extracted
 
-    def export_val(self, record, attr_name):
-        """Get attribute from record and cleanup.
-        Since the record object is available, you can return aggregated values.
-        """
-        val = record.attrs.get(attr_name)
-        return cleanup_for_csv(val)
-
     def csv(self, request):
-        # get orders soup
-        orders_soup = get_orders_soup(self.context)
-        # get bookings soup
-        bookings_soup = get_bookings_soup(self.context)
-        # get contacts soup
-        contacts_soup = get_contacts_soup(self.context)
-        # fetch user vendor uids
-        vendor_uids = get_vendor_uids_for()
-        # base query for time range
-        query = Ge("created", self.from_date) & Le("created", self.to_date)
-        # filter by given vendor uid or user vendor uids
-        vendor_uid = self.vendor
-        if vendor_uid:
-            vendor_uid = uuid.UUID(vendor_uid)
-            # raise if given vendor uid not in user vendor uids
-            if vendor_uid not in vendor_uids:
-                raise Unauthorized
-            query = query & Any("vendor_uids", [vendor_uid])
-        else:
-            query = query & Any("vendor_uids", vendor_uids)
-        # filter by customer if given
-        customer = self.customer
-        if customer:
-            query = query & Eq("creator", customer)
-        # prepare csv writer
-        bio = BytesIO()
-        ex = csv23.writer(bio, dialect="excel-colon",
-                          encoding=EXPORT_CHARSET)
-        # exported column keys as first line
-        ex.writerow(
-            ORDER_EXPORT_ATTRS
-            + list(COMPUTED_ORDER_EXPORT_ATTRS.keys())
-            + CONTACT_EXPORT_ATTRS
-            + list(COMPUTED_CONTACT_EXPORT_ATTRS.keys())
-            + BOOKING_EXPORT_ATTRS
-            + list(COMPUTED_BOOKING_EXPORT_ATTRS.keys())
-        )
-        # query orders
-        for order in orders_soup.query(query):
-            # restrict order bookings for current vendor_uids
-            order_data = OrderData(self.context, order=order, vendor_uids=vendor_uids)
-            order_attrs = list()
-            # order export attrs
-            for attr_name in ORDER_EXPORT_ATTRS:
-                val = self.export_val(order, attr_name)
-                order_attrs.append(val)
-            # computed order export attrs
-            for attr_name in COMPUTED_ORDER_EXPORT_ATTRS:
-                cb = COMPUTED_ORDER_EXPORT_ATTRS[attr_name]
-                val = cb(self.context, order_data)
-                val = cleanup_for_csv(val)
-                order_attrs.append(val)
-            if CONTACT_EXPORT_ATTRS:
-                contact_attrs = list()
-                contact = list(contacts_soup.query(
-                    Eq("uid", order.attrs['contact_uid'])))
-                if contact:
-                    # contact export attrs
-                    for attr_name in CONTACT_EXPORT_ATTRS:
-                        val = self.export_val(contact[0], attr_name)
-                        contact_attrs.append(val)
-                    # computed contact export attrs
-                    for attr_name in COMPUTED_CONTACT_EXPORT_ATTRS:
-                        cb = COMPUTED_CONTACT_EXPORT_ATTRS[attr_name]
-                        val = cb(self.context, contact[0])
-                        val = cleanup_for_csv(val)
-                        contact_attrs.append(val)
-
-            for booking in order_data.bookings:
-                booking_attrs = list()
-                # booking export attrs
-                for attr_name in BOOKING_EXPORT_ATTRS:
-                    val = self.export_val(booking, attr_name)
-                    booking_attrs.append(val)
-                # computed booking export attrs
-                for attr_name in COMPUTED_BOOKING_EXPORT_ATTRS:
-                    cb = COMPUTED_BOOKING_EXPORT_ATTRS[attr_name]
-                    val = cb(self.context, booking)
-                    val = cleanup_for_csv(val)
-                    booking_attrs.append(val)
-                ex.writerow(order_attrs + contact_attrs + booking_attrs)
-                booking.attrs["exported"] = True
-                bookings_soup.reindex(booking)
+        ret = super(ExportOrdersForm, self).csv()
         # create and return response
         s_start = self.from_date.strftime("%G-%m-%d_%H-%M-%S")
         s_end = self.to_date.strftime("%G-%m-%d_%H-%M-%S")
@@ -287,8 +296,6 @@ class ExportOrdersForm(YAMLForm, BrowserView):
         self.request.response.setHeader(
             "Content-Disposition", "attachment; filename=%s" % filename
         )
-        ret = bio.getvalue()
-        bio.close()
         return ret
 
 
@@ -309,8 +316,7 @@ class ExportOrdersContextual(BrowserView):
         )
         filename = safe_filename(filename)
         resp = self.request.response
-        resp.setHeader(
-            "content-type", "text/csv; charset={0}".format(EXPORT_CHARSET))
+        resp.setHeader("content-type", "text/csv; charset={0}".format(EXPORT_CHARSET))
         resp.setHeader("content-disposition", "attachment;filename={}".format(filename))
         return self.get_csv()
 
@@ -326,8 +332,7 @@ class ExportOrdersContextual(BrowserView):
 
         # prepare csv writer
         bio = BytesIO()
-        ex = csv23.writer(bio, dialect="excel-colon",
-                          encoding=EXPORT_CHARSET)
+        ex = csv23.writer(bio, dialect="excel-colon", encoding=EXPORT_CHARSET)
         # exported column keys as first line
         ex.writerow(
             ORDER_EXPORT_ATTRS

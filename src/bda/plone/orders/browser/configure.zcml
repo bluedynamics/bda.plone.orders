@@ -4,38 +4,11 @@
            xmlns:zcml="http://namespaces.zope.org/zcml">
 
   <!-- generic resources -->
-  <browser:resource
-    name="qrcode.js"
-    file="resources/qrcode.js"
-    layer="..interfaces.IOrdersExtensionLayer" />
-
-  <browser:resource
-    name="bda.plone.orders.js"
-    file="resources/orders.js"
-    layer="..interfaces.IOrdersExtensionLayer" />
-
-  <!-- resources directory -->
-  <!-- XXX: later needed for icons only -->
   <browser:resourceDirectory
     name="bda.plone.orders"
     directory="resources"
     layer="..interfaces.IOrdersExtensionLayer" />
 
-  <!-- resources -->
-  <browser:resource
-    name="bda.plone.orders.less"
-    file="resources/orders.less"
-    layer="..interfaces.IOrdersExtensionLayer" />
-
-  <browser:resource
-    name="bda.plone.orders.css"
-    file="resources/orders.css"
-    layer="..interfaces.IOrdersExtensionLayer" />
-
-  <browser:resource
-    name="bda.plone.orders.css.map"
-    file="resources/orders.css.map"
-    layer="..interfaces.IOrdersExtensionLayer" />
 
   <!-- bookings.py ######################################################## -->
 

@@ -12,8 +12,14 @@
     description="bda.plone.orders"
     provides="Products.GenericSetup.interfaces.EXTENSION" />
 
+  <genericsetup:registerProfile
+    name="uninstall"
+    title="bda.plone.orders (uninstall profile)"
+    directory="profiles/uninstall"
+    description="Uninstall bda.plone.orders"
+    provides="Products.GenericSetup.interfaces.EXTENSION" />
+
   <!-- Hide profiles/products from Quick Installer -->
   <utility factory=".setuphandlers.HiddenProfiles" name="bda.plone.orders" />
-  <utility factory=".setuphandlers.HiddenProducts" name="bda.plone.orders" />
 
 </configure>

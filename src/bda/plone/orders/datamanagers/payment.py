@@ -37,7 +37,9 @@ class PaymentData(object):
         order = self.order_data.order
         attrs = order.attrs
         if six.PY2:
-            amount = safe_encode("%s %s" % (self.currency, str(round(self.order_data.total, 2))))
+            amount = safe_encode(
+                "%s %s" % (self.currency, str(round(self.order_data.total, 2)))
+            )
         else:
             amount = "%s %s" % (self.currency, str(round(self.order_data.total, 2)))
         description = ", ".join(

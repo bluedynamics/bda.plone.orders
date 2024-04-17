@@ -8,8 +8,6 @@ from Products.Five import BrowserView
 from yafowil.base import ExtractionError
 from yafowil.plone.form import YAMLForm
 
-import six
-
 
 TEMPLATE = DynamicMailTemplate(
     required=REQUIRED_TEMPLATE_ATTRS, defaults=DEFAULT_TEMPLATE_ATTRS
@@ -32,10 +30,7 @@ class MailtemplatesView(BrowserView):
         tpllib = IDynamicMailTemplateLibraryStorage(self.context)
         items = []
         for key in tpllib.direct_keys():
-            if six.PY2:
-                preview = TEMPLATE(tpllib[key].decode("utf8"), DEFAULT_TEMPLATE_ATTRS)
-            else:
-                preview = TEMPLATE(tpllib[key], DEFAULT_TEMPLATE_ATTRS)
+            preview = TEMPLATE(tpllib[key], DEFAULT_TEMPLATE_ATTRS)
             items.append({"title": key, "preview": preview})
         return items
 
@@ -55,10 +50,7 @@ class MailtemplatesForm(YAMLForm):
         return value
 
     def validate_tpl(self, widget, data):
-        if six.PY2:
-            state, msg = TEMPLATE.validate(data.extracted.decode("utf8"))
-        else:
-            state, msg = TEMPLATE.validate(data.extracted)
+        state, msg = TEMPLATE.validate(data.extracted)
         if not state:
             raise ExtractionError(msg)
         return data.extracted

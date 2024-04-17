@@ -1,8 +1,11 @@
 Changelog
 =========
 
-2.0.dev0 (unreleased)
----------------------
+2.0b1 (unreleased)
+------------------
+
+- Introduce base class to allow more flexible subclassing for export.
+  [jensens]
 
 - Use csv23 for py2/3 csv export.
   Make export charset configurable.

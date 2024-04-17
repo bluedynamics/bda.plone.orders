@@ -19,7 +19,6 @@ from zope.component.interfaces import ISite
 from zope.i18n import translate
 
 import json
-import six
 
 
 def mail_gender_vocab():
@@ -73,10 +72,7 @@ class NotifyCustomers(YAMLBaseForm):
     def validate_tpl(self, widget, data):
         if not data.extracted:
             return data.extracted
-        if six.PY2:
-            state, msg = TEMPLATE.validate(data.extracted.decode("utf8"))
-        else:
-            state, msg = TEMPLATE.validate(data.extracted)
+        state, msg = TEMPLATE.validate(data.extracted)
         if not state:
             raise ExtractionError(msg)
         return data.extracted
@@ -112,13 +108,8 @@ class NotifyCustomers(YAMLBaseForm):
         notifier.send(subject, order.attrs["personal_data.email"], body)
 
     def send(self, widget, data):
-        if six.PY2:
-            tpl = data["text"].extracted.decode("utf8")
-            subject = data["subject"].extracted.decode("utf8")
-        else:
-            tpl = data["text"].extracted
-            subject = data["subject"].extracted
-
+        tpl = data["text"].extracted
+        subject = data["subject"].extracted
         notifier = MailNotify(self.context)
         for uid in self.request.form.get("uids", []):
             if not uid:

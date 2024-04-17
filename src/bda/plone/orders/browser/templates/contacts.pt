@@ -18,9 +18,11 @@
       <div class="ajaxtable"
            tal:attributes="data-tablename view/__name__">
 
-        <h1 class="documentFirstHeading" i18n:translate="contacts">
-          Contacts
-        </h1>
+        <header>
+          <h1 class="documentFirstHeading" i18n:translate="contacts">
+            Contacts
+          </h1>
+        </header>
 
         <table tal:define="ajaxurl view/ajaxurl;
                            columns view/columns"
