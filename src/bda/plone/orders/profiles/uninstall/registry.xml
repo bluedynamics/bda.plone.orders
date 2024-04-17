@@ -1,0 +1,6 @@
+<registry>
+
+  <records prefix="plone.bundles/qrcode" interface='Products.CMFPlone.interfaces.IBundleRegistry' remobe="true" />
+  <records prefix="plone.bundles/bda-plone-orders" interface='Products.CMFPlone.interfaces.IBundleRegistry' remove="true" />
+
+</registry>
