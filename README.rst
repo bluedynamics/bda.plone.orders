@@ -1,4 +1,3 @@
-================
 bda.plone.orders
 ================
 
@@ -8,16 +7,15 @@ bda.plone.orders
 .. image:: https://travis-ci.org/bluedynamics/bda.plone.orders.svg?branch=master
     :target: https://travis-ci.org/bluedynamics/bda.plone.orders
 
-Installation
-============
+Shop order storage and management.
 
-This package is part of the `bda.plone.shop`_ stack. Please refer to
-https://github.com/bluedynamics/bda.plone.shop for installation
-instructions.
+This package is part of the ``bda.plone.shop`` stack. Please refer to
+`bda.plone.shop <https://github.com/bluedynamics/bda.plone.shop>`_ for
+installation instructions.
 
 
 Integration notes
-=================
+-----------------
 
 - The order actions are done with background images in CSS, so if you have your
   own theme that is not based on Sunburst, you will have to add the "icons.on"
@@ -25,7 +23,7 @@ Integration notes
 
 
 Customizing Orders
-==================
+------------------
 
 If you've added custom fields to the checkout (see
 `bda.plone.checkout`_), chances are high you want to add them to the
@@ -48,7 +46,7 @@ After that you can start customizing the order process:
 
 
 Mail notifications
-------------------
+~~~~~~~~~~~~~~~~~~
 
 Order related notification is done by sending multipart mails containing a
 text and a HTML version of the notification payload.
@@ -65,7 +63,7 @@ WARNING:
 
 
 HTML Templates
-~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^
 
 Default HTML templates are located at ``bda.plone.orders:mailtemplates``.
 To customize them, copy the entire template folder to your integration package
@@ -83,7 +81,7 @@ and patch ``bda.plone.orders.mailnotify.MAIL_TEMPLATES_DIRECTORY`` like so:
 
 
 Text Templates
-~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^
 
 Copy the messages you need to customize from
 ``bda.plone.orders.mailtemplates`` and change the text to your needs.
@@ -109,7 +107,7 @@ added in version 0.4 are present.)
 
 
 Customize notification mechanism
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Alternativly you add/replace the notification methods and implement your
 own very custom. To do provide your own two functions similar to
@@ -131,7 +129,7 @@ own very custom. To do provide your own two functions similar to
 
 
 Order Export
-------------
+~~~~~~~~~~~~
 
 To make a new field show up in the export, just add it to the
 list ``ORDER_EXPORT_ATTRS``.
@@ -149,7 +147,7 @@ customizing ``bda.plone.checkout`` right after the company name:
 
 
 Order details
--------------
+~~~~~~~~~~~~~
 
 To show the data of the new field in the detail view of the order
 customize ``bda/plone/orders/browser/templates/order.pt`` using
@@ -175,7 +173,7 @@ WARNING:
 
 
 Invoice view
-------------
+~~~~~~~~~~~~
 
 The invoice template is ``bda/plone/orders/browser/templates/invoice.pt``.
 It can be customized via `z3c.jbot <https://pypi.python.org/pypi/z3c.jbot>`_ or
@@ -194,14 +192,14 @@ themelayer:
 
 
 Restrictions with souper.plone
-==============================
+------------------------------
 
 - Make sure you do not move orders or bookings soup away from portal root. This
   will end up in unexpected behavior and errors.
 
 
 Vendor support
-==============
+--------------
 
 ``bda.plone.orders`` supports the concept of vendors. A vendor is able to
 manage his products and view orders and booking related to this products.
@@ -216,7 +214,7 @@ and perform order related actions in the context of this container.
 
 
 Permissions
-===========
+-----------
 
 In general, custom shop deployments are likely to configure the permission and role settings according to their use cases.
 
@@ -326,7 +324,7 @@ Following as listing of the permissions and its purpose:
 
 
 How To allow anonymous users to buy items
-=========================================
+-----------------------------------------
 
 In your Generic Setup's profile, add to ``rolemap.xml``:
 
@@ -362,7 +360,7 @@ In your Generic Setup's profile, add to ``rolemap.xml``:
 
 
 REST-API
-========
+--------
 
 There is a REST API available.
 It is based on `plone.rest <https://pypi.org/project/plone.rest/>`_ endpoints.
@@ -377,7 +375,7 @@ GET ``@shop-order/${ORDER-UID}``
 
 
 Create translations
-===================
+-------------------
 
 ::
 
@@ -385,72 +383,8 @@ Create translations
     $ ./i18n.sh
 
 
-TODO
-====
-
-- Fix bookings views filters.
-
-- Store cart and item discount rules in checkout adapter instead of actual
-  discount values in order to reliably modify orders while keeping invoice and
-  order summary views sane.
-
-- Rename salaried to paid all over the place.
-
-- Icons in orders view actions.
-
-- Icons in contacts view actions.
-
-- Overhaul order view. Display discounted item price, etc.
-
-- Think about adding notification text to booking data in checkout adapter if
-  we want to display related text in invoice.
-
-- Add vendor support to invoices.
-
-- Properly implement initially non-billable bookings. Add a flag
-  ``charge_if_backorder`` to ``IStockBehavior``, so we have control per buyable
-  item, and a control panel setting with the default of this value
-  for all buyables. Implement UI to carry back unbilled backorders. Adopt order
-  and invoive views (Issue #45).
-
-- Adopt text notification mail generation to mako templates and move existing
-  text mail generation to legacy module, with flag to switch between old and
-  new style text generation. As fallback add transformation of HTML mail to
-  plain text version.
-  (https://github.com/collective/Products.EasyNewsletter/blob/master/Products/EasyNewsletter/utils/mail.py#L112)
-
-- @@orders in lineage subsites should only list orders in that path.
-
-- Consider vendor UID's and booking based state in mail notification.
-
-- Add ``is_customer`` utility.
-
-- Improve customers vocabulary utility to be more cpu friendly.
-
-- Search text in orders view needs to consider vendor and customer filter.
-
-- Display Export orders link only for vendors and administrators.
-
-- Work internally with unicode only.
-
-- Move IUUID adapter for ``IPloneSiteRoot`` to ``bda.plone.cart``, which is the
-  central package for the shop.
-
-- ``cart_discount_net`` and ``cart_discount_vat`` values calculation for vendor
-  specific orders in order view and order export.
-
-- Warning-popup, if state is changed globally for all bookings in orders view.
-
-- Move Customer role to ``bda.plone.cart``.
-
-- Fix dependency in bda.plone.payment.cash.__init__, which depends on
-  ``bda.plone.orders``.
-
-- Move some interfaces to ``bda.plone.cart`` to avoid circular dependencies.
-
-
 Contributors
-============
+------------
 
 - Robert Niederreiter (Author)
 - Johannes Raggam

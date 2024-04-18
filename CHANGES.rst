@@ -1,5 +1,5 @@
-Changelog
-=========
+Changes
+=======
 
 2.0b3 (unreleased)
 ------------------
@@ -77,8 +77,8 @@ Changelog
   [agitator]
 
 
-1.0a1 (unreleased)
-------------------
+1.0a1
+-----
 
 - Remove ``Authenticated`` role for ``bda.plone.orders: View Orders``
   permission in ``rolmap.xml`` and add ``Vendor`` instead. We really do not
