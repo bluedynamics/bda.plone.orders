@@ -18,19 +18,18 @@ from bda.plone.orders.mailtemplates import get_booking_reserved_to_ordered_templ
 from bda.plone.orders.mailtemplates import get_order_templates
 from bda.plone.orders.mailtemplates import get_reservation_templates
 from bda.plone.orders.mailtemplates import get_stock_threshold_reached_templates
-from chameleon import PageTemplateLoader
 from decimal import Decimal
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.utils import formataddr
 from plone import api
 from Products.CMFPlone.utils import safe_unicode
+from zope.component import getMultiAdapter
 from zope.component.hooks import getSite
 from zope.globalrequest import getRequest
 from zope.i18n import translate
 
 import logging
-import os
 import textwrap
 
 
@@ -288,27 +287,6 @@ def create_text_mail_body(context, order_data, templates):
     return templates["body"] % arguments
 
 
-class ZPTTranslator(object):
-    def __init__(self):
-        self.request = getRequest()
-
-    def __call__(
-        self,
-        msgid,
-        domain=None,
-        mapping=None,
-        default=None,
-        context=None,
-        target_language=None,
-    ):
-        return translate(
-            msgid, domain=domain, mapping=mapping, default=default, context=self.request
-        )
-
-
-MAIL_TEMPLATES_DIRECTORY = os.path.join(os.path.dirname(__file__), "mailtemplates")
-
-
 def create_html_mail_body(context, template_name, template_data):
     """Creates a rendered mail body
 
@@ -321,10 +299,7 @@ def create_html_mail_body(context, template_name, template_data):
     template_data
         Dict containing data passed to template.
     """
-    templates = PageTemplateLoader(
-        MAIL_TEMPLATES_DIRECTORY, translate=ZPTTranslator(), debug=True
-    )
-    template = templates["{}.pt".format(template_name)]
+    template = getMultiAdapter((context, getRequest()), name=template_name)
     template_data["ascur"] = ascur
     return template(**template_data)
 

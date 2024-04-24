@@ -5,23 +5,25 @@
 
   <head></head>
 
-  <body>
+  <body tal:define="
+    order options/order;
+  ">
     <h1 i18n:translate="order_mail_stock_threshold_reached_heading">
       Products getting out of stock
     </h1>
 
     <strong i18n:translate="order_mail_date">Date</strong>:
-    <tal:date replace="order['date']" />
+    ${order/date}
     <br />
 
     <ul>
-      <li tal:repeat="item items">
-        <strong tal:content="item['title']">Title</strong>
+      <li tal:repeat="item python:order['items']">
+        <strong>${item/title}</strong>
         <br />
         <span i18n:translate="order_mail_remaining_stock">
           Remaining Stock
         </span>:
-        <span tal:replace="item['remaining_stock_available']" />
+        ${item/remaining_stock_available}
       </li>
     </ul>
   </body>
