@@ -4,7 +4,8 @@ Changes
 2.0b3 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Fix typo in german translation.
+  [petschki]
 
 
 2.0b2 (2024-04-17)

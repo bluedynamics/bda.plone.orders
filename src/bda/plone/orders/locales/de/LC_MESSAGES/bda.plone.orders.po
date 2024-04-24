@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: bda.plone.orders\n"
 "POT-Creation-Date: 2019-02-10 13:43+0000\n"
-"PO-Revision-Date: 2016-11-02 11:58+0100\n"
-"Last-Translator: Jens W. Klein <jk@kleinundpartner.at>\n"
+"PO-Revision-Date: 2024-04-24 10:25+0200\n"
+"Last-Translator: Peter Mathis <peter.mathis@kombinat.at>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
@@ -14,7 +14,7 @@ msgstr ""
 "Preferred-Encodings: utf-8 latin1\n"
 "Domain: bda.plone.orders\n"
 "X-Is-Fallback-For: de-at de-li de-lu de-ch de-de\n"
-"X-Generator: Poedit 1.5.4\n"
+"X-Generator: Poedit 3.4.2\n"
 
 #. Default: "Item"
 #: ./browser/bookings.py:423
@@ -937,7 +937,7 @@ msgstr "Versand MwSt.: ${value} ${currency}"
 #. Default: "Thanks for your Order."
 #: ./browser/views.py:45
 msgid "order_text"
-msgstr "Viele Dank für Ihre Bestellung."
+msgstr "Vielen Dank für Ihre Bestellung."
 
 #. Default: "Total:"
 #: ./browser/templates/order.pt:114
