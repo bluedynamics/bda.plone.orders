@@ -21,7 +21,7 @@
     ${order/ordernumber}
     <br />
 
-    <strong i18n:translate="order_mail_cancelled_item">Cancelled item</strong>:
+    <strong i18n:translate="order_mail_booked_item">Booked item</strong>:
     ${booking/title}
     <br />
 
