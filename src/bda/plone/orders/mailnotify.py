@@ -18,6 +18,7 @@ from bda.plone.orders.mailtemplates import get_booking_reserved_to_ordered_templ
 from bda.plone.orders.mailtemplates import get_order_templates
 from bda.plone.orders.mailtemplates import get_reservation_templates
 from bda.plone.orders.mailtemplates import get_stock_threshold_reached_templates
+from chameleon import PageTemplateLoader
 from decimal import Decimal
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
@@ -287,6 +288,27 @@ def create_text_mail_body(context, order_data, templates):
     return templates["body"] % arguments
 
 
+class ZPTTranslator(object):
+    def __init__(self):
+        self.request = getRequest()
+
+    def __call__(
+        self,
+        msgid,
+        domain=None,
+        mapping=None,
+        default=None,
+        context=None,
+        target_language=None,
+    ):
+        return translate(
+            msgid, domain=domain, mapping=mapping, default=default, context=self.request
+        )
+
+
+MAIL_TEMPLATES_DIRECTORY = ""
+
+
 def create_html_mail_body(context, template_name, template_data):
     """Creates a rendered mail body
 
@@ -299,7 +321,15 @@ def create_html_mail_body(context, template_name, template_data):
     template_data
         Dict containing data passed to template.
     """
-    template = getMultiAdapter((context, getRequest()), name=template_name)
+    if MAIL_TEMPLATES_DIRECTORY != "":
+        # BBB this variable got patched outside this package.
+        # keep the old behavior of reading the patched directory template
+        templates = PageTemplateLoader(
+            MAIL_TEMPLATES_DIRECTORY, translate=ZPTTranslator(), debug=True
+        )
+        template = templates["{}.pt".format(template_name)]
+    else:
+        template = getMultiAdapter((context, getRequest()), name=template_name)
     template_data["ascur"] = ascur
     return template(**template_data)
 
