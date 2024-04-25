@@ -16,6 +16,7 @@
   <include file="profiles.zcml" />
   <include file="upgrades.zcml" />
   <include package=".browser" />
+  <include package=".mailnotifytemplates" />
   <include package=".restapi" />
 
   <!-- roles -->

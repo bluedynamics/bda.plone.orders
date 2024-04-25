@@ -1,0 +1,34 @@
+<configure xmlns="http://namespaces.zope.org/zope"
+           xmlns:plone="http://namespaces.plone.org/plone"
+           xmlns:browser="http://namespaces.zope.org/browser"
+           xmlns:zcml="http://namespaces.zope.org/zcml">
+
+  <browser:page
+    for="*"
+    name="booking_cancelled"
+    template="booking_cancelled.pt"
+    permission="zope2.View"
+    layer="..interfaces.IOrdersExtensionLayer" />
+
+  <browser:page
+    for="*"
+    name="booking_reserved_to_ordered"
+    template="booking_reserved_to_ordered.pt"
+    permission="zope2.View"
+    layer="..interfaces.IOrdersExtensionLayer" />
+
+  <browser:page
+    for="*"
+    name="order_success"
+    template="order_success.pt"
+    permission="zope2.View"
+    layer="..interfaces.IOrdersExtensionLayer" />
+
+  <browser:page
+    for="*"
+    name="stock_threshold_reached"
+    template="stock_threshold_reached.pt"
+    permission="zope2.View"
+    layer="..interfaces.IOrdersExtensionLayer" />
+
+</configure>

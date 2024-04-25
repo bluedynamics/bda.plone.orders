@@ -25,12 +25,12 @@ from email.mime.text import MIMEText
 from email.utils import formataddr
 from plone import api
 from Products.CMFPlone.utils import safe_unicode
+from zope.component import getMultiAdapter
 from zope.component.hooks import getSite
 from zope.globalrequest import getRequest
 from zope.i18n import translate
 
 import logging
-import os
 import textwrap
 
 
@@ -306,7 +306,7 @@ class ZPTTranslator(object):
         )
 
 
-MAIL_TEMPLATES_DIRECTORY = os.path.join(os.path.dirname(__file__), "mailtemplates")
+MAIL_TEMPLATES_DIRECTORY = ""
 
 
 def create_html_mail_body(context, template_name, template_data):
@@ -321,10 +321,15 @@ def create_html_mail_body(context, template_name, template_data):
     template_data
         Dict containing data passed to template.
     """
-    templates = PageTemplateLoader(
-        MAIL_TEMPLATES_DIRECTORY, translate=ZPTTranslator(), debug=True
-    )
-    template = templates["{}.pt".format(template_name)]
+    if MAIL_TEMPLATES_DIRECTORY != "":
+        # BBB this variable got patched outside this package.
+        # keep the old behavior of reading the patched directory template
+        templates = PageTemplateLoader(
+            MAIL_TEMPLATES_DIRECTORY, translate=ZPTTranslator(), debug=True
+        )
+        template = templates["{}.pt".format(template_name)]
+    else:
+        template = getMultiAdapter((context, getRequest()), name=template_name)
     template_data["ascur"] = ascur
     return template(**template_data)
 

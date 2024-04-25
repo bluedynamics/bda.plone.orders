@@ -30,7 +30,7 @@
     <p tal:content="view/text">Text goes here</p>
 
     <a href=""
-       class="payment_button standalone"
+       class="btn btn-primary"
        tal:attributes="href context/absolute_url"
        i18n:translate="order_done_continue">continue</a>
 

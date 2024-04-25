@@ -5,25 +5,28 @@
 
   <head></head>
 
-  <body>
+  <body tal:define="
+    order options/order;
+    booking options/booking;
+  ">
     <h1 i18n:translate="order_mail_booking_reserved_to_ordered_heading">
       Your reserved item is now available and our order is being processed
     </h1>
 
     <strong i18n:translate="order_mail_date">Date</strong>:
-    <tal:date replace="order['date']" />
+    ${order/date}
     <br />
 
     <strong i18n:translate="order_mail_ordernumber">Ordernumber</strong>:
-    <tal:ordernumber replace="order['ordernumber']" />
+    ${order/ordernumber}
     <br />
 
     <strong i18n:translate="order_mail_booked_item">Booked item</strong>:
-    <tal:cancelled_item replace="booking['title']" />
+    ${booking/title}
     <br />
 
     <strong i18n:translate="order_mail_order_details">Order details</strong>:
-    <a href="${order['portal_url'] + '/@@showorder?ordernumber=' + order['ordernumber']}"
+    <a href="${order/portal_url}/@@showorder?ordernumber=${order/ordernumber}"
        i18n:translate="order_mail_click_here">
       Click here
     </a>

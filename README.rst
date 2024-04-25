@@ -41,7 +41,6 @@ After that you can start customizing the order process:
 .. code-block:: python
 
     def patchShop():
-        patchMailTemplates()
         patchOrderExport()
 
 
@@ -65,19 +64,16 @@ WARNING:
 HTML Templates
 ^^^^^^^^^^^^^^
 
-Default HTML templates are located at ``bda.plone.orders:mailtemplates``.
-To customize them, copy the entire template folder to your integration package
-and patch ``bda.plone.orders.mailnotify.MAIL_TEMPLATES_DIRECTORY`` like so:
+Default HTML templates are located at ``bda.plone.orders.mailnotifytemplates``
+and registered as ``BrowserViews``. You can override the templates using
+``z3c.jbot``.
 
-.. code-block:: python
+WARNING:
 
-    from bda.plone.orders import mailnotify
-    import os
-
-    mailnotify.MAIL_TEMPLATES_DIRECTORY = os.path.join(
-        os.path.dirname(__file__),
-        'mailtemplates'
-    )
+    As of ``bda.plone.orders`` 2.0b3 the location of the mailnotification
+    templates moved from the folder ``mailtemplates`` to the module
+    ``mailnotifytemplates``. Please refactor your patches to jbot templates
+    or BrowserViews.
 
 
 Text Templates
