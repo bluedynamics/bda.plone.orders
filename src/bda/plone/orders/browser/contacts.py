@@ -26,7 +26,6 @@ class ContactsTable(BrowserView):
         super(ContactsTable, self).__init__(context, request)
         add_bundle_on_request(request, "bdajax-jquerytools")
         add_bundle_on_request(request, "bdajax-jquerytools-overlay")
-        add_bundle_on_request(request, "datatables")
         add_bundle_on_request(request, "bda-plone-orders")
 
     def render_get_actions_for_contact(self, colname, record):

@@ -127,7 +127,6 @@ class BookingsView(BrowserView):
         super(BookingsView, self).__init__(context, request)
         add_bundle_on_request(request, "bdajax-jquerytools")
         add_bundle_on_request(request, "bdajax-jquerytools-overlay")
-        add_bundle_on_request(request, "datatables")
         add_bundle_on_request(request, "bda-plone-orders")
 
     def bookings_table(self):

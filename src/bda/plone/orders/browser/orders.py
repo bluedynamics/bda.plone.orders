@@ -20,7 +20,8 @@ from bda.plone.orders.interfaces import IBuyable
 from bda.plone.orders.transitions import do_transition_for
 from bda.plone.orders.transitions import transitions_of_main_state
 from bda.plone.orders.transitions import transitions_of_salaried_state
-from Products.CMFPlone.interfaces import IPloneSiteRoot
+from plone.base.interfaces import IPloneSiteRoot
+from plone.memoize.view import memoize_contextless
 from Products.CMFPlone.resources import add_bundle_on_request
 from Products.Five import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
@@ -29,13 +30,13 @@ from repoze.catalog.query import Contains
 from repoze.catalog.query import Eq
 from souper.soup import get_soup
 from souper.soup import LazyRecord
+from urllib import parse as urlparse
 from yafowil.base import factory
 from yafowil.utils import Tag
 from zope.i18n import translate
 
 import json
 import plone.api
-import six.moves.urllib.parse
 import uuid
 
 
@@ -50,6 +51,7 @@ class TableData(BrowserView):
 
     soup_name = None
     search_text_index = None
+    b_size = 25
 
     @property
     def columns(self):
@@ -76,9 +78,9 @@ class TableData(BrowserView):
     def sort(self):
         columns = self.columns
         sortparams = dict()
-        sortcols_idx = int(self.request.form.get("iSortCol_0"))
+        sortcols_idx = 1  # TODO!
         sortparams["index"] = columns[sortcols_idx]["id"]
-        sortparams["reverse"] = self.request.form.get("sSortDir_0") == "desc"
+        sortparams["reverse"] = self.request.form.get("order[0][dir]") == "desc"
         return sortparams
 
     def all(self, soup):
@@ -94,8 +96,8 @@ class TableData(BrowserView):
         return soup.storage.length.value, lazyrecords()
 
     def slice(self, fullresult):
-        start = int(self.request.form["iDisplayStart"])
-        length = int(self.request.form["iDisplayLength"])
+        start = int(self.request.form.get("start", 0))
+        length = int(self.request.form.get("length", self.b_size))
         count = 0
         for lr in fullresult:
             if count >= start and count < (start + length):
@@ -110,6 +112,7 @@ class TableData(BrowserView):
                 return column
 
     def __call__(self):
+        print(self.request.form)
         soup = get_soup(self.soup_name, self.context)
         aaData = list()
         length, lazydata = self.query(soup)
@@ -132,10 +135,10 @@ class TableData(BrowserView):
         for lazyrecord in self.slice(lazydata):
             aaData.append(record2list(lazyrecord()))
         data = {
-            "sEcho": int(self.request.form["sEcho"]),
-            "iTotalRecords": soup.storage.length.value,
-            "iTotalDisplayRecords": length,
-            "aaData": aaData,
+            "recordsTotal": soup.storage.length.value,
+            "recordsFiltered": soup.storage.length.value,
+            "draw": int(self.request.form.get("draw", 1)),
+            "data": aaData,
         }
         self.request.response.setHeader("Content-type", "application/json")
         return json.dumps(data)
@@ -218,7 +221,6 @@ class OrdersViewBase(BrowserView):
         super(OrdersViewBase, self).__init__(context, request)
         add_bundle_on_request(request, "bdajax-jquerytools")
         add_bundle_on_request(request, "bdajax-jquerytools-overlay")
-        add_bundle_on_request(request, "datatables")
         add_bundle_on_request(request, "bda-plone-orders")
 
     def orders_table(self):
@@ -246,6 +248,11 @@ class OrdersTableBase(BrowserView):
     table_template = ViewPageTemplateFile("templates/table.pt")
     table_id = "bdaploneorders"
     data_view_name = "@@ordersdata"
+
+    @memoize_contextless
+    def iconresolver(self, icon):
+        resolver = self.context.restrictedTraverse("@@iconresolver")
+        return resolver.tag(icon)
 
     def rendered_table(self):
         return self.table_template(self)
@@ -386,7 +393,7 @@ class OrdersTable(OrdersTableBase):
         select_all_orders_attrs = {
             "name": "select_all_orders",
             "type": "checkbox",
-            "class_": "select_all_orders",
+            "class_": "select_all_orders form-check-input",
             "title": _("select_all_orders", default=u"Select all visible orders"),
         }
         select_all_orders = tag("input", **select_all_orders_attrs)
@@ -409,44 +416,34 @@ class OrdersTable(OrdersTableBase):
 
         # view order
         if vendor_uid:
-            view_order_target = "%s?uid=%s&vendor=%s" % (
+            view_order_target = "%s/order?uid=%s&vendor=%s" % (
                 base_url,
                 str(record.attrs["uid"]),
                 vendor_uid,
             )
         else:
-            view_order_target = "%s?uid=%s" % (base_url, str(record.attrs["uid"]))
+            view_order_target = "%s/order?uid=%s" % (base_url, str(record.attrs["uid"]))
         view_order_attrs = {
-            "ajax:bind": "click",
-            "ajax:target": view_order_target,
-            "ajax:overlay": "order",
-            "href": "",
+            "class_": "pat-plone-modal",
+            "href": view_order_target,
             "title": _("view_order", default=u"View Order"),
         }
-        order_icon_url = "%s/++resource++bda.plone.orders/order.png" % base_url
-        view_order_icon = tag("img", src=order_icon_url)
-        view_order = tag("a", view_order_icon, **view_order_attrs)
+        view_order = tag("a", self.iconresolver("card-checklist"), **view_order_attrs)
 
         # view invoice
-        view_invoice_target = "%s?uid=%s" % (base_url, str(record.attrs["uid"]))
         view_invoice_attrs = {
-            "ajax:bind": "click",
-            "ajax:target": view_invoice_target,
-            "ajax:overlay": "invoice",
-            "ajax:overlay-css": "invoice_overlay",
-            "href": "",
+            "class_": "pat-plone-modal",
+            "href": "%s/invoice?uid=%s" % (base_url, str(record.attrs["uid"])),
             "title": _("view_invoice", default=u"View Invoice"),
         }
-        invoice_icon_url = "%s/++resource++bda.plone.orders/invoice.png" % base_url
-        view_invoice_icon = tag("img", src=invoice_icon_url)
-        view_invoice = tag("a", view_invoice_icon, **view_invoice_attrs)
+        view_invoice = tag("a", self.iconresolver("receipt"), **view_invoice_attrs)
 
         # select order
         select_order_attrs = {
             "name": "select_order",
             "type": "checkbox",
             "value": record.attrs["uid"],
-            "class_": "select_order",
+            "class_": "select_order form-check-input",
         }
         select_order = tag("input", **select_order_attrs)
 
@@ -487,7 +484,7 @@ class OrdersTable(OrdersTableBase):
             ("state", self.request.form.get("state")),
             ("salaried", self.request.form.get("salaried")),
         ]
-        query = six.moves.urllib.parse.urlencode(dict([it for it in params if it[1]]))
+        query = urlparse.urlencode(dict([it for it in params if it[1]]))
         query = query and u"?{0}".format(query) or ""
         return u"{0:s}/{1:s}{2:s}".format(
             self.context.absolute_url(), self.data_view_name, query
@@ -511,31 +508,20 @@ class MyOrdersTable(OrdersTableBase):
         base_url = self.context.absolute_url()
 
         # view order
-        view_order_target = "%s?uid=%s" % (base_url, str(record.attrs["uid"]))
         view_order_attrs = {
-            "ajax:bind": "click",
-            "ajax:target": view_order_target,
-            "ajax:overlay": "myorder",
-            "href": "",
+            "class_": "pat-plone-modal",
+            "href": "%s?uid=%s" % (base_url, str(record.attrs["uid"])),
             "title": _("view_order", default=u"View Order"),
         }
-        order_icon_url = "%s/++resource++bda.plone.orders/order.png" % base_url
-        view_order_icon = tag("img", src=order_icon_url)
-        view_order = tag("a", view_order_icon, **view_order_attrs)
+        view_order = tag("a", self.iconresolver("card-checklist"), **view_order_attrs)
 
         # view invoice
-        view_invoice_target = "%s?uid=%s" % (base_url, str(record.attrs["uid"]))
         view_invoice_attrs = {
-            "ajax:bind": "click",
-            "ajax:target": view_invoice_target,
-            "ajax:overlay": "myinvoice",
-            "ajax:overlay-css": "invoice_overlay",
-            "href": "",
+            "class_": "pat-plone-modal",
+            "href": "%s?uid=%s" % (base_url, str(record.attrs["uid"])),
             "title": _("view_invoice", default=u"View Invoice"),
         }
-        invoice_icon_url = "%s/++resource++bda.plone.orders/invoice.png" % base_url
-        view_invoice_icon = tag("img", src=invoice_icon_url)
-        view_invoice = tag("a", view_invoice_icon, **view_invoice_attrs)
+        view_invoice = tag("a", self.iconresolver("receipt"), **view_invoice_attrs)
 
         # return joined actions
         return view_order + view_invoice
@@ -588,9 +574,7 @@ class OrdersData(OrdersTable, TableData):
             query = query & Eq("salaried", salaried)
 
         # filter by search term if given
-        term = self.request.form["sSearch"]
-        if six.PY2:
-            term = term.decode("utf-8")
+        term = self.request.form.get("search[value]")
         if term:
             # append * for proper fulltext search
             term += "*"
@@ -616,9 +600,7 @@ class MyOrdersData(MyOrdersTable, TableData):
     def query(self, soup):
         query = Eq("creator", plone.api.user.get_current().getId())
         # filter by search term if given
-        term = self.request.form["sSearch"]
-        if six.PY2:
-            term = term.decode("utf-8")
+        term = self.request.form.get("search[value]")
         if term:
             # append * for proper fulltext search
             term += "*"

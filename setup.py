@@ -51,7 +51,6 @@ setup(
         "bda.plone.cart",
         "bda.plone.checkout",
         "bda.plone.discount",
-        "collective.js.datatables",
         "plone.restapi",
         "Products.CMFPlone",
         "pycountry>=23.12.7",
