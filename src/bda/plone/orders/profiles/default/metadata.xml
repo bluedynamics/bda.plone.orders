@@ -1,8 +1,7 @@
 <?xml version="1.0"?>
 <metadata>
-  <version>2000</version>
+  <version>2001</version>
   <dependencies>
-    <dependency>profile-collective.js.datatables:default</dependency>
     <dependency>profile-bda.plone.checkout:default</dependency>
     <dependency>profile-bda.plone.discount:default</dependency>
     <dependency>profile-yafowil.plone:default</dependency>

@@ -114,4 +114,12 @@
     import_steps="plone.app.registry"
     run_deps="False" />
 
+  <genericsetup:upgradeDepends
+    title="Update resource registry -> remove datatables dependency"
+    source="2000"
+    destination="2001"
+    profile="bda.plone.orders:default"
+    import_steps="plone.app.registry"
+    run_deps="False" />
+
 </configure>

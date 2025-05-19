@@ -4,23 +4,36 @@
     i18n:domain="bda.plone.orders"
     tal:omit-tag="">
 
-  <div class="filter clearfix"
+  <div class="mb-3"
        tal:attributes="ajax:target context/absolute_url">
     <tal:filter replace="structure view/render_filter"/>
   </div>
 
   <table tal:define="ajaxurl view/ajaxurl;
                      columns view/columns"
-         tal:attributes="data-ajaxurl ajaxurl;
-                         id view/table_id">
-    <thead>
+         class="pat-datatables table table-sm table-bordered border-secondary-subtle"
+         id="${view/table_id}"
+         data-pat-datatables='{
+            "serverSide": true,
+            "ajax": {
+              "url": "${ajaxurl}",
+              "dataSrc": "data"
+            },
+            "order": [
+              [1, "asc"]
+            ],
+            "columnDefs": [
+              {"orderable": false, "targets": [0]}
+            ]
+         }'>
+    <thead class="table-light">
       <tr>
         <tal:loop repeat="colinfo columns">
           <th tal:attributes="class python: 'datarow-' + colinfo['id'];">
             <tal:additional
               condition="nocall:colinfo/head|nothing"
               replace="structure colinfo/head" />
-            <span tal:replace="python: colinfo['label']">Title</span>
+            <span tal:condition="not:repeat/colinfo/start" tal:replace="python: colinfo['label']">Title</span>
           </th>
         </tal:loop>
       </tr>
